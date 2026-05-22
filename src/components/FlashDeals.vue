@@ -151,6 +151,20 @@ onUnmounted(() => {
               {{ prod.discount }}
             </span>
           </div>
+
+          <!-- Wishlist Button -->
+          <button 
+            @click.stop="store.toggleWishlist(prod)"
+            class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow hover:bg-white transition-all flex items-center justify-center text-on-surface-variant hover:text-error z-10"
+          >
+            <span 
+              class="material-symbols-outlined text-[18px]"
+              :class="{ 'fill text-error': store.isInWishlist(prod.id) }"
+              :style="store.isInWishlist(prod.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
+            >
+              favorite
+            </span>
+          </button>
           
           <div class="p-6 flex-grow">
             <!-- Product Image -->
@@ -197,8 +211,7 @@ onUnmounted(() => {
             </div>
           </div>
           
-          <!-- Action Buttons (Conditional hover for Product 1, or quick view buttons for others) -->
-          <!-- We can combine so all have standard Add to Cart and Quick View actions for best premium UX! -->
+          <!-- Action Buttons -->
           <div class="px-6 pb-6 mt-auto flex flex-col gap-2">
             <button 
               @click="store.addToCart(prod)"
@@ -206,12 +219,22 @@ onUnmounted(() => {
             >
               Add to Cart <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
             </button>
-            <button 
-              @click="openQuickView(prod)"
-              class="w-full py-2 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low hover:border-primary transition-all text-xs"
-            >
-              Quick View
-            </button>
+            <div class="flex gap-2">
+              <button 
+                @click="openQuickView(prod)"
+                class="flex-grow py-2 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low hover:border-primary transition-all text-xs"
+              >
+                Quick View
+              </button>
+              <button 
+                @click="store.toggleCompare(prod)"
+                class="px-3 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low hover:border-primary transition-all flex items-center justify-center"
+                :class="{ 'bg-primary-container/20 border-primary text-primary': store.isInCompare(prod.id) }"
+                title="Compare Product"
+              >
+                <span class="material-symbols-outlined text-[18px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
