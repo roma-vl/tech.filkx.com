@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ElectroLux | Premium Electronics Catalog</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#bcc9ca",
+                        "on-secondary-container": "#526478",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eceef1",
+                        "outline": "#6c7b6d",
+                        "on-tertiary-fixed": "#121e1f",
+                        "surface": "#f7f9fc",
+                        "on-tertiary-container": "#3b4748",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e0e3e6",
+                        "on-surface": "#191c1e",
+                        "surface-tint": "#006d37",
+                        "on-secondary-fixed-variant": "#36485b",
+                        "surface-dim": "#d8dadd",
+                        "surface-container-low": "#f2f4f7",
+                        "on-background": "#191c1e",
+                        "background": "#f7f9fc",
+                        "on-secondary-fixed": "#091d2e",
+                        "tertiary": "#546162",
+                        "surface-container-highest": "#e0e3e6",
+                        "secondary": "#4e6073",
+                        "tertiary-fixed": "#d8e5e6",
+                        "secondary-fixed-dim": "#b5c8df",
+                        "inverse-surface": "#2d3133",
+                        "on-primary-fixed-variant": "#005228",
+                        "on-surface-variant": "#3d4a3e",
+                        "on-primary-fixed": "#00210c",
+                        "inverse-on-surface": "#eff1f4",
+                        "secondary-fixed": "#d1e4fb",
+                        "outline-variant": "#bbcbbb",
+                        "primary-fixed": "#6bfe9c",
+                        "primary-container": "#2ecc71",
+                        "primary-fixed-dim": "#4ae183",
+                        "surface-container-high": "#e6e8eb",
+                        "on-tertiary-fixed-variant": "#3d494a",
+                        "on-primary-container": "#005027",
+                        "primary": "#006d37",
+                        "secondary-container": "#cfe2f9",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#f7f9fc",
+                        "tertiary-container": "#a8b5b6",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#4ae183",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "columns": "12",
+                        "gutter": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "price-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .product-card-shadow {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .product-card-shadow:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container-lowest sticky top-0 z-50 shadow-sm border-b border-surface-variant w-full">
+<div class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-display-lg font-bold text-primary">ElectroLux</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Smartphones</a>
+<a class="text-primary border-b-2 border-primary font-bold pb-1" href="#">Laptops</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Gaming</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Audio</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Wearables</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container-low rounded-lg px-4 py-2 w-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full ml-2" placeholder="Search premium tech..." type="text"/>
+</div>
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all active:scale-95 relative">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute -top-2 -right-2 bg-primary text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">3</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-stack-lg flex gap-gutter">
+<!-- Sidebar Navigation & Filters -->
+<aside class="hidden lg:block w-64 flex-shrink-0">
+<div class="bg-surface-container-low rounded-xl p-6 shadow-sm border border-outline-variant space-y-stack-lg sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+<!-- Category Links -->
+<div class="space-y-2">
+<h3 class="font-title-md text-title-md text-on-surface mb-4">Department</h3>
+<a class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="laptop_mac">laptop_mac</span>
+<span class="font-title-md">Laptops</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="smartphone">smartphone</span>
+<span class="font-body-md">Smartphones</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="headphones">headphones</span>
+<span class="font-body-md">Audio</span>
+</a>
+</div>
+<hr class="border-outline-variant"/>
+<!-- Price Filter -->
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-4">Price Range</h3>
+<div class="space-y-4">
+<input class="w-full accent-primary" max="5000" min="0" step="100" type="range"/>
+<div class="flex items-center justify-between gap-2">
+<div class="relative w-1/2">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-label-md text-on-surface-variant">$</span>
+<input class="w-full h-10 pl-5 pr-2 border border-outline-variant rounded bg-surface font-body-md focus:border-primary-container focus:ring-0" placeholder="0" type="number"/>
+</div>
+<span class="text-on-surface-variant">-</span>
+<div class="relative w-1/2">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-label-md text-on-surface-variant">$</span>
+<input class="w-full h-10 pl-5 pr-2 border border-outline-variant rounded bg-surface font-body-md focus:border-primary-container focus:ring-0" placeholder="5000" type="number"/>
+</div>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant"/>
+<!-- Brand Filter -->
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-4">Brand</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Apple</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Dell</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Lenovo</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">ASUS ROG</span>
+</label>
+</div>
+</div>
+<hr class="border-outline-variant"/>
+<!-- Specs Filter -->
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-4">RAM Capacity</h3>
+<div class="grid grid-cols-2 gap-2">
+<button class="border border-outline-variant py-2 rounded text-label-md hover:bg-primary-container hover:text-white transition-all">8GB</button>
+<button class="border border-primary-container bg-primary-container text-white py-2 rounded text-label-md">16GB</button>
+<button class="border border-outline-variant py-2 rounded text-label-md hover:bg-primary-container hover:text-white transition-all">32GB</button>
+<button class="border border-outline-variant py-2 rounded text-label-md hover:bg-primary-container hover:text-white transition-all">64GB</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<section class="flex-1">
+<!-- Toolbar: Breadcrumbs, Sorting, Active Chips -->
+<div class="mb-stack-lg">
+<div class="flex items-center justify-between mb-6">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Premium Laptops</h1>
+<div class="flex items-center gap-4">
+<span class="text-body-md text-on-surface-variant hidden sm:inline">Sort by:</span>
+<select class="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 font-body-md focus:ring-2 focus:ring-primary-container focus:border-primary">
+<option>Popularity</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+<option>Customer Rating</option>
+</select>
+</div>
+</div>
+<!-- Active Filter Chips -->
+<div class="flex flex-wrap gap-2 items-center">
+<span class="text-label-md text-on-surface-variant mr-2">Active Filters:</span>
+<button class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full text-label-md hover:bg-error-container hover:text-on-error-container transition-all">
+                        Apple <span class="material-symbols-outlined text-[14px]" data-icon="close">close</span>
+</button>
+<button class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full text-label-md hover:bg-error-container hover:text-on-error-container transition-all">
+                        16GB RAM <span class="material-symbols-outlined text-[14px]" data-icon="close">close</span>
+</button>
+<button class="text-primary font-bold text-label-md ml-2 hover:underline">Clear all</button>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="MacBook Pro" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A sleek space gray high-end laptop sitting on a minimalist white marble desk. The composition is clean and professional, with bright daylight coming from a side window, highlighting the metallic finish of the device. The background is softly blurred to emphasize the product's premium build and elegant design aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM"/>
+<span class="absolute top-4 right-4 bg-primary text-white text-label-md font-bold px-3 py-1 rounded-full">New</span>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">4.9</span>
+<span class="text-label-md">(128 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">MacBook Pro 14" - M3 Pro Chip, 18GB RAM, 512GB SSD</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$1,999.00</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="Dell XPS 15" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated silver ultrabook laptop open on a dark wood surface. The screen displays a high-resolution landscape wallpaper. Ambient studio lighting creates subtle gradients on the aluminum chassis, portraying a corporate and high-performance atmosphere. The setting is a modern executive office with minimalist decor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw"/>
+<span class="absolute top-4 right-4 bg-secondary text-white text-label-md font-bold px-3 py-1 rounded-full">Sale</span>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">4.8</span>
+<span class="text-label-md">(92 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">Dell XPS 15 - Intel Core i9, 32GB RAM, 1TB SSD, RTX 4060</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$2,299.00</span>
+<span class="text-label-md text-on-surface-variant line-through">$2,499.00</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="ASUS ROG" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A powerful gaming laptop featuring vibrant RGB lighting under the keys and along the chassis edges. The laptop is positioned in a low-light gaming setup with neon blue and magenta ambient lighting. The design is aggressive and technical, appealing to pro gamers. Shadows are deep and dramatic, emphasizing the cooling vents and mechanical details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E"/>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">5.0</span>
+<span class="text-label-md">(45 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">ROG Zephyrus G14 - Ryzen 9, 16GB RAM, RTX 4070, 120Hz</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$1,599.00</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Repeat Pattern for more cards (Grid filler) -->
+<!-- Card 4 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="ThinkPad X1" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A matte black professional business laptop closed and sitting on a contemporary concrete table. The texture of the laptop is detailed and premium. The lighting is neutral and diffused, creating a realistic, high-end commercial product shot. In the background, a modern office setting is visible through soft focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7ehlQmQnyIbqZ7UKgr8V0mCEj26xp7hzfddOM2Bmm2eSXyygw_1Pa5UtAUjF8FiEFuuTKU2nirKQ6xTW89jAyo3ptFohpbMoa763DzIGnU9WcYlFze2ITHt1uim5itGotu78u02aygZyLgplNTR_YD5AGF0YTqbbYnWcLi0svVRaGzDbKcLNNWAmXWoHRHJc36gfBS75lwJHiIYn9iv35SWv3yGi7oWiWjLQtJV3USiCRNLvPQYgGVjdtW7X71knwmeOoQXbY0cA"/>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">4.7</span>
+<span class="text-label-md">(210 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">ThinkPad X1 Carbon Gen 11 - Intel Core i7, 16GB RAM, 512GB</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$1,450.00</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="HP Spectre" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A rose-gold luxury ultrabook laptop angled artistically on a white podium. The lighting is warm and soft, emphasizing the jewelry-like finish of the hinges and edges. The aesthetic is extremely high-end and lifestyle-oriented, using a soft pastel color palette in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQiu2QhryOyOxSSyZfWD9MeA0GEjrvV--xa1qwaS8hrlevCY7YgST20v_LnbFwuZSSQdzVOsu2UIszOqE4us7tgsKjEgTwEdx_oCNLd3WkEtX6Xchu-OJXN0HFiNi5FMwtNcN3vOE4aPigIDgb0iQsyL0uyZTRUVKoRY8-w1mQid0uPH6ua6yBODBCxg2VRofafATzyTk29_fVakQo7pDLYkoZpnlabZ-a6KrP-8mkENT9CmR6ScK9g2GjyiSJHaJ20jDKnRfWURM"/>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">4.6</span>
+<span class="text-label-md">(56 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">HP Spectre x360 Luxury 2-in-1 - Intel Evo i7, 16GB RAM</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$1,399.00</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 6 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant product-card-shadow transition-all duration-300">
+<div class="relative aspect-square bg-white p-6">
+<img alt="Razer Blade" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" data-alt="A dark, menacing black gaming laptop with an emerald green glowing logo on the lid. The laptop is set against a dark background with green fiber-optic lighting elements. The style is high-tech and aggressive, highlighting the thin profile of this powerful performance machine. The lighting is moody and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkksX47BmkwjAiSzTUIEmWwzDqhcckudBCmKAGA-iUC_9VuRipCKBceGV1cZ2RBI2VLhB8yvdfmaC06PXzi0r2fcnLBPv3CgwfTMDLB_GIRPkwhljwi0940O06xAnYQKKdCkdVpI1_VIF_-YWnoFcn7XIGMoGRLNdjWbH7SAwNwayPVReoUGckbhit9qQh_0Ah89KFN093j6spzUDUYz1mmH84ykE43aqnzG6oM5CvxmMAqqmJXhlQ37JF5NcZfX-XPImae1pnjfw"/>
+<span class="absolute top-4 left-4 bg-error text-white text-label-md font-bold px-3 py-1 rounded-full">Limited</span>
+</div>
+<div class="p-5 space-y-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="text-label-md font-bold text-on-surface">4.9</span>
+<span class="text-label-md">(18 reviews)</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">Razer Blade 16 - Dual Mode Mini-LED, RTX 4090, 32GB</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-price-lg text-price-lg text-on-surface">$4,299.99</span>
+</div>
+<div class="pt-4 flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-bold py-3 rounded-lg active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+                                Add to Cart
+                            </button>
+<button class="p-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<nav class="mt-16 flex items-center justify-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-all">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-all">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-all">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</nav>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="bg-surface-container-highest w-full py-stack-lg px-margin-desktop border-t border-outline-variant">
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<div class="md:col-span-4 space-y-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">ElectroLux</span>
+<p class="text-body-md text-on-surface-variant max-w-xs">
+                    Elevating your digital experience with premium electronics, world-class support, and curated technology solutions.
+                </p>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</div>
+<div class="md:col-span-2 space-y-4">
+<h4 class="font-title-lg text-title-lg text-on-surface">Company</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">About Us</a></li>
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Careers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Sitemap</a></li>
+</ul>
+</div>
+<div class="md:col-span-2 space-y-4">
+<h4 class="font-title-lg text-title-lg text-on-surface">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+<div class="md:col-span-4 space-y-4">
+<h4 class="font-title-lg text-title-lg text-on-surface">Newsletter</h4>
+<p class="text-body-md text-on-surface-variant">Stay updated with latest premium tech releases.</p>
+<div class="flex">
+<input class="flex-1 bg-surface-container border border-outline-variant rounded-l-lg px-4 py-2 focus:ring-1 focus:ring-primary focus:outline-none" placeholder="Enter your email" type="email"/>
+<button class="bg-primary text-white px-4 py-2 rounded-r-lg font-bold hover:opacity-80 transition-all">Join</button>
+</div>
+</div>
+<div class="md:col-span-12 pt-stack-lg border-t border-outline-variant text-center">
+<p class="text-body-md text-on-surface-variant">© 2024 ElectroLux Premium Electronics. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<script>
+        // Simple interactivity for demonstration
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                // Update UI or values if needed
+            });
+        });
+
+        // Toggle active filter state on chips
+        document.querySelectorAll('.flex-wrap .rounded-full').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.style.display = 'none';
+            });
+        });
+    </script>
+</body></html>
