@@ -154,8 +154,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 </script>
 
 <template>
-  <nav ref="navbarRef" class="navbar-secondary hidden md:block">
-    <div class="navbar-inner">
+  <nav ref="navbarRef" class="navbar-secondary hidden md:block w-full">
+     <div class="max-w-container-max mx-auto h-16 px-margin-desktop flex items-center justify-between gap-gutter">
+     
       <!-- Browse Categories Button -->
       <div class="browse-trigger-wrap" @mouseenter="openMenu" @mouseleave="closeMenu">
         <button
@@ -266,9 +267,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .navbar-inner {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 50px;
   display: flex;
   align-items: center;
   height: 48px;
