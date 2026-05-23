@@ -439,20 +439,20 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
 }
 
 .mega-sub-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: #49454f;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
   border: 1px solid transparent;
 }
@@ -531,12 +531,14 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 .promo-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   border: 1px solid rgba(0, 82, 40, 0.1);
   box-shadow: 0 2px 8px rgba(0, 82, 40, 0.06);
   transition: box-shadow 0.2s, transform 0.2s;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .promo-card:hover {
@@ -545,26 +547,29 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .promo-img {
-  width: 100%;
-  height: 88px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .promo-body {
-  padding: 10px 12px;
+  padding: 8px 10px;
+  flex: 1;
 }
 
 .promo-title {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #1c1b1f;
-  margin: 0 0 3px;
+  margin: 0 0 2px;
 }
 
 .promo-desc {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: #79747e;
-  margin: 0 0 8px;
+  margin: 0 0 4px;
+  line-height: 1.2;
 }
 
 .promo-cta {
@@ -574,7 +579,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   background: none;
   border: none;
   color: #005228;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
@@ -586,7 +591,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .promo-cta .material-symbols-outlined {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* ── Nav links ────────────────────────────────────────── */
