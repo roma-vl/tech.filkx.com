@@ -183,11 +183,11 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star_half</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star_half</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">4.9 (128)</span>
             </div>
@@ -200,7 +200,7 @@ onMounted(() => {
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -213,7 +213,7 @@ onMounted(() => {
           <div class="relative bg-white p-3">
             <div class="aspect-square w-full overflow-hidden rounded-lg bg-surface-container-low relative">
               <img alt="Dell XPS 15" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw"/>
-              <span class="absolute top-2 left-2 bg-error text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Save $200</span>
+              <span class="absolute top-2 left-2 bg-sale-error text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Save $200</span>
             </div>
             <button class="absolute top-5 right-5 p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full text-on-surface-variant hover:text-error hover:scale-110 transition-all opacity-0 group-hover:opacity-100">
               <span class="material-symbols-outlined text-[18px]">favorite</span>
@@ -222,10 +222,10 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
                 <span class="material-symbols-outlined text-[14px]">star</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">4.8 (92)</span>
@@ -242,7 +242,7 @@ onMounted(() => {
                   </label>
                 </div>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -263,11 +263,11 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">5.0 (45)</span>
             </div>
@@ -280,7 +280,7 @@ onMounted(() => {
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -301,11 +301,11 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">4.7 (210)</span>
             </div>
@@ -318,7 +318,7 @@ onMounted(() => {
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -339,10 +339,10 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
                 <span class="material-symbols-outlined text-[14px]">star_half</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">4.6 (56)</span>
@@ -356,7 +356,7 @@ onMounted(() => {
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -378,11 +378,11 @@ onMounted(() => {
           <div class="px-4 pb-4 flex flex-col flex-1">
             <div class="flex items-center gap-1 mb-1.5">
               <div class="flex text-star-rating">
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
-                <span class="material-symbols-outlined text-[14px] fill-current">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
               </div>
               <span class="text-[11px] font-bold text-on-surface-variant ml-1">4.9 (18)</span>
             </div>
@@ -395,7 +395,7 @@ onMounted(() => {
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary/90 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
