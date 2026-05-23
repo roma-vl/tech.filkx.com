@@ -415,7 +415,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   gap: 10px;
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #ede9f6;
+  border-bottom: 1px solid #e6f0e9;
 }
 
 .panel-icon {
@@ -439,31 +439,42 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: 8px;
   flex: 1;
 }
 
 .mega-sub-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 7px 10px;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s ease;
   color: #49454f;
-  font-size: 0.84rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid transparent;
 }
 
 .mega-sub-item:hover {
-  background: rgba(0, 82, 40, 0.07);
+  background: #ffffff;
   color: #005228;
+  border-color: rgba(0, 82, 40, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 82, 40, 0.05);
+  transform: translateY(-1px);
 }
 
 .sub-dot {
-  font-size: 18px;
-  color: #006d37;
+  font-size: 16px;
+  color: #80d997;
   flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.mega-sub-item:hover .sub-dot {
+  color: #006d37;
+  transform: translateX(3px);
 }
 
 .sub-name {
