@@ -15,6 +15,8 @@ import WishlistDrawer from './components/WishlistDrawer.vue';
 import CompareDrawer from './components/CompareDrawer.vue';
 import AccountModal from './components/AccountModal.vue';
 import ToastNotification from './components/ToastNotification.vue';
+import Catalog from './components/Catalog.vue';
+import { store } from './store.js';
 </script>
 
 <template>
@@ -23,11 +25,16 @@ import ToastNotification from './components/ToastNotification.vue';
     <Header />
     <Navbar />
     <main class="flex-grow text-on-background">
-      <HeroSlider />
-      <CategoriesGrid />
-      <FlashDeals />
-      <RecommendedProducts />
-      <BrandPartners />
+      <template v-if="store.currentPage === 'home'">
+        <HeroSlider />
+        <CategoriesGrid />
+        <FlashDeals />
+        <RecommendedProducts />
+        <BrandPartners />
+      </template>
+      <template v-else-if="store.currentPage === 'catalog'">
+        <Catalog />
+      </template>
     </main>
     <Footer />
 

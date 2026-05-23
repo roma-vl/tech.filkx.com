@@ -1,6 +1,9 @@
 import { reactive } from 'vue';
 
 export const store = reactive({
+  // Navigation state
+  currentPage: 'catalog',
+
   // Arrays for items
   cart: [],
   wishlist: [],
