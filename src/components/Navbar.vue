@@ -287,7 +287,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #6750a4 0%, #7c6ac0 100%);
+  background: linear-gradient(135deg, #005228 0%, #006d37 100%);
   color: #fff;
   padding: 0 20px;
   height: 48px;
@@ -302,8 +302,8 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 .browse-btn:hover,
 .browse-btn--active {
-  background: linear-gradient(135deg, #7c6ac0 0%, #9980d4 100%);
-  box-shadow: 0 4px 16px rgba(103, 80, 164, 0.35);
+  background: linear-gradient(135deg, #006d37 0%, #80d997 100%);
+  box-shadow: 0 4px 16px rgba(0, 82, 40, 0.35);
 }
 
 .browse-icon {
@@ -330,19 +330,19 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   grid-template-columns: 220px 1fr 240px;
   width: 860px;
   background: #fff;
-  border: 1px solid rgba(103, 80, 164, 0.12);
-  border-top: 3px solid #6750a4;
+  border: 1px solid rgba(0, 82, 40, 0.12);
+  border-top: 3px solid #005228;
   border-radius: 0 0 16px 16px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(103, 80, 164, 0.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 82, 40, 0.1);
   overflow: hidden;
   z-index: 60;
 }
 
 /* ── Sidebar ──────────────────────────────────────────── */
 .mega-sidebar {
-  background: #f7f5ff;
+  background: #f3faf5;
   padding: 20px 0;
-  border-right: 1px solid rgba(103, 80, 164, 0.1);
+  border-right: 1px solid rgba(0, 82, 40, 0.1);
 }
 
 .mega-sidebar-label {
@@ -350,7 +350,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #9980d4;
+  color: #006d37;
   padding: 0 16px 8px;
 }
 
@@ -375,9 +375,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 .mega-cat-item:hover,
 .mega-cat-item--active {
-  background: rgba(103, 80, 164, 0.08);
-  color: #6750a4;
-  border-left-color: #6750a4;
+  background: rgba(0, 82, 40, 0.08);
+  color: #005228;
+  border-left-color: #005228;
 }
 
 .cat-icon {
@@ -420,8 +420,8 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 .panel-icon {
   font-size: 22px;
-  color: #6750a4;
-  background: rgba(103, 80, 164, 0.1);
+  color: #005228;
+  background: rgba(0, 82, 40, 0.1);
   border-radius: 8px;
   padding: 4px;
 }
@@ -456,13 +456,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .mega-sub-item:hover {
-  background: rgba(103, 80, 164, 0.07);
-  color: #6750a4;
+  background: rgba(0, 82, 40, 0.07);
+  color: #005228;
 }
 
 .sub-dot {
   font-size: 18px;
-  color: #9980d4;
+  color: #006d37;
   flex-shrink: 0;
 }
 
@@ -490,7 +490,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   margin-top: 16px;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6750a4;
+  color: #005228;
   text-decoration: none;
   transition: gap 0.2s;
 }
@@ -501,9 +501,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 /* ── Promos ───────────────────────────────────────────── */
 .mega-promos {
-  background: #f7f5ff;
+  background: #f3faf5;
   padding: 20px 16px;
-  border-left: 1px solid rgba(103, 80, 164, 0.1);
+  border-left: 1px solid rgba(0, 82, 40, 0.1);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -514,7 +514,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #9980d4;
+  color: #006d37;
   margin-bottom: 4px;
 }
 
@@ -522,14 +522,14 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(103, 80, 164, 0.1);
-  box-shadow: 0 2px 8px rgba(103, 80, 164, 0.06);
+  border: 1px solid rgba(0, 82, 40, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 82, 40, 0.06);
   transition: box-shadow 0.2s, transform 0.2s;
   cursor: pointer;
 }
 
 .promo-card:hover {
-  box-shadow: 0 8px 24px rgba(103, 80, 164, 0.14);
+  box-shadow: 0 8px 24px rgba(0, 82, 40, 0.14);
   transform: translateY(-2px);
 }
 
@@ -562,7 +562,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   gap: 4px;
   background: none;
   border: none;
-  color: #6750a4;
+  color: #005228;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
@@ -608,14 +608,14 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   left: 14px;
   right: 14px;
   height: 3px;
-  background: #6750a4;
+  background: #005228;
   border-radius: 2px 2px 0 0;
   transform: scaleX(0);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-link:hover {
-  color: #6750a4;
+  color: #005228;
 }
 
 .nav-link:hover::after {
@@ -623,7 +623,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .nav-link--active {
-  color: #6750a4;
+  color: #005228;
 }
 
 .nav-link--active::after {
