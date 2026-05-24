@@ -75,7 +75,7 @@ const addRecommended = (product) => {
 
 <template>
   <main class="max-w-container-max mx-auto px-margin-desktop py-stack-lg min-h-screen">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-stack-lg">
+    <div class="cart-page-header mb-stack-lg">
       <div>
         <h1 class="font-headline-lg text-headline-lg">Your Shopping Cart</h1>
         <p class="text-on-surface-variant mt-2">{{ store.cartCount }} items ready for secure checkout.</p>
@@ -102,20 +102,20 @@ const addRecommended = (product) => {
         <article
           v-for="item in store.cart"
           :key="item.id"
-          class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant flex flex-col md:flex-row gap-6"
+          class="cart-item bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant"
         >
-          <div class="w-full md:w-32 h-32 bg-surface-container rounded-lg overflow-hidden flex-shrink-0 p-3">
+          <div class="cart-item-media bg-surface-container rounded-lg overflow-hidden flex-shrink-0 p-3">
             <img class="w-full h-full object-contain" :src="item.image" :alt="item.name" />
           </div>
           <div class="flex-grow flex flex-col justify-between gap-5">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+            <div class="cart-item-top">
               <div>
                 <h3 class="font-title-lg text-title-lg">{{ item.name }}</h3>
                 <p class="font-body-md text-on-surface-variant mt-1">{{ item.category }} | Premium configuration</p>
               </div>
               <span class="font-price-lg text-price-lg text-primary">{{ formatPrice(item.price * item.quantity) }}</span>
             </div>
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="cart-item-bottom">
               <div class="flex flex-wrap items-center gap-4">
                 <div class="flex items-center border border-outline-variant rounded-lg overflow-hidden">
                   <button class="px-3 py-1 hover:bg-surface-variant transition-colors" type="button" @click="store.updateCartQuantity(item.id, item.quantity - 1)">
@@ -233,10 +233,36 @@ const addRecommended = (product) => {
 </template>
 
 <style scoped>
+.cart-page-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
 .cart-layout {
   display: grid;
   gap: 24px;
   grid-template-columns: 1fr;
+}
+.cart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.cart-item-media {
+  width: 100%;
+  height: 8rem;
+}
+.cart-item-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.cart-item-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
 }
 .recommended-grid {
   display: grid;
@@ -247,6 +273,22 @@ const addRecommended = (product) => {
   font-variation-settings: 'FILL' 1;
 }
 @media (min-width: 768px) {
+  .cart-page-header {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+  .cart-item {
+    flex-direction: row;
+  }
+  .cart-item-media {
+    width: 8rem;
+    flex-basis: 8rem;
+  }
+  .cart-item-top {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
   .recommended-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -254,6 +296,10 @@ const addRecommended = (product) => {
 @media (min-width: 1024px) {
   .cart-layout {
     grid-template-columns: minmax(0, 8fr) minmax(320px, 4fr);
+  }
+  .cart-item-bottom {
+    flex-direction: row;
+    align-items: center;
   }
   .recommended-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
