@@ -15,12 +15,7 @@ const remainingForFreeShipping = computed(() => {
 
 const checkout = () => {
   if (store.cart.length === 0) return;
-  store.addToast('Processing checkout simulation...', 'info');
-  setTimeout(() => {
-    store.addToast('Checkout completed! Thank you for your purchase.', 'success');
-    store.cart = [];
-    store.closeDrawer();
-  }, 1500);
+  store.openCartPage();
 };
 </script>
 

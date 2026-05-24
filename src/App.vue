@@ -17,6 +17,7 @@ import AccountModal from './components/AccountModal.vue';
 import ToastNotification from './components/ToastNotification.vue';
 import Catalog from './components/Catalog.vue';
 import ProductDetail from './components/ProductDetail.vue';
+import ShoppingCart from './components/ShoppingCart.vue';
 import { store } from './store.js';
 </script>
 
@@ -38,6 +39,9 @@ import { store } from './store.js';
       </template>
       <template v-else-if="store.currentPage === 'product'">
         <ProductDetail />
+      </template>
+      <template v-else-if="store.currentPage === 'cart'">
+        <ShoppingCart />
       </template>
     </main>
     <Footer />
