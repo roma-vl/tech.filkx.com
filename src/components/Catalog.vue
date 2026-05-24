@@ -346,21 +346,22 @@ onMounted(() => {
 
       <div
         v-if="filteredProducts.length"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-3'"
       >
         <article
           v-for="product in filteredProducts"
           :key="product.id"
-          :class="viewMode === 'grid' ? 'flex-col' : 'flex-col sm:flex-row'"
-          class="group flex bg-surface-container-lowest rounded-xl border border-outline-variant hover:shadow-lg transition-all duration-300 overflow-hidden relative"
+          :class="viewMode === 'grid' ? 'catalog-card--grid flex-col rounded-xl hover:shadow-lg' : 'catalog-card--list flex-col rounded-lg hover:border-primary/30 hover:shadow-md'"
+          class="catalog-card group flex bg-surface-container-lowest border border-outline-variant transition-all duration-300 overflow-hidden relative"
         >
-          <div :class="viewMode === 'grid' ? 'p-3' : 'p-3 sm:w-56 sm:flex-shrink-0'" class="relative bg-white">
-            <div :class="viewMode === 'grid' ? 'aspect-square' : 'aspect-[4/3] sm:aspect-square'" class="w-full overflow-hidden rounded-lg bg-surface-container-low relative">
+          <div :class="viewMode === 'grid' ? 'p-3' : 'p-3'" class="catalog-card__media relative bg-white">
+            <div :class="viewMode === 'grid' ? 'aspect-square' : 'aspect-[16/10] sm:aspect-square'" class="w-full overflow-hidden rounded-lg bg-surface-container-low relative">
               <img :alt="product.name" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4" :src="product.image" />
               <span v-if="product.badge" :class="product.badgeClass" class="absolute top-2 left-2 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">{{ product.badge }}</span>
             </div>
             <button
-              class="absolute top-5 right-5 p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full text-on-surface-variant hover:text-error hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              :class="viewMode === 'grid' ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'"
+              class="absolute top-5 right-5 p-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full text-on-surface-variant hover:text-error hover:scale-110 transition-all"
               type="button"
               @click="store.toggleWishlist(product)"
             >
@@ -373,29 +374,45 @@ onMounted(() => {
               </span>
             </button>
           </div>
-          <div :class="viewMode === 'grid' ? 'px-4 pb-4' : 'p-4 sm:pl-2'" class="flex flex-col flex-1">
-            <div class="flex items-center gap-1 mb-1.5">
-              <div class="flex text-star-rating">
-                <span v-for="star in 5" :key="star" class="material-symbols-outlined text-[14px]" :style="star <= Math.floor(product.rating) ? 'font-variation-settings: \'FILL\' 1;' : ''">
-                  {{ star <= Math.floor(product.rating) ? 'star' : 'star_half' }}
+          <div :class="viewMode === 'grid' ? 'px-4 pb-4 flex-col' : 'p-4 md:p-5'" class="catalog-card__body flex flex-1">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1 mb-1.5">
+                <div class="flex text-star-rating">
+                  <span v-for="star in 5" :key="star" class="material-symbols-outlined text-[14px]" :style="star <= Math.floor(product.rating) ? 'font-variation-settings: \'FILL\' 1;' : ''">
+                    {{ star <= Math.floor(product.rating) ? 'star' : 'star_half' }}
+                  </span>
+                </div>
+                <span class="text-[11px] font-bold text-on-surface-variant ml-1">{{ product.rating.toFixed(1) }} ({{ product.reviews }})</span>
+              </div>
+              <h2 :class="viewMode === 'grid' ? 'text-sm line-clamp-2' : 'text-base line-clamp-1'" class="font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{{ product.name }}</h2>
+              <p v-if="viewMode === 'list'" class="mt-2 text-xs text-on-surface-variant leading-relaxed max-w-2xl">{{ product.description }}</p>
+              <div v-if="viewMode === 'list'" class="mt-3 flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1 rounded border border-outline-variant bg-surface-container-low px-2 py-1 text-[11px] font-bold text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[14px]">business</span>
+                  {{ product.brand }}
+                </span>
+                <span class="inline-flex items-center gap-1 rounded border border-outline-variant bg-surface-container-low px-2 py-1 text-[11px] font-bold text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[14px]">memory</span>
+                  {{ product.ram }} RAM
+                </span>
+                <span class="inline-flex items-center gap-1 rounded border border-outline-variant bg-surface-container-low px-2 py-1 text-[11px] font-bold text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[14px]">inventory_2</span>
+                  In stock
                 </span>
               </div>
-              <span class="text-[11px] font-bold text-on-surface-variant ml-1">{{ product.rating.toFixed(1) }} ({{ product.reviews }})</span>
             </div>
-            <h2 class="font-semibold text-sm text-on-surface group-hover:text-primary transition-colors line-clamp-2 leading-snug">{{ product.name }}</h2>
-            <p v-if="viewMode === 'list'" class="mt-2 text-xs text-on-surface-variant leading-relaxed">{{ product.description }}</p>
-            <div :class="viewMode === 'grid' ? 'pt-4' : 'pt-3'" class="mt-auto flex flex-col gap-3">
-              <div class="flex items-end justify-between gap-4">
+            <div :class="viewMode === 'grid' ? 'pt-4' : 'mt-4'" class="catalog-card__actions flex flex-col gap-3">
+              <div :class="viewMode === 'grid' ? 'items-end justify-between' : 'items-start md:items-end justify-between md:justify-start'" class="flex gap-4">
                 <div class="flex flex-col">
                   <span v-if="product.oldPrice" class="text-[10px] text-on-surface-variant line-through font-bold">{{ formatPrice(product.oldPrice) }}</span>
-                  <span class="font-bold text-lg text-primary tracking-tight">{{ formatPrice(product.price) }}</span>
+                  <span :class="viewMode === 'grid' ? 'text-lg' : 'text-xl'" class="font-bold text-primary tracking-tight">{{ formatPrice(product.price) }}</span>
                 </div>
-                <label class="flex items-center gap-1.5 cursor-pointer text-[10px] text-on-surface-variant hover:text-on-surface font-semibold">
+                <label :class="viewMode === 'grid' ? '' : 'md:mt-2'" class="flex items-center gap-1.5 cursor-pointer text-[10px] text-on-surface-variant hover:text-on-surface font-semibold">
                   <input :checked="store.isInCompare(product.id)" class="w-3 h-3 rounded border-outline-variant text-primary focus:ring-0" type="checkbox" @change="store.toggleCompare(product)" />
                   <span>Compare</span>
                 </label>
               </div>
-              <button class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider" type="button" @click="store.addToCart(product)">
+              <button :class="viewMode === 'grid' ? 'w-full' : 'w-full sm:w-48 md:w-full'" class="bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider" type="button" @click="store.addToCart(product)">
                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                 Add to Cart
               </button>
@@ -475,5 +492,49 @@ input[type='range']::-webkit-slider-thumb {
     -webkit-box-orient: vertical;
     overflow: hidden;
     min-height: 2.5rem;
+}
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+@media (min-width: 640px) {
+    .catalog-card--list {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .catalog-card--list .catalog-card__media {
+        width: 10rem;
+        flex-shrink: 0;
+        border-right: 1px solid rgba(190, 202, 189, 0.5);
+    }
+    .catalog-card--list .catalog-card__media > div {
+        aspect-ratio: 1 / 1;
+    }
+}
+@media (min-width: 768px) {
+    .catalog-card--list .catalog-card__body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 180px;
+        gap: 1.5rem;
+    }
+    .catalog-card--list .catalog-card__actions {
+        margin-top: 0;
+        justify-content: center;
+        border-left: 1px solid rgba(190, 202, 189, 0.5);
+        padding-left: 1.25rem;
+    }
+    .catalog-card--list .catalog-card__actions button {
+        width: 100%;
+    }
+}
+@media (min-width: 1280px) {
+    .catalog-card--list .catalog-card__media {
+        width: 12rem;
+    }
+    .catalog-card--list .catalog-card__body {
+        grid-template-columns: minmax(0, 1fr) 220px;
+    }
 }
 </style>
