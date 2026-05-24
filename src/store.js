@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 export const store = reactive({
   // Navigation state
   currentPage: 'catalog',
+  selectedProduct: null,
 
   // Arrays for items
   cart: [],
@@ -149,5 +150,10 @@ export const store = reactive({
   
   closeDrawer() {
     this.activeDrawer = null;
+  },
+
+  viewProduct(product = null) {
+    this.selectedProduct = product;
+    this.currentPage = 'product';
   }
 });

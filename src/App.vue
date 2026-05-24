@@ -16,6 +16,7 @@ import CompareDrawer from './components/CompareDrawer.vue';
 import AccountModal from './components/AccountModal.vue';
 import ToastNotification from './components/ToastNotification.vue';
 import Catalog from './components/Catalog.vue';
+import ProductDetail from './components/ProductDetail.vue';
 import { store } from './store.js';
 </script>
 
@@ -34,6 +35,9 @@ import { store } from './store.js';
       </template>
       <template v-else-if="store.currentPage === 'catalog'">
         <Catalog />
+      </template>
+      <template v-else-if="store.currentPage === 'product'">
+        <ProductDetail />
       </template>
     </main>
     <Footer />

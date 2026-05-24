@@ -355,7 +355,7 @@ onMounted(() => {
           class="catalog-card group flex bg-surface-container-lowest border border-outline-variant transition-all duration-300 overflow-hidden relative"
         >
           <div :class="viewMode === 'grid' ? 'p-3' : 'p-3'" class="catalog-card__media relative bg-white">
-            <div :class="viewMode === 'grid' ? 'aspect-square' : 'aspect-[16/10] sm:aspect-square'" class="w-full overflow-hidden rounded-lg bg-surface-container-low relative">
+            <div :class="viewMode === 'grid' ? 'aspect-square' : 'aspect-[16/10] sm:aspect-square'" class="w-full overflow-hidden rounded-lg bg-surface-container-low relative cursor-pointer" @click="store.viewProduct(product)">
               <img :alt="product.name" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4" :src="product.image" />
               <span v-if="product.badge" :class="product.badgeClass" class="absolute top-2 left-2 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">{{ product.badge }}</span>
             </div>
@@ -384,7 +384,9 @@ onMounted(() => {
                 </div>
                 <span class="text-[11px] font-bold text-on-surface-variant ml-1">{{ product.rating.toFixed(1) }} ({{ product.reviews }})</span>
               </div>
-              <h2 :class="viewMode === 'grid' ? 'text-sm line-clamp-2' : 'text-base line-clamp-1'" class="font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{{ product.name }}</h2>
+              <button type="button" class="block text-left" @click="store.viewProduct(product)">
+                <h2 :class="viewMode === 'grid' ? 'text-sm line-clamp-2' : 'text-base line-clamp-1'" class="font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{{ product.name }}</h2>
+              </button>
               <p v-if="viewMode === 'list'" class="mt-2 text-xs text-on-surface-variant leading-relaxed max-w-2xl">{{ product.description }}</p>
               <div v-if="viewMode === 'list'" class="mt-3 flex flex-wrap gap-2">
                 <span class="inline-flex items-center gap-1 rounded border border-outline-variant bg-surface-container-low px-2 py-1 text-[11px] font-bold text-on-surface-variant">
