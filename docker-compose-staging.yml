@@ -1,0 +1,196 @@
+services:
+  # ================= FRONTEND (dist + nginx) =================
+  staging-live-frontend:
+    build:
+      context: frontend/docker
+      dockerfile: staging/nginx/Dockerfile
+      args:
+        - VITE_API_BASE_URL=https://staging.app.filkx.com/api
+        - VITE_UPLOAD_BASE_URL=https://staging.app.filkx.com/api
+        - VITE_BASE_URL=https://staging.app.filkx.com
+    restart: always
+    volumes:
+      - ./frontend/dist:/app/dist:ro
+    ports:
+      - "8095:80"
+    networks:
+      - filkx
+
+  staging-landing-ssr:
+    build:
+      context: landing-ssr
+      dockerfile: docker/staging/node/Dockerfile
+    restart: always
+    environment:
+      - VITE_API_BASE_URL=https://staging.app.filkx.com/api
+      - VITE_BASE_URL=https://staging.live.filkx.com
+      - VITE_UPLOAD_BASE_URL=https://staging.upload.app.filkx.com/api
+      - VITE_APP_URL=https://staging.app.filkx.com
+      - PORT=3000
+    ports:
+      - "8105:3000"
+    networks:
+      - filkx
+
+  # ================= API (nginx → php-fpm) =================
+  staging-live-api:
+    build:
+      context: api/docker
+      dockerfile: staging/nginx/Dockerfile
+    restart: always
+    depends_on:
+      - staging-live-api-php-fpm
+    volumes:
+      - ./api:/app
+      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+    ports:
+      - "8096:80"
+    networks:
+      - filkx
+
+  # ================= PHP-FPM =================
+  staging-live-api-php-fpm:
+    build:
+      context: api/docker
+      dockerfile: staging/php-fpm/Dockerfile
+    restart: always
+    user: "1000:1000"
+    volumes:
+      - ./api:/app
+      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+    networks:
+      - filkx
+
+  # ================= API CLI =================
+  staging-live-api-php-cli:
+    build:
+      context: api/docker
+      dockerfile: staging/php-cli/Dockerfile
+    restart: always
+    user: "1000:1000"
+    volumes:
+      - ./api:/app
+      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+    networks:
+      - filkx
+    command: tail -f /dev/null
+
+  staging-live-api-scheduler:
+    build:
+      context: api/docker
+      dockerfile: staging/php-cli/Dockerfile
+    restart: always
+    user: "1000:1000"
+    volumes:
+      - ./api:/app
+      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+    networks:
+      - filkx
+    command: >
+      sh -c "while true; do php artisan schedule:run >> /app/storage/logs/scheduler.log 2>&1; sleep 30; done"
+
+  # ================= POSTGRES =================
+  staging-live-api-postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+    volumes:
+      - staging-api-postgres:/var/lib/postgresql/data
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    networks:
+      - filkx
+
+  # ================= FFMPEG RUNNER =================
+  staging-live-ffmpeg-runner:
+    build:
+      context: ./ffmpeg-runner
+      dockerfile: docker/Dockerfile
+    restart: always
+    user: root
+    ports:
+      - "8097:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams/videos:/opt/filkx/videos:ro
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams/lists:/opt/filkx/lists:ro
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams/logs:/opt/filkx/logs
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams/watermarks:/opt/filkx/watermarks:ro
+    environment:
+      RUNNER_PORT: "8080"
+      RUNNER_API_TOKEN: ${RUNNER_API_TOKEN:-secret_token_change_in_production}
+      DOCKER_HOST: unix:///var/run/docker.sock
+      DOCKER_API_VERSION: "1.41"
+      CPU_QUOTA: "1000000000" # 1 CPU
+      MEMORY_LIMIT: "536870912" # 512MB
+      VIDEOS_PATH: ${VIDEOS_PATH}
+      LISTS_PATH: ${LISTS_PATH}
+      LOGS_PATH: ${LOGS_PATH}
+      WATERMARKS_PATH: ${WATERMARKS_PATH}
+      FFMPEG_IMAGE: jrottenberg/ffmpeg:7-alpine
+      DOCKER_NETWORK: filkx
+      TZ: Europe/Kyiv
+    networks:
+      - filkx
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  staging-live-redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - staging-redis:/data
+    networks:
+      - filkx
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      retries: 3
+      timeout: 5s
+
+  staging-live-api-queue:
+    build:
+      context: api/docker
+      dockerfile: staging/php-cli/Dockerfile
+    restart: always
+    user: "1000:1000"
+    volumes:
+      - ./api:/app
+      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+    networks:
+      - filkx
+    depends_on:
+      - staging-live-redis
+      - staging-live-api-postgres
+    command: [ "php", "artisan", "queue:work", "--tries=3", "--sleep=3", "--timeout=90" ]
+
+  staging-video-transcoder:
+    build:
+      context: video-transcoder
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8099:8080"
+    environment:
+      - SERVER_PORT=8080
+      - MAX_WORKERS=2
+      - LOG_LEVEL=debug
+    volumes:
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams:/app/storage/app/public/streams
+      - /var/www/staging.live.filkx.com/shared/storage/app/public/streams/watermarks:/app/storage/app/watermarks
+    networks:
+      - filkx
+
+networks:
+  filkx:
+    driver: bridge
+
+volumes:
+  staging-api-postgres:
+  staging-redis:
