@@ -15,10 +15,10 @@ services:
       - filkx
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.live-frontend-spa.rule=Host(`dev.tech.filkx.com`)"
-      - "traefik.http.routers.live-frontend-spa.entrypoints=websecure"
-      - "traefik.http.routers.live-frontend-spa.tls.certresolver=devresolver"
-      - "traefik.http.services.live-frontend-spa.loadbalancer.server.port=5173"
+      - "traefik.http.routers.tech-frontend-spa.rule=Host(`dev.tech.filkx.com`)"
+      - "traefik.http.routers.tech-frontend-spa.entrypoints=websecure"
+      - "traefik.http.routers.tech-frontend-spa.tls.certresolver=devresolver"
+      - "traefik.http.services.tech-frontend-spa.loadbalancer.server.port=5173"
 
   tech-api:
     build:
@@ -27,7 +27,7 @@ services:
     restart: always
     volumes:
       - ./api:/app
-      - live-nginx-temp:/var/cache/nginx
+      - tech-nginx-temp:/var/cache/nginx
     depends_on:
       tech-api-php-fpm:
         condition: service_healthy
@@ -35,11 +35,11 @@ services:
       - filkx
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.live-api.rule=Host(`dev.api.tech.filkx.com`)"
-      - "traefik.http.routers.live-api.entrypoints=websecure"
-      - "traefik.http.routers.live-api.tls=true"
-      - "traefik.http.routers.live-api.tls.certresolver=devresolver"
-      - "traefik.http.services.live-api.loadbalancer.server.port=80"
+      - "traefik.http.routers.tech-api.rule=Host(`dev.api.tech.filkx.com`)"
+      - "traefik.http.routers.tech-api.entrypoints=websecure"
+      - "traefik.http.routers.tech-api.tls=true"
+      - "traefik.http.routers.tech-api.tls.certresolver=devresolver"
+      - "traefik.http.services.tech-api.loadbalancer.server.port=80"
 
   tech-frontend-node-cli:
     build:
@@ -50,29 +50,6 @@ services:
       - ./frontend:/app
     networks:
       - filkx
-
-  # SSR Production Server (uncomment to enable, comment live-frontend-dev to disable)
-#  live-frontend-ssr:
-#    build:
-#      context: landing-ssr/docker
-#      dockerfile: development/node/Dockerfile
-#    restart: always
-#    volumes:
-#      - ./landing-ssr:/app
-#    environment:
-#      - VITE_API_BASE_URL=https://dev.api.app.filkx.com/api
-#      - VITE_UPLOAD_BASE_URL=https://dev.api.app.filkx.com/api
-#      - VITE_BASE_URL=https://dev.live.filkx.com
-#      - VITE_APP_URL=https://dev.app.filkx.com
-#    networks:
-#      - filkx
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.live-frontend-ssr.rule=Host(`dev.live.filkx.com`)"
-#      - "traefik.http.routers.live-frontend-ssr.entrypoints=websecure"
-#      - "traefik.http.routers.live-frontend-ssr.tls.certresolver=devresolver"
-#      - "traefik.http.services.live-frontend-ssr.loadbalancer.server.port=3000"
-#    command: [ "sh", "-c", "npm install && npm run build && npm run serve:ssr" ]
 
   tech-api-php-fpm:
     container_name: tech-api-php-fpm
@@ -86,9 +63,9 @@ services:
     networks:
       - filkx
     depends_on:
-      live-api-postgres:
+      tech-api-postgres:
         condition: service_healthy
-      live-redis:
+      tech-redis:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "kill", "-0", "1" ]
@@ -107,17 +84,6 @@ services:
       - ./api:/app
     networks:
       - filkx
-#    depends_on:
-#      live-api-postgres:
-#        condition: service_healthy
-#      live-redis:
-#        condition: service_healthy
-#      live-api-php-fpm:
-#        condition: service_healthy
-#      live-rtmp-dev:
-#        condition: service_healthy
-#      live-ffmpeg-runner:
-#        condition: service_healthy
     command: tail -f /dev/null
 
   tech-api-scheduler:
@@ -136,10 +102,6 @@ services:
         condition: service_healthy
       tech-redis:
         condition: service_healthy
-      tech-rtmp-dev:
-        condition: service_healthy
-      tech-ffmpeg-runner:
-        condition: service_healthy
     command: >
       sh -c "while true; do /usr/local/bin/php /app/artisan schedule:run >> /app/storage/logs/scheduler.log 2>&1; sleep 30; done"
 
@@ -153,7 +115,7 @@ services:
     volumes:
       - api-postgres:/var/lib/postgresql/data
     ports:
-      - "54322:5432"
+      - "54323:5432"
     networks:
       - filkx
     healthcheck:
@@ -161,49 +123,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-#  live-ffmpeg-runner:
-#    container_name: live-ffmpeg-runner
-#    build:
-#      context: ./ffmpeg-runner
-#      dockerfile: docker/Dockerfile
-#    restart: always
-#    user: root
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      # Docker socket для управління контейнерами
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
-#      # Shared volumes для FFmpeg контейнерів
-#      - ./api/storage/app/public/streams/videos:/opt/filkx/videos:ro
-#      - ./api/storage/app/public/streams/lists:/opt/filkx/lists:ro
-#      - ./api/storage/app/public/streams/logs:/opt/filkx/logs
-#      - ./api/storage/app/public/streams/watermarks:/opt/filkx/watermarks:ro
-#    environment:
-#      RUNNER_PORT: "8080"
-#      RUNNER_API_TOKEN: ${RUNNER_API_TOKEN:-your_super_secret_token_here}
-#      DOCKER_HOST: unix:///var/run/docker.sock
-#      DOCKER_API_VERSION: "1.41"
-#      CPU_QUOTA: "1000000000" # 1 CPU
-#      MEMORY_LIMIT: "536870912" # 512MB
-#      VIDEOS_PATH: ${VIDEOS_PATH}
-#      LISTS_PATH: ${LISTS_PATH}
-#      LOGS_PATH: ${LOGS_PATH}
-#      WATERMARKS_PATH: ${WATERMARKS_PATH}
-#      FFMPEG_IMAGE: jrottenberg/ffmpeg:7-alpine
-#      DOCKER_NETWORK: filkx
-#      TZ: Europe/Kyiv
-#    networks:
-#      - filkx
-#    depends_on:
-#      live-rtmp-dev:
-#        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 3
-#      start_period: 10s
 
   tech-redis:
     image: redis:alpine
@@ -235,55 +154,7 @@ services:
         condition: service_healthy
       tech-api-php-fpm:
         condition: service_healthy
-#      tech-rtmp-dev:
-#        condition: service_healthy
-#      tech-ffmpeg-runner:
-#        condition: service_healthy
     command: [ "php", "artisan", "queue:work", "--tries=3", "--sleep=3", "--timeout=90" ]
-
-#  live-rtmp-dev:
-#    container_name: live-rtmp-dev
-#    image: alfg/nginx-rtmp
-#    restart: always
-#    ports:
-#      - "1935:1935"
-#      - "8088:80"
-#    volumes:
-#      - ./infrastructure/rtmp/nginx.conf:/opt/nginx.conf:ro
-#      - ./infrastructure/rtmp/www:/www:ro
-#    networks:
-#      - filkx
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.docker.network=filkx"
-#      - "traefik.http.routers.live-rtmp.rule=Host(`dev.rtmp.live.filkx.com`)"
-#      - "traefik.http.routers.live-rtmp.entrypoints=web,websecure"
-#      - "traefik.http.routers.live-rtmp.tls.certresolver=devresolver"
-#      - "traefik.http.services.live-rtmp.loadbalancer.server.port=80"
-#    command: nginx -g 'daemon off;' -c /opt/nginx.conf
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://127.0.0.1/" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-
-#  video-transcoder:
-#    container_name: video-transcoder
-#    build:
-#      context: video-transcoder
-#      dockerfile: Dockerfile
-#    restart: always
-#    ports:
-#      - "8081:8080"
-#    environment:
-#      - SERVER_PORT=8080
-#      - MAX_WORKERS=2
-#      - LOG_LEVEL=debug
-#    volumes:
-#      - ./api/storage/app/public/streams:/app/storage/app/public/streams
-#      - ./api/storage/app/public/streams/watermarks:/app/storage/app/watermarks
-#    networks:
-#      - filkx
 
 networks:
   filkx:
