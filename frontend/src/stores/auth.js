@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import api from "@/services/api";
-import { useSubscriptionStore } from "@/stores/subscription.js";
+import api from "./services/api";
 
 const TOKEN_KEY = "filkx_auth";
 const ADMIN_TOKEN_KEY = "filkx_admin_auth";
@@ -122,7 +121,6 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async login(credentials) {
-      const subscription = useSubscriptionStore();
       try {
         const response = await api.post("/v1/auth/login", credentials);
         const { token, user } = response.data.data;
@@ -130,7 +128,6 @@ export const useAuthStore = defineStore("auth", {
         this.setToken(token.accessToken, token.expiresIn);
         this.user = user;
         this._syncLocale(user.locale);
-        await subscription.fetch();
 
         // Reset failed attempts on success
         this.failedAttempts = 0;
