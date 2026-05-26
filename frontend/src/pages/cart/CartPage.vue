@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 const promoCode = ref('');
 const appliedPromo = ref('');

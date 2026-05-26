@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 const galleryImages = [
   {

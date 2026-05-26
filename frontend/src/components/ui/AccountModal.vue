@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 const isLoggedIn = ref(true);
 const emailInput = ref('');
@@ -40,17 +40,17 @@ const orders = [
 </script>
 
 <template>
-  <div 
-    v-if="store.activeDrawer === 'account'" 
+  <div
+    v-if="store.activeDrawer === 'account'"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
   >
     <!-- Modal Container -->
-    <div 
+    <div
       class="bg-white rounded-2xl max-w-lg w-full p-8 relative shadow-2xl border border-surface-variant flex flex-col max-h-[90vh] overflow-y-auto"
     >
       <!-- Close button -->
-      <button 
-        @click="store.closeDrawer()" 
+      <button
+        @click="store.closeDrawer()"
         class="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition-colors"
       >
         <span class="material-symbols-outlined text-[28px]">close</span>
@@ -79,8 +79,8 @@ const orders = [
         <div class="flex flex-col gap-3">
           <h4 class="font-title-md text-sm text-on-surface uppercase tracking-wider">Recent Orders</h4>
           <div class="flex flex-col gap-3">
-            <div 
-              v-for="order in orders" 
+            <div
+              v-for="order in orders"
               :key="order.id"
               class="border border-outline-variant/30 rounded-xl p-4 bg-surface-container-low/50"
             >
@@ -103,7 +103,7 @@ const orders = [
         </div>
 
         <!-- Logout button -->
-        <button 
+        <button
           @click="handleLogout()"
           class="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold hover:bg-error/5 hover:text-error hover:border-error/20 transition-all text-xs flex items-center justify-center gap-2"
         >
@@ -121,9 +121,9 @@ const orders = [
         <form @submit="handleLogin" class="flex flex-col gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Email address</label>
-            <input 
+            <input
               v-model="emailInput"
-              type="email" 
+              type="email"
               required
               placeholder="name@example.com"
               class="w-full h-12 px-4 bg-surface-container-low border-none ring-1 ring-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm"
@@ -132,16 +132,16 @@ const orders = [
 
           <div class="flex flex-col gap-1.5">
             <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Password</label>
-            <input 
+            <input
               v-model="passwordInput"
-              type="password" 
+              type="password"
               required
               placeholder="••••••••"
               class="w-full h-12 px-4 bg-surface-container-low border-none ring-1 ring-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm"
             />
           </div>
 
-          <button 
+          <button
             type="submit"
             class="w-full bg-primary text-white py-3.5 rounded-xl font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/10 mt-2"
           >

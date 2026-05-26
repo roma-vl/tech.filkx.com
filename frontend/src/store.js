@@ -2,7 +2,7 @@ import { reactive } from 'vue';
 
 export const store = reactive({
   // Navigation state
-  currentPage: 'catalog',
+  currentPage: 'home',
   selectedProduct: null,
 
   // Arrays for items
@@ -10,30 +10,30 @@ export const store = reactive({
   wishlist: [],
   compare: [],
   toasts: [],
-  
+
   // Modals visibility state
   activeDrawer: null, // 'cart', 'wishlist', 'compare', 'account', or null
-  
+
   // Toast notifications counter for unique IDs
   toastId: 0,
-  
+
   // Getters (defined as JS getters on the reactive object)
   get cartCount() {
     return this.cart.reduce((acc, item) => acc + item.quantity, 0);
   },
-  
+
   get cartTotal() {
     return this.cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   },
-  
+
   get wishlistCount() {
     return this.wishlist.length;
   },
-  
+
   get compareCount() {
     return this.compare.length;
   },
-  
+
   // Actions
   addToast(message, type = 'success') {
     const id = this.toastId++;
@@ -42,14 +42,14 @@ export const store = reactive({
       this.removeToast(id);
     }, 3000);
   },
-  
+
   removeToast(id) {
     const index = this.toasts.findIndex(t => t.id === id);
     if (index !== -1) {
       this.toasts.splice(index, 1);
     }
   },
-  
+
   addToCart(product) {
     const existing = this.cart.find(item => item.id === product.id);
     if (existing) {
@@ -67,7 +67,7 @@ export const store = reactive({
       this.addToast(`Added ${product.name} to cart.`);
     }
   },
-  
+
   removeFromCart(productId) {
     const index = this.cart.findIndex(item => item.id === productId);
     if (index !== -1) {
@@ -76,14 +76,14 @@ export const store = reactive({
       this.addToast(`Removed ${name} from cart.`, 'info');
     }
   },
-  
+
   updateCartQuantity(productId, quantity) {
     const item = this.cart.find(item => item.id === productId);
     if (item) {
       item.quantity = Math.max(1, quantity);
     }
   },
-  
+
   toggleWishlist(product) {
     const index = this.wishlist.findIndex(item => item.id === product.id);
     if (index !== -1) {
@@ -101,11 +101,11 @@ export const store = reactive({
       this.addToast(`Added ${product.name} to wishlist.`);
     }
   },
-  
+
   isInWishlist(productId) {
     return this.wishlist.some(item => item.id === productId);
   },
-  
+
   toggleCompare(product) {
     const index = this.compare.findIndex(item => item.id === product.id);
     if (index !== -1) {
@@ -130,11 +130,11 @@ export const store = reactive({
       this.addToast(`Added ${product.name} to compare.`);
     }
   },
-  
+
   isInCompare(productId) {
     return this.compare.some(item => item.id === productId);
   },
-  
+
   removeFromCompare(productId) {
     const index = this.compare.findIndex(item => item.id === productId);
     if (index !== -1) {
@@ -143,11 +143,11 @@ export const store = reactive({
       this.addToast(`Removed ${name} from compare.`, 'info');
     }
   },
-  
+
   openDrawer(drawerName) {
     this.activeDrawer = drawerName;
   },
-  
+
   closeDrawer() {
     this.activeDrawer = null;
   },

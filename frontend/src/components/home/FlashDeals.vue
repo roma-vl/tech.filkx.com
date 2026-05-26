@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 // Countdown Timer Logic
 const hours = ref(23);
@@ -138,10 +138,10 @@ onUnmounted(() => {
           View All Deals <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">chevron_right</span>
         </a>
       </div>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
-        <div 
-          v-for="prod in products" 
+        <div
+          v-for="prod in products"
           :key="prod.id"
           class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 product-card group relative flex flex-col border border-outline-variant/20"
         >
@@ -153,11 +153,11 @@ onUnmounted(() => {
           </div>
 
           <!-- Wishlist Button -->
-          <button 
+          <button
             @click.stop="store.toggleWishlist(prod)"
             class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow hover:bg-white transition-all flex items-center justify-center text-on-surface-variant hover:text-error z-10"
           >
-            <span 
+            <span
               class="material-symbols-outlined text-[18px]"
               :class="{ 'fill text-error': store.isInWishlist(prod.id) }"
               :style="store.isInWishlist(prod.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
@@ -165,41 +165,41 @@ onUnmounted(() => {
               favorite
             </span>
           </button>
-          
+
           <div class="p-6 flex-grow">
             <!-- Product Image -->
             <div class="aspect-square bg-surface-container-lowest rounded-lg mb-6 overflow-hidden relative group">
-              <img 
-                class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+              <img
+                class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                 :src="prod.image"
                 :alt="prod.name"
               />
             </div>
-            
+
             <p class="text-primary font-label-md font-bold mb-2 uppercase tracking-tighter">{{ prod.category }}</p>
             <h3 class="font-title-md text-on-surface line-clamp-2 mb-3 leading-tight min-h-[40px]">{{ prod.name }}</h3>
-            
+
             <!-- Rating -->
             <div class="flex items-center gap-1 mb-4">
               <div class="flex text-amber-400">
-                <span 
-                  v-for="star in 4" 
-                  :key="star" 
-                  class="material-symbols-outlined text-[16px] fill" 
+                <span
+                  v-for="star in 4"
+                  :key="star"
+                  class="material-symbols-outlined text-[16px] fill"
                   style="font-variation-settings: 'FILL' 1;"
                 >star</span>
                 <span class="material-symbols-outlined text-[16px]">star_half</span>
               </div>
               <span class="text-on-surface-variant text-xs font-medium ml-1">({{ prod.reviews }})</span>
             </div>
-            
+
             <!-- Price -->
             <div class="flex items-baseline gap-3">
               <span class="font-price-lg text-primary">${{ prod.price.toFixed(2) }}</span>
               <span class="font-body-md text-on-surface-variant line-through opacity-60">${{ prod.oldPrice.toFixed(2) }}</span>
             </div>
           </div>
-          
+
           <!-- Inventory / Progress Bar (For first product or all) -->
           <div class="px-6 pb-6" v-if="prod.soldPercent">
             <div class="w-full bg-surface-container-high h-1.5 rounded-full mb-2 overflow-hidden">
@@ -210,23 +210,23 @@ onUnmounted(() => {
               <p class="text-[10px] font-bold text-on-surface-variant">{{ prod.soldPercent }}% Sold</p>
             </div>
           </div>
-          
+
           <!-- Action Buttons -->
           <div class="px-6 pb-6 mt-auto flex flex-col gap-2">
-            <button 
+            <button
               @click="store.addToCart(prod)"
               class="w-full bg-primary text-white py-2.5 rounded-lg font-bold shadow-md hover:bg-primary-container transition-colors flex items-center justify-center gap-2"
             >
               Add to Cart <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
             </button>
             <div class="flex gap-2">
-              <button 
+              <button
                 @click="openQuickView(prod)"
                 class="flex-grow py-2 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low hover:border-primary transition-all text-xs"
               >
                 Quick View
               </button>
-              <button 
+              <button
                 @click="store.toggleCompare(prod)"
                 class="px-3 border border-outline-variant text-on-surface rounded-lg font-bold hover:bg-surface-container-low hover:border-primary transition-all flex items-center justify-center"
                 :class="{ 'bg-primary-container/20 border-primary text-primary': store.isInCompare(prod.id) }"
@@ -241,20 +241,20 @@ onUnmounted(() => {
     </div>
 
     <!-- Quick View Modal -->
-    <div 
-      v-if="showModal" 
+    <div
+      v-if="showModal"
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
     >
-      <div 
+      <div
         class="bg-white rounded-2xl max-w-2xl w-full p-8 relative shadow-2xl border border-surface-variant animate-in fade-in zoom-in duration-300"
       >
-        <button 
-          @click="closeModal" 
+        <button
+          @click="closeModal"
           class="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition-colors"
         >
           <span class="material-symbols-outlined text-[28px]">close</span>
         </button>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8" v-if="activeProduct">
           <div class="aspect-square bg-surface-container-low rounded-xl flex items-center justify-center p-4">
             <img class="w-full h-full object-contain" :src="activeProduct.image" :alt="activeProduct.name" />
@@ -263,7 +263,7 @@ onUnmounted(() => {
             <div>
               <span class="text-primary font-bold text-xs uppercase tracking-widest">{{ activeProduct.category }}</span>
               <h3 class="font-headline-md text-headline-md mt-2 text-on-background leading-tight">{{ activeProduct.name }}</h3>
-              
+
               <div class="flex items-center gap-2 mt-3">
                 <div class="flex text-amber-400">
                   <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -274,16 +274,16 @@ onUnmounted(() => {
                 </div>
                 <span class="text-on-surface-variant text-sm font-semibold">({{ activeProduct.reviews }} reviews)</span>
               </div>
-              
+
               <p class="text-on-surface-variant text-sm mt-4 leading-relaxed">{{ activeProduct.description }}</p>
             </div>
-            
+
             <div class="mt-6 border-t border-surface-variant pt-6">
               <div class="flex items-baseline gap-4 mb-4">
                 <span class="text-3xl font-bold text-primary">${{ activeProduct.price.toFixed(2) }}</span>
                 <span class="text-lg text-on-surface-variant line-through opacity-60">${{ activeProduct.oldPrice.toFixed(2) }}</span>
               </div>
-              <button 
+              <button
                 @click="store.addToCart(activeProduct); closeModal()"
                 class="w-full bg-primary text-white py-4 rounded-xl font-title-md hover:bg-primary-container transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
               >

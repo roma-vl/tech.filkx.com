@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 const searchInput = ref(null);
 const searchQuery = ref('');
@@ -84,8 +84,8 @@ const allProducts = [
 const filteredProducts = computed(() => {
   if (!searchQuery.value.trim()) return [];
   const q = searchQuery.value.toLowerCase().trim();
-  return allProducts.filter(p => 
-    p.name.toLowerCase().includes(q) || 
+  return allProducts.filter(p =>
+    p.name.toLowerCase().includes(q) ||
     p.category.toLowerCase().includes(q)
   ).slice(0, 5);
 });
@@ -133,16 +133,16 @@ onUnmounted(() => {
       <a class="font-display-lg text-display-lg font-bold text-primary flex-shrink-0 tracking-tight" href="/">
         ElectroLux
       </a>
-      
+
       <!-- Search Bar (Refined & Large) -->
       <div class="flex-grow max-w-2xl relative z-40">
         <div class="relative group">
-          <input 
+          <input
             ref="searchInput"
             v-model="searchQuery"
             @focus="showDropdown = true"
-            class="w-full h-12 pl-12 pr-4 bg-surface-container-low border-none ring-1 ring-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all font-body-md shadow-inner" 
-            placeholder="Search premium electronics..." 
+            class="w-full h-12 pl-12 pr-4 bg-surface-container-low border-none ring-1 ring-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all font-body-md shadow-inner"
+            placeholder="Search premium electronics..."
             type="text"
           />
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
@@ -152,15 +152,15 @@ onUnmounted(() => {
         </div>
 
         <!-- Live Search Autocomplete Dropdown -->
-        <div 
-          v-if="showDropdown && filteredProducts.length > 0" 
+        <div
+          v-if="showDropdown && filteredProducts.length > 0"
           class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-surface-variant z-[110] overflow-hidden p-2 flex flex-col gap-1 max-h-[360px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div class="px-3 py-1.5 text-[10px] font-black uppercase text-on-surface-variant tracking-wider border-b border-surface-variant/35 mb-1">
             Search Suggestions
           </div>
-          <div 
-            v-for="prod in filteredProducts" 
+          <div
+            v-for="prod in filteredProducts"
             :key="prod.id"
             @click="selectSearchResult(prod)"
             class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg cursor-pointer transition-colors group/item"
@@ -174,7 +174,7 @@ onUnmounted(() => {
             </div>
             <div class="shrink-0 flex items-center gap-3">
               <span class="text-xs font-bold text-on-surface">${{ prod.price.toFixed(2) }}</span>
-              <button 
+              <button
                 class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
                 title="Add to Cart"
               >
@@ -185,63 +185,63 @@ onUnmounted(() => {
         </div>
 
         <!-- Empty Results Alert -->
-        <div 
+        <div
           v-if="showDropdown && searchQuery.trim() && filteredProducts.length === 0"
           class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-surface-variant z-[110] p-4 text-center text-xs text-on-surface-variant"
         >
           No premium products found for "{{ searchQuery }}".
         </div>
       </div>
-      
+
       <!-- Actions -->
       <div class="flex items-center gap-8 text-on-surface">
         <!-- Account -->
-        <button 
+        <button
           @click="store.openDrawer('account')"
           class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
         >
           <span class="material-symbols-outlined">person</span>
           <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
         </button>
-        
+
         <!-- Compare -->
-        <button 
+        <button
           @click="store.openDrawer('compare')"
           class="flex flex-col items-center gap-1 hover:text-primary transition-colors hidden xl:flex relative"
         >
           <span class="material-symbols-outlined">compare_arrows</span>
           <span class="text-[10px] font-bold uppercase tracking-wider">Compare</span>
-          <span 
+          <span
             v-if="store.compareCount > 0"
             class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse"
           >
             {{ store.compareCount }}
           </span>
         </button>
-        
+
         <!-- Wishlist -->
-        <button 
+        <button
           @click="store.openDrawer('wishlist')"
           class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
         >
           <span class="material-symbols-outlined">favorite</span>
           <span class="text-[10px] font-bold uppercase tracking-wider">Wishlist</span>
-          <span 
+          <span
             v-if="store.wishlistCount > 0"
             class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
           >
             {{ store.wishlistCount }}
           </span>
         </button>
-        
+
         <!-- Cart -->
-        <button 
+        <button
           @click="store.openDrawer('cart')"
           class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
         >
           <span class="material-symbols-outlined">shopping_cart</span>
           <span class="text-[10px] font-bold uppercase tracking-wider">Cart</span>
-          <span 
+          <span
             v-if="store.cartCount > 0"
             class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
           >

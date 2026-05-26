@@ -156,7 +156,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 <template>
   <nav ref="navbarRef" class="navbar-secondary hidden md:block w-full">
      <div class="max-w-container-max mx-auto h-16 px-margin-desktop flex items-center justify-between gap-gutter">
-     
+
       <!-- Browse Categories Button -->
       <div class="browse-trigger-wrap" @mouseenter="openMenu" @mouseleave="closeMenu">
         <button
@@ -242,16 +242,16 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
       <!-- Nav Links -->
       <div class="nav-links">
-        <a
+        <router-link
           v-for="link in navLinks"
           :key="link"
-          href="#"
+          :to="{ name: 'catalog', query: { category: link.toLowerCase() } }"
           class="nav-link"
           :class="{ 'nav-link--active': activeNavLink === link }"
-          @click.prevent="activeNavLink = link"
+          @click="activeNavLink = link"
         >
           {{ link }}
-        </a>
+        </router-link>
       </div>
     </div>
   </nav>

@@ -1,4 +1,7 @@
-import MainPage from "@/pages/application/MainPage.vue";
+import HomePage from "@/pages/home/HomePage.vue";
+import CatalogPage from "@/pages/catalog/CatalogPage.vue";
+import ProductDetailPage from "@/pages/product/ProductDetailPage.vue";
+import CartPage from "@/pages/cart/CartPage.vue";
 // import VideosPage from "@/pages/application/VideosPage.vue";
 // import StreamsPage from "@/pages/application/StreamsPage.vue";
 // import SettingsPage from "@/pages/application/SettingsPage.vue";
@@ -10,15 +13,26 @@ import MainPage from "@/pages/application/MainPage.vue";
 // import AffiliateDocs from "@/pages/application/AffiliateDocs.vue";
 // import FaqPage from "@/pages/application/FaqPage.vue";
 
-import ApplicationLayoutWrapper from "@/pages/application/ApplicationLayoutWrapper.vue";
+import MainLayout from "@/layouts/main/MainLayout.vue";
 
 export default [
   {
-    path: "/dashboard",
+    path: "/",
+    component: MainLayout,
     children: [
       {
         path: "",
-        component: MainPage,
+        name: "home",
+        component: HomePage,
+        meta: {
+          title: "Home — Stream Studio",
+          auth: false,
+        },
+      },
+      {
+        path: "dashboard",
+        name: "dashboard",
+        component: HomePage,
         meta: {
           title: "Dashboard — Stream Studio",
           auth: true,
@@ -26,16 +40,24 @@ export default [
           requiresSubscription: true,
         },
       },
+      {
+        path: "catalog",
+        name: "catalog",
+        component: CatalogPage,
+        meta: { title: "Catalog" },
+      },
+      {
+        path: "product/:id",
+        name: "product-detail",
+        component: ProductDetailPage,
+        meta: { title: "Product Detail" },
+      },
+      {
+        path: "cart",
+        name: "cart",
+        component: CartPage,
+        meta: { title: "Shopping Cart" },
+      },
     ],
   },
-  // {
-  //   path: "/settings",
-  //   children: [
-  //     {
-  //       path: "",
-  //       component: SettingsPage,
-  //       meta: { title: "Settings — Stream Studio", auth: true, verified: true },
-  //     },
-  //   ],
-  // },
 ];

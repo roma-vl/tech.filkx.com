@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { store } from '../store.js';
+import { store } from '@/store.js';
 
 const carouselRef = ref(null);
 
@@ -67,43 +67,45 @@ const products = [
         <p class="text-on-surface-variant text-sm">Based on your browsing history and interests.</p>
       </div>
       <div class="flex gap-4">
-        <button 
-          @click="scrollCarousel('left')" 
+        <button
+          @click="scrollCarousel('left')"
           class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-high hover:border-primary transition-all shadow-sm"
         >
           <span class="material-symbols-outlined">chevron_left</span>
         </button>
-        <button 
-          @click="scrollCarousel('right')" 
+        <button
+          @click="scrollCarousel('right')"
           class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-high hover:border-primary transition-all shadow-sm"
         >
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
       </div>
     </div>
-    
+
     <!-- Carousel Row -->
-    <div 
+    <div
       ref="carouselRef"
       class="flex overflow-x-auto gap-8 hide-scrollbar scroll-smooth snap-x snap-mandatory px-1 py-4"
     >
       <!-- Recommendation Item -->
-      <div 
-        v-for="prod in products" 
+      <router-link
+        v-for="prod in products"
         :key="prod.id"
-        class="group cursor-pointer flex-shrink-0 w-[calc(50%-16px)] lg:w-[calc(20%-26px)] min-w-[220px] snap-start"
+        :to="{ name: 'product-detail', params: { id: prod.id } }"
+        class="group cursor-pointer flex-shrink-0 w-[calc(50%-16px)] lg:w-[calc(20%-26px)] min-w-[220px] snap-start block"
+        @click="store.viewProduct(prod)"
       >
         <div class="aspect-square bg-surface-container-low rounded-xl mb-5 overflow-hidden relative border border-outline-variant/10 shadow-sm transition-all duration-500 group-hover:shadow-lg group-hover:border-primary/20">
-          <img 
-            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-            :src="prod.image" 
+          <img
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            :src="prod.image"
             :alt="prod.name"
           />
-          <button 
+          <button
             @click.stop="store.toggleWishlist(prod)"
             class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md shadow-lg hover:bg-white transition-all flex items-center justify-center text-on-surface-variant hover:text-error opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 z-10"
           >
-            <span 
+            <span
               class="material-symbols-outlined text-[20px]"
               :class="{ 'fill text-error': store.isInWishlist(prod.id) }"
               :style="store.isInWishlist(prod.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
@@ -120,7 +122,7 @@ const products = [
           <div class="flex items-center justify-between">
             <span class="font-bold text-xl text-on-surface">${{ prod.price.toFixed(2) }}</span>
             <div class="flex gap-2">
-              <button 
+              <button
                 @click.stop="store.toggleCompare(prod)"
                 class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-md"
                 :class="{ 'bg-primary-container/20 text-primary': store.isInCompare(prod.id) }"
@@ -128,7 +130,7 @@ const products = [
               >
                 <span class="material-symbols-outlined text-[20px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
               </button>
-              <button 
+              <button
                 @click.stop="store.addToCart(prod)"
                 class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-md"
                 title="Add to Cart"
@@ -138,7 +140,7 @@ const products = [
             </div>
           </div>
         </div>
-      </div>
+      </router-link>
     </div>
   </section>
 </template>
