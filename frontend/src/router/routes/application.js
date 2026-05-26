@@ -1,7 +1,8 @@
 import HomePage from "@/pages/home/HomePage.vue";
 import CatalogPage from "@/pages/catalog/CatalogPage.vue";
 import ProductDetailPage from "@/pages/product/ProductDetailPage.vue";
-import CartPage from "@/pages/cart/CartPage.vue";
+import ShoppingCart from "@/pages/cart/ShoppingCart.vue";
+import UserCabinetPage from "@/pages/account/UserCabinetPage.vue";
 // import VideosPage from "@/pages/application/VideosPage.vue";
 // import StreamsPage from "@/pages/application/StreamsPage.vue";
 // import SettingsPage from "@/pages/application/SettingsPage.vue";
@@ -55,8 +56,14 @@ export default [
       {
         path: "cart",
         name: "cart",
-        component: CartPage,
+        component: ShoppingCart,
         meta: { title: "Shopping Cart" },
+      },
+      {
+        path: "account",
+        name: "account",
+        component: UserCabinetPage,
+        meta: { title: "Account — ElectroLux" },
       },
     ],
   },

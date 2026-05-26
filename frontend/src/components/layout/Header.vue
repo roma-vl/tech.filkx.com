@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { store } from '@/store.js';
+import Dropdown from '@/components/ui/Dropdown.vue';
 
+const router = useRouter();
 const searchInput = ref(null);
 const searchQuery = ref('');
 const showDropdown = ref(false);
@@ -196,13 +199,71 @@ onUnmounted(() => {
       <!-- Actions -->
       <div class="flex items-center gap-8 text-on-surface">
         <!-- Account -->
-        <button
-          @click="store.openDrawer('account')"
-          class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
-        >
-          <span class="material-symbols-outlined">person</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
-        </button>
+        <Dropdown align="right" width="60">
+          <template #trigger>
+            <button
+              class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
+            >
+              <span class="material-symbols-outlined">person</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
+            </button>
+          </template>
+
+          <template #content>
+            <div class="p-4 bg-surface-container-low border-b border-surface-variant flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">
+                JD
+              </div>
+              <div>
+                <p class="text-sm font-bold text-on-surface leading-none">John Doe</p>
+                <p class="text-[10px] text-on-surface-variant mt-1">Premium Member</p>
+              </div>
+            </div>
+            <div class="p-2 flex flex-col gap-1">
+              <button
+                @click="router.push({ name: 'account' })"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+              >
+                <span class="material-symbols-outlined text-lg">person</span>
+                <span class="text-xs font-semibold text-on-surface">My Profile</span>
+              </button>
+              <button
+                @click="router.push({ name: 'account' })"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+              >
+                <span class="material-symbols-outlined text-lg">shopping_bag</span>
+                <span class="text-xs font-semibold text-on-surface">Order History</span>
+              </button>
+              <button
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+              >
+                <span class="material-symbols-outlined text-lg">settings</span>
+                <span class="text-xs font-semibold text-on-surface">Settings</span>
+              </button>
+              <div class="h-px bg-surface-variant my-1"></div>
+              <button
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full text-error"
+              >
+                <span class="material-symbols-outlined text-lg">logout</span>
+                <span class="text-xs font-semibold">Sign Out</span>
+              </button>
+            </div>
+            <div class="p-2 border-t border-surface-variant flex flex-col gap-1">
+              <button
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+              >
+                <span class="material-symbols-outlined text-lg">login</span>
+                <span class="text-xs font-semibold text-on-surface">Sign In</span>
+              </button>
+              <button
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+              >
+                <span class="material-symbols-outlined text-lg">person_add</span>
+                <span class="text-xs font-semibold text-on-surface">Register</span>
+              </button>
+            </div>
+          </template>
+        </Dropdown>
 
         <!-- Compare -->
         <button

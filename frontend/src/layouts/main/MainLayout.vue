@@ -13,7 +13,7 @@
     <div class="flex-1 flex flex-col min-w-0 relative z-10">
       <main class="flex-1 overflow-y-auto custom-scrollbar">
           <div class="mx-auto w-full">
-            <slot />
+            <router-view />
           </div>
       </main>
     </div>

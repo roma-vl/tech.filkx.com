@@ -1,7 +1,9 @@
 <script setup>
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { store } from '@/store.js';
 
+const router = useRouter();
 const shippingThreshold = 500;
 const shippingProgress = computed(() => {
   const total = store.cartTotal;
@@ -15,7 +17,8 @@ const remainingForFreeShipping = computed(() => {
 
 const checkout = () => {
   if (store.cart.length === 0) return;
-  store.openCartPage();
+  store.closeDrawer();
+  router.push({ name: 'cart' });
 };
 </script>
 

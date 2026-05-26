@@ -155,10 +155,5 @@ export const store = reactive({
   viewProduct(product = null) {
     this.selectedProduct = product;
     this.currentPage = 'product';
-  },
-
-  openCartPage() {
-    this.activeDrawer = null;
-    this.currentPage = 'cart';
   }
 });
