@@ -7,8 +7,8 @@ APP_DIR="/var/www/live.filkx.com"
 TARGET_DIR="$APP_DIR/$COLOR/current"
 TARGET_COMPOSE="$TARGET_DIR/docker-compose-production.yml"
 
-LARAVEL_CLI="live-api-php-cli"
-LARAVEL_FPM="live-api-php-fpm"
+LARAVEL_CLI="tech-api-php-cli"
+LARAVEL_FPM="tech-api-php-fpm"
 WORKDIR_IN_CONTAINER="/app"
 
 # -----------------------------

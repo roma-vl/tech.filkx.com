@@ -39,17 +39,17 @@ services:
       dockerfile: staging/nginx/Dockerfile
     restart: always
     depends_on:
-      - staging-live-api-php-fpm
+      - staging-tech-api-php-fpm
     volumes:
       - ./api:/app
-      - /var/www/staging.live.filkx.com/shared/storage:/app/storage
+      - /var/www/staging.tech.filkx.com/shared/storage:/app/storage
     ports:
       - "8096:80"
     networks:
       - filkx
 
   # ================= PHP-FPM =================
-  staging-live-api-php-fpm:
+  staging-tech-api-php-fpm:
     build:
       context: api/docker
       dockerfile: staging/php-fpm/Dockerfile

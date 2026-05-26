@@ -7,8 +7,8 @@ APP_DIR="/var/www/staging.live.filkx.com"
 TARGET_DIR="$APP_DIR/$COLOR/current"
 TARGET_COMPOSE="$TARGET_DIR/docker-compose-staging.yml"
 
-LARAVEL_CLI="staging-live-api-php-cli"
-LARAVEL_FPM="staging-live-api-php-fpm"
+LARAVEL_CLI="staging-tech-api-php-cli"
+LARAVEL_FPM="staging-tech-api-php-fpm"
 WORKDIR_IN_CONTAINER="/app"
 
 # -----------------------------

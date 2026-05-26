@@ -32,7 +32,7 @@ class IndexController extends BaseApiController
     public function index(): JsonResponse
     {
         return self::successfulResponseWithData([
-            'api' => 'Hello Api!',
+            'api' => 'Hello Api!!!',
         ]);
     }
 }

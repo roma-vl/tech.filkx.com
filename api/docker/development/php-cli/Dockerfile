@@ -23,7 +23,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_HOME=/tmp/composer
+ENV HOME=/tmp
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 
 # PHP config
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
@@ -32,4 +36,5 @@ COPY ./common/php/conf.d/ "$PHP_INI_DIR/conf.d/"
 # Security & permissions
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
-USER nobody
+RUN useradd -ms /bin/bash app && chown -R app:app /app
+USER app

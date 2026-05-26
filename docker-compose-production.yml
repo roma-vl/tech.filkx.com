@@ -39,17 +39,17 @@ services:
       dockerfile: production/nginx/Dockerfile
     restart: always
     depends_on:
-      - live-api-php-fpm
+      - tech-api-php-fpm
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     ports:
       - "8089:80"
     networks:
       - filkx
 
   # ================= PHP-FPM =================
-  live-api-php-fpm:
+  tech-api-php-fpm:
     build:
       context: api/docker
       dockerfile: production/php-fpm/Dockerfile
@@ -57,12 +57,12 @@ services:
     user: "1000:1000"
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     networks:
       - filkx
 
   # ================= API CLI =================
-  live-api-php-cli:
+  tech-api-php-cli:
     build:
       context: api/docker
       dockerfile: production/php-cli/Dockerfile
