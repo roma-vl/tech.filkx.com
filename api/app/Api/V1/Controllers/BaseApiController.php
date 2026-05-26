@@ -33,5 +33,5 @@ abstract class BaseApiController extends Controller
 {
     use HasApiJsonResponse;
 
-    public const PER_PAGE = 10;
+    public const int PER_PAGE = 10;
 }
