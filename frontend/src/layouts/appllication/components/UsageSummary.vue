@@ -41,7 +41,6 @@
 
 <script setup>
 import { computed } from "vue";
-import { useSubscriptionStore } from "@/stores/subscription";
 import UsageBadge from "./UsageBadge.vue";
 import UpgradeCta from "./UpgradeCta.vue";
 import StorageIcon from "@/components/Icon/StorageIcon.vue";
@@ -55,7 +54,6 @@ const props = defineProps({
   },
 });
 
-const sub = useSubscriptionStore();
 const GB = 1024 * 1024 * 1024;
 
 const storage = computed(() => {

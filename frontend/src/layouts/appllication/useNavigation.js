@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useSubscriptionStore } from "@/stores/subscription";
+// import { useSubscriptionStore } from "@/stores/subscription";
 import { navigationGroups } from "@/layouts/appllication/navigation.js";
 
 export function useNavigation() {
@@ -28,10 +28,7 @@ export function useNavigation() {
   const getIsLocked = (item) => {
     if (!item.featureKey) return false;
     // Check if subscription exists and feature is explicitly false
-    const subscription = useSubscriptionStore();
-    if (!subscription.subscription) return false; // Default to not locked if not loaded
-    const hasFeature = subscription.subscription.features?.[item.featureKey];
-    return hasFeature === false;
+
   };
 
   const processedGroups = computed(() =>

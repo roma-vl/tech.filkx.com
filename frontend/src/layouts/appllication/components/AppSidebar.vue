@@ -67,18 +67,6 @@
         />
       </div>
     </nav>
-
-    <div
-      v-if="!collapsed"
-      class="px-2"
-    >
-      <TrialActivationBanner />
-    </div>
-
-    <TourReminderBanner
-      v-if="!collapsed"
-      @start-tour="$emit('start-tour', $event)"
-    />
     <Version />
   </aside>
 </template>
@@ -93,8 +81,8 @@ import AppNavItem from "./AppNavItem.vue";
 import AppNavDropdown from "./AppNavDropdown.vue";
 import { useNavigation } from "@/layouts/appllication/useNavigation.js";
 import Logo from "@/assets/images/logo/logo.png";
-import TourReminderBanner from "@/components/application/features/onboarding/TourReminderBanner.vue";
-import TrialActivationBanner from "@/components/application/ui/Banners/TrialActivationBanner.vue";
+// import TourReminderBanner from "@/components/application/features/onboarding/TourReminderBanner.vue";
+// import TrialActivationBanner from "@/components/application/ui/Banners/TrialActivationBanner.vue";
 import Version from "@/layouts/appllication/components/Version.vue";
 
 const { t } = useI18n();

@@ -48,11 +48,10 @@ export function createApp(routerInstance) {
 
   // Initialize stores BUT DO NOT CALL INIT methods that touch DOM/LocalStorage here
   const auth = useAuthStore(pinia);
-  const subscription = useSubscriptionStore(pinia);
   const ui = useUiStore(pinia);
 
   // Return the instance components
-  return { app, router: routerInstance, pinia, head, auth, subscription, ui };
+  return { app, router: routerInstance, pinia, head, auth, ui };
 }
 
 // Client-side entry point

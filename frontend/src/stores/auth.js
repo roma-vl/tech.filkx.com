@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import api from "./services/api";
+import api from "@/services/api";
 
 const TOKEN_KEY = "filkx_auth";
 const ADMIN_TOKEN_KEY = "filkx_admin_auth";

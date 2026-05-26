@@ -13,13 +13,6 @@
       @start-tour="handleStartTour"
     />
 
-    <OnboardingTour ref="tourRef"/>
-    <TourPromptModal
-      v-if="!tourCompleted"
-      @start-tour="handleStartTour"
-      @dismiss="handleDismissPrompt"
-    />
-
     <MobileNavDrawer
       v-if="isMobile"
       :open="mobileDrawerOpen"
@@ -41,7 +34,6 @@
         </div>
       </main>
 
-      <TrialWarningBanner v-if="isTrialWarningVisible" />
     </div>
   </div>
 </template>
@@ -49,13 +41,13 @@
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
 import Topbar from "@/layouts/appllication/Topbar.vue";
-import TrialWarningBanner from "@/components/application/features/billing/TrialWarningBanner.vue";
+// import TrialWarningBanner from "@/components/application/features/billing/TrialWarningBanner.vue";
 import AppSidebar from "@/layouts/appllication/components/AppSidebar.vue";
 import MobileNavDrawer from "@/layouts/appllication/components/MobileNavDrawer.vue";
 import {useAuthStore} from "@/stores/auth";
 import {useLayout} from "@/layouts/appllication/useLayout.js";
-import OnboardingTour from "@/components/application/features/onboarding/OnboardingTour.vue";
-import TourPromptModal from "@/components/application/features/onboarding/TourPromptModal.vue";
+// import OnboardingTour from "@/components/application/features/onboarding/OnboardingTour.vue";
+// import TourPromptModal from "@/components/application/features/onboarding/TourPromptModal.vue";
 
 const { sidebarCollapsed, toggleSidebar, isMobile } = useLayout();
 const auth = useAuthStore();
