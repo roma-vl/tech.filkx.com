@@ -10,6 +10,22 @@ const authStore = useAuthStore();
 const searchInput = ref(null);
 const searchQuery = ref('');
 const showDropdown = ref(false);
+const isMegaMenuOpen = ref(false);
+
+const popularQueries = [
+  'SSD',
+  'Кава',
+  'Свічки',
+  'Чайник',
+  'Кросівки',
+  'Jack Daniel\'s',
+  'Телефон',
+  'Мишка',
+  'Lego',
+  'Сумка',
+  'Крокси',
+  'Наушники'
+];
 
 const allProducts = [
   {
@@ -86,21 +102,132 @@ const allProducts = [
   }
 ];
 
-const filteredProducts = computed(() => {
-  if (!searchQuery.value.trim()) return [];
-  const q = searchQuery.value.toLowerCase().trim();
-  return allProducts.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.category.toLowerCase().includes(q)
-  ).slice(0, 5);
-});
+const categories = [
+  {
+    id: 'smartphones',
+    label: 'Smartphones',
+    icon: 'smartphone',
+    sub: [
+      { name: 'iPhone 15 Series', badge: 'New' },
+      { name: 'Samsung Galaxy S24', badge: '' },
+      { name: 'Google Pixel 8', badge: '' },
+      { name: 'Folding Phones', badge: 'Trending' },
+      { name: 'Budget Phones', badge: '' },
+      { name: 'Accessories', badge: '' },
+    ],
+  },
+  {
+    id: 'laptops',
+    label: 'Laptops',
+    icon: 'laptop',
+    sub: [
+      { name: 'MacBook Pro & Air', badge: 'New' },
+      { name: 'Gaming Laptops', badge: 'Hot' },
+      { name: 'Ultrabooks', badge: '' },
+      { name: 'Workstations', badge: '' },
+      { name: 'Chromebooks', badge: '' },
+      { name: 'Laptop Accessories', badge: '' },
+    ],
+  },
+  {
+    id: 'gaming',
+    label: 'Gaming',
+    icon: 'sports_esports',
+    sub: [
+      { name: 'PlayStation 5', badge: 'Hot' },
+      { name: 'Xbox Series X', badge: '' },
+      { name: 'Nintendo Switch', badge: '' },
+      { name: 'Gaming PCs', badge: '' },
+      { name: 'Controllers & Pads', badge: '' },
+      { name: 'Gaming Chairs', badge: '' },
+    ],
+  },
+  {
+    id: 'audio',
+    label: 'Audio',
+    icon: 'headphones',
+    sub: [
+      { name: 'Noise Cancelling', badge: '' },
+      { name: 'True Wireless Earbuds', badge: 'New' },
+      { name: 'Home Theater', badge: '' },
+      { name: 'Smart Speakers', badge: '' },
+      { name: 'Studio Monitors', badge: '' },
+      { name: 'Soundbars', badge: '' },
+    ],
+  },
+  {
+    id: 'wearables',
+    label: 'Wearables',
+    icon: 'watch',
+    sub: [
+      { name: 'Apple Watch', badge: 'New' },
+      { name: 'Galaxy Watch', badge: '' },
+      { name: 'Fitness Trackers', badge: '' },
+      { name: 'Smart Rings', badge: 'Trending' },
+      { name: 'AR & VR Headsets', badge: '' },
+      { name: 'Smart Glasses', badge: '' },
+    ],
+  },
+  {
+    id: 'cameras',
+    label: 'Cameras',
+    icon: 'photo_camera',
+    sub: [
+      { name: 'DSLR Cameras', badge: '' },
+      { name: 'Mirrorless', badge: 'Hot' },
+      { name: 'Action Cameras', badge: '' },
+      { name: 'Drones', badge: '' },
+      { name: 'Lenses', badge: '' },
+      { name: 'Camera Bags', badge: '' },
+    ],
+  },
+  {
+    id: 'tablets',
+    label: 'Tablets',
+    icon: 'tablet',
+    sub: [
+      { name: 'iPad Pro & Air', badge: 'New' },
+      { name: 'Samsung Galaxy Tab', badge: '' },
+      { name: 'Android Tablets', badge: '' },
+      { name: 'E-Readers', badge: '' },
+      { name: 'Tablet Cases', badge: '' },
+      { name: 'Stylus & Pens', badge: '' },
+    ],
+  },
+  {
+    id: 'smart-home',
+    label: 'Smart Home',
+    icon: 'home',
+    sub: [
+      { name: 'Smart Displays', badge: '' },
+      { name: 'Smart Bulbs', badge: '' },
+      { name: 'Security Cameras', badge: '' },
+      { name: 'Smart Locks', badge: '' },
+      { name: 'Robot Vacuums', badge: 'Hot' },
+      { name: 'Smart Thermostats', badge: '' },
+    ],
+  },
+];
 
-const handleKeydown = (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-    e.preventDefault();
-    searchInput.value?.focus();
-  }
-  if (e.key === 'Escape') {
+const activeCat = ref(categories[0]);
+
+const selectCategory = (cat) => {
+  activeCat.value = cat;
+};
+
+const clickCategorySub = (subName) => {
+  isMegaMenuOpen.value = false;
+  router.push({ name: 'catalog', query: { category: activeCat.value.id, sub: subName.toLowerCase() } });
+};
+
+const selectPopularQuery = (query) => {
+  searchQuery.value = query;
+  triggerSearch();
+};
+
+const triggerSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push({ name: 'catalog', query: { search: searchQuery.value.trim() } });
     showDropdown.value = false;
   }
 };
@@ -111,12 +238,49 @@ const selectSearchResult = (product) => {
   showDropdown.value = false;
 };
 
-// Click outside handling for search dropdown
+const highlightMatch = (name, query) => {
+  if (!query.trim()) return name;
+  const regex = new RegExp(`(${query.trim()})`, 'gi');
+  return name.replace(regex, '<span class="font-extrabold text-[#09090b]">$1</span>');
+};
+
+const filteredProducts = computed(() => {
+  if (!searchQuery.value.trim()) return [];
+  const q = searchQuery.value.toLowerCase().trim();
+  return allProducts.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.category.toLowerCase().includes(q)
+  ).slice(0, 8);
+});
+
+const handleKeydown = (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.value?.focus();
+  }
+  if (e.key === 'Escape') {
+    showDropdown.value = false;
+    isMegaMenuOpen.value = false;
+  }
+};
+
 const handleClickOutside = (e) => {
-  const container = searchInput.value?.closest('.group');
+  const container = searchInput.value?.closest('.search-container');
   if (container && !container.contains(e.target)) {
     showDropdown.value = false;
   }
+  const megaWrap = document.querySelector('.mega-menu-wrapper');
+  if (megaWrap && !megaWrap.contains(e.target) && !e.target.closest('.catalog-btn') && !e.target.closest('.burger-btn')) {
+    isMegaMenuOpen.value = false;
+  }
+};
+
+const toggleCatalog = () => {
+  isMegaMenuOpen.value = !isMegaMenuOpen.value;
+};
+
+const triggerVoiceSearch = () => {
+  store.addToast("Voice search activated. Start speaking...", "info");
 };
 
 onMounted(() => {
@@ -131,126 +295,176 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- Main Sticky Header -->
-  <header class="sticky top-0 z-50 w-full bg-surface-container-lowest/95 backdrop-blur-md shadow-sm border-b border-surface-variant">
-    <div class="max-w-container-max mx-auto h-20 px-margin-desktop flex items-center justify-between gap-gutter">
-      <!-- Brand -->
-      <a class="font-display-lg text-display-lg font-bold text-primary flex-shrink-0 tracking-tight" href="/">
-        ElectroLux
-      </a>
-
-      <!-- Search Bar (Refined & Large) -->
-      <div class="flex-grow max-w-2xl relative z-40">
-        <div class="relative group">
-          <input
-            ref="searchInput"
-            v-model="searchQuery"
-            @focus="showDropdown = true"
-            class="w-full h-12 pl-12 pr-4 bg-surface-container-low border-none ring-1 ring-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all font-body-md shadow-inner"
-            placeholder="Search premium electronics..."
-            type="text"
-          />
-          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
-          <div class="absolute right-3 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-1.5 px-2 py-1 bg-surface-container-highest rounded text-[10px] font-bold text-on-surface-variant border border-outline-variant/30">
-            <span>⌘</span><span>K</span>
-          </div>
-        </div>
-
-        <!-- Live Search Autocomplete Dropdown -->
-        <div
-          v-if="showDropdown && filteredProducts.length > 0"
-          class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-surface-variant z-[110] overflow-hidden p-2 flex flex-col gap-1 max-h-[360px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+  <!-- Main Header Shell -->
+  <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md select-none">
+    <div class="max-w-container-max mx-auto h-16 px-4 md:px-8 flex items-center justify-between gap-4">
+      
+      <!-- Left: Burger & Logo -->
+      <div class="flex items-center gap-3">
+        <!-- Burger Button -->
+        <button 
+          @click="toggleCatalog"
+          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center"
+          title="Toggle Categories"
         >
-          <div class="px-3 py-1.5 text-[10px] font-black uppercase text-on-surface-variant tracking-wider border-b border-surface-variant/35 mb-1">
-            Search Suggestions
+          <span class="material-symbols-outlined text-2xl text-white">menu</span>
+        </button>
+
+        <!-- Brand/Logo (Rozetka Green Smiley Style) -->
+        <a class="flex items-center gap-2 hover:opacity-90 transition-opacity" href="/" @click.prevent="router.push('/')">
+          <div class="w-8 h-8 rounded-full bg-[#00a046] flex items-center justify-center shadow-md">
+            <span class="material-symbols-outlined text-white text-[20px] font-bold">sentiment_very_satisfied</span>
           </div>
-          <div
-            v-for="prod in filteredProducts"
-            :key="prod.id"
-            @click="selectSearchResult(prod)"
-            class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg cursor-pointer transition-colors group/item"
+          <span class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block">
+            ElectroLux
+          </span>
+        </a>
+      </div>
+
+      <!-- Catalog Toggle Button -->
+      <button 
+        @click="toggleCatalog"
+        :class="isMegaMenuOpen ? 'bg-white/20 border-white/40' : 'border-white/20 hover:bg-white/10 hover:border-white/40'"
+        class="catalog-btn hidden md:flex items-center gap-2 border px-4 py-2 rounded-lg font-bold text-sm tracking-wide text-white transition-all"
+      >
+        <span class="material-symbols-outlined text-[18px]">grid_view</span>
+        <span>Каталог</span>
+      </button>
+
+      <!-- Center: Rozetka Styled Search Input -->
+      <div class="flex-grow max-w-3xl search-container relative z-40">
+        <form @submit.prevent="triggerSearch" class="flex items-center bg-white rounded-lg overflow-hidden shadow-sm h-10 border border-transparent focus-within:border-zinc-500">
+          <div class="relative flex-grow flex items-center h-full px-3">
+            <span class="material-symbols-outlined text-zinc-400 mr-2 text-[20px]">search</span>
+            <input
+              ref="searchInput"
+              v-model="searchQuery"
+              @focus="showDropdown = true"
+              class="w-full h-full text-zinc-800 text-sm focus:outline-none placeholder-zinc-400 bg-transparent"
+              placeholder="Я шукаю..."
+              type="text"
+            />
+            <!-- Clear Search Button -->
+            <button 
+              v-if="searchQuery" 
+              type="button" 
+              @click="searchQuery = ''" 
+              class="p-1 text-zinc-400 hover:text-zinc-600 mr-1 flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+            <!-- Microphone Voice Search Button -->
+            <button 
+              type="button" 
+              @click="triggerVoiceSearch" 
+              class="p-1 text-zinc-400 hover:text-zinc-600 flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-[20px]">mic</span>
+            </button>
+          </div>
+          <!-- Rozetka Green Find Button -->
+          <button 
+            type="submit" 
+            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 shrink-0"
           >
-            <div class="w-10 h-10 bg-surface-container-low rounded p-1 shrink-0 flex items-center justify-center">
-              <img class="max-h-full object-contain" :src="prod.image" :alt="prod.name" />
+            Знайти
+          </button>
+        </form>
+
+        <!-- Dropdown Panel (Rozetka matching auto-completion & popular queries) -->
+        <div
+          v-if="showDropdown"
+          class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-zinc-200 z-[110] overflow-hidden p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200"
+        >
+          <!-- Suggestions results -->
+          <div v-if="filteredProducts.length > 0" class="space-y-1">
+            <div class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">
+              Результати пошуку
             </div>
-            <div class="flex-grow">
-              <p class="text-[9px] font-bold text-primary uppercase tracking-wide leading-none mb-0.5">{{ prod.category }}</p>
-              <p class="text-xs font-semibold text-on-surface line-clamp-1 group-hover/item:text-primary transition-colors">{{ prod.name }}</p>
+            <div
+              v-for="prod in filteredProducts"
+              :key="prod.id"
+              @click="selectSearchResult(prod)"
+              class="flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg cursor-pointer transition-colors group/item"
+            >
+              <div class="w-10 h-10 bg-zinc-100 rounded p-1 shrink-0 flex items-center justify-center">
+                <img class="max-h-full object-contain" :src="prod.image" :alt="prod.name" />
+              </div>
+              <div class="flex-grow">
+                <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wide leading-none mb-0.5">{{ prod.category }}</p>
+                <p class="text-xs text-zinc-700 line-clamp-1 group-hover/item:text-primary transition-colors" v-html="highlightMatch(prod.name, searchQuery)"></p>
+              </div>
+              <span class="text-xs font-bold text-zinc-900 shrink-0">${{ prod.price.toFixed(2) }}</span>
             </div>
-            <div class="shrink-0 flex items-center gap-3">
-              <span class="text-xs font-bold text-on-surface">${{ prod.price.toFixed(2) }}</span>
+          </div>
+
+          <div v-else-if="searchQuery.trim()" class="text-center text-xs text-zinc-400 py-2">
+            Нічого не знайдено для "{{ searchQuery }}".
+          </div>
+
+          <!-- Popular Searches (Rozetka Tags Style) -->
+          <div class="space-y-2.5">
+            <div class="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+              Популярні запити
+            </div>
+            <div class="flex flex-wrap gap-2">
               <button
-                class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-                title="Add to Cart"
+                v-for="tag in popularQueries"
+                :key="tag"
+                type="button"
+                @click="selectPopularQuery(tag)"
+                class="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:border-zinc-300 transition-colors"
               >
-                <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+                {{ tag }}
               </button>
             </div>
           </div>
         </div>
-
-        <!-- Empty Results Alert -->
-        <div
-          v-if="showDropdown && searchQuery.trim() && filteredProducts.length === 0"
-          class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-surface-variant z-[110] p-4 text-center text-xs text-on-surface-variant"
-        >
-          No premium products found for "{{ searchQuery }}".
-        </div>
       </div>
 
-      <!-- Actions -->
-      <div class="flex items-center gap-8 text-on-surface">
+      <!-- Right: Compact Icon Actions -->
+      <div class="flex items-center gap-4 md:gap-6 text-white">
+        
         <!-- Account -->
         <Dropdown align="right" width="60">
           <template #trigger>
-            <button
-              class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
-            >
-              <span class="material-symbols-outlined">person</span>
-              <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
+            <button class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center" title="Account">
+              <span class="material-symbols-outlined text-[24px]">person</span>
             </button>
           </template>
 
           <template #content>
             <template v-if="authStore.isAuthenticated">
-              <div class="p-4 bg-surface-container-low border-b border-surface-variant flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">
+              <div class="p-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3 text-zinc-800">
+                <div class="w-10 h-10 rounded-full bg-[#00a046] flex items-center justify-center text-white font-bold">
                   {{ authStore.user?.name ? authStore.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U' }}
                 </div>
                 <div>
-                  <p class="text-sm font-bold text-on-surface leading-none">{{ authStore.user?.name }}</p>
-                  <p class="text-[10px] text-on-surface-variant mt-1">{{ authStore.user?.email }}</p>
+                  <p class="text-sm font-bold leading-none">{{ authStore.user?.name }}</p>
+                  <p class="text-[10px] text-zinc-500 mt-1">{{ authStore.user?.email }}</p>
                 </div>
               </div>
               <div class="p-2 flex flex-col gap-1">
                 <button
                   @click="router.push({ name: 'account', query: { tab: 'dashboard' } })"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
                 >
                   <span class="material-symbols-outlined text-lg">person</span>
-                  <span class="text-xs font-semibold text-on-surface">My Profile</span>
+                  <span class="text-xs font-semibold">Кабінет</span>
                 </button>
                 <button
                   @click="router.push({ name: 'account', query: { tab: 'orders' } })"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
                 >
                   <span class="material-symbols-outlined text-lg">shopping_bag</span>
-                  <span class="text-xs font-semibold text-on-surface">Order History</span>
+                  <span class="text-xs font-semibold">Мої замовлення</span>
                 </button>
-                <button
-                  @click="router.push({ name: 'account', query: { tab: 'settings' } })"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
-                >
-                  <span class="material-symbols-outlined text-lg">settings</span>
-                  <span class="text-xs font-semibold text-on-surface">Settings</span>
-                </button>
-                <div class="h-px bg-surface-variant my-1"></div>
                 <button
                   @click="authStore.logout().then(() => router.push('/login'))"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full text-error"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-error"
                 >
-                  <span class="material-symbols-outlined text-lg">logout</span>
-                  <span class="text-xs font-semibold">Sign Out</span>
+                  <span class="material-symbols-outlined text-lg text-red-500">logout</span>
+                  <span class="text-xs font-semibold text-red-600">Вихід</span>
                 </button>
               </div>
             </template>
@@ -258,17 +472,17 @@ onUnmounted(() => {
               <div class="p-2 flex flex-col gap-1">
                 <button
                   @click="router.push('/login')"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
                 >
                   <span class="material-symbols-outlined text-lg">login</span>
-                  <span class="text-xs font-semibold text-on-surface">Sign In</span>
+                  <span class="text-xs font-semibold">Увійти</span>
                 </button>
                 <button
                   @click="router.push('/register')"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
                 >
                   <span class="material-symbols-outlined text-lg">person_add</span>
-                  <span class="text-xs font-semibold text-on-surface">Register</span>
+                  <span class="text-xs font-semibold">Реєстрація</span>
                 </button>
               </div>
             </template>
@@ -278,13 +492,13 @@ onUnmounted(() => {
         <!-- Compare -->
         <button
           @click="store.openDrawer('compare')"
-          class="flex flex-col items-center gap-1 hover:text-primary transition-colors hidden xl:flex relative"
+          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          title="Compare"
         >
-          <span class="material-symbols-outlined">compare_arrows</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider">Compare</span>
+          <span class="material-symbols-outlined text-[24px]">compare_arrows</span>
           <span
             v-if="store.compareCount > 0"
-            class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse"
+            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
           >
             {{ store.compareCount }}
           </span>
@@ -293,13 +507,13 @@ onUnmounted(() => {
         <!-- Wishlist -->
         <button
           @click="store.openDrawer('wishlist')"
-          class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
+          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          title="Wishlist"
         >
-          <span class="material-symbols-outlined">favorite</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider">Wishlist</span>
+          <span class="material-symbols-outlined text-[24px]">favorite</span>
           <span
             v-if="store.wishlistCount > 0"
-            class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
+            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
           >
             {{ store.wishlistCount }}
           </span>
@@ -308,18 +522,89 @@ onUnmounted(() => {
         <!-- Cart -->
         <button
           @click="store.openDrawer('cart')"
-          class="flex flex-col items-center gap-1 hover:text-primary transition-colors relative"
+          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          title="Cart"
         >
-          <span class="material-symbols-outlined">shopping_cart</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider">Cart</span>
+          <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
           <span
             v-if="store.cartCount > 0"
-            class="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
+            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
           >
             {{ store.cartCount }}
           </span>
         </button>
       </div>
     </div>
+
+    <!-- Dropdown Floating Mega Menu Overlay -->
+    <div 
+      v-if="isMegaMenuOpen" 
+      class="mega-menu-wrapper absolute left-0 right-0 top-full bg-white text-zinc-900 border-t border-zinc-200 shadow-2xl z-[120] duration-200 flex"
+    >
+      <div class="max-w-container-max mx-auto w-full flex min-h-[480px]">
+        <!-- Left Sidebar: Category list -->
+        <div class="w-1/4 border-r border-zinc-200 bg-zinc-50 p-4">
+          <ul class="space-y-1">
+            <li
+              v-for="cat in categories"
+              :key="cat.id"
+              @mouseenter="selectCategory(cat)"
+              :class="activeCat.id === cat.id ? 'bg-[#00a046] text-white font-bold' : 'hover:bg-zinc-150 text-zinc-700'"
+              class="flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-colors"
+            >
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[20px]">{{ cat.icon }}</span>
+                <span class="text-xs uppercase tracking-wider font-semibold">{{ cat.label }}</span>
+              </div>
+              <span class="material-symbols-outlined text-[16px] opacity-75">chevron_right</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Center/Right: Sub-categories Grid -->
+        <div class="flex-grow p-8 bg-white flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-6 text-[#00a046] border-b border-zinc-100 pb-3">
+              <span class="material-symbols-outlined text-[24px]">{{ activeCat.icon }}</span>
+              <h3 class="text-base font-black uppercase tracking-wider">{{ activeCat.label }}</h3>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                v-for="sub in activeCat.sub"
+                :key="sub.name"
+                @click="clickCategorySub(sub.name)"
+                class="p-4 border border-zinc-100 hover:border-zinc-200 hover:bg-zinc-50 rounded-xl cursor-pointer transition-all flex flex-col justify-between h-20"
+              >
+                <div class="flex justify-between items-start gap-2">
+                  <span class="text-xs font-bold text-zinc-800 leading-snug">{{ sub.name }}</span>
+                  <span v-if="sub.badge" class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">{{ sub.badge }}</span>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase">
+                  Переглянути товари <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 pt-4 border-t border-zinc-100 text-right">
+            <button 
+              @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { category: activeCat.id } })"
+              class="inline-flex items-center gap-1.5 text-xs font-black text-[#00a046] hover:underline uppercase tracking-widest"
+            >
+              Всі товари {{ activeCat.label }} <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
+
+<style scoped>
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

@@ -260,20 +260,20 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 <style scoped>
 /* ── Navbar shell ─────────────────────────────────────── */
 .navbar-secondary {
-  background: var(--color-surface-container-lowest, #fff);
-  border-top: 1px solid var(--color-surface-variant, #e7e0ec);
+  background: #ffffff;
+  border-top: 1px solid #e4e4e7;
+  border-bottom: 1px solid #e4e4e7;
   position: relative;
-  z-index: 50;
+  z-index: 40;
 }
 
 .navbar-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 50px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
-  height: 48px;
-  gap: 0;
+  height: 52px;
 }
 
 /* ── Browse button ────────────────────────────────────── */
@@ -288,34 +288,35 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #005228 0%, #006d37 100%);
-  color: #fff;
-  padding: 0 20px;
-  height: 48px;
-  font-size: 0.875rem;
+  background: #09090b;
+  color: #ffffff;
+  padding: 0 18px;
+  height: 44px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
 .browse-btn:hover,
 .browse-btn--active {
-  background: linear-gradient(135deg, #006d37 0%, #80d997 100%);
-  box-shadow: 0 4px 16px rgba(0, 82, 40, 0.35);
+  background: #27272a;
+  box-shadow: 0 4px 12px rgba(9, 9, 11, 0.15);
 }
 
 .browse-icon {
-  font-size: 20px;
-  transition: transform 0.25s ease;
+  font-size: 18px;
+  transition: transform 0.2s ease;
 }
 
 .browse-chevron {
-  font-size: 18px;
-  transition: transform 0.3s ease;
-  margin-left: auto;
+  font-size: 16px;
+  transition: transform 0.25s ease;
+  margin-left: 8px;
 }
 
 .browse-chevron.rotated {
@@ -330,29 +331,30 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   display: grid;
   grid-template-columns: 220px 1fr 240px;
   width: 860px;
-  background: #fff;
-  border: 1px solid rgba(0, 82, 40, 0.12);
-  border-top: 3px solid #005228;
-  border-radius: 0 0 16px 16px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 82, 40, 0.1);
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
+  margin-top: 8px;
   overflow: hidden;
   z-index: 60;
+  transform-origin: top left;
 }
 
 /* ── Sidebar ──────────────────────────────────────────── */
 .mega-sidebar {
-  background: #f3faf5;
-  padding: 20px 0;
-  border-right: 1px solid rgba(0, 82, 40, 0.1);
+  background: #fafafa;
+  padding: 16px 0;
+  border-right: 1px solid #e4e4e7;
 }
 
 .mega-sidebar-label {
-  font-size: 0.65rem;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #006d37;
-  padding: 0 16px 8px;
+  color: #71717a;
+  padding: 0 16px 10px;
 }
 
 .mega-cat-list {
@@ -365,25 +367,25 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 16px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  color: #4a4458;
-  font-size: 0.84rem;
+  transition: all 0.15s ease;
+  color: #3f3f46;
+  font-size: 13px;
   font-weight: 500;
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
 }
 
 .mega-cat-item:hover,
 .mega-cat-item--active {
-  background: rgba(0, 82, 40, 0.08);
-  color: #005228;
-  border-left-color: #005228;
+  background: #f4f4f5;
+  color: #09090b;
+  border-left-color: #09090b;
 }
 
 .cat-icon {
-  font-size: 19px;
-  opacity: 0.75;
+  font-size: 18px;
+  opacity: 0.8;
 }
 
 .cat-label {
@@ -391,46 +393,45 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .cat-arrow {
-  font-size: 16px;
+  font-size: 14px;
   opacity: 0;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: all 0.15s ease;
 }
 
 .mega-cat-item:hover .cat-arrow,
 .mega-cat-item--active .cat-arrow {
   opacity: 1;
-  transform: translateX(2px);
+  transform: translateX(3px);
 }
 
 /* ── Sub-category panel ───────────────────────────────── */
 .mega-panel {
-  padding: 24px 28px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 16px;
 }
 
 .mega-panel-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e6f0e9;
+  border-bottom: 1px solid #f4f4f5;
 }
 
 .panel-icon {
-  font-size: 22px;
-  color: #005228;
-  background: rgba(0, 82, 40, 0.1);
-  border-radius: 8px;
+  font-size: 20px;
+  color: #09090b;
+  background: #f4f4f5;
+  border-radius: 6px;
   padding: 4px;
 }
 
 .panel-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1c1b1f;
+  font-size: 15px;
+  font-weight: 600;
+  color: #09090b;
   margin: 0;
 }
 
@@ -440,42 +441,40 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px;
+  gap: 8px;
   flex: 1;
 }
 
 .mega-sub-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #49454f;
-  font-size: 0.82rem;
+  color: #52525b;
+  font-size: 13px;
   font-weight: 500;
   border: 1px solid transparent;
 }
 
 .mega-sub-item:hover {
-  background: #ffffff;
-  color: #005228;
-  border-color: rgba(0, 82, 40, 0.15);
-  box-shadow: 0 4px 12px rgba(0, 82, 40, 0.05);
-  transform: translateY(-1px);
+  background: #fafafa;
+  color: #09090b;
+  border-color: #e4e4e7;
 }
 
 .sub-dot {
-  font-size: 16px;
-  color: #80d997;
+  font-size: 14px;
+  color: #a1a1aa;
   flex-shrink: 0;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .mega-sub-item:hover .sub-dot {
-  color: #006d37;
-  transform: translateX(3px);
+  color: #09090b;
+  transform: translateX(2px);
 }
 
 .sub-name {
@@ -483,94 +482,97 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .sub-badge {
-  font-size: 0.6rem;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 2px 6px;
-  border-radius: 99px;
+  letter-spacing: 0.02em;
+  padding: 1px 5px;
+  border-radius: 4px;
   text-transform: uppercase;
 }
 
-.badge--new    { background: #d1fadf; color: #12b76a; }
-.badge--hot    { background: #ffe4d3; color: #f04438; }
+.badge--new    { background: #f4f4f5; color: #18181b; border: 1px solid #e4e4e7; }
+.badge--hot    { background: #fee2e2; color: #ef4444; }
 .badge--trending { background: #fef3c7; color: #d97706; }
 
 .view-all-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 16px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #005228;
+  font-size: 12px;
+  font-weight: 600;
+  color: #09090b;
   text-decoration: none;
-  transition: gap 0.2s;
+  transition: all 0.2s ease;
 }
 
 .view-all-link:hover {
-  gap: 8px;
+  gap: 6px;
 }
 
 /* ── Promos ───────────────────────────────────────────── */
 .mega-promos {
-  background: #f3faf5;
-  padding: 20px 16px;
-  border-left: 1px solid rgba(0, 82, 40, 0.1);
+  background: #fafafa;
+  padding: 16px;
+  border-left: 1px solid #e4e4e7;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .promos-label {
-  font-size: 0.65rem;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #006d37;
+  color: #71717a;
   margin-bottom: 4px;
 }
 
 .promo-card {
-  background: #fff;
-  border-radius: 10px;
+  background: #ffffff;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(0, 82, 40, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 82, 40, 0.06);
-  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid #e4e4e7;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   display: flex;
   align-items: center;
 }
 
 .promo-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 82, 40, 0.14);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+  border-color: #d4d4d8;
+  transform: translateY(-1px);
 }
 
 .promo-img {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   flex-shrink: 0;
 }
 
 .promo-body {
-  padding: 8px 10px;
+  padding: 8px 12px;
   flex: 1;
+  min-width: 0;
 }
 
 .promo-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #1c1b1f;
+  font-size: 12px;
+  font-weight: 600;
+  color: #09090b;
   margin: 0 0 2px;
 }
 
 .promo-desc {
-  font-size: 0.68rem;
-  color: #79747e;
+  font-size: 10px;
+  color: #71717a;
   margin: 0 0 4px;
-  line-height: 1.2;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .promo-cta {
@@ -579,8 +581,8 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   gap: 4px;
   background: none;
   border: none;
-  color: #005228;
-  font-size: 0.68rem;
+  color: #09090b;
+  font-size: 10px;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
@@ -588,11 +590,11 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .promo-cta:hover {
-  gap: 8px;
+  gap: 6px;
 }
 
 .promo-cta .material-symbols-outlined {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* ── Nav links ────────────────────────────────────────── */
@@ -600,39 +602,39 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-left: 32px;
+  margin-left: 24px;
 }
 
 .nav-link {
   display: inline-flex;
   align-items: center;
-  padding: 0 14px;
-  height: 48px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  padding: 0 16px;
+  height: 52px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #49454f;
+  color: #52525b;
   text-decoration: none;
   position: relative;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .nav-link::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 14px;
-  right: 14px;
-  height: 3px;
-  background: #005228;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: #09090b;
   border-radius: 2px 2px 0 0;
   transform: scaleX(0);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-link:hover {
-  color: #005228;
+  color: #09090b;
 }
 
 .nav-link:hover::after {
@@ -640,7 +642,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .nav-link--active {
-  color: #005228;
+  color: #09090b;
 }
 
 .nav-link--active::after {
@@ -650,27 +652,28 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 /* ── Transitions ──────────────────────────────────────── */
 .mega-enter-active,
 .mega-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mega-enter-from,
 .mega-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-4px) scale(0.99);
 }
 
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .slide-fade-enter-from {
   opacity: 0;
-  transform: translateX(8px);
+  transform: translateX(4px);
 }
 
 .slide-fade-leave-to {
   opacity: 0;
-  transform: translateX(-8px);
+  transform: translateX(-4px);
 }
 </style>
+
