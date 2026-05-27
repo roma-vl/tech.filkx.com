@@ -99,8 +99,8 @@ import {useI18n} from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppInput from "@/components/ui/AppInput.vue";
+import AppButton from "@/components/ui/AppButton.vue";
 import {useReCaptcha} from "vue-recaptcha-v3";
 
 const {executeRecaptcha, recaptchaLoaded} = useReCaptcha();

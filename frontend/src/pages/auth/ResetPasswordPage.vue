@@ -73,8 +73,8 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/auth";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppInput from "@/components/ui/AppInput.vue";
+import AppButton from "@/components/ui/AppButton.vue";
 
 const router = useRouter();
 const route = useRoute();

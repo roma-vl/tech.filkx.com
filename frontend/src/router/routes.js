@@ -3,7 +3,7 @@ import NotFoundPage from "@/pages/errors/NotFoundPage.vue";
 import MaintenancePage from "@/pages/errors/MaintenancePage.vue";
 
 // Route Modules
-// import authRoutes from "./routes/auth";
+import authRoutes from "./routes/auth";
 import appRoutes from "./routes/application";
 // import adminRoutes from "./routes/admin";
 import MainLayout from "@/layouts/main/MainLayout.vue";
@@ -27,7 +27,7 @@ export const routes = [
     meta: { auth: false },
   },
 
-  // ...authRoutes,
+  ...authRoutes,
   // adminRoutes,
 
   // 404

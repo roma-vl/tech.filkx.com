@@ -121,7 +121,6 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
-import { useSubscriptionStore } from "@/stores/subscription";
 
 const route = useRoute();
 const router = useRouter();
@@ -160,9 +159,6 @@ onMounted(async () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
     await store.fetchUser();
-
-    const subscription = useSubscriptionStore();
-    await subscription.init();
 
     toast.success("Successfully signed in with Google!");
 

@@ -105,7 +105,6 @@ export const useAuthStore = defineStore("auth", {
      * Register new user
      */
     async register(data) {
-      const subscription = useSubscriptionStore();
       try {
         const response = await api.post("/v1/auth/register", data);
         const { token, user } = response.data.data;
@@ -113,7 +112,6 @@ export const useAuthStore = defineStore("auth", {
         this.setToken(token.accessToken, token.expiresIn);
         this.user = user;
         this._syncLocale(user.locale);
-        await subscription.fetch();
         return { ok: true };
       } catch (error) {
         return this._handleError(error);
@@ -213,7 +211,7 @@ export const useAuthStore = defineStore("auth", {
      */
     async fetchUser() {
       try {
-        const response = await api.get("/user/me");
+        const response = await api.get("/v1/auth/me");
         this.user = response.data.data;
         if (this.user?.locale) {
           this._syncLocale(this.user.locale);
@@ -245,7 +243,7 @@ export const useAuthStore = defineStore("auth", {
 
     async verifyEmailByParams({ id, hash, expires, signature }) {
       try {
-        await api.get("/v1/auth/verify-email-by-params", {
+        await api.get("/v1/auth/verify-email", {
           params: { id, hash, expires, signature },
         });
 
@@ -260,7 +258,7 @@ export const useAuthStore = defineStore("auth", {
      */
     async resendVerification(email) {
       try {
-        await api.post("/v1/auth/resend-verification", { email });
+        await api.post("/v1/auth/email/resend", { email });
         return { ok: true };
       } catch (error) {
         return this._handleError(error);
@@ -272,7 +270,7 @@ export const useAuthStore = defineStore("auth", {
      */
     async forgotPassword(email) {
       try {
-        await api.post("/v1/auth/forgot-password", { email });
+        await api.post("/v1/auth/password/forgot", { email });
         return { ok: true };
       } catch (error) {
         return this._handleError(error);
@@ -284,7 +282,7 @@ export const useAuthStore = defineStore("auth", {
      */
     async resetPassword(data) {
       try {
-        await api.post("/v1/auth/reset-password", data);
+        await api.post("/v1/auth/password/reset", data);
         return { ok: true };
       } catch (error) {
         return this._handleError(error);

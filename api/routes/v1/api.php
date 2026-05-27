@@ -3,22 +3,28 @@
 use App\Api\V1\Controllers\Auth\AuthController;
 use App\Api\V1\Controllers\Auth\OAuthController;
 use App\Api\V1\Controllers\IndexController;
+use App\Api\V1\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
 
-// Public auth routes
-Route::prefix('auth')->group(function () {
-    Route::post('/register',        [AuthController::class, 'register']);
-    Route::post('/login',           [AuthController::class, 'login']);
-    Route::get('/verify-email',     [AuthController::class, 'verifyEmailByParams']);
-    Route::post('/email/resend',    [AuthController::class, 'resendVerification']);
-    Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
-    Route::post('/password/reset',  [AuthController::class, 'resetPassword']);
+Route::get('/system/status', [SystemController::class, 'status']);
 
-    // Protected auth routes
-    Route::middleware('auth:api')->group(function () {
-        Route::get('/me',       [AuthController::class, 'me']);
-        Route::post('/logout',  [AuthController::class, 'logout']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
+
+Route::prefix('v1')->group(function () {
+// Public auth routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/register',        [AuthController::class, 'register']);
+        Route::post('/login',           [AuthController::class, 'login']);
+        Route::get('/verify-email',     [AuthController::class, 'verifyEmailByParams']);
+        Route::post('/email/resend',    [AuthController::class, 'resendVerification']);
+        Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
+        Route::post('/password/reset',  [AuthController::class, 'resetPassword']);
+
+        // Protected auth routes
+        Route::middleware('auth:api')->group(function () {
+            Route::get('/me',       [AuthController::class, 'me']);
+            Route::post('/logout',  [AuthController::class, 'logout']);
+            Route::post('/refresh', [AuthController::class, 'refresh']);
+        });
     });
 });
 

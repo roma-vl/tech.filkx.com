@@ -69,7 +69,7 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/auth";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppButton from "@/components/ui/AppButton.vue";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Checked.json";
 
