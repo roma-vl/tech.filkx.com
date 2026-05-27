@@ -12,13 +12,14 @@ const authStore = useAuthStore();
 // Reactivity & Active Tab
 const activeTab = computed(() => route.query.tab || 'dashboard');
 
+// Used only for mobile horizontal scroll bar
 const navTabs = [
-  { name: 'Dashboard', icon: 'dashboard', routeName: 'account', query: { tab: 'dashboard' } },
-  { name: 'Orders', icon: 'shopping_bag', routeName: 'account', query: { tab: 'orders' } },
-  { name: 'Favorites', icon: 'favorite', routeName: 'account', query: { tab: 'favorites' } },
-  { name: 'Compare', icon: 'compare_arrows', routeName: 'account', query: { tab: 'compare' } },
-  { name: 'Settings', icon: 'settings', routeName: 'account', query: { tab: 'settings' } },
-  { name: 'Support', icon: 'help', routeName: 'account', query: { tab: 'support' } },
+  { label: 'Dashboard', icon: 'dashboard',     tab: 'dashboard' },
+  { label: 'Orders',    icon: 'shopping_bag',   tab: 'orders' },
+  { label: 'Favorites', icon: 'favorite',       tab: 'favorites' },
+  { label: 'Compare',   icon: 'compare_arrows', tab: 'compare' },
+  { label: 'Settings',  icon: 'settings',       tab: 'settings' },
+  { label: 'Support',   icon: 'help',           tab: 'support' },
 ];
 
 const userName = computed(() => authStore.user?.name || 'John');
@@ -561,16 +562,16 @@ const selectTab = (tabName) => {
 
       <!-- Mobile Navigation Scroll Bar -->
       <div class="lg:hidden mb-6 -mx-margin-mobile px-margin-mobile overflow-x-auto scrollbar-none flex gap-2 border-b border-outline-variant pb-4">
-        <router-link
+        <button
           v-for="item in navTabs"
-          :key="item.name"
-          :to="item.query ? { name: item.routeName, query: item.query } : { name: item.routeName }"
+          :key="item.tab"
+          @click="selectTab(item.tab)"
           class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-sm border border-outline-variant"
-          :class="activeTab === item.query?.tab ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low'"
+          :class="activeTab === item.tab ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low'"
         >
           <span class="material-symbols-outlined text-[16px]">{{ item.icon }}</span>
-          {{ item.name }}
-        </router-link>
+          {{ item.label }}
+        </button>
       </div>
 
       <!-- Tab Content Area -->

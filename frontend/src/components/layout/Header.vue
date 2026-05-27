@@ -224,21 +224,21 @@ onUnmounted(() => {
               </div>
               <div class="p-2 flex flex-col gap-1">
                 <button
-                  @click="router.push('/dashboard')"
+                  @click="router.push({ name: 'account', query: { tab: 'dashboard' } })"
                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
                 >
                   <span class="material-symbols-outlined text-lg">person</span>
                   <span class="text-xs font-semibold text-on-surface">My Profile</span>
                 </button>
                 <button
-                  @click="router.push('/dashboard')"
+                  @click="router.push({ name: 'account', query: { tab: 'orders' } })"
                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
                 >
                   <span class="material-symbols-outlined text-lg">shopping_bag</span>
                   <span class="text-xs font-semibold text-on-surface">Order History</span>
                 </button>
                 <button
-                  @click="router.push('/dashboard')"
+                  @click="router.push({ name: 'account', query: { tab: 'settings' } })"
                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-left w-full"
                 >
                   <span class="material-symbols-outlined text-lg">settings</span>
