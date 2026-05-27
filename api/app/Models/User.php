@@ -35,9 +35,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $hidden = [
         'password',
-        'last_seen_at' => 'datetime',
-        'onboarding_completed_at' => 'datetime',
-        'settings' => 'array',
         'remember_token',
     ];
 
