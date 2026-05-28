@@ -51,7 +51,7 @@ const tabs = [
 ];
 
 const specs = [
-  ['Processor', 'ElectroLux X2 Octa-Core (3.4GHz) with Neural Engine'],
+  ['Processor', 'FilkxTech X2 Octa-Core (3.4GHz) with Neural Engine'],
   ['Memory (RAM)', '16GB LPDDR5X Hyper-Speed Unified Memory'],
   ['Display Panel', '6.9" ProMotion XDR OLED, 1-120Hz dynamic refresh'],
   ['Optics System', 'Triple 108MP Main + 48MP Ultra-Wide + 48MP Periscope Zoom'],

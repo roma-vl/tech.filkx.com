@@ -63,7 +63,7 @@ export default [
         path: "account",
         name: "account",
         component: UserCabinetPage,
-        meta: { title: "Account — ElectroLux" },
+        meta: { title: "Account — FilkxTech" },
       },
     ],
   },

@@ -16,7 +16,7 @@ const defaultOrders = [
     ],
     shippingAddress: { recipient: 'John Doe', street: '123 Emerald Ave, Suite 400', city: 'Seattle', state: 'WA', zip: '98101', country: 'United States' },
     paymentMethod: { type: 'Visa', number: '•••• 4242' },
-    items: [{ id: 101, name: 'ElectroLux ProBook 16" - M3 Max / 32GB RAM', price: 1299.00, returnWindow: 'Nov 24, 2024',
+    items: [{ id: 101, name: 'FilkxTech ProBook 16" - M3 Max / 32GB RAM', price: 1299.00, returnWindow: 'Nov 24, 2024',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBuVg-kXP_Dz4eDubPsXwLRjC9ddkd7vuALwu9d44EXhvUcmau1ettEqBuExcpfD_u05Iro8mRrCfjRLlEyElDWNK2XCXugMhg8BlFQmzkH5QXS1DmI_-nGJmj7Qj2nzbNxTaMQKQp0bQWxjEJSBQKmRMm8yVY7heCmjBY2zXzrTzybDqI72Tff2a3iARsbv4capMzqEVs456EoLHm-kOY-mlW9RKHwerz8Fm73OO4YjBf74fI_5VFz-bK8GP4E1iscPSLxhUpP1ho' }],
   },
   {
@@ -32,7 +32,7 @@ const defaultOrders = [
     ],
     shippingAddress: { recipient: 'John Doe', street: '123 Emerald Ave, Suite 400', city: 'Seattle', state: 'WA', zip: '98101', country: 'United States' },
     paymentMethod: { type: 'Mastercard', number: '•••• 9876' },
-    items: [{ id: 105, name: 'ElectroLux SonicPro ANC Headphones', price: 349.99, note: 'Delivered to the front porch.',
+    items: [{ id: 105, name: 'FilkxTech SonicPro ANC Headphones', price: 349.99, note: 'Delivered to the front porch.',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA' }],
   },
   {

@@ -27,7 +27,7 @@ const handleSubscribe = () => {
               <span class="material-symbols-outlined text-white text-[18px] font-bold">sentiment_very_satisfied</span>
             </div>
             <span class="font-extrabold text-lg tracking-tight text-white">
-              ElectroLux
+              FilkxTech
             </span>
           </a>
           <p class="text-xs leading-relaxed text-zinc-400">
@@ -125,7 +125,7 @@ const handleSubscribe = () => {
       <!-- Middle Section: Download App Badges -->
       <div class="flex flex-col sm:flex-row items-center justify-between border-t border-b border-zinc-800 py-6 my-8 gap-4">
         <div>
-          <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-1">Мобільні додатки ElectroLux</h5>
+          <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-1">Мобільні додатки FilkxTech</h5>
           <p class="text-[11px] text-zinc-500">Завантажуйте наш безкоштовний додаток для швидких та зручних покупок на ходу.</p>
         </div>
         <div class="flex items-center gap-3">
@@ -158,7 +158,7 @@ const handleSubscribe = () => {
         
         <!-- Trademark / Copyright -->
         <div class="space-y-1 text-center md:text-left">
-          <p>© 2026 ТОВ «ЕлектроЛюкс Преміум». Всі права захищені.</p>
+          <p>© 2026 ТОВ «ФілксТех Преміум». Всі права захищені.</p>
           <p class="text-[10px] text-zinc-600">Інформація про ціни, характеристики та наявність товарів може бути змінена без попередження.</p>
         </div>
 

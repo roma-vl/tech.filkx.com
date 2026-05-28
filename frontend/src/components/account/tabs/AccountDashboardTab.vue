@@ -23,7 +23,7 @@ const recentOrders = [
     statusIcon: 'local_shipping',
     statusClass: 'text-primary bg-primary/10 border border-primary/20',
     statusCode: 'shipped',
-    items: [{ id: 101, name: 'ElectroLux ProBook 16" - M3 Max / 32GB RAM', price: 1299.00,
+    items: [{ id: 101, name: 'FilkxTech ProBook 16" - M3 Max / 32GB RAM', price: 1299.00,
               image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBuVg-kXP_Dz4eDubPsXwLRjC9ddkd7vuALwu9d44EXhvUcmau1ettEqBuExcpfD_u05Iro8mRrCfjRLlEyElDWNK2XCXugMhg8BlFQmzkH5QXS1DmI_-nGJmj7Qj2nzbNxTaMQKQp0bQWxjEJSBQKmRMm8yVY7heCmjBY2zXzrTzybDqI72Tff2a3iARsbv4capMzqEVs456EoLHm-kOY-mlW9RKHwerz8Fm73OO4YjBf74fI_5VFz-bK8GP4E1iscPSLxhUpP1ho',
               returnWindow: 'Nov 24, 2024' }],
   },
@@ -33,7 +33,7 @@ const recentOrders = [
     statusIcon: 'check_circle',
     statusClass: 'text-on-surface-variant bg-surface-container-high border border-outline-variant',
     statusCode: 'delivered',
-    items: [{ id: 105, name: 'ElectroLux SonicPro ANC Headphones', price: 349.99,
+    items: [{ id: 105, name: 'FilkxTech SonicPro ANC Headphones', price: 349.99,
               image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA' }],
   },
 ];

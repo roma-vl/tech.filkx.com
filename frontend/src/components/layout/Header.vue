@@ -316,7 +316,7 @@ onUnmounted(() => {
             <span class="material-symbols-outlined text-white text-[20px] font-bold">sentiment_very_satisfied</span>
           </div>
           <span class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block">
-            ElectroLux
+            FilkxTech
           </span>
         </a>
       </div>
