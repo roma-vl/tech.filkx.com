@@ -1,6 +1,9 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { store } from '@/store.js';
+import CatalogFilters from '@/components/catalog/CatalogFilters.vue';
+import ProductCard from '@/components/catalog/ProductCard.vue';
+import QuickViewModal from '@/components/catalog/QuickViewModal.vue';
 
 const viewMode = ref('grid');
 const sortBy = ref('popularity');
@@ -326,7 +329,7 @@ onMounted(() => {
       <div class="sticky top-24 space-y-6">
         
         <!-- Breadcrumbs -->
-        <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 mb-4 font-bold">
+        <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-4 font-bold">
           <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="store.currentPage = 'home'">Головна</a>
           <span class="material-symbols-outlined text-[12px]">chevron_right</span>
           <a class="hover:text-[#00a046] transition-colors" href="#">Комп'ютери</a>
@@ -334,129 +337,20 @@ onMounted(() => {
           <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">Ноутбуки</span>
         </nav>
 
-        <!-- Filters Container -->
-        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm divide-y divide-zinc-100 dark:divide-zinc-800">
-          
-          <!-- Categories Filter Header/Item -->
-          <div class="p-5">
-            <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3.5">Категорія</h3>
-            <div class="space-y-1">
-              <a class="flex items-center justify-between bg-emerald-500/10 text-[#00a046] rounded-lg px-3 py-2 transition-all font-extrabold text-xs" href="#">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">laptop_mac</span>
-                  <span>Ноутбуки</span>
-                </span>
-                <span class="text-[10px] bg-[#00a046]/10 px-2 py-0.5 rounded-full">{{ products.length }}</span>
-              </a>
-              <a class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 transition-all text-xs font-semibold" href="#">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">smartphone</span>
-                  <span>Смартфони</span>
-                </span>
-                <span class="text-[10px]">182</span>
-              </a>
-              <a class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 transition-all text-xs font-semibold" href="#">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">headphones</span>
-                  <span>Аудіо & Навушники</span>
-                </span>
-                <span class="text-[10px]">96</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Quick Switches (Stock & Promo) -->
-          <div class="p-5 space-y-3">
-            <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Фільтри швидкого вибору</h3>
-            <label class="flex items-center justify-between group cursor-pointer py-0.5">
-              <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">Тільки в наявності</span>
-              <input v-model="onlyInStock" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
-            </label>
-            <label class="flex items-center justify-between group cursor-pointer py-0.5">
-              <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">Акційні пропозиції</span>
-              <input v-model="onlyDiscounts" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
-            </label>
-          </div>
-
-          <!-- Price Range Slider -->
-          <div class="p-5">
-            <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">Максимальна ціна</h3>
-            <div class="space-y-4">
-              <div class="space-y-1.5 px-1">
-                <input v-model.number="priceMax" class="w-full accent-[#00a046]" max="200000" min="0" step="5000" type="range" />
-                <div class="flex justify-between text-[10px] text-zinc-400 font-bold uppercase">
-                  <span>0 ₴</span>
-                  <span>200 000 ₴</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="flex-1 relative">
-                  <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400 font-extrabold">₴</span>
-                  <input v-model.number="priceMin" class="w-full h-9 pl-6 pr-2 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none" min="0" type="number" placeholder="Від" />
-                </div>
-                <span class="text-zinc-400 text-[10px] font-black">—</span>
-                <div class="flex-1 relative">
-                  <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400 font-extrabold">₴</span>
-                  <input v-model.number="priceMax" class="w-full h-9 pl-6 pr-2 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none" min="0" type="number" placeholder="До" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Brand Filter -->
-          <div class="p-5">
-            <div class="flex items-center justify-between mb-3.5">
-              <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Бренд</h3>
-              <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="selectedBrands = []">Очистити</button>
-            </div>
-            <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-              <label v-for="brand in brands" :key="brand.name" class="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                <div class="flex items-center gap-2.5">
-                  <input v-model="selectedBrands" :value="brand.name" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox" />
-                  <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">{{ brand.name }}</span>
-                </div>
-                <span class="text-[10px] font-bold text-zinc-400">{{ brand.count }}</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- RAM Options -->
-          <div class="p-5">
-            <div class="flex items-center justify-between mb-3.5">
-              <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Об'єм ОЗУ</h3>
-              <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="selectedRam = ''">Очистити</button>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <button
-                v-for="ram in ramOptions"
-                :key="ram"
-                :class="selectedRam === ram ? 'bg-[#00a046] text-white shadow-sm' : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'"
-                class="py-2 rounded-lg text-xs font-extrabold transition-all"
-                type="button"
-                @click="selectedRam = selectedRam === ram ? '' : ram"
-              >
-                {{ ram }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Rating filter -->
-          <div class="p-5">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Оцінка покупців</h3>
-              <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="selectedRating = ''">Очистити</button>
-            </div>
-            <div class="space-y-1">
-              <label v-for="rate in ['4.8', '4.5', '4.0']" :key="rate" class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                <input type="radio" v-model="selectedRating" :value="rate" class="w-3.5 h-3.5 border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer" />
-                <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-                  {{ rate }}+ <span class="material-symbols-outlined text-[14px] text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
-                </span>
-              </label>
-            </div>
-          </div>
-
-        </div>
+        <!-- Catalog Filters Component -->
+        <CatalogFilters
+          v-model:priceMin="priceMin"
+          v-model:priceMax="priceMax"
+          v-model:selectedBrands="selectedBrands"
+          v-model:selectedRam="selectedRam"
+          v-model:selectedRating="selectedRating"
+          v-model:onlyDiscounts="onlyDiscounts"
+          v-model:onlyInStock="onlyInStock"
+          :products="products"
+          :brands="brands"
+          :ramOptions="ramOptions"
+          @clear-filters="clearFilters"
+        />
       </div>
     </aside>
 
@@ -473,9 +367,9 @@ onMounted(() => {
           <div class="flex items-center gap-3">
             
             <!-- View Mode toggle switcher -->
-            <div class="flex items-center bg-zinc-55 dark:bg-zinc-850 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-800 mr-1.5">
+            <div class="flex items-center bg-zinc-55 dark:bg-zinc-850 rounded-lg p-0.5 border border-zinc-205 dark:border-zinc-800 mr-1.5">
               <button
-                :class="viewMode === 'grid' ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
+                :class="viewMode === 'grid' ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]' : 'text-zinc-450 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
                 class="p-2 rounded-md transition-colors"
                 title="Сітка"
                 type="button"
@@ -484,7 +378,7 @@ onMounted(() => {
                 <span class="material-symbols-outlined text-[18px]">grid_view</span>
               </button>
               <button
-                :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
+                :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]' : 'text-zinc-450 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
                 class="p-2 rounded-md transition-colors"
                 title="Список"
                 type="button"
@@ -506,7 +400,7 @@ onMounted(() => {
             </div>
 
             <!-- Mobile filter toggle button -->
-            <button @click="isMobileFilterOpen = true" class="lg:hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <button @click="isMobileFilterOpen = true" class="lg:hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-2.5 rounded-lg border border-zinc-202 dark:border-zinc-700">
               <span class="material-symbols-outlined text-[18px]">filter_alt</span>
             </button>
 
@@ -540,136 +434,13 @@ onMounted(() => {
         v-if="filteredProducts.length"
         :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'"
       >
-        <article
+        <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
-          :class="viewMode === 'grid'
-            ? 'flex-col rounded-xl hover:shadow-xl hover:border-emerald-500/30'
-            : 'flex-col sm:flex-row rounded-xl hover:shadow-xl hover:border-emerald-500/30'"
-          class="group flex bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 transition-all duration-300 overflow-hidden relative"
-        >
-          
-          <!-- Image Section -->
-          <div :class="viewMode === 'grid' ? 'w-full p-4 border-b border-zinc-100 dark:border-zinc-800' : 'w-full sm:w-60 p-4 border-r border-zinc-100 dark:border-zinc-800'" class="relative bg-white dark:bg-white/95 flex justify-center items-center aspect-[1.15/1]">
-            <a class="w-full h-full overflow-hidden relative cursor-pointer block" @click.prevent="store.viewProduct(product)">
-              <img :alt="product.name" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2" :src="product.image" />
-              <span v-if="product.badge" :class="product.badgeClass" class="absolute top-2 left-2 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">{{ product.badge }}</span>
-            </a>
-            
-            <!-- Quick View Floating Button on Hover (Grid) -->
-            <button
-              @click="openQuickView(product)"
-              class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all bg-zinc-950/80 hover:bg-zinc-950 text-white font-extrabold text-[10px] px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-md backdrop-blur-sm"
-            >
-              <span class="material-symbols-outlined text-[14px]">visibility</span> Швидкий перегляд
-            </button>
-
-            <!-- Wishlist button (oblong pill) -->
-            <button
-              class="absolute top-4 right-4 px-2.5 py-1.5 bg-white/90 dark:bg-zinc-800/90 hover:bg-rose-500/10 hover:text-rose-550 text-zinc-550 dark:text-zinc-300 rounded-lg transition-all shadow-sm flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider backdrop-blur-sm"
-              type="button"
-              @click="store.toggleWishlist(product)"
-            >
-              <span
-                :class="{ 'text-rose-550': store.isInWishlist(product.id) }"
-                :style="store.isInWishlist(product.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-                class="material-symbols-outlined text-[14px]"
-              >
-                favorite
-              </span>
-              <span>{{ store.isInWishlist(product.id) ? 'Обрано' : 'В обране' }}</span>
-            </button>
-          </div>
-
-          <!-- Product Details Body -->
-          <div :class="viewMode === 'grid' ? 'p-5 flex-col flex-1' : 'p-6 flex-1 flex flex-col justify-between'" class="flex flex-col justify-between">
-            <div class="space-y-3">
-              
-              <!-- Stars & brand -->
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2 py-0.5 rounded">{{ product.brand }}</span>
-                <div class="flex items-center gap-1">
-                  <div class="flex text-amber-400">
-                    <span v-for="star in 5" :key="star" class="material-symbols-outlined text-[14px]" :style="star <= Math.floor(product.rating) ? 'font-variation-settings: \'FILL\' 1;' : ''">
-                      {{ star <= Math.floor(product.rating) ? 'star' : 'star_half' }}
-                    </span>
-                  </div>
-                  <span class="text-[10px] font-black text-zinc-450 dark:text-zinc-500">({{ product.reviews }})</span>
-                </div>
-              </div>
-
-              <!-- Product Name -->
-              <a class="block text-left cursor-pointer" @click.prevent="store.viewProduct(product)">
-                <h2 :class="viewMode === 'grid' ? 'text-sm md:text-base line-clamp-2 min-h-[44px]' : 'text-base md:text-lg'" class="font-extrabold text-zinc-900 dark:text-white group-hover:text-[#00a046] transition-colors leading-snug">{{ product.name }}</h2>
-              </a>
-
-              <!-- Specs Pills (Grid / List spec display) -->
-              <div class="flex flex-wrap gap-1.5 mt-2">
-                <span class="inline-flex items-center gap-1 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 px-2 py-0.5 text-[9px] font-extrabold text-zinc-550 dark:text-zinc-400">
-                  <span class="material-symbols-outlined text-[12px]">memory</span>
-                  {{ product.ram }} RAM
-                </span>
-                <span class="inline-flex items-center gap-1 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 px-2 py-0.5 text-[9px] font-extrabold text-zinc-550 dark:text-zinc-400">
-                  <span class="material-symbols-outlined text-[12px]">laptop</span>
-                  {{ product.specs.screen.split(' ')[0] }}
-                </span>
-                <span class="inline-flex items-center gap-1 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 px-2 py-0.5 text-[9px] font-extrabold text-zinc-550 dark:text-zinc-400">
-                  <span class="material-symbols-outlined text-[12px]">storage</span>
-                  {{ product.specs.storage.split(' ')[0] }}
-                </span>
-                <span v-if="product.inStock" class="inline-flex items-center gap-1 rounded bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 text-[9px] font-extrabold text-[#00a046]">
-                  В наявності
-                </span>
-                <span v-else class="inline-flex items-center gap-1 rounded bg-zinc-500/5 border border-zinc-500/10 px-2 py-0.5 text-[9px] font-extrabold text-zinc-450 dark:text-zinc-500">
-                  Немає в наявності
-                </span>
-              </div>
-
-              <!-- List short description -->
-              <p v-if="viewMode === 'list'" class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mt-2.5">{{ product.description }}</p>
-
-            </div>
-
-            <!-- Price and Cart Buttons -->
-            <div :class="viewMode === 'grid' ? 'pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800' : 'mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex sm:flex-row flex-col justify-between items-stretch sm:items-center gap-4'" class="space-y-3">
-              <div class="flex items-center justify-between gap-4">
-                <div class="flex flex-col">
-                  <span v-if="product.oldPrice" class="text-[10px] text-zinc-400 line-through font-extrabold">{{ formatPrice(product.oldPrice) }}</span>
-                  <span class="text-lg md:text-xl font-black text-[#00a046] tracking-tight">{{ formatPrice(product.price) }}</span>
-                </div>
-                
-                <!-- Compare Button -->
-                <button
-                  type="button"
-                  @click="store.toggleCompare(product)"
-                  :class="store.isInCompare(product.id)
-                    ? 'bg-emerald-500/10 text-[#00a046] border-[#00a046]/30'
-                    : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-550 dark:text-zinc-400 border-zinc-250 dark:border-zinc-700 hover:text-[#00a046] hover:border-[#00a046]/40'"
-                  class="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all"
-                >
-                  <span class="material-symbols-outlined text-[14px]">compare_arrows</span>
-                  <span>{{ store.isInCompare(product.id) ? 'У порівнянні' : 'Порівняти' }}</span>
-                </button>
-              </div>
-
-              <div :class="viewMode === 'grid' ? 'w-full' : 'w-full sm:w-auto'">
-                <button
-                  :disabled="!product.inStock"
-                  @click="store.addToCart(product)"
-                  :class="product.inStock 
-                    ? 'bg-[#00a046] hover:bg-[#00b050] text-white active:scale-[0.98]' 
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'"
-                  class="w-full bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
-                  type="button"
-                >
-                  <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
-                  {{ product.inStock ? 'Купити' : 'Немає в наявності' }}
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </article>
+          :product="product"
+          :view-mode="viewMode"
+          @quick-view="openQuickView"
+        />
       </div>
 
       <!-- No products found placeholder -->
@@ -685,7 +456,7 @@ onMounted(() => {
       </div>
 
       <!-- Pagination Block -->
-      <nav class="mt-12 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-6">
+      <nav class="mt-12 flex items-center justify-between border-t border-zinc-105 dark:border-zinc-800 pt-6">
         <button class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-500 hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg transition-all">
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           НАЗАД
@@ -711,88 +482,22 @@ onMounted(() => {
       <div class="space-y-6">
         <div class="flex items-center justify-between border-b border-zinc-150 dark:border-zinc-800 pb-3">
           <h2 class="font-extrabold text-base text-zinc-900 dark:text-white">Фільтри товарів</h2>
-          <button @click="isMobileFilterOpen = false" class="text-zinc-400 hover:text-zinc-650"><span class="material-symbols-outlined">close</span></button>
+          <button @click="isMobileFilterOpen = false" class="text-zinc-450 hover:text-zinc-650"><span class="material-symbols-outlined">close</span></button>
         </div>
         
-        <!-- Category (Mobile) -->
-        <div>
-          <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">Категорія</h3>
-          <select class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-250 dark:border-zinc-700 rounded-lg px-3 py-2 text-xs font-extrabold text-zinc-800 dark:text-zinc-200 outline-none">
-            <option>Ноутбуки ({{ products.length }})</option>
-            <option>Смартфони (182)</option>
-            <option>Аудіо & Навушники (96)</option>
-          </select>
-        </div>
-
-        <!-- Switches (Mobile) -->
-        <div class="space-y-3">
-          <label class="flex items-center justify-between cursor-pointer">
-            <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300">Тільки в наявності</span>
-            <input v-model="onlyInStock" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer" />
-          </label>
-          <label class="flex items-center justify-between cursor-pointer">
-            <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300">Акційні пропозиції</span>
-            <input v-model="onlyDiscounts" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer" />
-          </label>
-        </div>
-
-        <!-- Price Range (Mobile) -->
-        <div>
-          <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3">Діапазон цін</h3>
-          <div class="flex items-center gap-2">
-            <input v-model.number="priceMin" type="number" class="w-full h-9 px-3 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold text-zinc-800 dark:text-zinc-200 outline-none" placeholder="Від" />
-            <span class="text-zinc-400 font-extrabold">-</span>
-            <input v-model.number="priceMax" type="number" class="w-full h-9 px-3 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold text-zinc-800 dark:text-zinc-200 outline-none" placeholder="До" />
-          </div>
-        </div>
-
-        <!-- Brand (Mobile) -->
-        <div>
-          <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">Бренди</h3>
-          <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-            <label v-for="brand in brands" :key="brand.name" class="flex items-center justify-between cursor-pointer py-1">
-              <div class="flex items-center gap-2">
-                <input v-model="selectedBrands" :value="brand.name" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer" type="checkbox" />
-                <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300">{{ brand.name }}</span>
-              </div>
-              <span class="text-[10px] font-bold text-zinc-400">{{ brand.count }}</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- RAM (Mobile) -->
-        <div>
-          <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">Об'єм ОЗУ</h3>
-          <div class="grid grid-cols-2 gap-1.5">
-            <button
-              v-for="ram in ramOptions"
-              :key="ram"
-              :class="selectedRam === ram ? 'bg-[#00a046] text-white' : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 bg-zinc-50/50 dark:bg-zinc-800'"
-              class="py-1.5 rounded-lg text-xs font-extrabold"
-              type="button"
-              @click="selectedRam = selectedRam === ram ? '' : ram"
-            >
-              {{ ram }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Rating (Mobile) -->
-        <div>
-          <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">Рейтинг покупців</h3>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="rate in ['4.8', '4.5', '4.0']"
-              :key="rate"
-              @click="selectedRating = selectedRating === rate ? '' : rate"
-              :class="selectedRating === rate ? 'bg-[#00a046] text-white' : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 bg-zinc-55 dark:bg-zinc-800'"
-              class="px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1"
-            >
-              {{ rate }}+ <span class="material-symbols-outlined text-[12px] text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
-            </button>
-          </div>
-        </div>
-
+        <CatalogFilters
+          v-model:priceMin="priceMin"
+          v-model:priceMax="priceMax"
+          v-model:selectedBrands="selectedBrands"
+          v-model:selectedRam="selectedRam"
+          v-model:selectedRating="selectedRating"
+          v-model:onlyDiscounts="onlyDiscounts"
+          v-model:onlyInStock="onlyInStock"
+          :products="products"
+          :brands="brands"
+          :ramOptions="ramOptions"
+          @clear-filters="clearFilters"
+        />
       </div>
       <div class="border-t border-zinc-150 dark:border-zinc-800 pt-4 mt-6 flex gap-3">
         <button @click="clearFilters" class="flex-1 border border-zinc-250 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-extrabold py-2.5 rounded-lg text-xs">Скинути</button>
@@ -802,92 +507,11 @@ onMounted(() => {
   </div>
 
   <!-- Quick View Modal (For detailed product stats overview) -->
-  <div v-if="isQuickViewOpen && selectedProductForQuickView" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade">
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4.5 flex justify-between items-center">
-        <div>
-          <span class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2.5 py-0.5 rounded tracking-wider">Швидкий перегляд</span>
-          <h3 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white mt-1">Детальні характеристики</h3>
-        </div>
-        <button @click="closeQuickView" class="text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-250"><span class="material-symbols-outlined">close</span></button>
-      </div>
-      
-      <div class="p-6 overflow-y-auto space-y-6 text-xs md:text-sm grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        
-        <!-- Left: Product Image block -->
-        <div class="flex flex-col gap-4 items-center">
-          <div class="bg-white rounded-lg border border-zinc-100 dark:border-zinc-800 p-6 flex items-center justify-center w-full aspect-square relative select-none">
-            <img :src="selectedProductForQuickView.image" :alt="selectedProductForQuickView.name" class="max-h-[220px] object-contain" />
-            <span v-if="selectedProductForQuickView.badge" :class="selectedProductForQuickView.badgeClass" class="absolute top-3 left-3 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">{{ selectedProductForQuickView.badge }}</span>
-          </div>
-          <div class="flex items-center gap-1.5 text-zinc-400">
-            <span class="material-symbols-outlined text-[16px]">info</span>
-            <span class="text-[10px] font-extrabold uppercase tracking-wide">Зображення слугує для демонстрації</span>
-          </div>
-        </div>
-
-        <!-- Right: Specs list -->
-        <div class="space-y-5">
-          <div>
-            <h4 class="font-black text-zinc-900 dark:text-white text-base leading-snug">{{ selectedProductForQuickView.name }}</h4>
-            <div class="flex items-center gap-3 mt-2.5">
-              <span class="text-xs font-black text-[#00a046] bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">{{ selectedProductForQuickView.brand }}</span>
-              <div class="flex items-center gap-1 text-amber-400">
-                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                <span class="font-extrabold text-zinc-800 dark:text-zinc-200 text-xs mt-0.5">{{ selectedProductForQuickView.rating }} ({{ selectedProductForQuickView.reviews }} відгуків)</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Price Block -->
-          <div class="bg-zinc-50 dark:bg-zinc-850 p-4.5 rounded-lg border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-            <div class="flex flex-col">
-              <span v-if="selectedProductForQuickView.oldPrice" class="text-xs text-zinc-400 line-through font-extrabold">{{ formatPrice(selectedProductForQuickView.oldPrice) }}</span>
-              <span class="text-xl font-black text-[#00a046]">{{ formatPrice(selectedProductForQuickView.price) }}</span>
-            </div>
-            <span v-if="selectedProductForQuickView.inStock" class="text-xs text-[#00a046] font-extrabold bg-[#00a046]/10 border border-[#00a046]/20 px-3 py-1 rounded-lg">В наявності</span>
-            <span v-else class="text-xs text-zinc-500 font-extrabold bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-lg">Немає в наявності</span>
-          </div>
-
-          <!-- Description -->
-          <div class="space-y-1.5">
-            <span class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Короткий опис</span>
-            <p class="text-zinc-650 dark:text-zinc-350 text-xs leading-relaxed">{{ selectedProductForQuickView.description }}</p>
-          </div>
-
-          <!-- Tech Specs Table -->
-          <div class="space-y-2">
-            <span class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Основні параметри</span>
-            <div class="border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800 text-xs">
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50"><span class="w-1/3 text-zinc-400 font-bold">Процесор</span><span class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold">{{ selectedProductForQuickView.specs.processor }}</span></div>
-              <div class="flex p-2.5"><span class="w-1/3 text-zinc-400 font-bold">Екран</span><span class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold">{{ selectedProductForQuickView.specs.screen }}</span></div>
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50"><span class="w-1/3 text-zinc-400 font-bold">Пам'ять</span><span class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold">{{ selectedProductForQuickView.ram }} RAM / {{ selectedProductForQuickView.specs.storage }}</span></div>
-              <div class="flex p-2.5"><span class="w-1/3 text-zinc-400 font-bold">Операційна система</span><span class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold">{{ selectedProductForQuickView.specs.os }}</span></div>
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50"><span class="w-1/3 text-zinc-400 font-bold">Вага</span><span class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold">{{ selectedProductForQuickView.specs.weight }}</span></div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Footer Buttons -->
-      <div class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex flex-col sm:flex-row justify-end gap-3">
-        <button @click="store.toggleCompare(selectedProductForQuickView)" class="border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-colors flex items-center justify-center gap-1.5">
-          <span class="material-symbols-outlined text-[16px] md:text-[18px]">compare_arrows</span> {{ store.isInCompare(selectedProductForQuickView.id) ? 'У порівнянні' : 'Порівняти' }}
-        </button>
-        <button
-          @click="store.addToCart(selectedProductForQuickView); closeQuickView();"
-          :disabled="!selectedProductForQuickView.inStock"
-          :class="selectedProductForQuickView.inStock ? 'bg-[#00a046] hover:bg-[#00b050] text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'"
-          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
-        >
-          <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span> Додати в кошик
-        </button>
-      </div>
-    </div>
-  </div>
-
+  <QuickViewModal
+    :is-open="isQuickViewOpen"
+    :product="selectedProductForQuickView"
+    @close="closeQuickView"
+  />
 </template>
 
 <style scoped>
@@ -904,57 +528,5 @@ onMounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
-  border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
-}
-
-input[type='range'] {
-  -webkit-appearance: none;
-  width: 100%;
-  background: transparent;
-}
-input[type='range']::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 2.5px;
-  cursor: pointer;
-  background: #e4e4e7;
-  border-radius: 1px;
-}
-.dark input[type='range']::-webkit-slider-runnable-track {
-  background: #27272a;
-}
-input[type='range']::-webkit-slider-thumb {
-  height: 14px;
-  width: 14px;
-  border-radius: 50%;
-  background: #00a046;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1.5px solid #ffffff;
-  transition: transform 0.1s ease;
-}
-input[type='range']::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 </style>
