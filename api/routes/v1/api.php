@@ -18,6 +18,7 @@ use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
+use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\UserController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,13 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout',  [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
         });
+    });
+
+    // Catalog routes
+    Route::prefix('catalog')->group(function () {
+        Route::get('categories', [CatalogController::class, 'categories']);
+        Route::get('products', [CatalogController::class, 'products']);
+        Route::get('products/{slug}', [CatalogController::class, 'product']);
     });
 });
 
@@ -170,6 +178,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         // Accounting Module
     });
 
-    Route::get('/version', [VersionController::class, 'index']);
+    Route::get('/version', [SystemController::class, 'status']);
 
 });

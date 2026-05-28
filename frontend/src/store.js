@@ -152,8 +152,12 @@ export const store = reactive({
     this.activeDrawer = null;
   },
 
-  viewProduct(product = null) {
+  async viewProduct(product = null) {
     this.selectedProduct = product;
     this.currentPage = 'product';
+    if (product && typeof window !== 'undefined') {
+      const { default: router } = await import('@/router');
+      router.push({ name: 'product-detail', params: { id: product.slug } });
+    }
   }
 });

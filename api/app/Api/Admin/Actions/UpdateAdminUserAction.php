@@ -2,7 +2,10 @@
 
 namespace App\Api\Admin\Actions;
 
+use App\Api\V1\Dto\AuditLogDto;
+use App\Events\AuditEvent;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateAdminUserAction
 {
@@ -15,7 +18,7 @@ class UpdateAdminUserAction
 
         if (isset($data['featuresSnapshot']) && $user->subscription) {
             $snapshot = $data['featuresSnapshot'];
-            
+
             // Normalize top-level keys
             $normalized = [
                 'concurrent_streams' => $snapshot['concurrentStreams'] ?? $snapshot['concurrent_streams'] ?? 1,
@@ -47,14 +50,14 @@ class UpdateAdminUserAction
             );
         }
 
-        event(new \App\Events\AuditEvent(new \App\Api\V1\Dto\AuditLogDto(
+        event(new AuditEvent(new AuditLogDto(
             action: 'user.updated',
             domain: 'team',
             message: "Admin updated user: {$user->name}",
-            userId: \Illuminate\Support\Facades\Auth::id(),
+            payload: $data,
+            userId: Auth::id(),
             subjectType: User::class,
             subjectId: $user->id,
-            payload: $data,
             ipAddress: $ip,
             userAgent: $userAgent
         )));

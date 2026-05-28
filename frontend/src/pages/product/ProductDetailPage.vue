@@ -1,59 +1,69 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { store } from '@/store.js';
+import api from '@/services/api.js';
 
-const galleryImages = computed(() => {
-  const mainImg = store.selectedProduct?.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
-  return [
-    { label: 'Основний вигляд', src: mainImg },
-    { label: 'Вигляд збоку', src: mainImg },
-    { label: 'Детальний макро-вигляд', src: mainImg }
-  ];
-});
+const route = useRoute();
+const router = useRouter();
+
+const isLoading = ref(false);
+const rawProduct = ref(null);
 
 const product = computed(() => {
-  if (store.selectedProduct) {
+  if (rawProduct.value) {
+    const mainVariant = rawProduct.value.variants && rawProduct.value.variants[0] ? rawProduct.value.variants[0] : null;
+    const price = mainVariant ? parseFloat(mainVariant.price) : 0;
+    const oldPrice = mainVariant && mainVariant.oldPrice ? parseFloat(mainVariant.oldPrice) : null;
+    const totalStock = mainVariant ? (mainVariant.stocks || []).reduce((acc, s) => acc + (parseInt(s.quantity) - parseInt(s.reserved)), 0) : 0;
+
+    let image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
+    if (rawProduct.value.slug === 'iphone-15-pro-max') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
+    } else if (rawProduct.value.slug === 'samsung-galaxy-s24-ultra') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw';
+    } else if (rawProduct.value.slug === 'lenovo-legion-5-pro') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E';
+    } else if (rawProduct.value.slug === 'sony-wh-1000xm5-black') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA';
+    } else if (rawProduct.value.slug === 'apple-airpods-pro-2') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ';
+    }
+
+    const name = typeof rawProduct.value.name === 'object' ? (rawProduct.value.name.uk || rawProduct.value.name.en) : rawProduct.value.name;
+    const description = typeof rawProduct.value.description === 'object' ? (rawProduct.value.description.uk || rawProduct.value.description.en) : rawProduct.value.description;
+
     return {
-      id: store.selectedProduct.id,
-      name: store.selectedProduct.name,
-      category: store.selectedProduct.category || 'Laptops',
-      subtitle: store.selectedProduct.specs ? `${store.selectedProduct.ram} ОЗУ / ${store.selectedProduct.specs.storage}` : 'Premium Tech Edition',
-      price: store.selectedProduct.price,
-      oldPrice: store.selectedProduct.oldPrice || store.selectedProduct.price * 1.15,
-      image: store.selectedProduct.image,
-      rating: store.selectedProduct.rating || 4.8,
-      reviews: store.selectedProduct.reviews || 84,
-      description: store.selectedProduct.description || 'Потужна система для роботи та розваг з неймовірно чітким екраном, тривалою автономністю та преміальними матеріалами корпусу.',
-      specs: store.selectedProduct.specs || {
-        processor: 'Intel Core / Apple Silicon',
-        screen: '14-16" Liquid Retina / IPS',
-        storage: '512GB-1TB Superfast SSD',
-        os: 'macOS / Windows 11',
-        weight: '1.4 - 2.2 кг'
+      id: rawProduct.value.id,
+      slug: rawProduct.value.slug,
+      name: name,
+      category: rawProduct.value.categories && rawProduct.value.categories[0] ? (rawProduct.value.categories[0].name.uk || rawProduct.value.categories[0].name.en) : 'Laptops',
+      subtitle: mainVariant && mainVariant.dimensions && mainVariant.dimensions.ram ? `${mainVariant.dimensions.ram} ОЗУ / ${mainVariant.dimensions.storage}` : 'Premium Tech Edition',
+      price: price,
+      oldPrice: oldPrice || price * 1.15,
+      image: image,
+      rating: rawProduct.value.rating || 4.8,
+      reviews: rawProduct.value.reviews || 84,
+      description: description,
+      specs: {
+        processor: mainVariant && mainVariant.dimensions && mainVariant.dimensions.processor ? mainVariant.dimensions.processor : 'Apple Silicon / Intel Core',
+        screen: mainVariant && mainVariant.dimensions && mainVariant.dimensions.screen ? mainVariant.dimensions.screen : '14" IPS',
+        storage: mainVariant && mainVariant.dimensions && mainVariant.dimensions.storage ? mainVariant.dimensions.storage : '512GB SSD',
+        os: mainVariant && mainVariant.dimensions && mainVariant.dimensions.os ? mainVariant.dimensions.os : 'Windows 11 / macOS',
+        weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : '1.5 кг'
       }
     };
   }
+  return null;
+});
 
-  // Fallback smartphone
-  return {
-    id: 501,
-    name: 'Lumix Pro 15 Ultra',
-    category: 'Smartphones',
-    subtitle: '1TB Пам’ять / Спеціальне видання',
-    price: 49990,
-    oldPrice: 54990,
-    image: galleryImages.value[0].src,
-    rating: 4.8,
-    reviews: 482,
-    description: 'Флагманський смартфон у міцному титановому корпусі з революційним дисплеєм ProMotion XDR, потрійною камерою професійного рівня та надзвичайною автономністю.',
-    specs: {
-      processor: 'FilkxTech X2 Octa-Core (3.4GHz) with Neural Engine',
-      screen: '6.9" ProMotion XDR OLED, 1-120Hz dynamic refresh',
-      storage: '1TB UFS 4.0 Storage',
-      os: 'Android 14 (FilkxOS)',
-      weight: '210 г'
-    }
-  };
+const galleryImages = computed(() => {
+  const mainImg = product.value?.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
+  return [
+    { label: 'Основний вигляд', src: mainImg },
+    { label: 'Вигляд збоку', src: src => mainImg },
+    { label: 'Детальний макро-вигляд', src: mainImg }
+  ];
 });
 
 const selectedImageIndex = ref(0);
@@ -90,7 +100,7 @@ const handleMouseLeave = () => {
   };
 };
 
-const selectedImage = computed(() => galleryImages.value[selectedImageIndex.value].src);
+const selectedImage = computed(() => galleryImages.value[selectedImageIndex.value]?.src || '');
 
 const tabs = [
   { id: 'experience', label: 'Огляд продукту' },
@@ -100,6 +110,7 @@ const tabs = [
 ];
 
 const productSpecs = computed(() => {
+  if (!product.value || !product.value.specs) return [];
   const entries = Object.entries(product.value.specs);
   const keyTranslation = {
     processor: 'Процесор',
@@ -111,30 +122,33 @@ const productSpecs = computed(() => {
   return entries.map(([key, val]) => [keyTranslation[key] || key, val]);
 });
 
-const bundleItems = computed(() => [
-  {
-    id: 'device',
-    name: product.value.name,
-    category: 'Основний пристрій',
-    price: product.value.price,
-    locked: true,
-    image: galleryImages.value[0].src
-  },
-  {
-    id: 'pods',
-    name: 'Elite Sound Pods',
-    category: 'Бездротові навушники',
-    price: 6990,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ'
-  },
-  {
-    id: 'charger',
-    name: 'Pro Charge 100W GaN',
-    category: 'Швидкий зарядний пристрій',
-    price: 2990,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHpw39gwGprYkW4qIbZzy2rLTbcLvDxWukT6TsUoCUIIA_MP68QWCuopoQuE9aG5HGs8xzGWJvtts8ShB73VX0DQ3EYiBd5Muljqm64CLPv2t0Sih0HEiaGcZ9xQ2yqdEPy-u7wBaEYQHeCCQqfWYxSM_XjbxKllnWehPZ9qyUDYglqNb73NhCqinyVtGSEOFch5lKqYYp6TABRJkKScR9scZP6lbXxLVOft7ZvFplc69p0s6hEhsBh7bPRgQPf3E-KLZlLIvte_g'
-  }
-]);
+const bundleItems = computed(() => {
+  if (!product.value) return [];
+  return [
+    {
+      id: 'device',
+      name: product.value.name,
+      category: 'Основний пристрій',
+      price: product.value.price,
+      locked: true,
+      image: galleryImages.value[0]?.src || ''
+    },
+    {
+      id: 'pods',
+      name: 'Elite Sound Pods',
+      category: 'Бездротові навушники',
+      price: 6990,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ'
+    },
+    {
+      id: 'charger',
+      name: 'Pro Charge 100W GaN',
+      category: 'Швидкий зарядний пристрій',
+      price: 2990,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHpw39gwGprYkW4qIbZzy2rLTbcLvDxWukT6TsUoCUIIA_MP68QWCuopoQuE9aG5HGs8xzGWJvtts8ShB73VX0DQ3EYiBd5Muljqm64CLPv2t0Sih0HEiaGcZ9xQ2yqdEPy-u7wBaEYQHeCCQqfWYxSM_XjbxKllnWehPZ9qyUDYglqNb73NhCqinyVtGSEOFch5lKqYYp6TABRJkKScR9scZP6lbXxLVOft7ZvFplc69p0s6hEhsBh7bPRgQPf3E-KLZlLIvte_g'
+    }
+  ];
+});
 
 const qualityGuarantees = [
   { icon: 'award_star', title: '2 роки офіційної гарантії', text: 'Повне сервісне обслуговування.' },
@@ -195,6 +209,7 @@ const toggleBundleItem = (item) => {
 };
 
 const addBundleToCart = () => {
+  if (!product.value) return;
   store.addToCart(product.value);
   selectedBundleIds.value.forEach((id) => {
     const item = bundleItems.value.find((bundleItem) => bundleItem.id === id);
@@ -210,12 +225,28 @@ const addBundleToCart = () => {
   });
 };
 
+const fetchProductDetails = async () => {
+  isLoading.value = true;
+  try {
+    const slug = route.params.id;
+    const response = await api.get(`/v1/catalog/products/${slug}`);
+    if (response.data && response.data.status === 'success') {
+      rawProduct.value = response.data.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch product details:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 const handleScroll = () => {
   showStickyBar.value = window.scrollY > 420;
 };
 
 onMounted(() => {
   window.scrollTo(0, 0);
+  fetchProductDetails();
   handleScroll();
   window.addEventListener('scroll', handleScroll, { passive: true });
 });
@@ -226,16 +257,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 text-zinc-800 dark:text-zinc-200 font-sans select-none">
-    
-    <!-- Breadcrumbs -->
-    <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-8 font-bold">
-      <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="store.currentPage = 'home'">Головна</a>
-      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-      <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="store.currentPage = 'catalog'">{{ product.category }}</a>
-      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ product.name }}</span>
-    </nav>
+  <div v-if="isLoading" class="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+  </div>
+  <div v-else-if="!product" class="min-h-screen flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-950 px-4">
+    <span class="material-symbols-outlined text-[64px] text-zinc-400 mb-4">search_off</span>
+    <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">Товар не знайдено</h1>
+    <p class="text-zinc-500 mb-6">Будь ласка, перевірте правильність посилання або скористайтесь каталогом.</p>
+    <button @click="router.push('/catalog')" class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-extrabold transition-all">
+      Перейти до каталогу
+    </button>
+  </div>
+  <div v-else>
+    <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 text-zinc-800 dark:text-zinc-200 font-sans select-none">
+      
+      <!-- Breadcrumbs -->
+      <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-8 font-bold">
+        <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="router.push('/')">Головна</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="router.push('/catalog')">{{ product.category }}</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ product.name }}</span>
+      </nav>
 
     <!-- Hero block -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -617,6 +660,7 @@ onUnmounted(() => {
         Додати в кошик
       </button>
     </div>
+  </div>
   </div>
 </template>
 

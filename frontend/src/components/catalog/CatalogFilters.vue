@@ -43,6 +43,14 @@ const props = defineProps({
   ramOptions: {
     type: Array,
     required: true
+  },
+  categoriesList: {
+    type: Array,
+    default: () => []
+  },
+  selectedCategory: {
+    type: String,
+    default: ''
   }
 });
 
@@ -54,7 +62,8 @@ const emit = defineEmits([
   'update:selectedRating',
   'update:onlyDiscounts',
   'update:onlyInStock',
-  'clear-filters'
+  'clear-filters',
+  'select-category'
 ]);
 
 const localPriceMin = computed({
@@ -100,26 +109,29 @@ const localStock = computed({
     <div class="p-5">
       <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-3.5">Категорія</h3>
       <div class="space-y-1">
-        <a class="flex items-center justify-between bg-emerald-500/10 text-[#00a046] rounded-lg px-3 py-2 transition-all font-extrabold text-xs" href="#">
+        <a
+          :class="!selectedCategory ? 'bg-emerald-500/10 text-[#00a046] font-extrabold' : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'"
+          class="flex items-center justify-between rounded-lg px-3 py-2 transition-all text-xs cursor-pointer"
+          @click.prevent="emit('select-category', '')"
+        >
           <span class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">laptop_mac</span>
-            <span>Ноутбуки</span>
+            <span class="material-symbols-outlined text-[18px]">list</span>
+            <span>Всі товари</span>
           </span>
-          <span class="text-[10px] bg-[#00a046]/10 px-2 py-0.5 rounded-full">{{ products.length }}</span>
         </a>
-        <a class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 transition-all text-xs font-semibold" href="#">
+        <a
+          v-for="cat in categoriesList"
+          :key="cat.id"
+          :class="selectedCategory === cat.slug ? 'bg-emerald-500/10 text-[#00a046] font-extrabold' : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'"
+          class="flex items-center justify-between rounded-lg px-3 py-2 transition-all text-xs cursor-pointer"
+          @click.prevent="emit('select-category', cat.slug)"
+        >
           <span class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">smartphone</span>
-            <span>Смартфони</span>
+            <span class="material-symbols-outlined text-[18px]">
+              {{ cat.slug === 'laptops' ? 'laptop_mac' : cat.slug === 'phones' ? 'smartphone' : cat.slug === 'audio' ? 'headphones' : 'category' }}
+            </span>
+            <span>{{ cat.name ? (cat.name.uk || cat.name.en) : '' }}</span>
           </span>
-          <span class="text-[10px]">182</span>
-        </a>
-        <a class="flex items-center justify-between text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 transition-all text-xs font-semibold" href="#">
-          <span class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">headphones</span>
-            <span>Аудіо & Навушники</span>
-          </span>
-          <span class="text-[10px]">96</span>
         </a>
       </div>
     </div>

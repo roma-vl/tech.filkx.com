@@ -1,9 +1,14 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { store } from '@/store.js';
 import CatalogFilters from '@/components/catalog/CatalogFilters.vue';
 import ProductCard from '@/components/catalog/ProductCard.vue';
 import QuickViewModal from '@/components/catalog/QuickViewModal.vue';
+import api from '@/services/api.js';
+
+const route = useRoute();
+const router = useRouter();
 
 const viewMode = ref('grid');
 const sortBy = ref('popularity');
@@ -19,179 +24,76 @@ const isMobileFilterOpen = ref(false);
 const selectedProductForQuickView = ref(null);
 const isQuickViewOpen = ref(false);
 
-const products = [
-  {
-    id: 101,
-    name: 'Apple MacBook Pro 14" M3 Pro Space Black',
-    brand: 'Apple',
-    ram: '18GB',
-    category: 'Laptops',
-    price: 84990,
-    rating: 4.9,
-    reviews: 128,
-    badge: 'Новинка',
-    badgeClass: 'bg-[#00a046]',
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM',
-    description: 'Портативна професійна продуктивність з дисплеєм Liquid Retina XDR, надшвидкою об’єднаною пам’яттю та роботою від батареї протягом усього дня.',
-    specs: {
-      processor: 'Apple M3 Pro (11-core CPU, 14-core GPU)',
-      screen: '14.2" Liquid Retina XDR (3024x1964) 120Hz',
-      storage: '512GB SSD Superfast',
-      os: 'macOS Sonoma',
-      weight: '1.61 кг'
-    }
-  },
-  {
-    id: 102,
-    name: 'Dell XPS 15 9530 Platinum Silver',
-    brand: 'Dell',
-    ram: '32GB',
-    category: 'Laptops',
-    price: 97990,
-    oldPrice: 105990,
-    rating: 4.8,
-    reviews: 92,
-    badge: 'Акція -8000 ₴',
-    badgeClass: 'bg-rose-600',
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw',
-    description: 'Ноутбук преміум-класу для творців контенту з потужною дискретною графікою NVIDIA RTX, яскравим безрамковим дисплеєм InfinityEdge та алюмінієвим корпусом.',
-    specs: {
-      processor: 'Intel Core i9-13900H (14 ядер, до 5.4 ГГц)',
-      screen: '15.6" OLED 3.5K (3456x2160) Сенсорний',
-      storage: '1TB SSD NVMe PCIe',
-      os: 'Windows 11 Pro',
-      weight: '1.92 кг'
-    }
-  },
-  {
-    id: 103,
-    name: 'ASUS ROG Zephyrus G14 Moonlight White',
-    brand: 'ASUS',
-    ram: '16GB',
-    category: 'Laptops',
-    price: 67990,
-    rating: 5.0,
-    reviews: 45,
-    badge: 'Топ продажів',
-    badgeClass: 'bg-amber-500',
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E',
-    description: 'Компактна геймерська станція з матрицею ROG Nebula, потужною відеокартою GeForce RTX 4070 та чудовою автономністю для подорожей.',
-    specs: {
-      processor: 'AMD Ryzen 9 7940HS (8 ядер, до 5.2 ГГц)',
-      screen: '14" IPS QHD+ (2560x1600) 165Hz G-Sync',
-      storage: '1TB SSD PCIe 4.0',
-      os: 'Без ОС',
-      weight: '1.65 кг'
-    }
-  },
-  {
-    id: 104,
-    name: 'Lenovo ThinkPad X1 Carbon Gen 11 Deep Black',
-    brand: 'Lenovo',
-    ram: '16GB',
-    category: 'Laptops',
-    price: 61990,
-    rating: 4.7,
-    reviews: 210,
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB7ehlQmQnyIbqZ7UKgr8V0mCEj26xp7hzfddOM2Bmm2eSXyygw_1Pa5UtAUjF8FiEFuuTKU2nirKQ6xTW89jAyo3ptFohpbMoa763DzIGnU9WcYlFze2ITHt1uim5itGotu78u02aygZyLgplNTR_YD5AGF0YTqbbYnWcLi0svVRaGzDbKcLNNWAmXWoHRHJc36gfBS75lwJHiIYn9iv35SWv3yGi7oWiWjLQtJV3USiCRNLvPQYgGVjdtW7X71knwmeOoQXbY0cA',
-    description: 'Легендарний корпоративний ультрабук з надлегким корпусом із вуглецевого волокна, найкращою у своєму класі клавіатурою та надійним захистом даних.',
-    specs: {
-      processor: 'Intel Core i7-1365U vPro (10 ядер, до 5.2 ГГц)',
-      screen: '14" IPS WUXGA (1920x1200) Антивідблисковий',
-      storage: '512GB SSD NVMe Opal2',
-      os: 'Windows 11 Pro',
-      weight: '1.12 кг'
-    }
-  },
-  {
-    id: 105,
-    name: 'HP Spectre x360 Luxury 2-in-1 Nightfall Blue',
-    brand: 'HP',
-    ram: '16GB',
-    category: 'Laptops',
-    price: 59990,
-    rating: 4.6,
-    reviews: 56,
-    inStock: false,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQiu2QhryOyOxSSyZfWD9MeA0GEjrvV--xa1qwaS8hrlevCY7YgST20v_LnbFwuZSSQdzVOsu2UIszOqE4us7tgsKjEgTwEdx_oCNLd3WkEtX6Xchu-OJXN0HFiNi5FMwtNcN3vOE4aPigIDgb0iQsyL0uyZTRUVKoRY8-w1mQid0uPH6ua6yBODBCxg2VRofafATzyTk29_fVakQo7pDLYkoZpnlabZ-a6KrP-8mkENT9CmR6ScK9g2GjyiSJHaJ20jDKnRfWURM',
-    description: 'Преміальний трансформер, який легко перетворюється з ноутбука на планшет. OLED-екран високої точності з підтримкою фірмового стилуса.',
-    specs: {
-      processor: 'Intel Core i7-13700H (14 ядер, до 5.0 ГГц)',
-      screen: '16" OLED 3K+ (3072x1920) 120Hz Сенсорний',
-      storage: '512GB SSD NVMe PCIe',
-      os: 'Windows 11 Home',
-      weight: '2.15 кг'
-    }
-  },
-  {
-    id: 106,
-    name: 'Razer Blade 16 Dual Mode Mini-LED Black',
-    brand: 'Razer',
-    ram: '32GB',
-    category: 'Laptops',
-    price: 182990,
-    rating: 4.9,
-    reviews: 18,
-    badge: 'Обмежена кількість',
-    badgeClass: 'bg-amber-600',
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBkksX47BmkwjAiSzTUIEmWwzDqhcckudBCmKAGA-iUC_9VuRipCKBceGV1cZ2RBI2VLhB8yvdfmaC06PXzi0r2fcnLBPv3CgwfTMDLB_GIRPkwhljwi0940O06xAnYQKKdCkdVpI1_VIF_-YWnoFcn7XIGMoGRLNdjWbH7SAwNwayPVReoUGckbhit9qQh_0Ah89KFN093j6spzUDUYz1mmH84ykE43aqnzG6oM5CvxmMAqqmJXhlQ37JF5NcZfX-XPImae1pnjfw',
-    description: 'Флагманська ігрова система в тонкому суцільнометалевому корпусі. Унікальний дисплей з можливістю апаратного перемикання роздільної здатності та частоти.',
-    specs: {
-      processor: 'Intel Core i9-13950HX (24 ядра, до 5.5 ГГц)',
-      screen: '16" Mini-LED QHD+ 240Hz / UHD+ 120Hz',
-      storage: '1TB SSD NVMe PCIe 4.0',
-      os: 'Windows 11 Home',
-      weight: '2.45 кг'
-    }
-  },
-  {
-    id: 107,
-    name: 'ASUS Zenbook 14 OLED Ponder Blue',
-    brand: 'ASUS',
-    ram: '16GB',
-    category: 'Laptops',
-    price: 39990,
-    rating: 4.5,
-    reviews: 31,
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA',
-    description: 'Стильний, легкий та екологічний ноутбук з чудовим OLED-екраном 90 Гц, тривалим терміном служби акумулятора та продуктивним процесором Ryzen.',
-    specs: {
-      processor: 'AMD Ryzen 7 7730U (8 ядер, до 4.5 ГГц)',
-      screen: '14" OLED 2.8K (2880x1800) 90Hz',
-      storage: '512GB SSD NVMe',
-      os: 'Без ОС',
-      weight: '1.39 кг'
-    }
-  },
-  {
-    id: 108,
-    name: 'Apple MacBook Air 13" M3 Space Gray',
-    brand: 'Apple',
-    ram: '8GB',
-    category: 'Laptops',
-    price: 54990,
-    rating: 4.8,
-    reviews: 73,
-    badge: 'Суперціна',
-    badgeClass: 'bg-emerald-600',
-    inStock: true,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM',
-    description: 'Надзвичайно тонкий і швидкий ноутбук на базі революційного чипа Apple M3. Безшумна робота без вентиляторів та до 18 годин автономності.',
-    specs: {
-      processor: 'Apple M3 (8-core CPU, 8-core GPU)',
-      screen: '13.6" Liquid Retina (2560x1664) True Tone',
-      storage: '256GB SSD',
-      os: 'macOS Sonoma',
-      weight: '1.24 кг'
-    }
+const isLoading = ref(false);
+const rawProducts = ref([]);
+const categoriesList = ref([]);
+const pagination = ref({
+  page: 1,
+  lastPage: 1,
+  total: 0
+});
+
+// A list of brand counts mapping dynamically
+const brands = computed(() => {
+  const brandList = ['Apple', 'Samsung', 'Lenovo', 'Sony'];
+  return brandList.map(brandName => {
+    return {
+      name: brandName,
+      count: rawProducts.value.filter(p => p.brand.toLowerCase() === brandName.toLowerCase()).length
+    };
+  });
+});
+
+const ramOptions = ref(['8GB', '12GB', '16GB', '18GB', '32GB']);
+
+function mapProduct(apiProduct) {
+  if (!apiProduct) return null;
+  const mainVariant = apiProduct.variants && apiProduct.variants[0] ? apiProduct.variants[0] : null;
+  const price = mainVariant ? parseFloat(mainVariant.price) : 0;
+  const oldPrice = mainVariant && mainVariant.oldPrice ? parseFloat(mainVariant.oldPrice) : null;
+  const totalStock = mainVariant ? (mainVariant.stocks || []).reduce((acc, s) => acc + (parseInt(s.quantity) - parseInt(s.reserved)), 0) : 0;
+  
+  let image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
+  if (apiProduct.slug === 'iphone-15-pro-max') {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
+  } else if (apiProduct.slug === 'samsung-galaxy-s24-ultra') {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw';
+  } else if (apiProduct.slug === 'lenovo-legion-5-pro') {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E';
+  } else if (apiProduct.slug === 'sony-wh-1000xm5-black') {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA';
+  } else if (apiProduct.slug === 'apple-airpods-pro-2') {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ';
   }
-];
+
+  const name = typeof apiProduct.name === 'object' ? (apiProduct.name.uk || apiProduct.name.en) : apiProduct.name;
+  const description = typeof apiProduct.description === 'object' ? (apiProduct.description.uk || apiProduct.description.en) : apiProduct.description;
+
+  return {
+    id: apiProduct.id,
+    slug: apiProduct.slug,
+    name: name,
+    brand: apiProduct.brand ? apiProduct.brand.name : 'Unknown',
+    ram: mainVariant && mainVariant.dimensions && mainVariant.dimensions.ram ? mainVariant.dimensions.ram : '16GB',
+    category: apiProduct.categories && apiProduct.categories[0] ? (apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en) : 'Laptops',
+    price: price,
+    oldPrice: oldPrice,
+    rating: apiProduct.rating || 4.8,
+    reviews: apiProduct.reviews || 84,
+    badge: oldPrice ? 'Акція' : null,
+    badgeClass: oldPrice ? 'bg-rose-600' : '',
+    inStock: totalStock > 0,
+    image: image,
+    description: description,
+    specs: {
+      processor: mainVariant && mainVariant.dimensions && mainVariant.dimensions.processor ? mainVariant.dimensions.processor : 'Apple Silicon / Intel Core',
+      screen: mainVariant && mainVariant.dimensions && mainVariant.dimensions.screen ? mainVariant.dimensions.screen : '14" IPS',
+      storage: mainVariant && mainVariant.dimensions && mainVariant.dimensions.storage ? mainVariant.dimensions.storage : '512GB SSD',
+      os: mainVariant && mainVariant.dimensions && mainVariant.dimensions.os ? mainVariant.dimensions.os : 'Windows 11 / macOS',
+      weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : '1.5 кг'
+    }
+  };
+}
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('uk-UA', {
@@ -201,42 +103,89 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const brands = computed(() => {
-  return [...new Set(products.map((product) => product.brand))].map((brand) => ({
-    name: brand,
-    count: products.filter((product) => product.brand === brand).length
-  }));
-});
+const fetchCategories = async () => {
+  try {
+    const response = await api.get('/v1/catalog/categories');
+    if (response.data && response.data.status === 'success') {
+      categoriesList.value = response.data.data || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+  }
+};
 
-const ramOptions = computed(() => {
-  return [...new Set(products.map((product) => product.ram))].sort((a, b) => parseInt(a) - parseInt(b));
-});
+const fetchProducts = async () => {
+  isLoading.value = true;
+  try {
+    const params = {
+      page: pagination.value.page,
+      sort_by: sortBy.value,
+      price_from: priceMin.value > 0 ? priceMin.value : undefined,
+      price_to: priceMax.value < 200000 ? priceMax.value : undefined,
+    };
 
-const normalizedPriceRange = computed(() => {
-  const min = Math.min(Number(priceMin.value) || 0, Number(priceMax.value) || 0);
-  const max = Math.max(Number(priceMin.value) || 0, Number(priceMax.value) || 0);
-  return { min, max };
-});
+    if (selectedBrands.value.length > 0) {
+      params.brand = selectedBrands.value.map(b => b.toLowerCase()).join(',');
+    }
+
+    if (route.query.category) {
+      params.category = route.query.category;
+    }
+
+    if (route.query.search) {
+      params.search = route.query.search;
+    }
+
+    const response = await api.get('/v1/catalog/products', { params });
+    if (response.data && response.data.status === 'success') {
+      const apiData = response.data.data;
+      rawProducts.value = (apiData.data || []).map(mapProduct);
+      pagination.value = {
+        page: apiData.currentPage || 1,
+        lastPage: apiData.lastPage || 1,
+        total: apiData.total || 0
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const selectCategory = (categorySlug) => {
+  router.push({
+    name: 'catalog',
+    query: {
+      ...route.query,
+      category: categorySlug || undefined,
+      page: 1
+    }
+  });
+};
+
+const changePage = (page) => {
+  if (page >= 1 && page <= pagination.value.lastPage) {
+    pagination.value.page = page;
+    // Set route query to trigger watch and reload
+    router.push({
+      name: 'catalog',
+      query: {
+        ...route.query,
+        page: page
+      }
+    });
+  }
+};
 
 const filteredProducts = computed(() => {
-  const { min, max } = normalizedPriceRange.value;
-
-  const filtered = products.filter((product) => {
-    const matchesPrice = product.price >= min && product.price <= max;
-    const matchesBrand = selectedBrands.value.length === 0 || selectedBrands.value.includes(product.brand);
+  return rawProducts.value.filter((product) => {
     const matchesRam = !selectedRam.value || product.ram === selectedRam.value;
-    const matchesDiscount = !onlyDiscounts.value || product.oldPrice !== undefined;
+    const matchesDiscount = !onlyDiscounts.value || product.oldPrice !== null;
     const matchesStock = !onlyInStock.value || product.inStock;
     const matchesRating = !selectedRating.value || product.rating >= parseFloat(selectedRating.value);
 
-    return matchesPrice && matchesBrand && matchesRam && matchesDiscount && matchesStock && matchesRating;
-  });
-
-  return [...filtered].sort((a, b) => {
-    if (sortBy.value === 'newest') return b.id - a.id;
-    if (sortBy.value === 'price-asc') return a.price - b.price;
-    if (sortBy.value === 'price-desc') return b.price - a.price;
-    return (b.rating * b.reviews) - (a.rating * a.reviews);
+    return matchesRam && matchesDiscount && matchesStock && matchesRating;
   });
 });
 
@@ -254,7 +203,7 @@ const activeFilters = computed(() => {
   if (priceMin.value > 0 || priceMax.value < 200000) {
     filters.push({
       type: 'price',
-      label: `${formatPrice(normalizedPriceRange.value.min)} - ${formatPrice(normalizedPriceRange.value.max)}`
+      label: `${formatPrice(priceMin.value)} - ${formatPrice(priceMax.value)}`
     });
   }
 
@@ -315,8 +264,36 @@ const closeQuickView = () => {
   isQuickViewOpen.value = false;
 };
 
+const currentCategoryName = computed(() => {
+  if (!route.query.category) return 'Всі товари';
+  const cat = categoriesList.value.find(c => c.slug === route.query.category);
+  return cat ? (cat.name.uk || cat.name.en) : 'Каталог';
+});
+
+// Watch route query to update page & category triggers
+watch(
+  () => [route.query.category, route.query.search, route.query.page],
+  () => {
+    pagination.value.page = parseInt(route.query.page) || 1;
+    fetchProducts();
+  }
+);
+
+// Watch sorting/price/brands filters
+watch(
+  () => [sortBy.value, priceMin.value, priceMax.value, selectedBrands.value],
+  () => {
+    pagination.value.page = 1;
+    fetchProducts();
+  },
+  { deep: true }
+);
+
 onMounted(() => {
   window.scrollTo(0, 0);
+  fetchCategories();
+  pagination.value.page = parseInt(route.query.page) || 1;
+  fetchProducts();
 });
 </script>
 
@@ -330,11 +307,11 @@ onMounted(() => {
         
         <!-- Breadcrumbs -->
         <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-4 font-bold">
-          <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="store.currentPage = 'home'">Головна</a>
+          <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="router.push('/')">Головна</a>
           <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-          <a class="hover:text-[#00a046] transition-colors" href="#">Комп'ютери</a>
-          <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-          <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">Ноутбуки</span>
+          <a class="hover:text-[#00a046] transition-colors" href="#" @click.prevent="selectCategory('')">Каталог</a>
+          <span v-if="route.query.category" class="material-symbols-outlined text-[12px]">chevron_right</span>
+          <span v-if="route.query.category" class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ currentCategoryName }}</span>
         </nav>
 
         <!-- Catalog Filters Component -->
@@ -346,9 +323,12 @@ onMounted(() => {
           v-model:selectedRating="selectedRating"
           v-model:onlyDiscounts="onlyDiscounts"
           v-model:onlyInStock="onlyInStock"
-          :products="products"
+          :products="rawProducts"
           :brands="brands"
           :ramOptions="ramOptions"
+          :categoriesList="categoriesList"
+          :selectedCategory="route.query.category || ''"
+          @select-category="selectCategory"
           @clear-filters="clearFilters"
         />
       </div>
@@ -361,8 +341,8 @@ onMounted(() => {
       <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-4 mb-6 shadow-sm">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">Каталог техніки</h1>
-            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-bold mt-1">Знайдено {{ filteredProducts.length }} товарів у категорії "Ноутбуки"</p>
+            <h1 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">{{ currentCategoryName }}</h1>
+            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-bold mt-1">Знайдено {{ pagination.total }} товарів</p>
           </div>
           <div class="flex items-center gap-3">
             
@@ -456,19 +436,33 @@ onMounted(() => {
       </div>
 
       <!-- Pagination Block -->
-      <nav class="mt-12 flex items-center justify-between border-t border-zinc-105 dark:border-zinc-800 pt-6">
-        <button class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-500 hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg transition-all">
+      <nav v-if="pagination.lastPage > 1" class="mt-12 flex items-center justify-between border-t border-zinc-105 dark:border-zinc-800 pt-6">
+        <button 
+          :disabled="pagination.page === 1" 
+          @click="changePage(pagination.page - 1)"
+          :class="pagination.page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800'"
+          class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-550 rounded-lg transition-all"
+        >
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           НАЗАД
         </button>
         <div class="flex items-center gap-1">
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#00a046] text-white font-extrabold text-xs shadow-sm">1</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all font-extrabold text-xs">2</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all font-extrabold text-xs">3</button>
-          <span class="px-2 text-zinc-400 font-extrabold text-xs select-none">...</span>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all font-extrabold text-xs">12</button>
+          <button 
+            v-for="p in pagination.lastPage" 
+            :key="p"
+            @click="changePage(p)"
+            :class="pagination.page === p ? 'bg-[#00a046] text-white shadow-sm' : 'text-zinc-550 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200'"
+            class="w-8 h-8 flex items-center justify-center rounded-lg transition-all font-extrabold text-xs"
+          >
+            {{ p }}
+          </button>
         </div>
-        <button class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-500 hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg transition-all">
+        <button 
+          :disabled="pagination.page === pagination.lastPage" 
+          @click="changePage(pagination.page + 1)"
+          :class="pagination.page === pagination.lastPage ? 'opacity-50 cursor-not-allowed' : 'hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800'"
+          class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-550 rounded-lg transition-all"
+        >
           ВПЕРЕД
           <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </button>
@@ -493,9 +487,12 @@ onMounted(() => {
           v-model:selectedRating="selectedRating"
           v-model:onlyDiscounts="onlyDiscounts"
           v-model:onlyInStock="onlyInStock"
-          :products="products"
+          :products="rawProducts"
           :brands="brands"
           :ramOptions="ramOptions"
+          :categoriesList="categoriesList"
+          :selectedCategory="route.query.category || ''"
+          @select-category="selectCategory"
           @clear-filters="clearFilters"
         />
       </div>
