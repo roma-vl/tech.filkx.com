@@ -5,7 +5,7 @@ import MaintenancePage from "@/pages/errors/MaintenancePage.vue";
 // Route Modules
 import authRoutes from "./routes/auth";
 import appRoutes from "./routes/application";
-// import adminRoutes from "./routes/admin";
+import adminRoutes from "./routes/admin";
 import MainLayout from "@/layouts/main/MainLayout.vue";
 
 // Add redirects for /auth/login -> /login etc.
@@ -18,7 +18,7 @@ const authRedirects = [
 
 export const routes = [
   ...appRoutes,
-  // ...authRedirects,
+  ...authRedirects,
 
   {
     path: "/maintenance",
@@ -28,7 +28,7 @@ export const routes = [
   },
 
   ...authRoutes,
-  // adminRoutes,
+  adminRoutes,
 
   // 404
   {
