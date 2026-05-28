@@ -100,9 +100,9 @@ const products = [
         @click="store.viewProduct(prod)"
       >
         <!-- Product Image Container -->
-        <div class="aspect-square bg-zinc-50 dark:bg-zinc-900 rounded-3xl mb-4 overflow-hidden relative border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
+        <div class="aspect-square bg-zinc-50 dark:bg-zinc-900 rounded-3xl mb-2.5 overflow-hidden relative border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
           <img
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
             :src="prod.image"
             :alt="prod.name"
           />
