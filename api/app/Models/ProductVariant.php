@@ -42,4 +42,9 @@ class ProductVariant extends Model
     {
         return $this->stocks()->sum('quantity') - $this->stocks()->sum('reserved');
     }
+
+    public function attributeValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValue::class, 'variant_id');
+    }
 }

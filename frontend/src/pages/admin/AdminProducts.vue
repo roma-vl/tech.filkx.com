@@ -1,291 +1,654 @@
 <template>
   <div class="space-y-6">
-    <!-- Top Action Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-      <div class="flex-1 w-full sm:w-auto relative">
-        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </span>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Пошук товарів за назвою, SKU чи описом..."
-          class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        />
-      </div>
+    <!-- Tabs Header -->
+    <div class="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        @click="activeTab = tab.id"
+        :class="activeTab === tab.id 
+          ? 'bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold' 
+          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'"
+        class="px-5 py-2.5 rounded-xl text-sm transition-all duration-300 flex items-center gap-2"
+      >
+        <span v-html="tab.icon"></span>
+        {{ tab.name }}
+      </button>
+    </div>
 
-      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-        <select
-          v-model="categoryFilter"
-          class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm px-4 py-2.5 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        >
-          <option value="">Усі категорії</option>
-          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-        </select>
-
-        <select
-          v-model="statusFilter"
-          class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm px-4 py-2.5 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        >
-          <option value="">Усі статуси</option>
-          <option value="active">Активні</option>
-          <option value="draft">Чернетки</option>
-          <option value="out_of_stock">Немає в наявності</option>
-        </select>
-
-        <button
-          @click="openAddModal"
-          class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all shrink-0"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Додати товар
-        </button>
+    <!-- LOADING OVERLAY -->
+    <div v-if="isLoading" class="relative min-h-[400px] flex items-center justify-center bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+      <div class="flex flex-col items-center gap-3">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-primary-500"></div>
+        <p class="text-gray-500 dark:text-gray-400 font-medium">Завантаження даних...</p>
       </div>
     </div>
 
-    <!-- Products Table Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-900">
-            <tr>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Товар</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Категорія</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ціна</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Наявність</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Статус</th>
-              <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="product in filteredProducts" :key="product.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-3">
-                  <img :src="product.image" alt="" class="w-12 h-12 rounded-xl object-cover border border-gray-200 dark:border-gray-700 bg-gray-100" />
-                  <div>
-                    <div class="font-bold text-gray-900 dark:text-white">{{ product.name }}</div>
-                    <div class="text-xs text-gray-400">SKU: {{ product.sku }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                {{ product.category }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-gray-900 dark:text-white">
-                  {{ formatPrice(product.price) }}
-                </div>
-                <div v-if="product.discountPrice" class="text-xs text-red-500 line-through">
-                  {{ formatPrice(product.discountPrice) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span
-                  v-if="product.stock > 10"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                >
-                  У наявності ({{ product.stock }})
-                </span>
-                <span
-                  v-else-if="product.stock > 0"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                >
-                  Закінчується ({{ product.stock }})
-                </span>
-                <span
-                  v-else
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                >
-                  Немає
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="product.status === 'active'"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                >
-                  Активний
-                </span>
-                <span
-                  v-else-if="product.status === 'draft'"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                >
-                  Чернетка
-                </span>
-                <span
-                  v-else
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400"
-                >
-                  Прихований
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex justify-end gap-2">
-                  <button
-                    @click="openEditModal(product)"
-                    class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button
-                    @click="deleteProduct(product.id)"
-                    class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="filteredProducts.length === 0">
-              <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                Товарів не знайдено за вашим запитом.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <div v-else>
+      <!-- TAB 1: PRODUCTS -->
+      <div v-if="activeTab === 'products'" class="space-y-6">
+        <!-- Top Action Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div class="flex-1 w-full sm:w-auto relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              v-model="productSearch"
+              type="text"
+              placeholder="Пошук товарів за назвою чи SKU..."
+              class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            />
+          </div>
 
-    <!-- Product Modal -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-    >
-      <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-all">
-        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
-          <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">
-            {{ isEditing ? 'Редагувати товар' : 'Додати новий товар' }}
-          </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <select
+              v-model="productCategoryFilter"
+              class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm px-4 py-2.5 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            >
+              <option value="">Усі категорії</option>
+              <option v-for="cat in dbCategories" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
+            </select>
+
+            <button
+              @click="openAddProductModal"
+              class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all shrink-0"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Додати товар
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Товар</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Категорія</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Бренд</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Варіанти (Ціна / Залишок)</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Статус</th>
+                  <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="product in filteredProducts" :key="product.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-3">
+                      <img :src="product.image" alt="" class="w-12 h-12 rounded-xl object-cover border border-gray-200 dark:border-gray-700 bg-gray-100" />
+                      <div>
+                        <div class="font-bold text-gray-900 dark:text-white">{{ product.nameUk }}</div>
+                        <div class="text-xs text-gray-400">{{ product.nameEn }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    {{ product.categoryName || 'Без категорії' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    {{ product.brandName || 'Без бренду' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="space-y-1">
+                      <div v-for="v in product.variants" :key="v.id" class="text-xs text-gray-700 dark:text-gray-300">
+                        <span class="font-mono bg-gray-100 dark:bg-gray-950 px-1 py-0.5 rounded text-[10px]">{{ v.sku }}</span>:
+                        <span class="font-bold text-gray-900 dark:text-white">{{ formatPrice(v.price) }}</span>
+                        <span class="text-gray-400"> ({{ v.stock }} шт)</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span :class="{
+                      'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400': product.status === 'active',
+                      'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300': product.status === 'draft',
+                      'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400': product.status === 'hidden'
+                    }" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                      {{ product.status === 'active' ? 'Активний' : product.status === 'draft' ? 'Чернетка' : 'Прихований' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <button @click="openEditProductModal(product)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteProduct(product.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="filteredProducts.length === 0">
+                  <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    Товарів не знайдено за вашим запитом.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: CATEGORIES -->
+      <div v-if="activeTab === 'categories'" class="space-y-6">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Управління категоріями</h2>
+          <button
+            @click="openAddCategoryModal"
+            class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm transition-all"
+          >
+            Додати категорію
           </button>
         </div>
 
-        <form @submit.prevent="saveProduct" class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="col-span-2">
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва товару</label>
-              <input
-                v-model="form.name"
-                required
-                type="text"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="напр. Навушники Bose QuietComfort"
-              />
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (UK)</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (EN)</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Slug</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Батьківська категорія</th>
+                  <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="cat in dbCategories" :key="cat.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{{ cat.id }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold">{{ cat.nameUk }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ cat.nameEn }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">{{ cat.slug }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ cat.parentName || '—' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <button @click="openEditCategoryModal(cat)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteCategory(cat.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="dbCategories.length === 0">
+                  <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    Категорій не створено.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: BRANDS -->
+      <div v-if="activeTab === 'brands'" class="space-y-6">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Управління брендами</h2>
+          <button
+            @click="openAddBrandModal"
+            class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm transition-all"
+          >
+            Додати бренд
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва бренду</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Slug</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Логотип URL</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Опис</th>
+                  <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="brand in dbBrands" :key="brand.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{{ brand.id }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold">{{ brand.name }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">{{ brand.slug }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span v-if="brand.logoPath" class="truncate max-w-[150px] inline-block font-mono text-xs">{{ brand.logoPath }}</span>
+                    <span v-else class="text-gray-300 dark:text-gray-600">немає</span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 truncate max-w-[200px]">
+                    {{ brand.description || '—' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <button @click="openEditBrandModal(brand)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteBrand(brand.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: ATTRIBUTES -->
+      <div v-if="activeTab === 'attributes'" class="space-y-6">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Характеристики та атрибути</h2>
+          <button
+            @click="openAddAttributeModal"
+            class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm transition-all"
+          >
+            Додати атрибут
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Код атрибуту</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (UK)</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Тип поля</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Варіанти значень</th>
+                  <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="attr in dbAttributes" :key="attr.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{{ attr.id }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-mono font-bold">{{ attr.code }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">{{ attr.nameUk }}</td>
+                  <td class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-xs">
+                    <span :class="{
+                      'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400': attr.type === 'select',
+                      'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': attr.type === 'color',
+                      'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300': attr.type === 'text'
+                    }" class="px-2 py-0.5 rounded">
+                      {{ attr.type }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex flex-wrap gap-1">
+                      <span v-for="val in attr.values" :key="val.id" class="bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded text-xs">
+                        {{ val.valueUk || val.value }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <button @click="openEditAttributeModal(attr)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteAttribute(attr.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 1: PRODUCT EDIT/CREATE (DOUBLY RICH MULTI-VARIANT AND MULTILANGUAL FORM) -->
+    <div v-if="showProductModal" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-all my-8">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+          <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">
+            {{ isEditing ? 'Редагувати товар' : 'Створити товар із варіантами' }}
+          </h3>
+          <button @click="showProductModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveProduct" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+          <!-- General Details section -->
+          <div class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 space-y-4">
+            <h4 class="font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">1. Загальна інформація про товар</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва товару (UK)</label>
+                <input v-model="productForm.nameUk" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="напр. iPhone 15 Pro Max" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва товару (EN)</label>
+                <input v-model="productForm.nameEn" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="e.g. iPhone 15 Pro Max" />
+              </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">SKU артикул</label>
-              <input
-                v-model="form.sku"
-                required
-                type="text"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="напр. HEAD-BOS-QC"
-              />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис (UK)</label>
+                <textarea v-model="productForm.descriptionUk" rows="3" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Опис українською..."></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис (EN)</label>
+                <textarea v-model="productForm.descriptionEn" rows="3" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Description in English..."></textarea>
+              </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Категорія</label>
-              <select
-                v-model="form.category"
-                required
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              >
-                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Ціна (₴)</label>
-              <input
-                v-model.number="form.price"
-                required
-                type="number"
-                min="0"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Ціна зі знижкою (₴)</label>
-              <input
-                v-model.number="form.discountPrice"
-                type="number"
-                min="0"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="Немає знижки"
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Кількість на складі</label>
-              <input
-                v-model.number="form.stock"
-                required
-                type="number"
-                min="0"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Статус</label>
-              <select
-                v-model="form.status"
-                required
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              >
-                <option value="active">Активний</option>
-                <option value="draft">Чернетка</option>
-                <option value="hidden">Прихований</option>
-              </select>
-            </div>
-
-            <div class="col-span-2">
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Зображення товару (URL)</label>
-              <input
-                v-model="form.image"
-                required
-                type="text"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="Введіть посилання на зображення..."
-              />
-            </div>
-
-            <div class="col-span-2">
-              <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис товару</label>
-              <textarea
-                v-model="form.description"
-                rows="3"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="Введіть детальний опис товару..."
-              ></textarea>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Категорія</label>
+                <select v-model="productForm.categoryId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                  <option value="" disabled>Оберіть категорію</option>
+                  <option v-for="cat in dbCategories" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Бренд</label>
+                <select v-model="productForm.brandId" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                  <option :value="null">Без бренду</option>
+                  <option v-for="brand in dbBrands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Статус</label>
+                <select v-model="productForm.status" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                  <option value="active">Активний</option>
+                  <option value="draft">Чернетка</option>
+                  <option value="hidden">Прихований</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              type="button"
-              @click="closeModal"
-              class="px-5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-gray-700 dark:text-gray-300"
-            >
+          <!-- Variants section -->
+          <div class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 space-y-6">
+            <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
+              <h4 class="font-bold text-gray-900 dark:text-white">2. Варіанти товару та наявність</h4>
+              <button type="button" @click="addProductVariant" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1">
+                + Додати варіант
+              </button>
+            </div>
+
+            <div v-for="(v, index) in productForm.variants" :key="index" class="bg-white dark:bg-gray-850 p-5 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4 shadow-sm relative">
+              <button v-if="productForm.variants.length > 1" type="button" @click="removeProductVariant(index)" class="absolute top-4 right-4 text-red-500 hover:text-red-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+
+              <h5 class="text-sm font-bold text-primary-500">Варіант #{{ index + 1 }}</h5>
+
+              <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                <div class="col-span-1">
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">SKU артикул</label>
+                  <input v-model="v.sku" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" placeholder="SKU" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Ціна (₴)</label>
+                  <input v-model.number="v.price" required type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Стара ціна (₴)</label>
+                  <input v-model.number="v.oldPrice" type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Склад (шт)</label>
+                  <input v-model.number="v.stock" required type="number" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Вага (кг)</label>
+                  <input v-model.number="v.weight" type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
+                </div>
+              </div>
+
+              <!-- Images dynamic field inside variant -->
+              <div class="space-y-2 border-t border-gray-100 dark:border-gray-800 pt-3">
+                <div class="flex justify-between items-center">
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase">Фотографії (URL)</label>
+                  <button type="button" @click="addVariantImage(v)" class="text-[10px] font-bold text-primary-500 hover:text-primary-600">+ Додати фото</button>
+                </div>
+                
+                <div v-for="(img, imgIdx) in v.images" :key="imgIdx" class="flex items-center gap-3">
+                  <input v-model="img.url" required type="text" class="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-xs focus:ring-primary-500" placeholder="https://unsplash.com/photo-..." />
+                  
+                  <label class="flex items-center gap-1 cursor-pointer shrink-0">
+                    <input type="radio" :name="'primary-img-' + index" :checked="img.isPrimary" @change="setPrimaryImage(v, imgIdx)" class="rounded-full text-primary-500 focus:ring-primary-500" />
+                    <span class="text-[10px] text-gray-500">Головне</span>
+                  </label>
+
+                  <button type="button" @click="removeVariantImage(v, imgIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold">Видалити</button>
+                </div>
+              </div>
+
+              <!-- Attributes for Variant section -->
+              <div class="space-y-2 border-t border-gray-100 dark:border-gray-800 pt-3">
+                <div class="flex justify-between items-center">
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase">Характеристики варіанту (Атрибути)</label>
+                  <button type="button" @click="addVariantAttribute(v)" class="text-[10px] font-bold text-primary-500 hover:text-primary-600">+ Додати характеристику</button>
+                </div>
+
+                <div v-for="(attr, aIdx) in v.attributes" :key="aIdx" class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end bg-gray-50 dark:bg-gray-900/60 p-3 rounded-lg border border-gray-200/40">
+                  <div>
+                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Атрибут</label>
+                    <select v-model="attr.attributeId" @change="onAttributeSelected(attr)" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs">
+                      <option value="" disabled>Оберіть характеристику</option>
+                      <option v-for="dbAttr in dbAttributes" :key="dbAttr.id" :value="dbAttr.id">{{ dbAttr.nameUk }}</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Значення</label>
+                    <!-- Select option list if it's dynamic select or color attribute type -->
+                    <select v-if="getAttributeType(attr.attributeId) === 'select' || getAttributeType(attr.attributeId) === 'color'" v-model="attr.valueId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs">
+                      <option v-for="val in getAttributeValues(attr.attributeId)" :key="val.id" :value="val.id">
+                        {{ val.valueUk || val.value }}
+                      </option>
+                    </select>
+                    <!-- Free text input for custom attribute values -->
+                    <input v-else v-model="attr.value" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs focus:ring-primary-500" placeholder="напр. 8GB чи M2" />
+                  </div>
+
+                  <div class="flex justify-end">
+                    <button type="button" @click="removeVariantAttribute(v, aIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold py-1">Видалити</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bottom controls -->
+          <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <button type="button" @click="showProductModal = false" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm transition-colors">
               Скасувати
             </button>
-            <button
-              type="submit"
-              class="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md transition-colors"
-            >
+            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all">
+              Зберегти товар
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 2: CATEGORY MODAL -->
+    <div v-if="showCategoryModal" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-all">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+          <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">
+            {{ isEditing ? 'Редагувати категорію' : 'Додати категорію' }}
+          </h3>
+          <button @click="showCategoryModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveCategory" class="p-6 space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва категорії (UK)</label>
+            <input v-model="categoryForm.nameUk" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Планшети" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва категорії (EN)</label>
+            <input v-model="categoryForm.nameEn" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="e.g. Tablets" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Батьківська категорія</label>
+            <select v-model="categoryForm.parentId" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors">
+              <option :value="null">Немає (Головна категорія)</option>
+              <option v-for="cat in dbCategories.filter(c => c.id !== categoryForm.id)" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Порядок сортування</label>
+            <input v-model.number="categoryForm.order" type="number" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" />
+          </div>
+
+          <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+            <button type="button" @click="showCategoryModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+              Скасувати
+            </button>
+            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
+              Зберегти
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 3: BRAND MODAL -->
+    <div v-if="showBrandModal" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-all">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+          <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">
+            {{ isEditing ? 'Редагувати бренд' : 'Додати бренд' }}
+          </h3>
+          <button @click="showBrandModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveBrand" class="p-6 space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва бренду</label>
+            <input v-model="brandForm.name" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Apple чи Samsung" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Логотип (URL)</label>
+            <input v-model="brandForm.logoPath" type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="https://logo-url.com" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис бренду</label>
+            <textarea v-model="brandForm.description" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="Короткий опис..."></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+            <button type="button" @click="showBrandModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+              Скасувати
+            </button>
+            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
+              Зберегти
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 4: ATTRIBUTE MODAL -->
+    <div v-if="showAttributeModal" class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-all">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+          <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">
+            {{ isEditing ? 'Редагувати атрибут' : 'Додати атрибут' }}
+          </h3>
+          <button @click="showAttributeModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveAttribute" class="p-6 space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Код атрибуту (системний)</label>
+            <input v-model="attributeForm.code" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. color, ram, screen_size" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва атрибуту (UK)</label>
+            <input v-model="attributeForm.nameUk" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Колір чи ОЗП" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва атрибуту (EN)</label>
+            <input v-model="attributeForm.nameEn" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="e.g. Color or RAM" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Тип поля</label>
+            <select v-model="attributeForm.type" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors">
+              <option value="text">Текст (Вільне введення)</option>
+              <option value="select">Випадаючий список варіантів</option>
+              <option value="color">Кольоровий вибір</option>
+              <option value="number">Число</option>
+              <option value="boolean">Так / Ні (Булеве)</option>
+            </select>
+          </div>
+
+          <!-- Attributes preset values list -->
+          <div v-if="attributeForm.type === 'select' || attributeForm.type === 'color'" class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
+              <button type="button" @click="addAttributeValue" class="text-xs font-bold text-primary-500 hover:text-primary-600">+ Додати значення</button>
+            </div>
+
+            <div v-for="(val, vIdx) in attributeForm.values" :key="vIdx" class="flex gap-2 items-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border">
+              <div v-if="attributeForm.type === 'color'" class="flex-1 flex gap-2">
+                <input v-model="val.value" required type="text" placeholder="#FF0000" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs" />
+                <input type="color" v-model="val.value" class="w-8 h-8 rounded border cursor-pointer bg-transparent" />
+              </div>
+              <div v-else class="flex-1 flex gap-2">
+                <input v-model="val.valueUk" required type="text" placeholder="Значення (UK)" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs" />
+                <input v-model="val.valueEn" required type="text" placeholder="Value (EN)" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs" />
+              </div>
+
+              <button type="button" @click="removeAttributeValue(vIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold px-1">Х</button>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+            <button type="button" @click="showAttributeModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+              Скасувати
+            </button>
+            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
               Зберегти
             </button>
           </div>
@@ -296,152 +659,442 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import api from '@/services/api';
 
-const categories = ['Ноутбуки', 'Смартфони', 'Планшети', 'Навушники', 'Розумні годинники', 'Аксесуари'];
+const tabs = [
+  { id: 'products', name: 'Товари', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>' },
+  { id: 'categories', name: 'Категорії', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>' },
+  { id: 'brands', name: 'Бренди', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>' },
+  { id: 'attributes', name: 'Характеристики', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>' }
+];
 
-const products = ref([
-  {
-    id: 1,
-    name: 'MacBook Air M2 13" 8/256GB Midnight',
-    sku: 'MBA-M2-MID-256',
-    category: 'Ноутбуки',
-    price: 45999,
-    discountPrice: 48999,
-    stock: 14,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&fit=crop',
-    description: 'Легкий та потужний ноутбук на чіпі M2 від Apple.'
-  },
-  {
-    id: 2,
-    name: 'iPhone 15 Pro 128GB Natural Titanium',
-    sku: 'IPH15P-NAT-128',
-    category: 'Смартфони',
-    price: 49999,
-    discountPrice: null,
-    stock: 5,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=200&fit=crop',
-    description: 'Флагманський смартфон з титановим корпусом та камерою 48 МП.'
-  },
-  {
-    id: 3,
-    name: 'AirPods Max Sky Blue',
-    sku: 'APM-BLUE-01',
-    category: 'Навушники',
-    price: 24999,
-    discountPrice: 26999,
-    stock: 2,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200&fit=crop',
-    description: 'Повнорозмірні бездротові навушники з активним шумопоглинанням.'
-  },
-  {
-    id: 4,
-    name: 'Sony WH-1000XM5 Black',
-    sku: 'SNY-XM5-BLK',
-    category: 'Навушники',
-    price: 15499,
-    discountPrice: null,
-    stock: 0,
-    status: 'out_of_stock',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&fit=crop',
-    description: 'Найкращі у своєму класі навушники з шумопоглинанням.'
-  },
-  {
-    id: 5,
-    name: 'Apple Watch Series 9 45mm GPS Graphite',
-    sku: 'AW9-45-GRA-GPS',
-    category: 'Розумні годинники',
-    price: 18999,
-    discountPrice: null,
-    stock: 22,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=200&fit=crop',
-    description: 'Розумні годинники з функцією Gesture Double Tap.'
-  }
-]);
+const activeTab = ref('products');
+const isLoading = ref(false);
 
-const searchQuery = ref('');
-const categoryFilter = ref('');
-const statusFilter = ref('');
+const dbProducts = ref([]);
+const dbCategories = ref([]);
+const dbBrands = ref([]);
+const dbAttributes = ref([]);
 
-const filteredProducts = computed(() => {
-  return products.value.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                          product.sku.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesCategory = !categoryFilter.value || product.category === categoryFilter.value;
-    const matchesStatus = !statusFilter.value || product.status === statusFilter.value || 
-                          (statusFilter.value === 'out_of_stock' && product.stock === 0);
+// Filter refs
+const productSearch = ref('');
+const productCategoryFilter = ref('');
 
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+// Modals display refs
+const showProductModal = ref(false);
+const showCategoryModal = ref(false);
+const showBrandModal = ref(false);
+const showAttributeModal = ref(false);
+const isEditing = ref(false);
+
+// Forms templates
+const productForm = ref({
+  id: null,
+  nameUk: '',
+  nameEn: '',
+  descriptionUk: '',
+  descriptionEn: '',
+  categoryId: '',
+  brandId: null,
+  status: 'active',
+  variants: []
 });
 
-const showModal = ref(false);
-const isEditing = ref(false);
-const form = ref({
+const categoryForm = ref({
+  id: null,
+  nameUk: '',
+  nameEn: '',
+  parentId: null,
+  order: 0
+});
+
+const brandForm = ref({
   id: null,
   name: '',
-  sku: '',
-  category: '',
-  price: 0,
-  discountPrice: null,
-  stock: 0,
-  status: 'active',
-  image: '',
+  logoPath: '',
   description: ''
 });
 
-const openAddModal = () => {
+const attributeForm = ref({
+  id: null,
+  code: '',
+  nameUk: '',
+  nameEn: '',
+  type: 'text',
+  values: []
+});
+
+// Load catalog metadata
+const fetchAllData = async () => {
+  isLoading.value = true;
+  try {
+    const productsRes = await api.get('/admin/products');
+    dbProducts.value = productsRes.data.data;
+
+    const catsRes = await api.get('/admin/categories');
+    dbCategories.value = catsRes.data.data;
+
+    const brandsRes = await api.get('/admin/brands');
+    dbBrands.value = brandsRes.data.data;
+
+    const attrsRes = await api.get('/admin/attributes');
+    dbAttributes.value = attrsRes.data.data;
+  } catch (error) {
+    console.error('Failed to load catalog data:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchAllData();
+});
+
+// Filtered Products Computed
+const filteredProducts = computed(() => {
+  return dbProducts.value.filter(product => {
+    const nameMatch = (product.nameUk || '').toLowerCase().includes(productSearch.value.toLowerCase()) ||
+                      (product.nameEn || '').toLowerCase().includes(productSearch.value.toLowerCase()) ||
+                      (product.variants || []).some(v => (v.sku || '').toLowerCase().includes(productSearch.value.toLowerCase()));
+    
+    const catMatch = !productCategoryFilter.value || product.categoryId === parseInt(productCategoryFilter.value);
+    
+    return nameMatch && catMatch;
+  });
+});
+
+// PRODUCTS OPERATIONS
+const openAddProductModal = () => {
   isEditing.value = false;
-  form.value = {
+  productForm.value = {
     id: null,
-    name: '',
-    sku: '',
-    category: categories[0],
-    price: 0,
-    discountPrice: null,
-    stock: 10,
+    nameUk: '',
+    nameEn: '',
+    descriptionUk: '',
+    descriptionEn: '',
+    categoryId: dbCategories.value[0]?.id || '',
+    brandId: null,
     status: 'active',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop',
-    description: ''
+    variants: [
+      {
+        id: null,
+        sku: '',
+        price: 0,
+        oldPrice: null,
+        stock: 10,
+        weight: null,
+        images: [{ url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop', isPrimary: true }],
+        attributes: []
+      }
+    ]
   };
-  showModal.value = true;
+  showProductModal.value = true;
 };
 
-const openEditModal = (product) => {
+const openEditProductModal = (product) => {
   isEditing.value = true;
-  form.value = { ...product };
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-};
-
-const saveProduct = () => {
-  if (isEditing.value) {
-    const idx = products.value.findIndex(p => p.id === form.value.id);
-    if (idx !== -1) {
-      products.value[idx] = { ...form.value };
+  
+  // Clone product and variants to avoid side-effects
+  const variantsCloned = (product.variants || []).map(v => {
+    const imagesMapped = (v.images || []).map(img => ({ url: img.url, isPrimary: !!img.isPrimary }));
+    if (imagesMapped.length === 0) {
+      imagesMapped.push({ url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop', isPrimary: true });
     }
-  } else {
-    products.value.push({
-      ...form.value,
-      id: Date.now()
-    });
-  }
-  closeModal();
+    
+    const attributesMapped = (v.attributes || []).map(a => ({
+      attributeId: a.attributeId,
+      valueId: a.valueId,
+      value: a.value
+    }));
+
+    return {
+      id: v.id,
+      sku: v.sku,
+      price: v.price,
+      oldPrice: v.oldPrice,
+      stock: v.stock,
+      weight: v.weight,
+      images: imagesMapped,
+      attributes: attributesMapped
+    };
+  });
+
+  productForm.value = {
+    id: product.id,
+    nameUk: product.nameUk,
+    nameEn: product.nameEn,
+    descriptionUk: product.descriptionUk,
+    descriptionEn: product.descriptionEn,
+    categoryId: product.categoryId || '',
+    brandId: product.brandId,
+    status: product.status,
+    variants: variantsCloned.length > 0 ? variantsCloned : [
+      {
+        id: null,
+        sku: '',
+        price: 0,
+        oldPrice: null,
+        stock: 10,
+        weight: null,
+        images: [{ url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop', isPrimary: true }],
+        attributes: []
+      }
+    ]
+  };
+  showProductModal.value = true;
 };
 
-const deleteProduct = (id) => {
+const saveProduct = async () => {
+  try {
+    if (isEditing.value) {
+      await api.put(`/admin/products/${productForm.value.id}`, productForm.value);
+    } else {
+      await api.post('/admin/products', productForm.value);
+    }
+    showProductModal.value = false;
+    fetchAllData();
+  } catch (error) {
+    console.error('Failed to save product:', error);
+    alert('Помилка при збереженні товару. Перевірте правильність заповнення полів.');
+  }
+};
+
+const deleteProduct = async (id) => {
   if (confirm('Ви впевнені, що хочете видалити цей товар?')) {
-    products.value = products.value.filter(p => p.id !== id);
+    try {
+      await api.delete(`/admin/products/${id}`);
+      fetchAllData();
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    }
   }
 };
 
+// DYNAMIC VARIANT FORM HELPERS
+const addProductVariant = () => {
+  productForm.value.variants.push({
+    id: null,
+    sku: '',
+    price: 0,
+    oldPrice: null,
+    stock: 10,
+    weight: null,
+    images: [{ url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop', isPrimary: true }],
+    attributes: []
+  });
+};
+
+const removeProductVariant = (index) => {
+  productForm.value.variants.splice(index, 1);
+};
+
+const addVariantImage = (variant) => {
+  variant.images.push({ url: '', isPrimary: false });
+};
+
+const removeVariantImage = (variant, index) => {
+  variant.images.splice(index, 1);
+  // Ensure at least one image remains primary
+  if (variant.images.length > 0 && !variant.images.some(img => img.isPrimary)) {
+    variant.images[0].isPrimary = true;
+  }
+};
+
+const setPrimaryImage = (variant, index) => {
+  variant.images.forEach((img, idx) => {
+    img.isPrimary = idx === index;
+  });
+};
+
+const addVariantAttribute = (variant) => {
+  variant.attributes.push({
+    attributeId: '',
+    valueId: null,
+    value: ''
+  });
+};
+
+const removeVariantAttribute = (variant, index) => {
+  variant.attributes.splice(index, 1);
+};
+
+const onAttributeSelected = (attr) => {
+  const selected = dbAttributes.value.find(a => a.id === attr.attributeId);
+  if (selected) {
+    attr.valueId = null;
+    attr.value = '';
+    // Set default value if select/color type
+    if ((selected.type === 'select' || selected.type === 'color') && selected.values.length > 0) {
+      attr.valueId = selected.values[0].id;
+    }
+  }
+};
+
+const getAttributeType = (attrId) => {
+  const attr = dbAttributes.value.find(a => a.id === attrId);
+  return attr ? attr.type : 'text';
+};
+
+const getAttributeValues = (attrId) => {
+  const attr = dbAttributes.value.find(a => a.id === attrId);
+  return attr ? attr.values : [];
+};
+
+// CATEGORIES CRUD
+const openAddCategoryModal = () => {
+  isEditing.value = false;
+  categoryForm.value = { id: null, nameUk: '', nameEn: '', parentId: null, order: 0 };
+  showCategoryModal.value = true;
+};
+
+const openEditCategoryModal = (cat) => {
+  isEditing.value = true;
+  categoryForm.value = {
+    id: cat.id,
+    nameUk: cat.nameUk,
+    nameEn: cat.nameEn,
+    parentId: cat.parentId,
+    order: cat.order
+  };
+  showCategoryModal.value = true;
+};
+
+const saveCategory = async () => {
+  try {
+    if (isEditing.value) {
+      await api.put(`/admin/categories/${categoryForm.value.id}`, categoryForm.value);
+    } else {
+      await api.post('/admin/categories', categoryForm.value);
+    }
+    showCategoryModal.value = false;
+    fetchAllData();
+  } catch (error) {
+    console.error('Failed to save category:', error);
+  }
+};
+
+const deleteCategory = async (id) => {
+  if (confirm('Ви впевнені, що хочете видалити цю категорію?')) {
+    try {
+      await api.delete(`/admin/categories/${id}`);
+      fetchAllData();
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+    }
+  }
+};
+
+// BRANDS CRUD
+const openAddBrandModal = () => {
+  isEditing.value = false;
+  brandForm.value = { id: null, name: '', logoPath: '', description: '' };
+  showBrandModal.value = true;
+};
+
+const openEditBrandModal = (brand) => {
+  isEditing.value = true;
+  brandForm.value = {
+    id: brand.id,
+    name: brand.name,
+    logoPath: brand.logoPath,
+    description: brand.description
+  };
+  showBrandModal.value = true;
+};
+
+const saveBrand = async () => {
+  try {
+    if (isEditing.value) {
+      await api.put(`/admin/brands/${brandForm.value.id}`, brandForm.value);
+    } else {
+      await api.post('/admin/brands', brandForm.value);
+    }
+    showBrandModal.value = false;
+    fetchAllData();
+  } catch (error) {
+    console.error('Failed to save brand:', error);
+  }
+};
+
+const deleteBrand = async (id) => {
+  if (confirm('Ви впевнені, що хочете видалити цей бренд?')) {
+    try {
+      await api.delete(`/admin/brands/${id}`);
+      fetchAllData();
+    } catch (error) {
+      console.error('Failed to delete brand:', error);
+    }
+  }
+};
+
+// ATTRIBUTES CRUD
+const openAddAttributeModal = () => {
+  isEditing.value = false;
+  attributeForm.value = { id: null, code: '', nameUk: '', nameEn: '', type: 'text', values: [] };
+  showAttributeModal.value = true;
+};
+
+const openEditAttributeModal = (attr) => {
+  isEditing.value = true;
+  
+  const valuesCloned = (attr.values || []).map(v => ({
+    id: v.id,
+    value: v.value || '',
+    valueUk: v.valueUk || '',
+    valueEn: v.valueEn || ''
+  }));
+
+  attributeForm.value = {
+    id: attr.id,
+    code: attr.code,
+    nameUk: attr.nameUk,
+    nameEn: attr.nameEn,
+    type: attr.type,
+    values: valuesCloned
+  };
+  showAttributeModal.value = true;
+};
+
+const saveAttribute = async () => {
+  try {
+    if (isEditing.value) {
+      await api.put(`/admin/attributes/${attributeForm.value.id}`, attributeForm.value);
+    } else {
+      await api.post('/admin/attributes', attributeForm.value);
+    }
+    showAttributeModal.value = false;
+    fetchAllData();
+  } catch (error) {
+    console.error('Failed to save attribute:', error);
+  }
+};
+
+const deleteAttribute = async (id) => {
+  if (confirm('Ви впевнені, що хочете видалити цей атрибут?')) {
+    try {
+      await api.delete(`/admin/attributes/${id}`);
+      fetchAllData();
+    } catch (error) {
+      console.error('Failed to delete attribute:', error);
+    }
+  }
+};
+
+const addAttributeValue = () => {
+  attributeForm.value.values.push({
+    id: null,
+    value: '',
+    valueUk: '',
+    valueEn: ''
+  });
+};
+
+const removeAttributeValue = (index) => {
+  attributeForm.value.values.splice(index, 1);
+};
+
+// Formatting helpers
 const formatPrice = (val) => {
   return new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 }).format(val);
 };

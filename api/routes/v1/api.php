@@ -11,6 +11,10 @@ use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
 use App\Api\Admin\Controllers\AdminUserController;
+use App\Api\Admin\Controllers\AdminProductController;
+use App\Api\Admin\Controllers\AdminCategoryController;
+use App\Api\Admin\Controllers\AdminBrandController;
+use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
 use App\Api\V1\Controllers\Auth\OAuthController;
@@ -174,6 +178,30 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::get('server-logs', [AdminServerLogController::class, 'index']);
         Route::get('server-logs/{filename}', [AdminServerLogController::class, 'show']);
         Route::delete('server-logs/{filename}', [AdminServerLogController::class, 'clear']);
+
+        // Product Management
+        Route::get('products', [AdminProductController::class, 'index']);
+        Route::post('products', [AdminProductController::class, 'store']);
+        Route::put('products/{id}', [AdminProductController::class, 'update']);
+        Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
+
+        // Categories CRUD
+        Route::get('categories', [AdminCategoryController::class, 'index']);
+        Route::post('categories', [AdminCategoryController::class, 'store']);
+        Route::put('categories/{id}', [AdminCategoryController::class, 'update']);
+        Route::delete('categories/{id}', [AdminCategoryController::class, 'destroy']);
+
+        // Brands CRUD
+        Route::get('brands', [AdminBrandController::class, 'index']);
+        Route::post('brands', [AdminBrandController::class, 'store']);
+        Route::put('brands/{id}', [AdminBrandController::class, 'update']);
+        Route::delete('brands/{id}', [AdminBrandController::class, 'destroy']);
+
+        // Attributes CRUD
+        Route::get('attributes', [AdminAttributeController::class, 'index']);
+        Route::post('attributes', [AdminAttributeController::class, 'store']);
+        Route::put('attributes/{id}', [AdminAttributeController::class, 'update']);
+        Route::delete('attributes/{id}', [AdminAttributeController::class, 'destroy']);
 
         // Accounting Module
     });
