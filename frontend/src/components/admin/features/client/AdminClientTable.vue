@@ -24,15 +24,6 @@
                 class="font-bold text-gray-900 dark:text-gray-100 flex flex-wrap items-center gap-2"
               >
                 {{ row.name }}
-                <div class="flex flex-wrap gap-1">
-                  <span
-                    v-for="role in row.roles"
-                    :key="role"
-                    class="text-[9px] px-1.5 py-0 bg-blue-50 text-blue-600 border border-blue-100 rounded font-bold dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 uppercase tracking-tighter"
-                  >
-                    {{ role }}
-                  </span>
-                </div>
                 <AdminBadge
                   v-if="row.status === 'deleted'"
                   variant="error"
@@ -49,10 +40,22 @@
         </td>
 
         <td class="px-4 py-4">
+          <div class="flex flex-wrap gap-1">
+            <span
+              v-for="role in row.roles"
+              :key="role"
+              class="text-[9px] px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded font-bold dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 uppercase tracking-tighter"
+            >
+              {{ role }}
+            </span>
+            <span v-if="!row.roles || row.roles.length === 0" class="text-xs text-gray-400">
+              Покупець
+            </span>
+          </div>
+        </td>
+
+        <td class="px-4 py-4">
           <div class="flex flex-col gap-1.5">
-            <AdminBadge :variant="getPlanVariant(row.plan)">
-              {{ row.plan || "Free" }}
-            </AdminBadge>
             <AdminBadge :variant="getStatusVariant(row.status)">
               <span
                 v-if="row.status === 'active'"
@@ -60,72 +63,6 @@
               />
               {{ $t(`admin.users.status.${row.status}`) }}
             </AdminBadge>
-          </div>
-        </td>
-
-        <td class="px-4 py-4">
-          <div class="flex flex-col gap-1">
-            <div class="text-xs font-medium text-gray-700 dark:text-gray-300">
-              {{ row.attribution?.source || 'Direct' }}
-            </div>
-            <div v-if="row.is_activated"
-                 class="flex items-center gap-1 text-[10px] text-green-600 font-bold uppercase tracking-wider">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-              {{ t('admin.growth.activation.activated') }}
-            </div>
-            <div v-else class="text-[10px] text-gray-400 uppercase tracking-wider">
-              {{ t('admin.growth.activation.pending') }}
-            </div>
-          </div>
-        </td>
-
-        <td class="px-4 py-4">
-          <div class="space-y-3 max-w-[140px]">
-            <!-- Streams Usage -->
-            <div class="space-y-1">
-              <div
-                class="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest"
-              >
-                <span>{{ t("admin.users.table.usage.streams") }}</span>
-                <span class="text-gray-900 dark:text-gray-300">{{ row.streamsCount }}/{{ row.streamsLimit }}</span>
-              </div>
-              <div
-                class="h-1.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden"
-              >
-                <div
-                  class="h-full bg-primary-500 transition-all duration-1000"
-                  :style="{
-                    width:
-                      (row.streamsLimit > 0
-                        ? (row.streamsCount / row.streamsLimit) * 100
-                        : 0) + '%',
-                  }"
-                />
-              </div>
-            </div>
-
-            <!-- Storage Usage -->
-            <div class="space-y-1">
-              <div
-                class="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest"
-              >
-                <span>{{ t("admin.users.table.usage.storage") }}</span>
-                <span class="text-gray-900 dark:text-gray-300">{{ row.storageUsed }}/{{ row.storageLimit || 0 }} GB</span>
-              </div>
-              <div
-                class="h-1.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden"
-              >
-                <div
-                  class="h-full bg-amber-500 transition-all duration-1000"
-                  :style="{
-                    width:
-                      (row.storageLimit > 0
-                        ? (row.storageUsed / row.storageLimit) * 100
-                        : 0) + '%',
-                  }"
-                />
-              </div>
-            </div>
           </div>
         </td>
 
@@ -211,9 +148,8 @@ defineEmits(["edit", "suspend", "delete", "impersonate"]);
 
 const headers = computed(() => [
   { key: "client", label: t("admin.users.table.client") },
-  { key: "subscription", label: t("admin.users.table.subscription") },
-  {key: "growth", label: t("admin.growth.title")},
-  { key: "usage", label: t("admin.users.table.usage.streams") },
+  { key: "roles", label: "Ролі" },
+  { key: "status", label: t("admin.users.filters.status") },
   { key: "joinDate", label: t("admin.users.table.joinDate") },
   {
     key: "actions",
@@ -221,14 +157,6 @@ const headers = computed(() => [
     class: "text-right",
   },
 ]);
-
-const getPlanVariant = (plan) => {
-  if (!plan) return "neutral";
-  const p = plan.toLowerCase();
-  if (p.includes("pro")) return "warning";
-  if (p.includes("free") || p.includes("trial")) return "info";
-  return "primary";
-};
 
 const getStatusVariant = (status) => {
   switch (status) {

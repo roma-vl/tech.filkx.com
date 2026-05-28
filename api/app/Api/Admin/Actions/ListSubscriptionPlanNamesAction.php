@@ -2,7 +2,6 @@
 
 namespace App\Api\Admin\Actions;
 
-use App\Models\Billing\SubscriptionPlan;
 use Illuminate\Support\Collection;
 
 class ListSubscriptionPlanNamesAction
@@ -12,6 +11,6 @@ class ListSubscriptionPlanNamesAction
      */
     public function execute(): Collection
     {
-        return SubscriptionPlan::pluck('name')->unique()->values();
+        return collect(['Regular Client', 'VIP Client', 'Staff']);
     }
 }

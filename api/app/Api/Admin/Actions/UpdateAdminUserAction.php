@@ -59,6 +59,6 @@ class UpdateAdminUserAction
             userAgent: $userAgent
         )));
 
-        return $user->fresh(['subscription.usage']);
+        return $user->fresh(['roles']);
     }
 }

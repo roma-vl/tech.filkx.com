@@ -10,7 +10,7 @@ class ExportAdminUsersAction
     public function execute(array $filters): StreamedResponse
     {
         $listAction = new ListAdminUsersAction;
-        $query = User::query()->with(['subscription.plan']);
+        $query = User::query()->with(['roles']);
 
         $listAction->applyFilters($query, $filters);
 
@@ -30,7 +30,7 @@ class ExportAdminUsersAction
                     $user->id,
                     $user->name,
                     $user->email,
-                    $user->subscription?->plan?->name ?? 'Free',
+                    'Free',
                     $status,
                     $user->created_at->toDateString(),
                 ]);

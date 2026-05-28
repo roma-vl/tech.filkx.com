@@ -6,14 +6,13 @@ import BellIcon from "@/components/Icon/BellIcon.vue";
 
 const show = ref(false);
 const expandedIds = ref(new Set());
-// const {
-//   notifications,
-//   unreadCount,
-//   fetchNotifications,
-//   markAllAsRead,
-//   markAsRead,
-//   initEcho,
-// } = useNotifications();
+
+const notifications = ref([]);
+const unreadCount = ref(0);
+const fetchNotifications = () => Promise.resolve();
+const markAllAsRead = () => Promise.resolve();
+const markAsRead = () => Promise.resolve();
+const initEcho = () => {};
 
 const toggleDropdown = () => (show.value = !show.value);
 
