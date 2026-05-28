@@ -7,7 +7,7 @@ let intervalId = null;
 const slides = [
   {
     badge: 'Новинка',
-    subtitle: 'Ексклюзивний передзамовлення',
+    subtitle: 'Ексклюзивне передзамовлення',
     title: 'Майбутнє звуку:<br/>Ultra-HD Obsidian X',
     description: 'Відчуйте 99.9% чистоти звуку з новими бездротовими навушниками Obsidian X. Професійне гібридне шумозаглушення ANC.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAeP34U9uxXzWX_WKcHhEi0vWNEKPS1GBvEAaaCn8H_vs759dx6l3vFG3nU5he_83uLeobjrt3wO0ZTEHNr25GfoTOXk5BgJw0aBq4DOBTZMDcXNWSXIr1Br7yzQkfStCKz3Oxa_9E9hwc-MI8TOzXJweyp4dCEYjzmPa4PcOZWK8cZ5xZfFuBzDK2HqrULJkf1Ml3VwbTL28VxUOr2bPKZymnCA8AKm6tLkWZ6qdevZbKINiYZfVXwJTG_-T6bU9QakJ1S-sv7f0Y',
@@ -71,7 +71,7 @@ onUnmounted(() => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <!-- Left side: Main Slider (takes 2 columns) -->
-      <div class="lg:col-span-2 relative rounded-2xl overflow-hidden bg-zinc-950 h-[360px] md:h-[440px] flex items-center group shadow-md border border-zinc-800">
+      <div class="lg:col-span-2 relative rounded-2xl overflow-hidden bg-zinc-950 h-[380px] md:h-[480px] flex items-center group shadow-md border border-zinc-800">
         
         <!-- Slides -->
         <div 
@@ -94,25 +94,25 @@ onUnmounted(() => {
           <!-- Content -->
           <div class="relative z-10 px-8 md:px-16 max-w-2xl text-white h-full flex flex-col justify-center">
             <div class="flex items-center gap-2 mb-4">
-              <span class="bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 rounded text-[9px] shadow-md">
+              <span class="bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 rounded text-[10px] shadow-md">
                 {{ slide.badge }}
               </span>
-              <span class="text-zinc-400 font-bold text-[11px] uppercase tracking-widest">
+              <span class="text-zinc-300 font-bold text-xs md:text-sm uppercase tracking-widest">
                 • {{ slide.subtitle }}
               </span>
             </div>
             
-            <h1 class="font-extrabold text-2xl md:text-4xl mb-4 leading-tight text-white" v-html="slide.title"></h1>
-            <p class="text-xs md:text-sm mb-6 text-zinc-300 max-w-lg leading-relaxed">
+            <h1 class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white" v-html="slide.title"></h1>
+            <p class="text-sm md:text-[16px] mb-6 text-zinc-300 max-w-lg leading-relaxed">
               {{ slide.description }}
             </p>
             
             <div class="flex items-center gap-4">
-              <a :href="slide.link" class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+              <a :href="slide.link" class="bg-[#00a046] hover:bg-[#00b050] text-white px-7 py-3 rounded-lg text-xs md:text-sm font-bold transition-all shadow-md flex items-center gap-1.5">
                 {{ slide.btnPrimary }}
-                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
               </a>
-              <a :href="slide.link" class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-6 py-2.5 rounded-lg text-xs font-bold transition-colors">
+              <a :href="slide.link" class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-7 py-3 rounded-lg text-xs md:text-sm font-bold transition-colors">
                 {{ slide.btnSecondary }}
               </a>
             </div>
@@ -126,15 +126,15 @@ onUnmounted(() => {
             :key="index"
             @click="setSlide(index)"
             :class="[
-              'h-1 rounded-full transition-all duration-500',
-              activeIndex === index ? 'w-10 bg-[#00a046]' : 'w-5 bg-white/30 hover:bg-white/50'
+              'h-1.5 rounded-full transition-all duration-500',
+              activeIndex === index ? 'w-12 bg-[#00a046]' : 'w-6 bg-white/30 hover:bg-white/50'
             ]"
           ></button>
         </div>
       </div>
       
       <!-- Right side: Mini Promo Cards (takes 1 column) -->
-      <div class="flex flex-col gap-5 h-[360px] md:h-[440px] justify-between">
+      <div class="flex flex-col gap-5 h-[380px] md:h-[480px] justify-between">
         
         <!-- Promo 1: Smart Home Setup -->
         <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950 to-purple-900 border border-purple-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-purple-500/40 transition-colors">
@@ -144,13 +144,13 @@ onUnmounted(() => {
             </svg>
           </div>
           <div class="relative z-10">
-            <span class="text-[9px] bg-purple-500/20 border border-purple-400/30 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider">Розумний Дім</span>
-            <h3 class="font-extrabold text-base md:text-lg text-white mt-3 leading-snug">Технології майбутнього вже сьогодні</h3>
-            <p class="text-[11px] text-zinc-400 mt-1 leading-relaxed max-w-[200px]">Керуйте освітленням, безпекою та кліматом за допомогою смартфона.</p>
+            <span class="text-[10px] bg-purple-500/20 border border-purple-400/30 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider">Розумний Дім</span>
+            <h3 class="font-extrabold text-lg md:text-xl text-white mt-3 leading-snug">Технології майбутнього вже сьогодні</h3>
+            <p class="text-xs md:text-sm text-zinc-400 mt-1.5 leading-relaxed max-w-[220px]">Керуйте освітленням, безпекою та кліматом за допомогою смартфона.</p>
           </div>
-          <a href="/catalog" class="relative z-10 text-xs font-bold text-white hover:text-purple-300 transition-colors flex items-center gap-1.5 w-fit mt-4">
+          <a href="/catalog" class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-purple-300 transition-colors flex items-center gap-1.5 w-fit mt-4">
             Перейти в каталог
-            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
           </a>
         </div>
         
@@ -163,13 +163,13 @@ onUnmounted(() => {
             </svg>
           </div>
           <div class="relative z-10">
-            <span class="text-[9px] bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 px-2 py-0.5 rounded font-black uppercase tracking-wider">Суперсила</span>
-            <h3 class="font-extrabold text-base md:text-lg text-white mt-3 leading-snug">Спорт та Здоров'я на максимумі</h3>
-            <p class="text-[11px] text-zinc-400 mt-1 leading-relaxed max-w-[200px]">Нові моделі фітнес-браслетів та смарт-годинників з GPS.</p>
+            <span class="text-[10px] bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 px-2 py-0.5 rounded font-black uppercase tracking-wider">Суперсила</span>
+            <h3 class="font-extrabold text-lg md:text-xl text-white mt-3 leading-snug">Спорт та Здоров'я на максимумі</h3>
+            <p class="text-xs md:text-sm text-zinc-400 mt-1.5 leading-relaxed max-w-[220px]">Нові моделі фітнес-браслетів та смарт-годинників з GPS.</p>
           </div>
-          <a href="/catalog" class="relative z-10 text-xs font-bold text-white hover:text-emerald-300 transition-colors flex items-center gap-1.5 w-fit mt-4">
+          <a href="/catalog" class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-emerald-300 transition-colors flex items-center gap-1.5 w-fit mt-4">
             Переглянути акції
-            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
           </a>
         </div>
         

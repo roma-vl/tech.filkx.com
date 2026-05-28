@@ -25,26 +25,26 @@ const articles = [
 </script>
 
 <template>
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-10 select-none font-sans">
-    <div class="flex items-center justify-between mb-8">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-12 select-none font-sans">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
       <div class="space-y-1">
-        <h2 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">Блог та огляди техніки</h2>
-        <p class="text-xs text-zinc-500">Корисні статті, огляди новинок та поради від експертів FilkxTech</p>
+        <h2 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">Блог та огляди техніки</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">Корисні статті, огляди новинок та поради від експертів FilkxTech</p>
       </div>
-      <a class="text-[#00a046] hover:text-[#00b050] font-bold text-xs hover:underline flex items-center gap-1.5 transition-colors" href="/blog">
+      <a class="text-[#00a046] hover:text-[#00b050] font-bold text-sm hover:underline flex items-center gap-1.5 transition-colors" href="/blog">
         Читати всі статті
-        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
       </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div 
         v-for="article in articles" 
         :key="article.title"
-        class="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:shadow-lg transition-all duration-300 group flex flex-col"
+        class="bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:shadow-lg transition-all duration-300 group flex flex-col"
       >
         <!-- Article Image -->
-        <div class="aspect-[16/9] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-850 relative">
+        <div class="aspect-[16/10] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-850 relative">
           <img 
             :src="article.image" 
             :alt="article.title" 
@@ -54,28 +54,28 @@ const articles = [
         </div>
 
         <!-- Content -->
-        <div class="p-5 flex-grow flex flex-col justify-between">
-          <div class="space-y-2">
+        <div class="p-6 flex-grow flex flex-col justify-between">
+          <div class="space-y-3">
             <!-- Meta details -->
-            <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-bold">
+            <div class="flex items-center gap-2 text-xs text-zinc-400 font-bold">
               <span>{{ article.date }}</span>
               <span>•</span>
               <span>{{ article.readTime }}</span>
             </div>
             
-            <h3 class="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-[#00a046] transition-colors leading-snug line-clamp-2">
+            <h3 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white group-hover:text-[#00a046] transition-colors leading-snug line-clamp-2">
               {{ article.title }}
             </h3>
             
-            <p class="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed line-clamp-2">
+            <p class="text-zinc-555 dark:text-zinc-400 text-xs md:text-sm leading-relaxed line-clamp-2">
               {{ article.excerpt }}
             </p>
           </div>
 
-          <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-            <a href="/blog" class="text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors flex items-center gap-1.5">
+          <div class="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <a href="/blog" class="text-xs md:text-sm font-extrabold text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors flex items-center gap-1.5">
               Читати статтю
-              <span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
         </div>

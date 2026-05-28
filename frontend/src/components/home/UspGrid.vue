@@ -29,18 +29,18 @@ const items = [
       <div 
         v-for="item in items" 
         :key="item.title"
-        class="flex items-start gap-4 p-5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors"
+        class="flex items-start gap-4 p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors"
       >
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/5 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-[#00a046] text-xl font-bold">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/5 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[#00a046] text-2xl font-bold">
             {{ item.icon }}
           </span>
         </div>
         <div class="space-y-1">
-          <h4 class="font-extrabold text-xs text-zinc-900 dark:text-white leading-tight">
+          <h4 class="font-extrabold text-sm md:text-[15px] text-zinc-900 dark:text-white leading-tight">
             {{ item.title }}
           </h4>
-          <p class="text-[11px] text-zinc-500 leading-relaxed">
+          <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
             {{ item.description }}
           </p>
         </div>

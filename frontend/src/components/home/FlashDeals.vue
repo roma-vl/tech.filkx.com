@@ -119,40 +119,40 @@ onUnmounted(() => {
 
 <template>
   <!-- Hot Deals Section -->
-  <section class="bg-zinc-50 dark:bg-zinc-950 py-12 border-y border-zinc-100 dark:border-zinc-900 select-none font-sans">
+  <section class="bg-zinc-50 dark:bg-zinc-950 py-16 border-y border-zinc-100 dark:border-zinc-900 select-none font-sans">
     <div class="max-w-container-max mx-auto px-4 md:px-8">
       
       <!-- Section Header -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div class="space-y-1">
-          <span class="text-[#00a046] font-bold text-xs uppercase tracking-wider">Супер Знижки</span>
+          <span class="text-[#00a046] font-extrabold text-sm uppercase tracking-wider">Супер Знижки</span>
           <div class="flex flex-wrap items-center gap-4">
-            <h2 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">Гарячі пропозиції дня</h2>
+            <h2 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">Гарячі пропозиції дня</h2>
             <!-- Countdown timer -->
-            <div class="flex items-center gap-1.5 bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-black shadow-md shadow-rose-600/10">
-              <span class="material-symbols-outlined text-[16px] animate-pulse">schedule</span>
-              <span class="font-mono text-sm">
+            <div class="flex items-center gap-2 bg-rose-600 text-white px-4 py-1.5 rounded-xl text-xs md:text-sm font-black shadow-md shadow-rose-600/10">
+              <span class="material-symbols-outlined text-[18px] animate-pulse">schedule</span>
+              <span class="font-mono text-sm md:text-base">
                 {{ formatNumber(hours) }}:{{ formatNumber(minutes) }}:{{ formatNumber(seconds) }}
               </span>
             </div>
           </div>
         </div>
-        <a class="text-zinc-500 hover:text-[#00a046] font-bold text-xs flex items-center gap-1 transition-colors" href="/catalog">
+        <a class="text-zinc-500 hover:text-[#00a046] font-bold text-sm flex items-center gap-1 transition-colors" href="/catalog">
           Всі акційні товари
-          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span class="material-symbols-outlined text-[18px]">chevron_right</span>
         </a>
       </div>
 
       <!-- Products Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div
           v-for="prod in products"
           :key="prod.id"
-          class="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 group relative flex flex-col border border-zinc-100 dark:border-zinc-800"
+          class="bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 group relative flex flex-col border border-zinc-100 dark:border-zinc-800"
         >
           <!-- Sale Badge -->
-          <div class="absolute top-4 left-4 z-10">
-            <span class="bg-rose-600 text-white px-2.5 py-1 rounded-lg font-black text-[10px] shadow-sm">
+          <div class="absolute top-5 left-5 z-10">
+            <span class="bg-rose-600 text-white px-3 py-1 rounded-xl font-black text-xs shadow-sm">
               {{ prod.discount }}
             </span>
           </div>
@@ -160,10 +160,10 @@ onUnmounted(() => {
           <!-- Wishlist Button -->
           <button
             @click.stop="store.toggleWishlist(prod)"
-            class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm shadow hover:scale-105 active:scale-95 transition-all flex items-center justify-center text-zinc-400 hover:text-rose-600 z-10"
+            class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm shadow hover:scale-110 active:scale-95 transition-all flex items-center justify-center text-zinc-400 hover:text-rose-600 z-10"
           >
             <span
-              class="material-symbols-outlined text-[18px]"
+              class="material-symbols-outlined text-[20px]"
               :class="{ 'fill text-rose-600': store.isInWishlist(prod.id) }"
               :style="store.isInWishlist(prod.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
             >
@@ -171,74 +171,74 @@ onUnmounted(() => {
             </span>
           </button>
 
-          <div class="p-5 flex-grow flex flex-col">
+          <div class="p-6 flex-grow flex flex-col">
             <!-- Product Image -->
-            <div class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-xl mb-4 overflow-hidden relative flex items-center justify-center">
+            <div class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-2xl mb-5 overflow-hidden relative flex items-center justify-center">
               <img
-                class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                class="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
                 :src="prod.image"
                 :alt="prod.name"
               />
             </div>
 
-            <p class="text-zinc-400 font-bold text-[10px] mb-1.5 uppercase tracking-wider">{{ prod.category }}</p>
-            <h3 class="font-bold text-sm text-zinc-850 dark:text-zinc-100 line-clamp-2 mb-3 leading-snug min-h-[40px] hover:text-[#00a046] transition-colors cursor-pointer">{{ prod.name }}</h3>
+            <p class="text-zinc-400 dark:text-zinc-500 font-extrabold text-[11px] mb-2 uppercase tracking-wider">{{ prod.category }}</p>
+            <h3 class="font-extrabold text-base md:text-lg text-zinc-850 dark:text-zinc-100 line-clamp-3 mb-3.5 leading-snug min-h-[72px] hover:text-[#00a046] transition-colors cursor-pointer">{{ prod.name }}</h3>
 
             <!-- Rating -->
-            <div class="flex items-center gap-1 mb-4 mt-auto">
+            <div class="flex items-center gap-1.5 mb-4 mt-auto">
               <div class="flex text-amber-400">
                 <span
                   v-for="star in 4"
                   :key="star"
-                  class="material-symbols-outlined text-[14px]"
+                  class="material-symbols-outlined text-[16px]"
                   style="font-variation-settings: 'FILL' 1;"
                 >star</span>
-                <span class="material-symbols-outlined text-[14px]">star_half</span>
+                <span class="material-symbols-outlined text-[16px]">star_half</span>
               </div>
-              <span class="text-zinc-400 text-[10px] font-semibold ml-1">({{ prod.reviews }})</span>
+              <span class="text-zinc-500 dark:text-zinc-400 text-xs font-bold ml-1">({{ prod.reviews }} відгуків)</span>
             </div>
 
             <!-- Price -->
-            <div class="flex items-baseline gap-2">
-              <span class="font-black text-lg text-zinc-900 dark:text-white">${{ prod.price.toFixed(2) }}</span>
-              <span class="text-xs text-zinc-400 line-through">${{ prod.oldPrice.toFixed(2) }}</span>
+            <div class="flex items-baseline gap-2.5">
+              <span class="font-black text-xl md:text-2xl text-zinc-900 dark:text-white">${{ prod.price.toFixed(2) }}</span>
+              <span class="text-sm text-zinc-400 line-through">${{ prod.oldPrice.toFixed(2) }}</span>
             </div>
           </div>
 
           <!-- Inventory Progress Bar -->
-          <div class="px-5 pb-4" v-if="prod.soldPercent">
-            <div class="w-full bg-zinc-100 dark:bg-zinc-800 h-1 rounded-full mb-1.5 overflow-hidden">
+          <div class="px-6 pb-4" v-if="prod.soldPercent">
+            <div class="w-full bg-zinc-100 dark:bg-zinc-800 h-1.5 rounded-full mb-2 overflow-hidden">
               <div class="bg-rose-600 h-full rounded-full" :style="{ width: prod.soldPercent + '%' }"></div>
             </div>
-            <div class="flex justify-between items-center text-[9px]">
+            <div class="flex justify-between items-center text-xs">
               <p class="font-extrabold text-rose-600 uppercase tracking-wider">Залишилось: {{ prod.leftCount }} шт</p>
-              <p class="font-medium text-zinc-400">{{ prod.soldPercent }}% Розпродано</p>
+              <p class="font-bold text-zinc-400">{{ prod.soldPercent }}% Розпродано</p>
             </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="px-5 pb-5 mt-auto flex flex-col gap-2">
+          <div class="px-6 pb-6 mt-auto flex flex-col gap-3">
             <button
               @click="store.addToCart(prod)"
-              class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2 rounded-lg text-xs font-bold shadow-md shadow-emerald-700/10 transition-colors flex items-center justify-center gap-1.5"
+              class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-xl text-sm font-extrabold shadow-md shadow-emerald-700/10 transition-colors flex items-center justify-center gap-2"
             >
               В кошик
-              <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+              <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
             </button>
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-4 gap-3">
               <button
                 @click="openQuickView(prod)"
-                class="col-span-3 py-1.5 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-[11px]"
+                class="col-span-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl font-extrabold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-xs"
               >
-                Огляд
+                Швидкий огляд
               </button>
               <button
                 @click="store.toggleCompare(prod)"
-                class="col-span-1 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
+                class="col-span-1 border border-zinc-200 dark:border-zinc-800 text-zinc-650 dark:text-zinc-350 rounded-xl font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
                 :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': store.isInCompare(prod.id) }"
                 title="Порівняти"
               >
-                <span class="material-symbols-outlined text-[16px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
+                <span class="material-symbols-outlined text-[18px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
               </button>
             </div>
           </div>
@@ -252,45 +252,45 @@ onUnmounted(() => {
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade"
     >
       <div
-        class="bg-white dark:bg-zinc-900 rounded-2xl max-w-xl w-full p-6 relative shadow-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col"
+        class="bg-white dark:bg-zinc-900 rounded-3xl max-w-xl w-full p-8 relative shadow-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col"
       >
         <button
           @click="closeModal"
-          class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+          class="absolute top-5 right-5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
         >
-          <span class="material-symbols-outlined text-[24px]">close</span>
+          <span class="material-symbols-outlined text-[26px]">close</span>
         </button>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2" v-if="activeProduct">
-          <div class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-xl flex items-center justify-center p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-2" v-if="activeProduct">
+          <div class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-2xl flex items-center justify-center p-5">
             <img class="w-full h-full object-contain" :src="activeProduct.image" :alt="activeProduct.name" />
           </div>
           <div class="flex flex-col justify-between">
             <div>
-              <span class="text-[#00a046] font-bold text-[10px] uppercase tracking-wider">{{ activeProduct.category }}</span>
-              <h3 class="font-bold text-base mt-1.5 text-zinc-900 dark:text-white leading-snug">{{ activeProduct.name }}</h3>
+              <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-wider">{{ activeProduct.category }}</span>
+              <h3 class="font-extrabold text-lg md:text-xl mt-2 text-zinc-900 dark:text-white leading-snug">{{ activeProduct.name }}</h3>
 
-              <div class="flex items-center gap-1.5 mt-2">
+              <div class="flex items-center gap-1.5 mt-2.5">
                 <div class="flex text-amber-400">
-                  <span v-for="star in 5" :key="star" class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                  <span v-for="star in 5" :key="star" class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
                 </div>
-                <span class="text-zinc-400 text-[10px] font-semibold">({{ activeProduct.reviews }} відгуків)</span>
+                <span class="text-zinc-500 text-xs font-bold">({{ activeProduct.reviews }} відгуків)</span>
               </div>
 
-              <p class="text-zinc-500 dark:text-zinc-400 text-xs mt-3 leading-relaxed">{{ activeProduct.description }}</p>
+              <p class="text-zinc-650 dark:text-zinc-400 text-sm mt-4 leading-relaxed">{{ activeProduct.description }}</p>
             </div>
 
-            <div class="mt-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
-              <div class="flex items-baseline gap-2.5 mb-4">
-                <span class="text-2xl font-black text-zinc-900 dark:text-white">${{ activeProduct.price.toFixed(2) }}</span>
-                <span class="text-xs text-zinc-400 line-through">${{ activeProduct.oldPrice.toFixed(2) }}</span>
+            <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-6">
+              <div class="flex items-baseline gap-3 mb-5">
+                <span class="text-3xl font-black text-zinc-900 dark:text-white">${{ activeProduct.price.toFixed(2) }}</span>
+                <span class="text-sm text-zinc-400 line-through">${{ activeProduct.oldPrice.toFixed(2) }}</span>
               </div>
               <button
                 @click="store.addToCart(activeProduct); closeModal()"
-                class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-700/10"
+                class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-xl text-sm font-extrabold transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-700/10"
               >
                 Додати в кошик
-                <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+                <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
               </button>
             </div>
           </div>

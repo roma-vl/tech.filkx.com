@@ -15,36 +15,36 @@ const categories = [
   <!-- Popular Categories Section -->
   <section class="max-w-container-max mx-auto px-4 md:px-8 py-10 select-none font-sans">
     <div class="flex items-center justify-between mb-8">
-      <div class="flex flex-col gap-1">
-        <h2 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">Популярні категорії</h2>
-        <p class="text-xs text-zinc-500">Швидкий перехід до потрібних розділів нашого каталогу</p>
+      <div class="space-y-1">
+        <h2 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">Популярні категорії</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">Швидкий перехід до потрібних розділів нашого каталогу</p>
       </div>
-      <a class="text-[#00a046] hover:text-[#00b050] font-bold text-xs hover:underline flex items-center gap-1.5 transition-colors" href="/catalog">
+      <a class="text-[#00a046] hover:text-[#00b050] font-bold text-sm hover:underline flex items-center gap-1.5 transition-colors" href="/catalog">
         Усі категорії
-        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
       </a>
     </div>
     
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-5">
       <!-- Category Card -->
       <a 
         v-for="cat in categories" 
         :key="cat.name"
         :href="cat.link"
-        class="group flex flex-col items-center p-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+        class="group flex flex-col items-center p-5 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
       >
         <!-- Background Gradient Accent on Hover -->
         <div class="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-350" :class="cat.color"></div>
         
         <!-- Icon Container -->
-        <div class="relative z-10 w-16 h-16 rounded-2xl bg-zinc-50 dark:bg-zinc-850 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-          <span class="material-symbols-outlined text-3xl transition-colors duration-300" :class="[cat.iconColor]">
+        <div class="relative z-10 w-20 h-20 rounded-2xl bg-zinc-50 dark:bg-zinc-850 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+          <span class="material-symbols-outlined text-4xl transition-colors duration-300" :class="[cat.iconColor]">
             {{ cat.icon }}
           </span>
         </div>
         
         <!-- Text -->
-        <span class="relative z-10 font-bold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors text-center line-clamp-1">
+        <span class="relative z-10 font-bold text-sm text-zinc-850 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors text-center line-clamp-1">
           {{ cat.name }}
         </span>
       </a>
