@@ -341,50 +341,65 @@
             <h4 class="font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">1. Загальна інформація про товар</h4>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва товару (UK)</label>
-                <input v-model="productForm.nameUk" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="напр. iPhone 15 Pro Max" />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва товару (EN)</label>
-                <input v-model="productForm.nameEn" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="e.g. iPhone 15 Pro Max" />
-              </div>
+              <AppInput
+                v-model="productForm.nameUk"
+                required
+                label="Назва товару (UK)"
+                placeholder="напр. iPhone 15 Pro Max"
+              />
+              <AppInput
+                v-model="productForm.nameEn"
+                required
+                label="Назва товару (EN)"
+                placeholder="e.g. iPhone 15 Pro Max"
+              />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис (UK)</label>
-                <textarea v-model="productForm.descriptionUk" rows="3" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Опис українською..."></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис (EN)</label>
-                <textarea v-model="productForm.descriptionEn" rows="3" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Description in English..."></textarea>
-              </div>
+              <AppTextarea
+                v-model="productForm.descriptionUk"
+                rows="3"
+                label="Опис (UK)"
+                placeholder="Опис українською..."
+              />
+              <AppTextarea
+                v-model="productForm.descriptionEn"
+                rows="3"
+                label="Опис (EN)"
+                placeholder="Description in English..."
+              />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Категорія</label>
-                <select v-model="productForm.categoryId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                  <option value="" disabled>Оберіть категорію</option>
-                  <option v-for="cat in dbCategories" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Бренд</label>
-                <select v-model="productForm.brandId" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                  <option :value="null">Без бренду</option>
-                  <option v-for="brand in dbBrands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Статус</label>
-                <select v-model="productForm.status" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                  <option value="active">Активний</option>
-                  <option value="draft">Чернетка</option>
-                  <option value="hidden">Прихований</option>
-                </select>
-              </div>
+              <AppSelect
+                v-model="productForm.categoryId"
+                required
+                label="Категорія"
+                placeholder="Оберіть категорію"
+                :options="dbCategories"
+                option-value="id"
+                option-label="nameUk"
+              />
+              <AppSelect
+                v-model="productForm.brandId"
+                label="Бренд"
+                placeholder="Без бренду"
+                :options="[{ id: null, name: 'Без бренду' }, ...dbBrands]"
+                option-value="id"
+                option-label="name"
+              />
+              <AppSelect
+                v-model="productForm.status"
+                required
+                label="Статус"
+                :options="[
+                  { id: 'active', name: 'Активний' },
+                  { id: 'draft', name: 'Чернетка' },
+                  { id: 'hidden', name: 'Прихований' }
+                ]"
+                option-value="id"
+                option-label="name"
+              />
             </div>
           </div>
 
@@ -402,80 +417,137 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               </button>
 
-              <h5 class="text-sm font-bold text-primary-500">Варіант #{{ index + 1 }}</h5>
+              <h5 class="text-base font-bold text-primary-500">Варіант #{{ index + 1 }}</h5>
 
-              <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                <div class="col-span-1">
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">SKU артикул</label>
-                  <input v-model="v.sku" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" placeholder="SKU" />
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Ціна (₴)</label>
-                  <input v-model.number="v.price" required type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Стара ціна (₴)</label>
-                  <input v-model.number="v.oldPrice" type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Склад (шт)</label>
-                  <input v-model.number="v.stock" required type="number" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Вага (кг)</label>
-                  <input v-model.number="v.weight" type="number" step="0.01" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs focus:ring-primary-500" />
-                </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+                <AppInput
+                  v-model="v.sku"
+                  required
+                  label="SKU артикул"
+                  placeholder="SKU"
+                />
+                <AppInput
+                  v-model.number="v.price"
+                  required
+                  type="number"
+                  step="0.01"
+                  label="Ціна (₴)"
+                />
+                <AppInput
+                  v-model.number="v.oldPrice"
+                  type="number"
+                  step="0.01"
+                  label="Стара ціна (₴)"
+                />
+                <AppInput
+                  v-model.number="v.stock"
+                  required
+                  type="number"
+                  label="Склад (шт)"
+                />
+                <AppInput
+                  v-model.number="v.weight"
+                  type="number"
+                  step="0.01"
+                  label="Вага (кг)"
+                />
               </div>
 
-              <!-- Images dynamic field inside variant -->
-              <div class="space-y-2 border-t border-gray-100 dark:border-gray-800 pt-3">
+              <!-- Images Section with Drag-and-Drop and Server Upload -->
+              <div class="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
                 <div class="flex justify-between items-center">
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase">Фотографії (URL)</label>
-                  <button type="button" @click="addVariantImage(v)" class="text-[10px] font-bold text-primary-500 hover:text-primary-600">+ Додати фото</button>
-                </div>
-                
-                <div v-for="(img, imgIdx) in v.images" :key="imgIdx" class="flex items-center gap-3">
-                  <input v-model="img.url" required type="text" class="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-xs focus:ring-primary-500" placeholder="https://unsplash.com/photo-..." />
-                  
-                  <label class="flex items-center gap-1 cursor-pointer shrink-0">
-                    <input type="radio" :name="'primary-img-' + index" :checked="img.isPrimary" @change="setPrimaryImage(v, imgIdx)" class="rounded-full text-primary-500 focus:ring-primary-500" />
-                    <span class="text-[10px] text-gray-500">Головне</span>
+                  <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Фотогалерея варіанту (Перше фото автоматично стає головним)
                   </label>
+                  <span class="text-xs text-gray-400">Перетягуйте фото мишкою для зміни порядку</span>
+                </div>
 
-                  <button type="button" @click="removeVariantImage(v, imgIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold">Видалити</button>
+                <!-- Image Grid with Drag and Drop -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                  <div
+                    v-for="(img, imgIdx) in v.images"
+                    :key="imgIdx"
+                    draggable="true"
+                    @dragstart="onDragStart($event, imgIdx, v)"
+                    @dragover.prevent
+                    @drop="onDrop($event, imgIdx, v)"
+                    @dragend="onDragEnd"
+                    :class="img.isPrimary 
+                      ? 'border-2 border-emerald-500 ring-2 ring-emerald-500/20 shadow-md scale-102' 
+                      : 'border border-gray-200 dark:border-gray-700 hover:border-primary-500'"
+                    class="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-900 group cursor-move transition-all duration-200"
+                  >
+                    <img :src="img.url" alt="" class="w-full h-full object-cover" />
+                    
+                    <!-- Badges -->
+                    <span v-if="img.isPrimary" class="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow">
+                      ★ Головне
+                    </span>
+                    <span v-else class="absolute top-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[8px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      #{{ imgIdx + 1 }}
+                    </span>
+
+                    <!-- Action buttons -->
+                    <button
+                      type="button"
+                      @click="removeVariantImage(v, imgIdx)"
+                      class="absolute top-2 right-2 p-1.5 bg-rose-500 text-white rounded-lg opacity-0 group-hover:opacity-100 hover:bg-rose-600 transition-all shadow-md"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Upload Button / Area -->
+                  <label class="border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-primary-500 rounded-2xl flex flex-col items-center justify-center aspect-square cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-900/30 group">
+                    <svg class="w-6 h-6 text-gray-400 group-hover:text-primary-500 mb-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 group-hover:text-primary-500 transition-colors">Завантажити</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      class="hidden"
+                      @change="onFileChange($event, v)"
+                    />
+                  </label>
                 </div>
               </div>
 
               <!-- Attributes for Variant section -->
-              <div class="space-y-2 border-t border-gray-100 dark:border-gray-800 pt-3">
+              <div class="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
                 <div class="flex justify-between items-center">
-                  <label class="block text-[10px] font-bold text-gray-500 uppercase">Характеристики варіанту (Атрибути)</label>
-                  <button type="button" @click="addVariantAttribute(v)" class="text-[10px] font-bold text-primary-500 hover:text-primary-600">+ Додати характеристику</button>
+                  <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Характеристики варіанту (Атрибути)</label>
+                  <button type="button" @click="addVariantAttribute(v)" class="text-xs font-bold text-primary-500 hover:text-primary-600 transition-colors">+ Додати характеристику</button>
                 </div>
 
-                <div v-for="(attr, aIdx) in v.attributes" :key="aIdx" class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end bg-gray-50 dark:bg-gray-900/60 p-3 rounded-lg border border-gray-200/40">
+                <div v-for="(attr, aIdx) in v.attributes" :key="aIdx" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-gray-50 dark:bg-gray-900/60 p-4 rounded-xl border border-gray-200/40">
                   <div>
-                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Атрибут</label>
-                    <select v-model="attr.attributeId" @change="onAttributeSelected(attr)" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs">
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Атрибут</label>
+                    <select v-model="attr.attributeId" @change="onAttributeSelected(attr)" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500">
                       <option value="" disabled>Оберіть характеристику</option>
                       <option v-for="dbAttr in dbAttributes" :key="dbAttr.id" :value="dbAttr.id">{{ dbAttr.nameUk }}</option>
                     </select>
                   </div>
                   
                   <div>
-                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Значення</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Значення</label>
                     <!-- Select option list if it's dynamic select or color attribute type -->
-                    <select v-if="getAttributeType(attr.attributeId) === 'select' || getAttributeType(attr.attributeId) === 'color'" v-model="attr.valueId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs">
+                    <select v-if="getAttributeType(attr.attributeId) === 'select' || getAttributeType(attr.attributeId) === 'color'" v-model="attr.valueId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500">
                       <option v-for="val in getAttributeValues(attr.attributeId)" :key="val.id" :value="val.id">
                         {{ val.valueUk || val.value }}
                       </option>
                     </select>
                     <!-- Free text input for custom attribute values -->
-                    <input v-else v-model="attr.value" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 text-xs focus:ring-primary-500" placeholder="напр. 8GB чи M2" />
+                    <input v-else v-model="attr.value" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500" placeholder="напр. 8GB чи M2" />
                   </div>
 
                   <div class="flex justify-end">
-                    <button type="button" @click="removeVariantAttribute(v, aIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold py-1">Видалити</button>
+                    <button type="button" @click="removeVariantAttribute(v, aIdx)" class="text-red-500 hover:text-red-700 text-sm font-bold py-2 transition-colors">
+                      Видалити
+                    </button>
                   </div>
                 </div>
               </div>
@@ -485,12 +557,18 @@
 
           <!-- Bottom controls -->
           <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4">
-            <button type="button" @click="showProductModal = false" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm transition-colors">
+            <AppButton
+              variant="secondary"
+              @click="showProductModal = false"
+            >
               Скасувати
-            </button>
-            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all">
+            </AppButton>
+            <AppButton
+              type="submit"
+              variant="primary"
+            >
               Зберегти товар
-            </button>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -509,36 +587,42 @@
         </div>
 
         <form @submit.prevent="saveCategory" class="p-6 space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва категорії (UK)</label>
-            <input v-model="categoryForm.nameUk" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Планшети" />
-          </div>
+          <AppInput
+            v-model="categoryForm.nameUk"
+            required
+            label="Назва категорії (UK)"
+            placeholder="напр. Планшети"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва категорії (EN)</label>
-            <input v-model="categoryForm.nameEn" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="e.g. Tablets" />
-          </div>
+          <AppInput
+            v-model="categoryForm.nameEn"
+            required
+            label="Назва категорії (EN)"
+            placeholder="e.g. Tablets"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Батьківська категорія</label>
-            <select v-model="categoryForm.parentId" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors">
-              <option :value="null">Немає (Головна категорія)</option>
-              <option v-for="cat in dbCategories.filter(c => c.id !== categoryForm.id)" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
-            </select>
-          </div>
+          <AppSelect
+            v-model="categoryForm.parentId"
+            label="Батьківська категорія"
+            placeholder="Немає (Головна категорія)"
+            :options="[{ id: null, nameUk: 'Немає (Головна категорія)' }, ...dbCategories.filter(c => c.id !== categoryForm.id)]"
+            option-value="id"
+            option-label="nameUk"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Порядок сортування</label>
-            <input v-model.number="categoryForm.order" type="number" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" />
-          </div>
+          <AppInput
+            v-model.number="categoryForm.order"
+            type="number"
+            label="Порядок сортування"
+          />
 
           <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
-            <button type="button" @click="showCategoryModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+            <AppButton variant="secondary" @click="showCategoryModal = false">
               Скасувати
-            </button>
-            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
+            </AppButton>
+            <AppButton type="submit" variant="primary">
               Зберегти
-            </button>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -557,28 +641,33 @@
         </div>
 
         <form @submit.prevent="saveBrand" class="p-6 space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва бренду</label>
-            <input v-model="brandForm.name" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Apple чи Samsung" />
-          </div>
+          <AppInput
+            v-model="brandForm.name"
+            required
+            label="Назва бренду"
+            placeholder="напр. Apple чи Samsung"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Логотип (URL)</label>
-            <input v-model="brandForm.logoPath" type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="https://logo-url.com" />
-          </div>
+          <AppInput
+            v-model="brandForm.logoPath"
+            label="Логотип (URL)"
+            placeholder="https://logo-url.com"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Опис бренду</label>
-            <textarea v-model="brandForm.description" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="Короткий опис..."></textarea>
-          </div>
+          <AppTextarea
+            v-model="brandForm.description"
+            rows="3"
+            label="Опис бренду"
+            placeholder="Короткий опис..."
+          />
 
           <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
-            <button type="button" @click="showBrandModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+            <AppButton variant="secondary" @click="showBrandModal = false">
               Скасувати
-            </button>
-            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
+            </AppButton>
+            <AppButton type="submit" variant="primary">
               Зберегти
-            </button>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -597,31 +686,41 @@
         </div>
 
         <form @submit.prevent="saveAttribute" class="p-6 space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Код атрибуту (системний)</label>
-            <input v-model="attributeForm.code" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. color, ram, screen_size" />
-          </div>
+          <AppInput
+            v-model="attributeForm.code"
+            required
+            label="Код атрибуту (системний)"
+            placeholder="напр. color, ram, screen_size"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва атрибуту (UK)</label>
-            <input v-model="attributeForm.nameUk" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="напр. Колір чи ОЗП" />
-          </div>
+          <AppInput
+            v-model="attributeForm.nameUk"
+            required
+            label="Назва атрибуту (UK)"
+            placeholder="напр. Колір чи ОЗП"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Назва атрибуту (EN)</label>
-            <input v-model="attributeForm.nameEn" required type="text" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors" placeholder="e.g. Color or RAM" />
-          </div>
+          <AppInput
+            v-model="attributeForm.nameEn"
+            required
+            label="Назва атрибуту (EN)"
+            placeholder="e.g. Color or RAM"
+          />
 
-          <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Тип поля</label>
-            <select v-model="attributeForm.type" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:ring-primary-500 transition-colors">
-              <option value="text">Текст (Вільне введення)</option>
-              <option value="select">Випадаючий список варіантів</option>
-              <option value="color">Кольоровий вибір</option>
-              <option value="number">Число</option>
-              <option value="boolean">Так / Ні (Булеве)</option>
-            </select>
-          </div>
+          <AppSelect
+            v-model="attributeForm.type"
+            required
+            label="Тип поля"
+            :options="[
+              { id: 'text', name: 'Текст (Вільне введення)' },
+              { id: 'select', name: 'Випадаючий список варіантів' },
+              { id: 'color', name: 'Кольоровий вибір' },
+              { id: 'number', name: 'Число' },
+              { id: 'boolean', name: 'Так / Ні (Булеве)' }
+            ]"
+            option-value="id"
+            option-label="name"
+          />
 
           <!-- Attributes preset values list -->
           <div v-if="attributeForm.type === 'select' || attributeForm.type === 'color'" class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700">
@@ -645,12 +744,12 @@
           </div>
 
           <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
-            <button type="button" @click="showAttributeModal = false" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm">
+            <AppButton variant="secondary" @click="showAttributeModal = false">
               Скасувати
-            </button>
-            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold rounded-xl text-sm shadow-md">
+            </AppButton>
+            <AppButton type="submit" variant="primary">
               Зберегти
-            </button>
+            </AppButton>
           </div>
         </form>
       </div>
@@ -661,6 +760,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import api from '@/services/api';
+import AppInput from '@/components/admin/ui/Form/AppInput.vue';
+import AppTextarea from '@/components/admin/ui/Form/AppTextarea.vue';
+import AppSelect from '@/components/admin/ui/Form/AppSelect.vue';
+import AppButton from '@/components/admin/ui/Button/AppButton.vue';
 
 const tabs = [
   { id: 'products', name: 'Товари', icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>' },
@@ -889,22 +992,74 @@ const removeProductVariant = (index) => {
   productForm.value.variants.splice(index, 1);
 };
 
-const addVariantImage = (variant) => {
-  variant.images.push({ url: '', isPrimary: false });
+const draggedIndex = ref(null);
+const draggedVariant = ref(null);
+
+const onDragStart = (event, index, variant) => {
+  draggedIndex.value = index;
+  draggedVariant.value = variant;
+  event.dataTransfer.effectAllowed = 'move';
+};
+
+const onDrop = (event, index, variant) => {
+  if (draggedVariant.value === variant && draggedIndex.value !== null && draggedIndex.value !== index) {
+    const images = variant.images;
+    const draggedItem = images[draggedIndex.value];
+    
+    // Remove and reinsert
+    images.splice(draggedIndex.value, 1);
+    images.splice(index, 0, draggedItem);
+
+    // Re-evaluate primary image: first image in array becomes primary
+    images.forEach((img, idx) => {
+      img.isPrimary = idx === 0;
+    });
+  }
+  draggedIndex.value = null;
+  draggedVariant.value = null;
+};
+
+const onDragEnd = () => {
+  draggedIndex.value = null;
+  draggedVariant.value = null;
+};
+
+const onFileChange = async (event, variant) => {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await api.post('/admin/products/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if (response.data && response.data.data && response.data.data.url) {
+        const imageUrl = response.data.data.url;
+        const isPrimary = variant.images.length === 0;
+        variant.images.push({ url: imageUrl, isPrimary });
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      alert('Помилка при завантаженні зображення: ' + (error.response?.data?.message || error.message));
+    }
+  }
+  event.target.value = '';
 };
 
 const removeVariantImage = (variant, index) => {
   variant.images.splice(index, 1);
   // Ensure at least one image remains primary
-  if (variant.images.length > 0 && !variant.images.some(img => img.isPrimary)) {
-    variant.images[0].isPrimary = true;
+  if (variant.images.length > 0) {
+    variant.images.forEach((img, idx) => {
+      img.isPrimary = idx === 0;
+    });
   }
-};
-
-const setPrimaryImage = (variant, index) => {
-  variant.images.forEach((img, idx) => {
-    img.isPrimary = idx === index;
-  });
 };
 
 const addVariantAttribute = (variant) => {

@@ -292,4 +292,24 @@ class AdminProductController extends BaseApiController
 
         return self::successfulResponse();
     }
+
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|max:10240', // Max 10MB
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store('catalog', 'public');
+            $url = asset('storage/' . $path);
+
+            return self::successfulResponseWithData([
+                'url' => $url,
+                'path' => $path
+            ]);
+        }
+
+        return self::errorResponse('File not found', Response::HTTP_BAD_REQUEST);
+    }
 }

@@ -184,6 +184,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('products', [AdminProductController::class, 'store']);
         Route::put('products/{id}', [AdminProductController::class, 'update']);
         Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
+        Route::post('products/upload', [AdminProductController::class, 'uploadImage']);
 
         // Categories CRUD
         Route::get('categories', [AdminCategoryController::class, 'index']);
