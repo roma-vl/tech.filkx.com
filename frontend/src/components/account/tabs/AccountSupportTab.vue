@@ -4,100 +4,100 @@ import { store } from '@/store.js';
 
 const activeFaqIndex = ref(null);
 const faqs = [
-  { q: 'How long does shipping take?', a: 'Standard shipping takes 3-5 business days. Express shipping takes 1-2 business days. Premium members enjoy free express shipping on all orders.' },
-  { q: 'What is your return policy?', a: 'We offer a 30-day return policy on all hardware and electronics. Items must be in their original packaging, unused, and include all manuals/accessories.' },
-  { q: 'How do I claim my product warranty?', a: 'All items come with a standard 2-year warranty. You can register claims by submitting a support ticket here, or by visiting any authorized center with your order invoice.' },
-  { q: 'Can I change my delivery address after placing an order?', a: 'Addresses can be updated within 1 hour of placing your order. Once the status changes to "Shipped", we cannot redirect it.' },
+  { q: 'Скільки часу займає доставка товарів?', a: 'Стандартна доставка триває 1-3 робочих дні. Експрес-доставка кур\'єром по місту — 1 день. Для наших постійних покупців та преміум-клієнтів діє безкоштовна доставка.' },
+  { q: 'Які умови повернення товару?', a: 'Повернення товару можливе протягом 14 днів відповідно до законодавства України. Товар має бути в оригінальній упаковці, без слідів використання, з усіма заводськими плівками, аксесуарами та чеком.' },
+  { q: 'Як отримати гарантійне обслуговування?', a: 'Вся техніка FilkxTech постачається з офіційною гарантією терміном від 12 до 24 місяців. Ви можете подати заявку на ремонт, створивши звернення тут, або звернутися до сервісного центру.' },
+  { q: 'Чи можна змінити адресу після оформлення замовлення?', a: 'Адресу доставки можна змінити протягом 1 години після оформлення замовлення. Коли замовлення переходить у статус "В дорозі", змінити адресу вже неможливо.' },
 ];
 const toggleFaq = (i) => { activeFaqIndex.value = activeFaqIndex.value === i ? null : i; };
 
-const ticketForm = ref({ subject: '', category: 'Order Issue', message: '' });
+const ticketForm = ref({ subject: '', category: 'Проблеми із замовленням', message: '' });
 const ticketsList = ref([
-  { id: 'TK-8492', subject: 'Delay in delivery', category: 'Order Issue', date: 'May 24, 2026', status: 'In Progress', statusClass: 'text-secondary bg-secondary-container/30 border border-secondary/20' },
-  { id: 'TK-3921', subject: 'Broken headphone cable', category: 'Warranty & Returns', date: 'Jan 12, 2026', status: 'Closed', statusClass: 'text-on-surface-variant bg-surface-container-high border border-outline-variant' },
+  { id: 'TK-8492', subject: 'Затримка доставки замовлення', category: 'Проблеми із замовленням', date: '24 Тра, 2025', status: 'В обробці', statusClass: 'text-amber-500 bg-amber-500/10 border border-amber-500/20' },
+  { id: 'TK-3921', subject: 'Пошкоджений кабель навушників', category: 'Гарантія та повернення', date: '12 Січ, 2025', status: 'Закрито', statusClass: 'text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700' },
 ]);
 
 const submitTicket = () => {
   if (!ticketForm.value.subject || !ticketForm.value.message) {
-    store.addToast('Please fill out the ticket subject and description.', 'warning');
+    store.addToast('Будь ласка, вкажіть тему та детальний опис проблеми.', 'warning');
     return;
   }
   const newId = `TK-${Math.floor(1000 + Math.random() * 9000)}`;
   ticketsList.value.unshift({
     id: newId, subject: ticketForm.value.subject, category: ticketForm.value.category,
-    date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-    status: 'Open', statusClass: 'text-primary bg-primary/10 border border-primary/20',
+    date: new Date().toLocaleDateString('uk-UA', { month: 'short', day: '2-digit', year: 'numeric' }),
+    status: 'Відкрито', statusClass: 'text-[#00a046] bg-emerald-500/10 border border-emerald-500/20',
   });
-  store.addToast(`Ticket ${newId} created! Our team will respond shortly.`, 'success');
+  store.addToast(`Звернення ${newId} створено! Наша служба підтримки відповість найближчим часом.`, 'success');
   ticketForm.value.subject = '';
   ticketForm.value.message = '';
 };
 </script>
 
 <template>
-  <div class="space-y-gutter animate-fade">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+  <div class="space-y-6 animate-fade font-sans select-none">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- Left: FAQ + History -->
-      <div class="lg:col-span-2 space-y-gutter">
-        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm space-y-4">
-          <h3 class="font-title-lg text-on-surface text-base border-b border-outline-variant pb-2">Frequently Asked Questions</h3>
-          <div class="divide-y divide-outline-variant">
-            <div v-for="(faq, idx) in faqs" :key="idx" class="py-3">
-              <button @click="toggleFaq(idx)" class="w-full flex items-center justify-between text-left font-semibold text-xs text-on-surface hover:text-primary transition-colors py-1">
+      <div class="lg:col-span-2 space-y-6">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
+          <h3 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3">Часті запитання (FAQ)</h3>
+          <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <div v-for="(faq, idx) in faqs" :key="idx" class="py-4.5 first:pt-0 last:pb-0">
+              <button @click="toggleFaq(idx)" class="w-full flex items-center justify-between text-left font-extrabold text-xs md:text-sm text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] transition-colors py-1">
                 <span>{{ faq.q }}</span>
-                <span class="material-symbols-outlined text-[18px] transition-transform duration-300"
-                      :class="activeFaqIndex === idx ? 'rotate-180 text-primary' : 'text-on-surface-variant'">expand_more</span>
+                <span class="material-symbols-outlined text-[20px] transition-transform duration-300"
+                      :class="activeFaqIndex === idx ? 'rotate-180 text-[#00a046]' : 'text-zinc-400'">expand_more</span>
               </button>
-              <div v-show="activeFaqIndex === idx" class="mt-2 text-xs text-on-surface-variant leading-relaxed">{{ faq.a }}</div>
+              <div v-show="activeFaqIndex === idx" class="mt-2.5 text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{{ faq.a }}</div>
             </div>
           </div>
         </section>
 
-        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm space-y-4">
-          <h3 class="font-title-lg text-on-surface text-base border-b border-outline-variant pb-2">Support Tickets</h3>
-          <div v-if="ticketsList.length > 0" class="divide-y divide-outline-variant">
-            <div v-for="ticket in ticketsList" :key="ticket.id" class="py-4 first:pt-0 last:pb-0 flex flex-wrap justify-between items-center gap-4 text-xs">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
+          <h3 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3">Історія звернень</h3>
+          <div v-if="ticketsList.length > 0" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <div v-for="ticket in ticketsList" :key="ticket.id" class="py-4.5 first:pt-0 last:pb-0 flex flex-wrap justify-between items-center gap-4 text-xs md:text-sm">
               <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-on-surface text-sm">{{ ticket.subject }}</span>
-                  <span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded">{{ ticket.category }}</span>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base">{{ ticket.subject }}</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-100 dark:border-zinc-700">{{ ticket.category }}</span>
                 </div>
-                <p class="text-on-surface-variant text-[11px] mt-1">Ticket ID: {{ ticket.id }} • Created: {{ ticket.date }}</p>
+                <p class="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5">ID звернення: {{ ticket.id }} • Створено: {{ ticket.date }}</p>
               </div>
-              <span class="inline-block px-3 py-1 rounded-full font-bold uppercase text-[9px] tracking-wider" :class="ticket.statusClass">{{ ticket.status }}</span>
+              <span class="inline-block px-3.5 py-1.5 rounded-lg font-extrabold uppercase text-[10px] tracking-wider" :class="ticket.statusClass">{{ ticket.status }}</span>
             </div>
           </div>
-          <p v-else class="text-xs text-on-surface-variant italic text-center py-4">No tickets created.</p>
+          <p v-else class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 italic text-center py-4">У вас немає відкритих звернень.</p>
         </section>
       </div>
 
       <!-- Right: Submit Ticket -->
-      <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm space-y-4 h-fit">
-        <h3 class="font-title-lg text-on-surface text-base border-b border-outline-variant pb-2">Submit a Ticket</h3>
+      <section class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-4 h-fit">
+        <h3 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3">Створити звернення</h3>
         <form @submit.prevent="submitTicket" class="space-y-4">
-          <div class="space-y-1">
-            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Category</label>
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold text-zinc-455 dark:text-zinc-500 uppercase tracking-wider">Категорія</label>
             <select v-model="ticketForm.category"
-                    class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-xs text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
-              <option>Order Issue</option>
-              <option>Warranty & Returns</option>
-              <option>Technical Support</option>
-              <option>Billing & Invoices</option>
+                    class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none">
+              <option>Проблеми із замовленням</option>
+              <option>Гарантія та повернення</option>
+              <option>Технічна підтримка</option>
+              <option>Оплата та рахунки</option>
             </select>
           </div>
-          <div class="space-y-1">
-            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Subject</label>
-            <input v-model="ticketForm.subject" type="text" placeholder="Brief subject description..." required
-                   class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-xs text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Тема звернення</label>
+            <input v-model="ticketForm.subject" type="text" placeholder="Коротко опишіть тему..." required
+                   class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none" />
           </div>
-          <div class="space-y-1">
-            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Message</label>
-            <textarea v-model="ticketForm.message" rows="4" placeholder="How can we help you today?" required
-                      class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2 text-xs text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none resize-none"></textarea>
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Опис проблеми</label>
+            <textarea v-model="ticketForm.message" rows="4" placeholder="Детально опишіть вашу проблему..." required
+                      class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"></textarea>
           </div>
-          <button type="submit" class="w-full bg-primary text-on-primary font-bold text-xs py-2.5 rounded-lg hover:bg-primary-container transition-all uppercase tracking-wider flex items-center justify-center gap-1.5">
-            <span class="material-symbols-outlined text-[16px]">send</span> Send Ticket
+          <button type="submit" class="w-full bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]">send</span> Надіслати
           </button>
         </form>
       </section>
