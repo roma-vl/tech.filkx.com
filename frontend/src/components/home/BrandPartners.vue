@@ -11,17 +11,17 @@ const brands = [
 </script>
 
 <template>
-  <!-- Shop by Brand (Enhanced Logos) -->
-  <section class="border-y border-surface-variant bg-white py-16">
-    <div class="max-w-container-max mx-auto px-margin-desktop">
-      <h2 class="font-label-md text-center mb-12 text-on-surface-variant uppercase tracking-[0.3em] font-black">
-        Authorized Premium Partners
+  <!-- Shop by Brand Section -->
+  <section class="border-y border-zinc-100 dark:border-zinc-900 bg-white dark:bg-zinc-950 py-10 select-none font-sans">
+    <div class="max-w-container-max mx-auto px-4 md:px-8">
+      <h2 class="text-center mb-8 text-[11px] text-zinc-400 dark:text-zinc-500 font-extrabold uppercase tracking-[0.25em]">
+        Офіційні преміум-партнери бренду
       </h2>
-      <div class="flex flex-wrap items-center justify-center gap-16 md:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+      <div class="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-45 grayscale hover:grayscale-0 transition-all duration-700">
         <span 
           v-for="brand in brands" 
           :key="brand"
-          class="font-display-lg text-2xl font-black cursor-default hover:text-primary transition-colors duration-300"
+          class="font-extrabold text-lg md:text-xl tracking-widest text-zinc-600 dark:text-zinc-400 cursor-default hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors duration-300"
         >
           {{ brand }}
         </span>
@@ -29,3 +29,6 @@ const brands = [
     </div>
   </section>
 </template>
+
+<style scoped>
+</style>
