@@ -310,7 +310,8 @@ import {
   Cog6ToothIcon,
   InformationCircleIcon,
   MegaphoneIcon,
-  RocketLaunchIcon,
+  ShoppingBagIcon,
+  ShoppingCartIcon,
   SignalIcon,
   Squares2X2Icon,
   TagIcon,
@@ -318,7 +319,6 @@ import {
   UserCircleIcon,
   UserGroupIcon,
   UsersIcon,
-  VideoCameraIcon,
 } from "@heroicons/vue/24/outline";
 import {Popover, PopoverButton, PopoverPanel} from "@headlessui/vue";
 
@@ -377,15 +377,16 @@ const navItems = shallowRef([
     icon: markRaw(Squares2X2Icon),
   },
   {
-    key: "content",
-    name: t("admin.nav.content"),
-    icon: markRaw(VideoCameraIcon),
-    children: [
-      { name: t("admin.nav.videos"), path: "/admin/videos" },
-      { name: t("admin.nav.streams"), path: "/admin/streams" },
-      { name: t("admin.nav.playlists"), path: "/admin/playlists" },
-      { name: t("admin.nav.converter"), path: "/admin/converter" },
-    ],
+    key: "products",
+    name: t("admin.nav.products"),
+    path: "/admin/products",
+    icon: markRaw(ShoppingBagIcon),
+  },
+  {
+    key: "orders",
+    name: t("admin.nav.orders"),
+    path: "/admin/orders",
+    icon: markRaw(ShoppingCartIcon),
   },
   {
     key: "clients",
@@ -395,13 +396,12 @@ const navItems = shallowRef([
   },
   {
     key: "billing",
-    name: t("admin.nav.billing"),
+    name: t("admin.nav.sales"),
     icon: markRaw(SignalIcon),
     children: [
       { name: t("admin.nav.billingOverview"), path: "/admin/billing" },
-      { name: t("admin.nav.accountingLedger"), path: "/admin/accounting/ledger" },
       { name: t("admin.nav.accountingInvoices"), path: "/admin/accounting/invoices" },
-      { name: t("admin.nav.planBuilder"), path: "/admin/plans" },
+      { name: t("admin.nav.accountingLedger"), path: "/admin/accounting/ledger" },
     ],
   },
   {
@@ -439,12 +439,6 @@ const navItems = shallowRef([
     icon: markRaw(ChartBarIcon),
   },
   {
-    key: "growth",
-    name: t("admin.nav.growth"),
-    path: "/admin/growth",
-    icon: markRaw(RocketLaunchIcon),
-  },
-  {
     key: "management",
     name: t("admin.nav.management"),
     icon: markRaw(UserGroupIcon),
@@ -454,20 +448,12 @@ const navItems = shallowRef([
       { name: t("admin.nav.auditLogs"), path: "/admin/logs" },
       { name: t("admin.nav.serverLogs"), path: "/admin/server-logs" },
       { name: t("admin.nav.systemStatus"), path: "/admin/system" },
-      { name: t("admin.nav.runnerNodes"), path: "/admin/runner-nodes" },
-      { name: t("admin.nav.transcoderNodes"), path: "/admin/transcoder-nodes" },
     ],
   },
   {
     key: "settings",
     name: t("admin.nav.settings"),
     path: "/admin/settings",
-    icon: markRaw(Cog6ToothIcon),
-  },
-  {
-    key: "docs",
-    name: t("admin.nav.docs"),
-    path: "/admin/docs",
     icon: markRaw(Cog6ToothIcon),
   },
   {

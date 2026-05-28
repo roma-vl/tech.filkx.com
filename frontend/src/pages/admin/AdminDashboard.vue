@@ -31,11 +31,10 @@ import AdminQuickActions from "@/components/admin/features/dashboard/AdminQuickA
 
 import {
   UsersIcon,
-  VideoCameraIcon,
-  SignalIcon,
+  ShoppingCartIcon,
+  ShoppingBagIcon,
   BanknotesIcon,
   UserPlusIcon,
-  ShieldCheckIcon,
   EnvelopeIcon,
   Cog6ToothIcon,
 } from "@heroicons/vue/24/outline";
@@ -45,8 +44,8 @@ const router = useRouter();
 
 const iconMap = {
   UsersIcon,
-  VideoCameraIcon,
-  SignalIcon,
+  ShoppingCartIcon,
+  ShoppingBagIcon,
   BanknotesIcon,
 };
 
@@ -74,11 +73,11 @@ const translatedQuickActions = computed(() => [
     to: "/admin/users",
   },
   {
-    label: t("admin.dashboard.quickActions.videoModeration.label"),
-    desc: t("admin.dashboard.quickActions.videoModeration.desc"),
-    icon: ShieldCheckIcon,
+    label: "Керування товарами",
+    desc: "Додавання, редагування та огляд товарів",
+    icon: ShoppingBagIcon,
     bg: "bg-red-500",
-    to: "/admin/videos",
+    to: "/admin/products",
   },
   {
     label: t("admin.dashboard.quickActions.supportTickets.label"),
@@ -100,7 +99,7 @@ const fetchStats = async () => {
   try {
     const response = await axios.get("/admin/stats");
     quickStats.value = response.data.data.stats;
-    recentUsers.value = response.data.data.recentUsers;
+    recentUsers.value = response.data.data.recent_users || response.data.data.recentUsers || [];
   } catch (error) {
     console.error("Failed to fetch dashboard stats", error);
   } finally {

@@ -41,7 +41,11 @@ class AuthController extends BaseApiController
      */
     public function me(): JsonResponse
     {
-        return self::successfulResponseWithData(new UserResource(auth()->user()));
+        $user = auth()->user();
+        if ($user) {
+            $user->load('roles');
+        }
+        return self::successfulResponseWithData(new UserResource($user));
     }
 
     /**

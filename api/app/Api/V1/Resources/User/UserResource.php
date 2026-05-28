@@ -67,7 +67,7 @@ class UserResource extends JsonResource
             'description' => $this->getDescriptionAttribute() ?? null,
             'status'      => $this->status,
             'createdAt'   => $this->created_at->toIso8601String(),
-            'roles'       => $this->whenLoaded('roles', fn () => $this->roles->pluck('slug'), []),
+            'roles'       => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
             'permissions' => $this->getPermissions(),
             // Subscription module not yet implemented
             'subscription' => null,

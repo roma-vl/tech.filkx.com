@@ -1,6 +1,6 @@
 <script setup>
 import { useAuthStore } from "@/stores/auth";
-import Dropdown from "@/components/Dropdown.vue";
+import Dropdown from "@/components/ui/Dropdown.vue";
 import ArrowSmallDownIcon from "@/components/Icon/ArrowSmallDownIcon.vue";
 
 const store = useAuthStore();
