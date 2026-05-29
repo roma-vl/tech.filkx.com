@@ -106,7 +106,21 @@ const mapProduct = (p) => {
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get('/v1/catalog/home');
+    let wishlistIds = '';
+    let viewedIds = '';
+    if (typeof window !== 'undefined') {
+      const wishlist = JSON.parse(localStorage.getItem('electro_wishlist') || '[]');
+      wishlistIds = wishlist.map(p => p.id).join(',');
+      const viewed = JSON.parse(localStorage.getItem('electro_viewed') || '[]');
+      viewedIds = viewed.join(',');
+    }
+
+    const { data } = await axios.get('/v1/catalog/home', {
+      params: {
+        wishlist_ids: wishlistIds,
+        viewed_ids: viewedIds
+      }
+    });
     if (data && (data.success || data.status === 'success')) {
       categories.value = data.data.categories || [];
       flashDeals.value = (data.data.flashDeals || data.data.flash_deals || []).map(mapProduct).filter(Boolean);

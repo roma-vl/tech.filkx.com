@@ -23,6 +23,7 @@ use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
 use App\Api\V1\Controllers\CatalogController;
+use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\UserController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
@@ -50,7 +51,7 @@ Route::prefix('v1')->group(function () {
 
     // Catalog routes
     Route::prefix('catalog')->group(function () {
-        Route::get('home', [CatalogController::class, 'homeData']);
+        Route::get('home', [HomeController::class, 'homeData']);
         Route::get('categories', [CatalogController::class, 'categories']);
         Route::get('brands', [CatalogController::class, 'brands']);
         Route::get('filters', [CatalogController::class, 'filters']);

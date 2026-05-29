@@ -232,6 +232,9 @@ const fetchProductDetails = async () => {
     const response = await api.get(`/v1/catalog/products/${slug}`);
     if (response.data && response.data.status === 'success') {
       rawProduct.value = response.data.data;
+      if (rawProduct.value && rawProduct.value.id) {
+        store.trackProductView(rawProduct.value.id);
+      }
     }
   } catch (error) {
     console.error('Failed to fetch product details:', error);

@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use Laravel\Scout\Searchable;
+
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'brand_id',
@@ -19,12 +21,34 @@ class Product extends Model
         'description',
         'status',
         'views_count',
+        'is_hot',
+        'is_recommended',
     ];
 
     protected $casts = [
         'name' => 'array',
         'description' => 'array',
+        'is_hot' => 'boolean',
+        'is_recommended' => 'boolean',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'name_uk' => $this->name['uk'] ?? '',
+            'name_en' => $this->name['en'] ?? '',
+            'description_uk' => $this->description['uk'] ?? '',
+            'description_en' => $this->description['en'] ?? '',
+            'status' => $this->status,
+        ];
+    }
 
     public function brand(): BelongsTo
     {
