@@ -6,9 +6,15 @@ export const store = reactive({
   selectedProduct: null,
 
   // Arrays for items
-  cart: [],
-  wishlist: [],
-  compare: [],
+  cart: typeof window !== 'undefined' && localStorage.getItem('electro_cart') 
+    ? JSON.parse(localStorage.getItem('electro_cart')) 
+    : [],
+  wishlist: typeof window !== 'undefined' && localStorage.getItem('electro_wishlist') 
+    ? JSON.parse(localStorage.getItem('electro_wishlist')) 
+    : [],
+  compare: typeof window !== 'undefined' && localStorage.getItem('electro_compare') 
+    ? JSON.parse(localStorage.getItem('electro_compare')) 
+    : [],
   toasts: [],
 
   // Modals visibility state
@@ -66,6 +72,9 @@ export const store = reactive({
       });
       this.addToast(`Added ${product.name} to cart.`);
     }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('electro_cart', JSON.stringify(this.cart));
+    }
   },
 
   removeFromCart(productId) {
@@ -74,6 +83,9 @@ export const store = reactive({
       const name = this.cart[index].name;
       this.cart.splice(index, 1);
       this.addToast(`Removed ${name} from cart.`, 'info');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('electro_cart', JSON.stringify(this.cart));
+      }
     }
   },
 
@@ -81,6 +93,9 @@ export const store = reactive({
     const item = this.cart.find(item => item.id === productId);
     if (item) {
       item.quantity = Math.max(1, quantity);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('electro_cart', JSON.stringify(this.cart));
+      }
     }
   },
 
@@ -99,6 +114,9 @@ export const store = reactive({
         category: product.category || 'Electronics'
       });
       this.addToast(`Added ${product.name} to wishlist.`);
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('electro_wishlist', JSON.stringify(this.wishlist));
     }
   },
 
@@ -129,6 +147,9 @@ export const store = reactive({
       });
       this.addToast(`Added ${product.name} to compare.`);
     }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('electro_compare', JSON.stringify(this.compare));
+    }
   },
 
   isInCompare(productId) {
@@ -141,6 +162,9 @@ export const store = reactive({
       const name = this.compare[index].name;
       this.compare.splice(index, 1);
       this.addToast(`Removed ${name} from compare.`, 'info');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('electro_compare', JSON.stringify(this.compare));
+      }
     }
   },
 
@@ -152,8 +176,23 @@ export const store = reactive({
     this.activeDrawer = null;
   },
 
-  viewProduct(product = null) {
+  trackProductView(productId) {
+    if (typeof window !== 'undefined' && productId) {
+      let viewed = JSON.parse(localStorage.getItem('electro_viewed') || '[]');
+      viewed = viewed.filter(id => id !== productId);
+      viewed.unshift(productId);
+      viewed = viewed.slice(0, 10);
+      localStorage.setItem('electro_viewed', JSON.stringify(viewed));
+    }
+  },
+
+  async viewProduct(product = null) {
     this.selectedProduct = product;
     this.currentPage = 'product';
+    if (product && typeof window !== 'undefined') {
+      this.trackProductView(product.id);
+      const { default: router } = await import('@/router');
+      router.push({ name: 'product-detail', params: { id: product.slug } });
+    }
   }
 });

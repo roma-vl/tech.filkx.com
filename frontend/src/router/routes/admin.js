@@ -3,9 +3,6 @@ import AdminDashboard from "@/pages/admin/AdminDashboard.vue";
 import AdminClients from "@/pages/admin/AdminClients.vue";
 import AdminSettings from "@/pages/admin/AdminSettings.vue";
 import AdminAnalytics from "@/pages/admin/AdminAnalytics.vue";
-import AdminVideos from "@/pages/admin/AdminVideos.vue";
-import AdminStreams from "@/pages/admin/AdminStreams.vue";
-import AdminPlaylists from "@/pages/admin/AdminPlaylists.vue";
 import AdminSupport from "@/pages/admin/AdminSupport.vue";
 import AdminCoupons from "@/pages/admin/AdminCoupons.vue";
 import AdminPromotions from "@/pages/admin/AdminPromotions.vue";
@@ -13,19 +10,14 @@ import AdminTeam from "@/pages/admin/AdminTeam.vue";
 import AdminLogs from "@/pages/admin/AdminLogs.vue";
 import AdminSystem from "@/pages/admin/AdminSystem.vue";
 import AdminRoles from "@/pages/admin/AdminRoles.vue";
-import AdminPlanBuilder from "@/pages/admin/AdminPlanBuilder.vue";
 import AdminNotifications from "@/pages/admin/AdminNotifications.vue";
 import AdminEmailTemplates from "@/pages/admin/AdminEmailTemplates.vue";
 import AdminLayoutWrapper from "@/pages/admin/AdminLayoutWrapper.vue";
-import AdminDocs from "@/pages/admin/AdminDocs.vue";
 import AdminServerLogs from "@/pages/admin/AdminServerLogs.vue";
-import AdminAffiliates from "@/pages/admin/AdminAffiliates.vue";
-import AdminGrowth from "@/pages/admin/AdminGrowth.vue";
 import AdminAccountingLedger from "@/pages/admin/accounting/AdminAccountingLedger.vue";
 import AdminAccountingInvoices from "@/pages/admin/accounting/AdminAccountingInvoices.vue";
-import AdminRunnerNodes from "@/pages/admin/AdminRunnerNodes.vue";
-import AdminTranscoderNodes from "@/pages/admin/AdminTranscoderNodes.vue";
-import AdminConverter from "@/pages/admin/AdminConverter.vue";
+import AdminProducts from "@/pages/admin/AdminProducts.vue";
+import AdminOrders from "@/pages/admin/AdminOrders.vue";
 
 export default {
   path: "/admin",
@@ -46,21 +38,30 @@ export default {
       },
     },
     {
+      path: "products",
+      name: "admin-products",
+      component: AdminProducts,
+      meta: {
+        titleKey: "admin.products.title",
+        descriptionKey: "admin.products.description",
+      },
+    },
+    {
+      path: "orders",
+      name: "admin-orders",
+      component: AdminOrders,
+      meta: {
+        titleKey: "admin.orders.title",
+        descriptionKey: "admin.orders.description",
+      },
+    },
+    {
       path: "users",
       name: "admin-clients",
       component: AdminClients,
       meta: {
         titleKey: "admin.users.title",
         descriptionKey: "admin.users.description",
-      },
-    },
-    {
-      path: "affiliates",
-      name: "admin-affiliates",
-      component: AdminAffiliates,
-      meta: {
-        titleKey: "admin.affiliates.title",
-        descriptionKey: "admin.affiliates.description",
       },
     },
     {
@@ -73,57 +74,30 @@ export default {
       },
     },
     {
-      path: "videos",
-      name: "admin-videos",
-      component: AdminVideos,
+      path: "billing",
+      name: "admin-billing",
+      component: AdminBillingPanel,
       meta: {
-        titleKey: "admin.videos.title",
-        descriptionKey: "admin.videos.description",
+        titleKey: "admin.billing.description",
+        descriptionKey: "admin.billing.description",
       },
     },
     {
-      path: "streams",
-      name: "admin-streams",
-      component: AdminStreams,
+      path: "accounting/ledger",
+      name: "admin-accounting-ledger",
+      component: AdminAccountingLedger,
       meta: {
-        titleKey: "admin.streams.title",
-        descriptionKey: "admin.streams.description",
+        titleKey: "admin.accounting.ledger.title",
+        descriptionKey: "admin.accounting.ledger.description",
       },
     },
     {
-      path: "runner-nodes",
-      name: "admin-runner-nodes",
-      component: AdminRunnerNodes,
+      path: "accounting/invoices",
+      name: "admin-accounting-invoices",
+      component: AdminAccountingInvoices,
       meta: {
-        titleKey: "admin.runnerNodes.title",
-        descriptionKey: "admin.runnerNodes.description",
-      },
-    },
-    {
-      path: "transcoder-nodes",
-      name: "admin-transcoder-nodes",
-      component: AdminTranscoderNodes,
-      meta: {
-        titleKey: "admin.transcoderNodes.title",
-        descriptionKey: "admin.transcoderNodes.description",
-      },
-    },
-    {
-      path: "playlists",
-      name: "admin-playlists",
-      component: AdminPlaylists,
-      meta: {
-        titleKey: "admin.playlists.title",
-        descriptionKey: "admin.playlists.description",
-      },
-    },
-    {
-      path: "converter",
-      name: "admin-converter",
-      component: AdminConverter,
-      meta: {
-        titleKey: "admin.converter.title",
-        descriptionKey: "admin.converter.subtitle",
+        titleKey: "admin.accounting.invoices.title",
+        descriptionKey: "admin.accounting.invoices.description",
       },
     },
     {
@@ -133,15 +107,6 @@ export default {
       meta: {
         titleKey: "admin.analytics.title",
         descriptionKey: "admin.analytics.description",
-      },
-    },
-    {
-      path: "growth",
-      name: "admin-growth",
-      component: AdminGrowth,
-      meta: {
-        titleKey: "admin.growth.title",
-        descriptionKey: "admin.growth.description",
       },
     },
     {
@@ -217,57 +182,12 @@ export default {
       },
     },
     {
-      path: "billing",
-      name: "admin-billing",
-      component: AdminBillingPanel,
-      meta: {
-        titleKey: "admin.billing.description",
-        descriptionKey: "admin.billing.description",
-      },
-    },
-    {
-      path: "accounting/ledger",
-      name: "admin-accounting-ledger",
-      component: AdminAccountingLedger,
-      meta: {
-        titleKey: "admin.accounting.ledger.title",
-        descriptionKey: "admin.accounting.ledger.description",
-      },
-    },
-    {
-      path: "accounting/invoices",
-      name: "admin-accounting-invoices",
-      component: AdminAccountingInvoices,
-      meta: {
-        titleKey: "admin.accounting.invoices.title",
-        descriptionKey: "admin.accounting.invoices.description",
-      },
-    },
-    {
-      path: "plans",
-      name: "admin-plans",
-      component: AdminPlanBuilder,
-      meta: {
-        titleKey: "admin.plans.title",
-        descriptionKey: "admin.plans.description",
-      },
-    },
-    {
       path: "settings",
       name: "admin-settings",
       component: AdminSettings,
       meta: {
         titleKey: "admin.settings.title",
         descriptionKey: "admin.settings.description",
-      },
-    },
-    {
-      path: "docs",
-      name: "admin-docs",
-      component: AdminDocs,
-      meta: {
-        titleKey: "admin.docs.title",
-        descriptionKey: "admin.docs.description",
       },
     },
     {

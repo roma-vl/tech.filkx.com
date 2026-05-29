@@ -3,38 +3,38 @@ import { store } from '@/store.js';
 </script>
 
 <template>
-  <div class="space-y-stack-md animate-fade">
+  <div class="space-y-6 animate-fade font-sans select-none">
     <div v-if="store.wishlist.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <div v-for="product in store.wishlist" :key="product.id"
-           class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
-        <div class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-outline-variant">
+           class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+        <div class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-zinc-100 dark:border-zinc-800">
           <img :src="product.image" :alt="product.name" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300" />
-          <button @click="store.toggleWishlist(product)" class="absolute top-3 right-3 p-1.5 bg-surface-container-low hover:bg-error-container hover:text-error text-on-surface-variant rounded-full transition-colors">
+          <button @click="store.toggleWishlist(product)" class="absolute top-3 right-3 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-550 rounded-full transition-colors">
             <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
-        <div class="p-4 flex-1 flex flex-col justify-between gap-4">
+        <div class="p-5 flex-1 flex flex-col justify-between gap-4">
           <div>
-            <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider mb-1">{{ product.category }}</p>
-            <h3 class="font-title-md text-on-surface text-sm line-clamp-2 leading-snug group-hover:text-primary transition-colors">{{ product.name }}</h3>
+            <p class="text-[10px] text-[#00a046] font-extrabold uppercase tracking-wider mb-1.5">{{ product.category }}</p>
+            <h3 class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors">{{ product.name }}</h3>
           </div>
           <div class="flex items-center justify-between gap-2 mt-auto">
-            <span class="font-bold text-primary text-lg">${{ product.price.toFixed(2) }}</span>
-            <button @click="store.addToCart(product)" class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-xs hover:bg-primary-container transition-all uppercase tracking-wider flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">shopping_cart</span> Add
+            <span class="font-black text-[#00a046] text-lg">{{ product.price.toFixed(2) }} ₴</span>
+            <button @click="store.addToCart(product)" class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-all uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span> Додати
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="bg-surface-container-lowest rounded-xl border border-outline-variant p-12 text-center shadow-sm">
-      <div class="w-16 h-16 bg-error-container/10 border border-error-container text-error rounded-full flex items-center justify-center mx-auto mb-4">
+    <div v-else class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-12 text-center shadow-sm">
+      <div class="w-16 h-16 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
         <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
       </div>
-      <h3 class="font-title-lg text-on-surface text-lg">Your Wishlist is Empty</h3>
-      <p class="text-xs text-on-surface-variant max-w-sm mx-auto mt-2">Click the heart icon on any product to save it here.</p>
-      <a href="/catalog" class="inline-block bg-primary text-on-primary font-bold text-xs py-2.5 px-6 rounded-lg hover:bg-primary-container transition-all mt-6">Explore Products</a>
+      <h3 class="font-extrabold text-lg text-zinc-855 dark:text-zinc-150">Ваш список обраного порожній</h3>
+      <p class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 max-w-sm mx-auto mt-2">Натисніть на іконку серця біля будь-якого товару, щоб зберегти його тут.</p>
+      <a href="/catalog" class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm">Перейти до товарів</a>
     </div>
   </div>
 </template>

@@ -1,19 +1,18 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import Dropdown from "@/components/Dropdown.vue";
+import Dropdown from "@/components/ui/Dropdown.vue";
 import BellIcon from "@/components/Icon/BellIcon.vue";
 // import { useNotifications } from "@/composables/useNotifications";
 
 const show = ref(false);
 const expandedIds = ref(new Set());
-// const {
-//   notifications,
-//   unreadCount,
-//   fetchNotifications,
-//   markAllAsRead,
-//   markAsRead,
-//   initEcho,
-// } = useNotifications();
+
+const notifications = ref([]);
+const unreadCount = ref(0);
+const fetchNotifications = () => Promise.resolve();
+const markAllAsRead = () => Promise.resolve();
+const markAsRead = () => Promise.resolve();
+const initEcho = () => {};
 
 const toggleDropdown = () => (show.value = !show.value);
 

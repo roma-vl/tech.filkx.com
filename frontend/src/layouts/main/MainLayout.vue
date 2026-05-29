@@ -4,7 +4,6 @@
   >
     <PromoBar />
     <Header />
-    <Navbar />
 
     <!-- Background accents -->
     <div class="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
@@ -25,7 +24,6 @@
 <script setup>
 import PromoBar from '@/components/layout/PromoBar.vue';
 import Header from '@/components/layout/Header.vue';
-import Navbar from '@/components/layout/Navbar.vue';
 import Footer from '@/components/layout/Footer.vue';
 import {useAuthStore} from "@/stores/auth";
 import {useLayout} from "@/layouts/main/useLayout.js";
@@ -33,3 +31,4 @@ import {useLayout} from "@/layouts/main/useLayout.js";
 const { isMobile } = useLayout();
 const auth = useAuthStore();
 </script>
+

@@ -16,24 +16,24 @@ const router    = useRouter();
 const authStore = useAuthStore();
 
 const activeTab = computed(() => route.query.tab || 'dashboard');
-const userName  = computed(() => authStore.user?.name || 'User');
+const userName  = computed(() => authStore.user?.name || 'Клієнт');
 
 const tabTitles = {
-  dashboard: 'Account Dashboard',
-  orders:    'Order History',
-  favorites: 'My Favorites',
-  compare:   'Compare Products',
-  settings:  'Account Settings',
-  support:   'Help & Support',
+  dashboard: 'Панель керування',
+  orders:    'Історія замовлень',
+  favorites: 'Моє обране',
+  compare:   'Порівняння товарів',
+  settings:  'Налаштування профілю',
+  support:   'Служба підтримки',
 };
 
 const navTabs = [
-  { label: 'Dashboard', icon: 'dashboard',     tab: 'dashboard' },
-  { label: 'Orders',    icon: 'shopping_bag',   tab: 'orders' },
-  { label: 'Favorites', icon: 'favorite',       tab: 'favorites' },
-  { label: 'Compare',   icon: 'compare_arrows', tab: 'compare' },
-  { label: 'Settings',  icon: 'settings',       tab: 'settings' },
-  { label: 'Support',   icon: 'help',           tab: 'support' },
+  { label: 'Панель',      icon: 'dashboard',     tab: 'dashboard' },
+  { label: 'Замовлення',  icon: 'shopping_bag',   tab: 'orders' },
+  { label: 'Обране',      icon: 'favorite',       tab: 'favorites' },
+  { label: 'Порівняння',  icon: 'compare_arrows', tab: 'compare' },
+  { label: 'Налаштування', icon: 'settings',       tab: 'settings' },
+  { label: 'Підтримка',   icon: 'help',           tab: 'support' },
 ];
 
 const selectTab = (tab) => router.push({ name: 'account', query: { tab } });
@@ -51,44 +51,44 @@ const currentTab = computed(() => tabComponents[activeTab.value] ?? AccountDashb
 </script>
 
 <template>
-  <div class="max-w-container-max mx-auto flex min-h-screen bg-surface relative">
+  <div class="max-w-container-max mx-auto flex min-h-screen bg-zinc-50 dark:bg-zinc-950 relative font-sans">
 
     <!-- Desktop Sidebar -->
     <AccountSidebar />
 
     <!-- Content Workspace -->
-    <div class="flex-1 px-margin-mobile md:px-margin-desktop py-stack-lg min-w-0">
+    <div class="flex-1 px-4 md:px-8 py-10 min-w-0">
 
       <!-- Page Header -->
-      <header class="mb-6 border-b border-outline-variant pb-6">
+      <header class="mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 class="font-headline-lg text-headline-lg text-on-surface capitalize">
-              {{ tabTitles[activeTab] || 'Account' }}
+            <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">
+              {{ tabTitles[activeTab] || 'Особистий кабінет' }}
             </h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant">
-              Welcome back, {{ userName }}! Manage your store account and order status.
+            <p class="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-1">
+              Вітаємо, {{ userName }}! Керуйте своїм профілем, замовленнями та налаштуваннями акаунту FilkxTech.
             </p>
           </div>
-          <div class="lg:hidden self-start flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-container/20 border border-primary/20">
-            <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
-            <span class="text-[11px] font-bold text-primary uppercase tracking-widest">Member</span>
+          <div class="lg:hidden self-start flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+            <span class="material-symbols-outlined text-[16px] text-[#00a046]">verified</span>
+            <span class="text-[11px] font-black text-[#00a046] uppercase tracking-widest">Клієнт</span>
           </div>
         </div>
       </header>
 
       <!-- Mobile Navigation Scroll Bar -->
-      <div class="lg:hidden mb-6 -mx-margin-mobile px-margin-mobile overflow-x-auto scrollbar-none flex gap-2 border-b border-outline-variant pb-4">
+      <div class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-4">
         <button
           v-for="item in navTabs"
           :key="item.tab"
           @click="selectTab(item.tab)"
-          class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-sm border border-outline-variant"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs md:text-sm font-extrabold whitespace-nowrap transition-all shadow-sm border border-zinc-200 dark:border-zinc-850"
           :class="activeTab === item.tab
-            ? 'bg-primary text-on-primary border-primary'
-            : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low'"
+            ? 'bg-[#00a046] text-white border-[#00a046]'
+            : 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
         >
-          <span class="material-symbols-outlined text-[16px]">{{ item.icon }}</span>
+          <span class="material-symbols-outlined text-[16px] md:text-[18px]">{{ item.icon }}</span>
           {{ item.label }}
         </button>
       </div>
