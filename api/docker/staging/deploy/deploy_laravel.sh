@@ -104,6 +104,4 @@ do
   docker-compose -f "$TARGET_COMPOSE" run --rm -w "$WORKDIR_IN_CONTAINER" "$LARAVEL_CLI" php artisan $cmd
 done
 
-docker-compose -f "$TARGET_COMPOSE" exec -T "$LARAVEL_FPM" php artisan streams:restart-live
-
 echo "🎉 Deploy complete → active = $COLOR"

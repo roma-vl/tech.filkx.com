@@ -69,7 +69,7 @@ done
 echo "✅ $LARAVEL_CLI is ready"
 
 # -----------------------------
-# Write version info
+# Laravel filesystem & version info
 # -----------------------------
 VERSION=$(git -C "$TARGET_DIR" describe --tags --always || echo "production")
 COMMIT_SHA=$(git -C "$TARGET_DIR" rev-parse --short HEAD || echo "unknown")
@@ -77,11 +77,8 @@ TIMESTAMP=$(date +%s)
 
 echo "ℹ️ Writing version.json → $VERSION / $COMMIT_SHA"
 
-# -----------------------------
-# Права на каталоги Laravel
-# -----------------------------
-docker-compose -f "$TARGET_COMPOSE" run --rm "$LARAVEL_CLI" sh -c "
-mkdir -p /app/storage/app/public/var
+docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
+mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/bootstrap/cache /app/storage/app/public/var
 cat <<EOF > /app/storage/app/public/var/version.json
 {
   \"version\": \"$VERSION\",
@@ -89,16 +86,9 @@ cat <<EOF > /app/storage/app/public/var/version.json
   \"timestamp\": $TIMESTAMP
 }
 EOF
-"
-
-# -----------------------------
-# Laravel filesystem
-# -----------------------------
-docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
-mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/bootstrap/cache
-chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs  /app/storage/media-library /app/bootstrap/cache
+chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs /app/storage/media-library /app/bootstrap/cache
 chown -R 1337:1000 /app/storage /app/bootstrap/cache
-chown 1000:1000 /app/storage/oauth-*.key
+chown 1000:1000 /app/storage/oauth-*.key 2>/dev/null || true
 "
 
 
@@ -114,7 +104,5 @@ for cmd in \
 do
   docker-compose -f "$TARGET_COMPOSE" run --rm -w "$WORKDIR_IN_CONTAINER" "$LARAVEL_CLI" php artisan $cmd
 done
-
-docker-compose -f "$TARGET_COMPOSE" exec -T "$LARAVEL_FPM" php artisan streams:restart-live
 
 echo "🎉 Deploy complete → active = $COLOR"
