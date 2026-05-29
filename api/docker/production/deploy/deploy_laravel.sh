@@ -93,7 +93,7 @@ cat <<EOF > /app/storage/app/public/var/version.json
 }
 EOF
 chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs /app/storage/media-library /app/bootstrap/cache
-chown -R 1337:1000 /app/storage /app/bootstrap/cache
+chown -R 1000:1000 /app/storage /app/bootstrap/cache
 chown 1000:1000 /app/storage/oauth-*.key 2>/dev/null || true
 "
 
