@@ -16,8 +16,8 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  selectedRam: {
-    type: String,
+  selectedAttrs: {
+    type: Object,
     required: true
   },
   selectedRating: {
@@ -40,9 +40,9 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  ramOptions: {
+  dynamicAttributes: {
     type: Array,
-    required: true
+    default: () => []
   },
   categoriesList: {
     type: Array,
@@ -58,7 +58,7 @@ const emit = defineEmits([
   'update:priceMin',
   'update:priceMax',
   'update:selectedBrands',
-  'update:selectedRam',
+  'update:selectedAttrs',
   'update:selectedRating',
   'update:onlyDiscounts',
   'update:onlyInStock',
@@ -81,11 +81,6 @@ const localBrands = computed({
   set: (val) => emit('update:selectedBrands', val)
 });
 
-const localRam = computed({
-  get: () => props.selectedRam,
-  set: (val) => emit('update:selectedRam', val)
-});
-
 const localRating = computed({
   get: () => props.selectedRating,
   set: (val) => emit('update:selectedRating', val)
@@ -100,6 +95,16 @@ const localStock = computed({
   get: () => props.onlyInStock,
   set: (val) => emit('update:onlyInStock', val)
 });
+
+const toggleAttr = (code, value) => {
+  const current = { ...props.selectedAttrs };
+  if (!value || current[code] === value) {
+    delete current[code];
+  } else {
+    current[code] = value;
+  }
+  emit('update:selectedAttrs', current);
+};
 </script>
 
 <template>
@@ -168,9 +173,9 @@ const localStock = computed({
         <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="localBrands = []">Очистити</button>
       </div>
       <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-        <label v-for="brand in brands" :key="brand.name" class="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+        <label v-for="brand in brands" :key="brand.slug" class="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
           <div class="flex items-center gap-2.5">
-            <input v-model="localBrands" :value="brand.name" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox" />
+            <input v-model="localBrands" :value="brand.slug" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox" />
             <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">{{ brand.name }}</span>
           </div>
           <span class="text-[10px] font-bold text-zinc-400">{{ brand.count }}</span>
@@ -178,22 +183,46 @@ const localStock = computed({
       </div>
     </div>
 
-    <!-- RAM Options -->
-    <div class="p-5">
+    <!-- Dynamic Attributes Filter -->
+    <div v-for="attr in dynamicAttributes" :key="attr.id" class="p-5">
       <div class="flex items-center justify-between mb-3.5">
-        <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500">Об'єм ОЗУ</h3>
-        <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="localRam = ''">Очистити</button>
+        <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500">
+          {{ attr.name ? (attr.name.uk || attr.name.en || attr.name) : attr.code }}
+        </h3>
+        <button v-if="selectedAttrs[attr.code]" class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="toggleAttr(attr.code, '')">Очистити</button>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+
+      <!-- Color swatches -->
+      <div v-if="attr.type === 'color'" class="flex flex-wrap gap-2">
         <button
-          v-for="ram in ramOptions"
-          :key="ram"
-          :class="localRam === ram ? 'bg-[#00a046] text-white shadow-sm' : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'"
-          class="py-2 rounded-lg text-xs font-extrabold transition-all"
+          v-for="val in attr.values"
+          :key="val.id"
+          :style="{ backgroundColor: val.value }"
+          :class="[
+            selectedAttrs[attr.code] === val.value 
+              ? 'ring-2 ring-[#00a046] ring-offset-2 scale-110' 
+              : 'border border-zinc-200 dark:border-zinc-700 hover:scale-105'
+          ]"
+          class="w-6 h-6 rounded-full transition-all focus:outline-none"
           type="button"
-          @click="localRam = localRam === ram ? '' : ram"
+          :title="val.value"
+          @click="toggleAttr(attr.code, val.value)"
+        />
+      </div>
+
+      <!-- Text/Select Options -->
+      <div v-else class="grid grid-cols-2 gap-2">
+        <button
+          v-for="val in attr.values"
+          :key="val.id"
+          :class="selectedAttrs[attr.code] === (val.value.uk || val.value.en || val.value)
+            ? 'bg-[#00a046] text-white shadow-sm' 
+            : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'"
+          class="py-2 px-1 rounded-lg text-xs font-extrabold transition-all truncate"
+          type="button"
+          @click="toggleAttr(attr.code, val.value.uk || val.value.en || val.value)"
         >
-          {{ ram }}
+          {{ val.value ? (val.value.uk || val.value.en || val.value) : '' }}
         </button>
       </div>
     </div>

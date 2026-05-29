@@ -12,10 +12,12 @@ const router = useRouter();
 
 const viewMode = ref('grid');
 const sortBy = ref('popularity');
+const initialPriceMin = ref(0);
+const initialPriceMax = ref(200000);
 const priceMin = ref(0);
 const priceMax = ref(200000);
 const selectedBrands = ref([]);
-const selectedRam = ref('');
+const selectedAttrs = ref({});
 const selectedRating = ref('');
 const onlyDiscounts = ref(false);
 const onlyInStock = ref(false);
@@ -27,54 +29,91 @@ const isQuickViewOpen = ref(false);
 const isLoading = ref(false);
 const rawProducts = ref([]);
 const categoriesList = ref([]);
+const dbBrands = ref([]);
+const dynamicAttributes = ref([]);
 const pagination = ref({
   page: 1,
   lastPage: 1,
   total: 0
 });
 
-// A list of brand counts mapping dynamically
+// Brand counts computed property dynamically mapping from DB
 const brands = computed(() => {
-  const brandList = ['Apple', 'Samsung', 'Lenovo', 'Sony'];
-  return brandList.map(brandName => {
+  return dbBrands.value.map(b => {
     return {
-      name: brandName,
-      count: rawProducts.value.filter(p => p.brand.toLowerCase() === brandName.toLowerCase()).length
+      name: b.name,
+      slug: b.slug,
+      count: b.products_count || 0
     };
   });
 });
-
-const ramOptions = ref(['8GB', '12GB', '16GB', '18GB', '32GB']);
 
 function mapProduct(apiProduct) {
   if (!apiProduct) return null;
   const mainVariant = apiProduct.variants && apiProduct.variants[0] ? apiProduct.variants[0] : null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
-  const oldPrice = mainVariant && mainVariant.oldPrice ? parseFloat(mainVariant.oldPrice) : null;
+  const oldPrice = mainVariant && mainVariant.old_price ? parseFloat(mainVariant.old_price) : null;
   const totalStock = mainVariant ? (mainVariant.stocks || []).reduce((acc, s) => acc + (parseInt(s.quantity) - parseInt(s.reserved)), 0) : 0;
   
-  let image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
-  if (apiProduct.slug === 'iphone-15-pro-max') {
+  // Try to get primary image from variant's dimensions.images
+  let image = '';
+  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+    const primary = mainVariant.dimensions.images.find(img => img.isPrimary) || mainVariant.dimensions.images[0];
+    if (primary && primary.url) {
+      image = primary.url;
+    }
+  }
+  
+  // Fallback to legacy static images if no dynamic images exist
+  if (!image) {
     image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
-  } else if (apiProduct.slug === 'samsung-galaxy-s24-ultra') {
-    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw';
-  } else if (apiProduct.slug === 'lenovo-legion-5-pro') {
-    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E';
-  } else if (apiProduct.slug === 'sony-wh-1000xm5-black') {
-    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA';
-  } else if (apiProduct.slug === 'apple-airpods-pro-2') {
-    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ';
+    if (apiProduct.slug === 'iphone-15-pro-max') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
+    } else if (apiProduct.slug === 'samsung-galaxy-s24-ultra') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw';
+    } else if (apiProduct.slug === 'lenovo-legion-5-pro') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E';
+    } else if (apiProduct.slug === 'sony-wh-1000xm5-black') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA';
+    } else if (apiProduct.slug === 'apple-airpods-pro-2') {
+      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ';
+    }
   }
 
   const name = typeof apiProduct.name === 'object' ? (apiProduct.name.uk || apiProduct.name.en) : apiProduct.name;
   const description = typeof apiProduct.description === 'object' ? (apiProduct.description.uk || apiProduct.description.en) : apiProduct.description;
+
+  const getAttrValue = (code) => {
+    const checkList = [];
+    if (mainVariant) {
+      if (mainVariant.attribute_values) checkList.push(...mainVariant.attribute_values);
+      if (mainVariant.attributeValues) checkList.push(...mainVariant.attributeValues);
+    }
+    if (apiProduct) {
+      if (apiProduct.attribute_values) checkList.push(...apiProduct.attribute_values);
+      if (apiProduct.attributeValues) checkList.push(...apiProduct.attributeValues);
+    }
+    
+    const match = checkList.find(av => av.attribute && av.attribute.code === code);
+    if (match) {
+      const valObj = match.attribute_value || match.attributeValue;
+      if (valObj && valObj.value) {
+        if (typeof valObj.value === 'object') {
+          return valObj.value.uk || valObj.value.en || '';
+        }
+        return valObj.value;
+      }
+      return match.custom_value || '';
+    }
+    return '';
+  };
 
   return {
     id: apiProduct.id,
     slug: apiProduct.slug,
     name: name,
     brand: apiProduct.brand ? apiProduct.brand.name : 'Unknown',
-    ram: mainVariant && mainVariant.dimensions && mainVariant.dimensions.ram ? mainVariant.dimensions.ram : '16GB',
+    ram: getAttrValue('ram') || '16GB',
     category: apiProduct.categories && apiProduct.categories[0] ? (apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en) : 'Laptops',
     price: price,
     oldPrice: oldPrice,
@@ -86,10 +125,10 @@ function mapProduct(apiProduct) {
     image: image,
     description: description,
     specs: {
-      processor: mainVariant && mainVariant.dimensions && mainVariant.dimensions.processor ? mainVariant.dimensions.processor : 'Apple Silicon / Intel Core',
-      screen: mainVariant && mainVariant.dimensions && mainVariant.dimensions.screen ? mainVariant.dimensions.screen : '14" IPS',
-      storage: mainVariant && mainVariant.dimensions && mainVariant.dimensions.storage ? mainVariant.dimensions.storage : '512GB SSD',
-      os: mainVariant && mainVariant.dimensions && mainVariant.dimensions.os ? mainVariant.dimensions.os : 'Windows 11 / macOS',
+      processor: getAttrValue('processor') || 'Apple Silicon / Intel Core',
+      screen: getAttrValue('screen_size') || '14" IPS',
+      storage: getAttrValue('storage') || '512GB SSD',
+      os: getAttrValue('os') || 'Windows 11 / macOS',
       weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : '1.5 кг'
     }
   };
@@ -114,18 +153,47 @@ const fetchCategories = async () => {
   }
 };
 
+const fetchBrands = async () => {
+  try {
+    const response = await api.get('/v1/catalog/brands');
+    if (response.data && response.data.status === 'success') {
+      dbBrands.value = response.data.data || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch brands:', error);
+  }
+};
+
+const fetchFilterSchema = async () => {
+  try {
+    const response = await api.get('/v1/catalog/filters');
+    if (response.data && response.data.status === 'success') {
+      const data = response.data.data;
+      dynamicAttributes.value = data.attributes || [];
+      if (priceMin.value === 0 && priceMax.value === 200000) {
+        priceMin.value = data.price.min || 0;
+        priceMax.value = data.price.max || 200000;
+        initialPriceMin.value = data.price.min || 0;
+        initialPriceMax.value = data.price.max || 200000;
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch filter schema:', error);
+  }
+};
+
 const fetchProducts = async () => {
   isLoading.value = true;
   try {
     const params = {
       page: pagination.value.page,
       sort_by: sortBy.value,
-      price_from: priceMin.value > 0 ? priceMin.value : undefined,
-      price_to: priceMax.value < 200000 ? priceMax.value : undefined,
+      price_from: priceMin.value > initialPriceMin.value ? priceMin.value : undefined,
+      price_to: priceMax.value < initialPriceMax.value ? priceMax.value : undefined,
     };
 
     if (selectedBrands.value.length > 0) {
-      params.brand = selectedBrands.value.map(b => b.toLowerCase()).join(',');
+      params.brand = selectedBrands.value.join(',');
     }
 
     if (route.query.category) {
@@ -135,6 +203,22 @@ const fetchProducts = async () => {
     if (route.query.search) {
       params.search = route.query.search;
     }
+
+    if (onlyDiscounts.value) {
+      params.discounts = 1;
+    }
+
+    if (onlyInStock.value) {
+      params.in_stock = 1;
+    }
+
+    // Add EAV attributes to query parameters
+    Object.keys(selectedAttrs.value).forEach(code => {
+      const val = selectedAttrs.value[code];
+      if (val) {
+        params[`attrs[${code}]`] = val;
+      }
+    });
 
     const response = await api.get('/v1/catalog/products', { params });
     if (response.data && response.data.status === 'success') {
@@ -167,7 +251,6 @@ const selectCategory = (categorySlug) => {
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.lastPage) {
     pagination.value.page = page;
-    // Set route query to trigger watch and reload
     router.push({
       name: 'catalog',
       query: {
@@ -180,27 +263,29 @@ const changePage = (page) => {
 
 const filteredProducts = computed(() => {
   return rawProducts.value.filter((product) => {
-    const matchesRam = !selectedRam.value || product.ram === selectedRam.value;
-    const matchesDiscount = !onlyDiscounts.value || product.oldPrice !== null;
-    const matchesStock = !onlyInStock.value || product.inStock;
-    const matchesRating = !selectedRating.value || product.rating >= parseFloat(selectedRating.value);
-
-    return matchesRam && matchesDiscount && matchesStock && matchesRating;
+    return !selectedRating.value || product.rating >= parseFloat(selectedRating.value);
   });
 });
 
 const activeFilters = computed(() => {
   const filters = [];
 
-  selectedBrands.value.forEach((brand) => {
-    filters.push({ type: 'brand', label: brand, value: brand });
+  selectedBrands.value.forEach((brandSlug) => {
+    const brandObj = dbBrands.value.find(b => b.slug === brandSlug);
+    filters.push({ type: 'brand', label: brandObj ? brandObj.name : brandSlug, value: brandSlug });
   });
 
-  if (selectedRam.value) {
-    filters.push({ type: 'ram', label: `ОЗУ: ${selectedRam.value}`, value: selectedRam.value });
-  }
+  // Dynamic attributes
+  Object.keys(selectedAttrs.value).forEach((code) => {
+    const val = selectedAttrs.value[code];
+    if (val) {
+      const attr = dynamicAttributes.value.find(a => a.code === code);
+      const attrName = attr ? (attr.name.uk || attr.name.en || attr.name) : code;
+      filters.push({ type: 'attribute', code: code, label: `${attrName}: ${val}`, value: val });
+    }
+  });
 
-  if (priceMin.value > 0 || priceMax.value < 200000) {
+  if (priceMin.value > initialPriceMin.value || priceMax.value < initialPriceMax.value) {
     filters.push({
       type: 'price',
       label: `${formatPrice(priceMin.value)} - ${formatPrice(priceMax.value)}`
@@ -226,12 +311,14 @@ const removeFilter = (filter) => {
   if (filter.type === 'brand') {
     selectedBrands.value = selectedBrands.value.filter((brand) => brand !== filter.value);
   }
-  if (filter.type === 'ram') {
-    selectedRam.value = '';
+  if (filter.type === 'attribute') {
+    const current = { ...selectedAttrs.value };
+    delete current[filter.code];
+    selectedAttrs.value = current;
   }
   if (filter.type === 'price') {
-    priceMin.value = 0;
-    priceMax.value = 200000;
+    priceMin.value = initialPriceMin.value;
+    priceMax.value = initialPriceMax.value;
   }
   if (filter.type === 'rating') {
     selectedRating.value = '';
@@ -246,9 +333,9 @@ const removeFilter = (filter) => {
 
 const clearFilters = () => {
   selectedBrands.value = [];
-  selectedRam.value = '';
-  priceMin.value = 0;
-  priceMax.value = 200000;
+  selectedAttrs.value = {};
+  priceMin.value = initialPriceMin.value;
+  priceMax.value = initialPriceMax.value;
   selectedRating.value = '';
   onlyDiscounts.value = false;
   onlyInStock.value = false;
@@ -267,10 +354,9 @@ const closeQuickView = () => {
 const currentCategoryName = computed(() => {
   if (!route.query.category) return 'Всі товари';
   const cat = categoriesList.value.find(c => c.slug === route.query.category);
-  return cat ? (cat.name.uk || cat.name.en) : 'Каталог';
+  return cat ? (cat.name.uk || cat.name.en || cat.name) : 'Каталог';
 });
 
-// Watch route query to update page & category triggers
 watch(
   () => [route.query.category, route.query.search, route.query.page],
   () => {
@@ -279,9 +365,8 @@ watch(
   }
 );
 
-// Watch sorting/price/brands filters
 watch(
-  () => [sortBy.value, priceMin.value, priceMax.value, selectedBrands.value],
+  () => [sortBy.value, priceMin.value, priceMax.value, selectedBrands.value, selectedAttrs.value, onlyDiscounts.value, onlyInStock.value],
   () => {
     pagination.value.page = 1;
     fetchProducts();
@@ -292,6 +377,8 @@ watch(
 onMounted(() => {
   window.scrollTo(0, 0);
   fetchCategories();
+  fetchBrands();
+  fetchFilterSchema();
   pagination.value.page = parseInt(route.query.page) || 1;
   fetchProducts();
 });
@@ -319,13 +406,13 @@ onMounted(() => {
           v-model:priceMin="priceMin"
           v-model:priceMax="priceMax"
           v-model:selectedBrands="selectedBrands"
-          v-model:selectedRam="selectedRam"
+          v-model:selectedAttrs="selectedAttrs"
           v-model:selectedRating="selectedRating"
           v-model:onlyDiscounts="onlyDiscounts"
           v-model:onlyInStock="onlyInStock"
           :products="rawProducts"
           :brands="brands"
-          :ramOptions="ramOptions"
+          :dynamicAttributes="dynamicAttributes"
           :categoriesList="categoriesList"
           :selectedCategory="route.query.category || ''"
           @select-category="selectCategory"
@@ -483,13 +570,13 @@ onMounted(() => {
           v-model:priceMin="priceMin"
           v-model:priceMax="priceMax"
           v-model:selectedBrands="selectedBrands"
-          v-model:selectedRam="selectedRam"
+          v-model:selectedAttrs="selectedAttrs"
           v-model:selectedRating="selectedRating"
           v-model:onlyDiscounts="onlyDiscounts"
           v-model:onlyInStock="onlyInStock"
           :products="rawProducts"
           :brands="brands"
-          :ramOptions="ramOptions"
+          :dynamicAttributes="dynamicAttributes"
           :categoriesList="categoriesList"
           :selectedCategory="route.query.category || ''"
           @select-category="selectCategory"

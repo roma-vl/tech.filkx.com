@@ -51,6 +51,8 @@ Route::prefix('v1')->group(function () {
     // Catalog routes
     Route::prefix('catalog')->group(function () {
         Route::get('categories', [CatalogController::class, 'categories']);
+        Route::get('brands', [CatalogController::class, 'brands']);
+        Route::get('filters', [CatalogController::class, 'filters']);
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
     });
