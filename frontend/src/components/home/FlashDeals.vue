@@ -9,6 +9,14 @@ const props = defineProps({
   }
 });
 
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('uk-UA', {
+    style: 'currency',
+    currency: 'UAH',
+    maximumFractionDigits: 0
+  }).format(price);
+};
+
 // Countdown Timer Logic
 const hours = ref(23);
 const minutes = ref(59);
@@ -81,7 +89,7 @@ const decrementQty = () => {
 
 <template>
   <!-- Hot Deals Section -->
-  <section class="bg-zinc-50 dark:bg-zinc-950 py-16 border-y border-zinc-100 dark:border-zinc-900 select-none font-sans">
+  <section class="bg-zinc-50 dark:bg-zinc-950 py-16 border-y border-zinc-100 dark:border-zinc-900 font-sans">
     <div class="max-w-container-max mx-auto px-4 md:px-8">
       
       <!-- Section Header -->
@@ -171,8 +179,8 @@ const decrementQty = () => {
 
             <!-- Price -->
             <div class="flex items-baseline gap-2">
-              <span class="font-black text-xl md:text-2xl text-zinc-900 dark:text-white">${{ prod.price.toFixed(2) }}</span>
-              <span class="text-xs text-zinc-400 line-through">${{ prod.oldPrice.toFixed(2) }}</span>
+              <span class="font-black text-xl md:text-2xl text-[#00a046]">{{ formatPrice(prod.price) }}</span>
+              <span class="text-xs text-zinc-400 line-through">{{ formatPrice(prod.oldPrice) }}</span>
             </div>
           </div>
 
@@ -282,8 +290,8 @@ const decrementQty = () => {
 
                 <!-- Price Box -->
                 <div class="flex items-baseline gap-3 bg-zinc-50 dark:bg-zinc-850 px-4 py-3 rounded-2xl w-fit">
-                  <span class="text-3xl font-black text-zinc-900 dark:text-white">${{ activeProduct.price.toFixed(2) }}</span>
-                  <span class="text-sm text-zinc-400 line-through">${{ activeProduct.oldPrice.toFixed(2) }}</span>
+                  <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ formatPrice(activeProduct.price) }}</span>
+                  <span class="text-sm text-zinc-400 line-through">{{ formatPrice(activeProduct.oldPrice) }}</span>
                 </div>
 
                 <!-- Excerpt / Description -->

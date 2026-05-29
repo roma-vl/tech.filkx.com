@@ -38,7 +38,7 @@ const getCategoryStyle = (slug) => {
 
 <template>
   <!-- Popular Categories Section -->
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-10 select-none font-sans">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-10 font-sans">
     <div class="flex items-center justify-between mb-8">
       <div class="space-y-1">
         <h2 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">Популярні категорії</h2>
@@ -50,13 +50,13 @@ const getCategoryStyle = (slug) => {
       </a>
     </div>
     
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-5">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
       <!-- Category Card -->
       <a 
-        v-for="cat in categories" 
-        :key="cat.id"
-        :href="`/catalog?category=${cat.slug}`"
-        class="group flex flex-col items-center p-5 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+         v-for="cat in categories" 
+         :key="cat.id"
+         :href="`/catalog?category=${cat.slug}`"
+         class="group flex flex-col items-center p-5 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
       >
         <!-- Background Gradient Accent on Hover -->
         <div class="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-350" :class="getCategoryStyle(cat.slug).color"></div>
@@ -69,7 +69,7 @@ const getCategoryStyle = (slug) => {
         </div>
         
         <!-- Text -->
-        <span class="relative z-10 font-bold text-sm text-zinc-850 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors text-center line-clamp-1">
+        <span class="relative z-10 font-bold text-xs md:text-sm text-zinc-850 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors text-center line-clamp-2 min-h-[2.5rem] flex items-center justify-center">
           {{ cat.name?.uk || cat.name?.en || cat.name }}
         </span>
       </a>

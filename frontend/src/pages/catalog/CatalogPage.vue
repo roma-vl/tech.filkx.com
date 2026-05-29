@@ -386,7 +386,7 @@ onMounted(() => {
 
 <template>
   <!-- Main Catalog Area -->
-  <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 flex gap-8 font-sans select-none text-zinc-800 dark:text-zinc-200">
+  <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 flex gap-8 font-sans text-zinc-800 dark:text-zinc-200">
     
     <!-- Sidebar Filters (Desktop) -->
     <aside class="hidden lg:block w-72 flex-shrink-0">

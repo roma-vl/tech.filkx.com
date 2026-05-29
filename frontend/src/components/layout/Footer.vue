@@ -14,7 +14,7 @@ const handleSubscribe = () => {
 
 <template>
   <!-- Main Footer -->
-  <footer class="bg-[#19191b] text-[#c4c4c7] pt-16 pb-8 border-t border-zinc-800 select-none font-sans">
+  <footer class="bg-[#19191b] text-[#c4c4c7] pt-16 pb-8 border-t border-zinc-800 font-sans">
     <div class="max-w-container-max mx-auto px-4 md:px-8">
       
       <!-- Top Section: Sitemap & Form Grid -->
@@ -130,7 +130,7 @@ const handleSubscribe = () => {
         </div>
         <div class="flex items-center gap-3">
           <!-- App Store Badge -->
-          <a href="#" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white select-none">
+          <a href="#" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white">
             <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.51-.64.74-1.2 1.88-1.05 3 .96.08 2.11-.53 2.76-1.32z"/>
             </svg>
@@ -141,7 +141,7 @@ const handleSubscribe = () => {
           </a>
 
           <!-- Google Play Badge -->
-          <a href="#" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white select-none">
+          <a href="#" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white">
             <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
               <path d="M3 5.27v13.46c0 .82.68 1.42 1.47 1.26l11.14-6.43L4.47 4.01C3.68 3.85 3 4.45 3 5.27zm13.14 6.73L5.68 6.09l9.31 5.37c.36.21.36.73 0 .94l-9.31 5.37 10.46-5.77z"/>
             </svg>
@@ -171,7 +171,7 @@ const handleSubscribe = () => {
         </div>
 
         <!-- Payment Brands -->
-        <div class="flex items-center gap-4 select-none opacity-50 hover:opacity-75 transition-opacity">
+        <div class="flex items-center gap-4 opacity-50 hover:opacity-75 transition-opacity">
           <!-- Visa -->
           <svg class="h-5 w-auto" viewBox="0 0 36 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12.986 0.165l-2.428 11.235h-2.316l2.428-11.235h2.316zm12.388 4.256c0.007-0.089 0.012-0.18 0.012-0.274 0-1.849-2.545-1.951-2.569-2.775 0-0.25 0.228-0.518 0.723-0.584 0.245-0.033 0.923-0.06 1.696 0.297l0.301-1.398c-0.412-0.15-0.947-0.307-1.616-0.307-1.693 0-2.887 0.901-2.898 2.193-0.013 1.624 2.247 1.714 2.235 2.502-0.003 0.24-0.288 0.493-0.852 0.558-0.426 0.049-1.442 0.026-1.996-0.297l-0.316 1.46c0.536 0.245 1.23 0.384 1.9 0.385 1.795 0 2.969-0.89 2.98-2.295zm9.58-4.256l-1.802 8.497c-0.12 0.559-0.51 1.055-1.042 1.341l-2.527 1.397 0.065-0.306 4.316-10.929h2.99zm-26.685 0l-3.327 7.784-0.36-1.844c-0.505-1.722-2.072-3.585-3.837-4.512l3.415 9.807 2.378-0.004 3.541-11.231h-1.81z" fill="currentColor"/>

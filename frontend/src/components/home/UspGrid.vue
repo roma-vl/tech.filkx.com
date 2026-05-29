@@ -3,7 +3,7 @@ const items = [
   {
     icon: 'local_shipping',
     title: 'Безкоштовна доставка',
-    description: 'Для всіх замовлень від $500 по всій Україні.'
+    description: 'Для всіх замовлень від 2000 ₴ по всій Україні.'
   },
   {
     icon: 'verified',
@@ -24,7 +24,7 @@ const items = [
 </script>
 
 <template>
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-6 select-none font-sans">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-6 font-sans">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div 
         v-for="item in items" 

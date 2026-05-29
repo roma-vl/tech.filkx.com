@@ -12,7 +12,7 @@ const brands = [
 
 <template>
   <!-- Shop by Brand Section -->
-  <section class="border-y border-zinc-100 dark:border-zinc-900 bg-white dark:bg-zinc-950 py-10 select-none font-sans">
+  <section class="border-y border-zinc-100 dark:border-zinc-900 bg-white dark:bg-zinc-950 py-10 font-sans">
     <div class="max-w-container-max mx-auto px-4 md:px-8">
       <h2 class="text-center mb-8 text-[11px] text-zinc-400 dark:text-zinc-500 font-extrabold uppercase tracking-[0.25em]">
         Офіційні преміум-партнери бренду

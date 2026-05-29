@@ -238,6 +238,14 @@ const selectSearchResult = (product) => {
   showDropdown.value = false;
 };
 
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('uk-UA', {
+    style: 'currency',
+    currency: 'UAH',
+    maximumFractionDigits: 0
+  }).format(price);
+};
+
 const highlightMatch = (name, query) => {
   if (!query.trim()) return name;
   const regex = new RegExp(`(${query.trim()})`, 'gi');
@@ -296,7 +304,7 @@ onUnmounted(() => {
 
 <template>
   <!-- Main Header Shell -->
-  <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md select-none">
+  <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
     <div class="max-w-container-max mx-auto h-16 px-4 md:px-8 flex items-center justify-between gap-4">
       
       <!-- Left: Burger & Logo -->
@@ -394,7 +402,7 @@ onUnmounted(() => {
                 <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-wide leading-none mb-0.5">{{ prod.category }}</p>
                 <p class="text-xs text-zinc-700 line-clamp-1 group-hover/item:text-primary transition-colors" v-html="highlightMatch(prod.name, searchQuery)"></p>
               </div>
-              <span class="text-xs font-bold text-zinc-900 shrink-0">${{ prod.price.toFixed(2) }}</span>
+              <span class="text-xs font-bold text-zinc-900 shrink-0">{{ formatPrice(prod.price) }}</span>
             </div>
           </div>
 

@@ -16,8 +16,8 @@ class GetHomeDataAction
 
     public function execute(Request $request): array
     {
-        // 1. Popular categories (8 categories with most active products)
-        $categories = $this->categoryRepository->getPopularCategories(8);
+        // 1. Popular categories (6 categories with most active products)
+        $categories = $this->categoryRepository->getPopularCategories(6);
 
         // 2. Flash Deals (is_hot = true or highest variant discount percentage)
         $flashDealsRaw = $this->productRepository->getHotDeals();
@@ -36,7 +36,7 @@ class GetHomeDataAction
             }
             return $maxDiscountPct;
         })
-        ->take(8)
+        ->take(4)
         ->values();
 
         // 3. Smart Recommendations Algorithm

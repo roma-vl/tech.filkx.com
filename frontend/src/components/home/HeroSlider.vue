@@ -67,7 +67,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-6 select-none font-sans">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-6 font-sans">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <!-- Left side: Main Slider (takes 2 columns) -->

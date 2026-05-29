@@ -25,7 +25,7 @@ const articles = [
 </script>
 
 <template>
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-12 select-none font-sans">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-12 font-sans">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
       <div class="space-y-1">
         <h2 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">Блог та огляди техніки</h2>

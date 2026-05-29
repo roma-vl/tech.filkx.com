@@ -272,7 +272,7 @@ onUnmounted(() => {
     </button>
   </div>
   <div v-else>
-    <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 text-zinc-800 dark:text-zinc-200 font-sans select-none">
+    <main class="max-w-container-max mx-auto px-4 md:px-8 py-8 text-zinc-800 dark:text-zinc-200 font-sans">
       
       <!-- Breadcrumbs -->
       <nav class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-8 font-bold">

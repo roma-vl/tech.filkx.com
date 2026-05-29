@@ -20,11 +20,19 @@ const scrollCarousel = (direction) => {
     });
   }
 };
+
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('uk-UA', {
+    style: 'currency',
+    currency: 'UAH',
+    maximumFractionDigits: 0
+  }).format(price);
+};
 </script>
 
 <template>
   <!-- Recommended for You Section -->
-  <section class="max-w-container-max mx-auto px-4 md:px-8 py-12 select-none font-sans">
+  <section class="max-w-container-max mx-auto px-4 md:px-8 py-12 font-sans">
     
     <!-- Section Header -->
     <div class="flex items-center justify-between mb-10">
@@ -56,15 +64,16 @@ const scrollCarousel = (direction) => {
       class="flex overflow-x-auto gap-6 hide-scrollbar scroll-smooth snap-x snap-mandatory px-1 py-4"
     >
       <!-- Recommendation Item -->
-      <router-link
+      <div
         v-for="prod in products"
         :key="prod.id"
-        :to="{ name: 'product-detail', params: { id: prod.slug } }"
-        class="group cursor-pointer flex-shrink-0 w-[calc(50%-12px)] md:w-[calc(33.33%-16px)] lg:w-[calc(20%-20px)] min-w-[220px] snap-start block"
-        @click="store.viewProduct(prod)"
+        class="group flex flex-col p-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl hover:shadow-xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 relative overflow-hidden w-[calc(50%-12px)] md:w-[calc(33.33%-16px)] lg:w-[calc(20%-20px)] min-w-[240px] snap-start"
       >
         <!-- Product Image Container -->
-        <div class="aspect-square bg-zinc-50 dark:bg-zinc-900 rounded-3xl mb-2.5 overflow-hidden relative border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
+        <div 
+          @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
+          class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-2xl mb-4 overflow-hidden relative flex items-center justify-center p-2 cursor-pointer"
+        >
           <img
             class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
             :src="prod.image"
@@ -73,7 +82,7 @@ const scrollCarousel = (direction) => {
           <!-- Wishlist -->
           <button
             @click.stop="store.toggleWishlist(prod)"
-            class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md shadow hover:scale-105 active:scale-95 transition-all flex items-center justify-center text-zinc-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 z-10"
+            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/95 dark:bg-zinc-800/95 shadow hover:scale-110 active:scale-95 transition-all flex items-center justify-center text-zinc-400 hover:text-rose-600 z-10"
           >
             <span
               class="material-symbols-outlined text-[18px]"
@@ -86,35 +95,50 @@ const scrollCarousel = (direction) => {
         </div>
 
         <!-- Product Text Info -->
-        <div class="flex flex-col gap-2">
-          <span class="text-zinc-400 dark:text-zinc-500 font-extrabold text-[10px] uppercase tracking-wider">{{ prod.category }}</span>
-          <h3 class="font-extrabold text-sm md:text-base text-zinc-800 dark:text-zinc-200 group-hover:text-[#00a046] transition-colors line-clamp-2 leading-snug min-h-[40px] md:min-h-[44px]">
+        <div class="flex flex-col flex-grow">
+          <span class="text-zinc-400 dark:text-zinc-500 font-extrabold text-[10px] mb-1.5 uppercase tracking-wider">{{ prod.category }}</span>
+          <h3 
+            @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
+            class="font-extrabold text-sm md:text-base text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] transition-colors line-clamp-2 leading-snug min-h-[40px] md:min-h-[44px] cursor-pointer"
+          >
             {{ prod.name }}
           </h3>
-          <div class="flex items-center justify-between mt-1">
-            <span class="font-black text-lg md:text-xl text-zinc-900 dark:text-white">${{ prod.price.toFixed(2) }}</span>
-            <div class="flex gap-2">
-              <!-- Compare -->
-              <button
-                @click.stop="store.toggleCompare(prod)"
-                class="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-350 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:scale-105 active:scale-95 transition-all"
-                :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': store.isInCompare(prod.id) }"
-                title="Порівняти"
-              >
-                <span class="material-symbols-outlined text-[18px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
-              </button>
-              <!-- Buy -->
-              <button
-                @click.stop="store.addToCart(prod)"
-                class="w-9 h-9 rounded-xl bg-[#00a046] hover:bg-[#00b050] text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-sm"
-                title="В кошик"
-              >
-                <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-              </button>
+
+          <!-- Rating -->
+          <div class="flex items-center gap-1 my-2">
+            <div class="flex text-amber-400">
+              <span v-for="star in 4" :key="star" class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[13px]">star_half</span>
             </div>
+            <span class="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold ml-1">({{ prod.reviews }})</span>
+          </div>
+
+          <!-- Price -->
+          <div class="flex flex-wrap items-baseline gap-2 mt-auto">
+            <span class="font-black text-lg md:text-xl text-[#00a046]">{{ formatPrice(prod.price) }}</span>
+            <span v-if="prod.oldPrice" class="text-xs text-zinc-400 line-through font-bold">{{ formatPrice(prod.oldPrice) }}</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-4 flex gap-2">
+            <button
+              @click.stop="store.addToCart(prod)"
+              class="flex-grow bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>В кошик</span>
+              <span class="material-symbols-outlined text-[15px]">shopping_cart</span>
+            </button>
+            <button
+              @click.stop="store.toggleCompare(prod)"
+              class="w-9 h-9 border border-zinc-200 dark:border-zinc-800 text-zinc-550 dark:text-zinc-450 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
+              :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': store.isInCompare(prod.id) }"
+              title="Порівняти"
+            >
+              <span class="material-symbols-outlined text-[16px]" :class="{ 'fill': store.isInCompare(prod.id) }">compare_arrows</span>
+            </button>
           </div>
         </div>
-      </router-link>
+      </div>
     </div>
   </section>
 </template>
