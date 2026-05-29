@@ -156,6 +156,21 @@ services:
         condition: service_healthy
     command: [ "php", "artisan", "queue:work", "--tries=3", "--sleep=3", "--timeout=90" ]
 
+  tech-meilisearch:
+    container_name: tech-meilisearch
+    image: getmeili/meilisearch:v1.7
+    restart: always
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-secret}
+    volumes:
+      - meilisearch-data:/meili_data
+    networks:
+      - filkx
+
 networks:
   filkx:
     external: true
@@ -163,5 +178,6 @@ networks:
 volumes:
   api-postgres:
   redis:
+  meilisearch-data:
   tech-nginx-temp:
     driver: local
