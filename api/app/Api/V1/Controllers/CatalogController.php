@@ -237,4 +237,94 @@ class CatalogController extends BaseApiController
 
         return self::successfulResponseWithData($product);
     }
+
+    public function homeData(): JsonResponse
+    {
+        // 1. Popular categories (8 categories with the most active products)
+        $categories = Category::withCount(['products' => function ($q) {
+            $q->where('status', 'active');
+        }])
+        ->orderBy('products_count', 'desc')
+        ->take(8)
+        ->get();
+
+        // 2. Flash Deals (is_hot = true OR has variants with old_price > price)
+        $flashDeals = Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'attributeValues.attribute',
+            'attributeValues.attributeValue',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue'
+        ])
+        ->where('status', 'active')
+        ->where(function ($q) {
+            $q->where('is_hot', true)
+              ->orWhereHas('variants', function ($varQ) {
+                  $varQ->whereNotNull('old_price')
+                       ->whereRaw('old_price > price');
+              });
+        })
+        ->get()
+        ->sortByDesc(function ($product) {
+            if ($product->is_hot) {
+                return 999;
+            }
+            $maxDiscountPct = 0;
+            foreach ($product->variants as $variant) {
+                if ($variant->old_price && $variant->old_price > $variant->price) {
+                    $pct = ($variant->old_price - $variant->price) / $variant->old_price;
+                    if ($pct > $maxDiscountPct) {
+                        $maxDiscountPct = $pct;
+                    }
+                }
+            }
+            return $maxDiscountPct;
+        })
+        ->take(8)
+        ->values();
+
+        // 3. Recommended products (is_recommended = true or random fallback)
+        $recommended = Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'attributeValues.attribute',
+            'attributeValues.attributeValue',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue'
+        ])
+        ->where('status', 'active')
+        ->where('is_recommended', true)
+        ->take(8)
+        ->get();
+
+        if ($recommended->count() < 8) {
+            $needed = 8 - $recommended->count();
+            $excludeIds = $recommended->pluck('id')->toArray();
+            $random = Product::with([
+                'brand',
+                'categories',
+                'variants.stocks',
+                'attributeValues.attribute',
+                'attributeValues.attributeValue',
+                'variants.attributeValues.attribute',
+                'variants.attributeValues.attributeValue'
+            ])
+            ->where('status', 'active')
+            ->whereNotIn('id', $excludeIds)
+            ->inRandomOrder()
+            ->take($needed)
+            ->get();
+            
+            $recommended = $recommended->concat($random);
+        }
+
+        return self::successfulResponseWithData([
+            'categories' => $categories,
+            'flash_deals' => $flashDeals,
+            'recommended' => $recommended->values()
+        ]);
+    }
 }
