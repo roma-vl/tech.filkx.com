@@ -28,7 +28,7 @@ services:
       - ./api:/app
       - /var/www/staging.tech.filkx.com/shared/storage:/app/storage
     ports:
-      - "8976:80"
+      - "8076:80"
     networks:
       - filkx
 
