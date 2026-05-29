@@ -55,6 +55,41 @@ const product = computed(() => {
     const storageVal = getAttrValue('storage');
     const subtitle = ramVal && storageVal ? `${ramVal} ОЗУ / ${storageVal}` : (rawProduct.value.brand?.name ? `${rawProduct.value.brand.name} Edition` : 'Premium Tech Edition');
 
+    const specsList = [];
+    const list = [];
+    if (rawProduct.value.attributeValues) {
+      list.push(...rawProduct.value.attributeValues);
+    }
+    if (mainVariant && mainVariant.attributeValues) {
+      list.push(...mainVariant.attributeValues);
+    }
+    const seenCodes = new Set();
+    list.forEach(av => {
+      if (!av.attribute) return;
+      const code = av.attribute.code;
+      if (seenCodes.has(code)) return;
+      seenCodes.add(code);
+      const label = av.attribute.name?.uk || av.attribute.name?.en || av.attribute.name || code;
+      let val = '';
+      if (av.customValue !== null && av.customValue !== undefined) {
+        val = av.customValue;
+      } else if (av.attributeValue) {
+        val = av.attributeValue.value?.uk || av.attributeValue.value?.en || av.attributeValue.value || '';
+      }
+      if (label && val) {
+        specsList.push([label, val]);
+      }
+    });
+    if (mainVariant && mainVariant.weight && !seenCodes.has('weight')) {
+      specsList.push(['Вага', `${mainVariant.weight} кг`]);
+    }
+    if (rawProduct.value.brand && !seenCodes.has('brand')) {
+      specsList.push(['Бренд', rawProduct.value.brand.name]);
+    }
+    if (mainVariant && mainVariant.sku && !seenCodes.has('sku')) {
+      specsList.push(['Артикул (SKU)', mainVariant.sku]);
+    }
+
     return {
       id: mainVariant ? mainVariant.id : rawProduct.value.id,
       productId: rawProduct.value.id,
@@ -67,7 +102,8 @@ const product = computed(() => {
       image: image,
       rating: rawProduct.value.rating || 4.8,
       reviews: rawProduct.value.reviews || 84,
-      description: description
+      description: description,
+      specs: specsList
     };
   }
   return null;

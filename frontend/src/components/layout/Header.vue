@@ -34,7 +34,7 @@ const isSearching = ref(false);
 const mapApiProduct = (prod) => {
   const mainVariant = prod.variants?.[0] || null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
-  
+
   let image = '';
   if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
     const primary = mainVariant.dimensions.images.find(img => img.isPrimary) || mainVariant.dimensions.images[0];
@@ -42,16 +42,16 @@ const mapApiProduct = (prod) => {
       image = primary.url;
     }
   }
-  
+
   if (!image) {
     image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
   }
 
   const name = typeof prod.name === 'object' ? (prod.name.uk || prod.name.en) : prod.name;
-  
+
   const categoryObj = prod.categories?.[0] || null;
-  const category = categoryObj 
-    ? (typeof categoryObj.name === 'object' ? (categoryObj.name.uk || categoryObj.name.en) : categoryObj.name) 
+  const category = categoryObj
+    ? (typeof categoryObj.name === 'object' ? (categoryObj.name.uk || categoryObj.name.en) : categoryObj.name)
     : 'Товари';
 
   return {
@@ -68,13 +68,13 @@ let debounceTimeout = null;
 
 watch(searchQuery, (newQuery) => {
   if (debounceTimeout) clearTimeout(debounceTimeout);
-  
+
   const query = newQuery.trim();
   if (!query) {
     searchResults.value = [];
     return;
   }
-  
+
   debounceTimeout = setTimeout(async () => {
     isSearching.value = true;
     try {
@@ -206,7 +206,7 @@ onMounted(async () => {
           badge: ''
         }))
       }));
-      
+
       if (categories.value.length > 0) {
         activeCat.value = categories.value[0];
       }
@@ -226,11 +226,11 @@ onUnmounted(() => {
   <!-- Main Header Shell -->
   <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
     <div class="max-w-container-max mx-auto h-16 px-4 md:px-8 flex items-center justify-between gap-4">
-      
+
       <!-- Left: Burger & Logo -->
       <div class="flex items-center gap-3">
         <!-- Burger Button -->
-        <button 
+        <button
           @click="toggleCatalog"
           class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center"
           title="Toggle Categories"
@@ -240,9 +240,7 @@ onUnmounted(() => {
 
         <!-- Brand/Logo (Rozetka Green Smiley Style) -->
         <a class="flex items-center gap-2 hover:opacity-90 transition-opacity" href="/" @click.prevent="router.push('/')">
-          <div class="w-8 h-8 rounded-full bg-[#00a046] flex items-center justify-center shadow-md">
-            <span class="material-symbols-outlined text-white text-[20px] font-bold">sentiment_very_satisfied</span>
-          </div>
+
           <span class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block">
             FilkxTech
           </span>
@@ -250,7 +248,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Catalog Toggle Button -->
-      <button 
+      <button
         @click="toggleCatalog"
         :class="isMegaMenuOpen ? 'bg-white/20 border-white/40' : 'border-white/20 hover:bg-white/10 hover:border-white/40'"
         class="catalog-btn hidden md:flex items-center gap-2 border px-4 py-2 rounded-lg font-bold text-sm tracking-wide text-white transition-all"
@@ -273,26 +271,26 @@ onUnmounted(() => {
               type="text"
             />
             <!-- Clear Search Button -->
-            <button 
-              v-if="searchQuery" 
-              type="button" 
-              @click="searchQuery = ''" 
+            <button
+              v-if="searchQuery"
+              type="button"
+              @click="searchQuery = ''"
               class="p-1 text-zinc-400 hover:text-zinc-600 mr-1 flex items-center justify-center"
             >
               <span class="material-symbols-outlined text-[16px]">close</span>
             </button>
             <!-- Microphone Voice Search Button -->
-            <button 
-              type="button" 
-              @click="triggerVoiceSearch" 
+            <button
+              type="button"
+              @click="triggerVoiceSearch"
               class="p-1 text-zinc-400 hover:text-zinc-600 flex items-center justify-center"
             >
               <span class="material-symbols-outlined text-[20px]">mic</span>
             </button>
           </div>
           <!-- Rozetka Green Find Button -->
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 shrink-0"
           >
             Знайти
@@ -365,7 +363,7 @@ onUnmounted(() => {
 
       <!-- Right: Compact Icon Actions -->
       <div class="flex items-center gap-4 md:gap-6 text-white">
-        
+
         <!-- Account -->
         <Dropdown align="right" width="60">
           <template #trigger>
@@ -432,14 +430,14 @@ onUnmounted(() => {
 
         <!-- Compare -->
         <button
-          @click="store.openDrawer('compare')"
+          @click="router.push({ name: 'account', query: { tab: 'compare' } })"
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
           title="Compare"
         >
           <span class="material-symbols-outlined text-[24px]">compare_arrows</span>
           <span
             v-if="store.compareCount > 0"
-            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
+            class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
             {{ store.compareCount }}
           </span>
@@ -447,14 +445,14 @@ onUnmounted(() => {
 
         <!-- Wishlist -->
         <button
-          @click="store.openDrawer('wishlist')"
+          @click="router.push({ name: 'account', query: { tab: 'favorites' } })"
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
           title="Wishlist"
         >
           <span class="material-symbols-outlined text-[24px]">favorite</span>
           <span
             v-if="store.wishlistCount > 0"
-            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
+            class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
             {{ store.wishlistCount }}
           </span>
@@ -469,7 +467,7 @@ onUnmounted(() => {
           <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
           <span
             v-if="store.cartCount > 0"
-            class="absolute -top-1 -right-1.5 bg-[#00a046] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold"
+            class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
             {{ store.cartCount }}
           </span>
@@ -478,8 +476,8 @@ onUnmounted(() => {
     </div>
 
     <!-- Dropdown Floating Mega Menu Overlay -->
-    <div 
-      v-if="isMegaMenuOpen && categories.length > 0 && activeCat" 
+    <div
+      v-if="isMegaMenuOpen && categories.length > 0 && activeCat"
       class="mega-menu-wrapper absolute left-0 right-0 top-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-900 dark:text-zinc-100 border-t border-zinc-200 dark:border-zinc-800 shadow-2xl z-[120] duration-350 flex animate-in fade-in slide-in-from-top-4"
     >
       <div class="max-w-container-max mx-auto w-full flex min-h-[480px]">
@@ -490,13 +488,13 @@ onUnmounted(() => {
               v-for="cat in categories"
               :key="cat.id"
               @mouseenter="selectCategory(cat)"
-              :class="activeCat && activeCat.id === cat.id 
-                ? 'bg-gradient-to-r from-[#00a046] to-[#00b050] text-white shadow-md shadow-emerald-500/10 font-bold' 
+              :class="activeCat && activeCat.id === cat.id
+                ? 'bg-gradient-to-r from-[#00a046] to-[#00b050] text-white shadow-md shadow-emerald-500/10 font-bold'
                 : 'hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300'"
               class="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group/item"
             >
               <div class="flex items-center gap-3">
-                <span 
+                <span
                   class="material-symbols-outlined text-[21px] transition-transform duration-300"
                   :class="activeCat && activeCat.id === cat.id ? 'scale-110' : 'group-hover/item:scale-110 text-zinc-400 dark:text-zinc-500'"
                 >
@@ -504,7 +502,7 @@ onUnmounted(() => {
                 </span>
                 <span class="text-xs uppercase tracking-wider font-extrabold">{{ cat.label }}</span>
               </div>
-              <span 
+              <span
                 class="material-symbols-outlined text-[16px] transition-transform duration-300"
                 :class="activeCat && activeCat.id === cat.id ? 'translate-x-0.5 opacity-100' : 'opacity-0 group-hover/item:opacity-75 group-hover/item:translate-x-0.5'"
               >
@@ -523,7 +521,7 @@ onUnmounted(() => {
                 <span class="material-symbols-outlined text-[26px] font-bold">{{ activeCat.icon }}</span>
                 <h3 class="text-lg font-black uppercase tracking-wider">{{ activeCat.label }}</h3>
               </div>
-              
+
               <div v-if="activeCat.sub && activeCat.sub.length > 0" class="grid grid-cols-2 lg:grid-cols-3 gap-5">
                 <div
                   v-for="sub in activeCat.sub"
@@ -536,7 +534,7 @@ onUnmounted(() => {
                     <span v-if="sub.badge" class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 animate-pulse">{{ sub.badge }}</span>
                   </div>
                   <span class="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors flex items-center gap-1 font-bold uppercase tracking-wider">
-                    Переглянути товари 
+                    Переглянути товари
                     <span class="material-symbols-outlined text-[13px] group-hover/sub:translate-x-1 transition-transform">arrow_forward</span>
                   </span>
                 </div>
@@ -551,11 +549,11 @@ onUnmounted(() => {
               <p class="text-[10px] text-zinc-400 dark:text-zinc-550 font-bold uppercase tracking-wider">
                 Швидка доставка та офіційна гарантія на всі товари
               </p>
-              <button 
+              <button
                 @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { category: activeCat.id } })"
                 class="inline-flex items-center gap-2 text-xs font-black text-[#00a046] hover:text-[#00b050] dark:text-[#00b050] dark:hover:text-[#00c060] transition-colors uppercase tracking-widest"
               >
-                Всі товари {{ activeCat.label }} 
+                Всі товари {{ activeCat.label }}
                 <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
               </button>
             </div>
@@ -565,7 +563,7 @@ onUnmounted(() => {
           <div class="w-80 shrink-0 hidden xl:flex flex-col justify-between relative rounded-3xl overflow-hidden bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 shadow-lg p-6 text-white group/promo">
             <!-- Glow Effect -->
             <div class="absolute -right-16 -top-16 w-36 h-36 rounded-full bg-emerald-500/10 blur-2xl group-hover/promo:bg-emerald-500/20 transition-all duration-500"></div>
-            
+
             <div class="relative z-10 space-y-4">
               <span class="inline-block text-[9px] bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-2.5 py-0.5 rounded-full font-black uppercase tracking-widest">
                 Пропозиція тижня
@@ -587,8 +585,8 @@ onUnmounted(() => {
                 <span class="material-symbols-outlined text-emerald-400 text-sm">local_shipping</span>
                 <span>Безкоштовна доставка</span>
               </div>
-              
-              <button 
+
+              <button
                 @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { is_hot: 'true' } })"
                 class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-xl transition-all shadow-md hover:shadow-emerald-500/10 flex items-center justify-center gap-1.5"
               >

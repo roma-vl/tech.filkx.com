@@ -2,7 +2,7 @@
   <div
     class="min-h-screen bg-[#fcfcfd] dark:bg-[#0b0c10] text-gray-900 dark:text-gray-100 flex flex-col font-sans relative"
   >
-    <PromoBar />
+<!--    <PromoBar />-->
     <Header />
 
     <!-- Background accents -->

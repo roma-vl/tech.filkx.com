@@ -131,8 +131,8 @@ export const store = reactive({
       this.compare.splice(index, 1);
       this.addToast(`Removed ${name} from compare.`, 'info');
     } else {
-      if (this.compare.length >= 3) {
-        this.addToast('You can compare a maximum of 3 items.', 'warning');
+      if (this.compare.length >= 12) {
+        this.addToast('Ви можете порівнювати не більше 12 товарів одночасно.', 'warning');
         return;
       }
       this.compare.push({
@@ -143,7 +143,8 @@ export const store = reactive({
         category: product.category || 'Electronics',
         rating: product.rating || 4.5,
         reviews: product.reviews || 0,
-        description: product.description || 'Premium build quality, ultra-durable, leading technology.'
+        description: product.description || 'Premium build quality, ultra-durable, leading technology.',
+        specs: product.specs || []
       });
       this.addToast(`Added ${product.name} to compare.`);
     }
