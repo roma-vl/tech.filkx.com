@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { store } from '@/store.js';
 import api from '@/services/api.js';
@@ -9,66 +9,164 @@ const router = useRouter();
 
 const isLoading = ref(false);
 const rawProduct = ref(null);
+const activeVariantId = ref(null);
+
+const activeVariant = computed(() => {
+  if (!rawProduct.value || !rawProduct.value.variants || rawProduct.value.variants.length === 0) {
+    return null;
+  }
+  if (activeVariantId.value) {
+    const found = rawProduct.value.variants.find(v => v.id === activeVariantId.value);
+    if (found) return found;
+  }
+  return rawProduct.value.variants[0];
+});
 
 const product = computed(() => {
   if (rawProduct.value) {
-    const mainVariant = rawProduct.value.variants && rawProduct.value.variants[0] ? rawProduct.value.variants[0] : null;
+    const mainVariant = activeVariant.value;
     const price = mainVariant ? parseFloat(mainVariant.price) : 0;
     const oldPrice = mainVariant && mainVariant.oldPrice ? parseFloat(mainVariant.oldPrice) : null;
     const totalStock = mainVariant ? (mainVariant.stocks || []).reduce((acc, s) => acc + (parseInt(s.quantity) - parseInt(s.reserved)), 0) : 0;
 
-    let image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
-    if (rawProduct.value.slug === 'iphone-15-pro-max') {
+    let image = '';
+    if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images && mainVariant.dimensions.images.length > 0) {
+      const primary = mainVariant.dimensions.images.find(img => img.isPrimary) || mainVariant.dimensions.images[0];
+      if (primary && primary.url) {
+        image = primary.url;
+      }
+    }
+    
+    if (!image) {
       image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
-    } else if (rawProduct.value.slug === 'samsung-galaxy-s24-ultra') {
-      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw';
-    } else if (rawProduct.value.slug === 'lenovo-legion-5-pro') {
-      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E';
-    } else if (rawProduct.value.slug === 'sony-wh-1000xm5-black') {
-      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA';
-    } else if (rawProduct.value.slug === 'apple-airpods-pro-2') {
-      image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ';
     }
 
     const name = typeof rawProduct.value.name === 'object' ? (rawProduct.value.name.uk || rawProduct.value.name.en) : rawProduct.value.name;
     const description = typeof rawProduct.value.description === 'object' ? (rawProduct.value.description.uk || rawProduct.value.description.en) : rawProduct.value.description;
 
+    const getAttrValue = (code) => {
+      const list = [...(rawProduct.value.attributeValues || []), ...(mainVariant?.attributeValues || [])];
+      const match = list.find(av => av.attribute?.code === code);
+      if (!match) return null;
+      return match.customValue || match.attributeValue?.value?.uk || match.attributeValue?.value?.en || match.attributeValue?.value;
+    };
+
+    const ramVal = getAttrValue('memory') || getAttrValue('ram');
+    const storageVal = getAttrValue('storage');
+    const subtitle = ramVal && storageVal ? `${ramVal} ОЗУ / ${storageVal}` : (rawProduct.value.brand?.name ? `${rawProduct.value.brand.name} Edition` : 'Premium Tech Edition');
+
     return {
-      id: rawProduct.value.id,
+      id: mainVariant ? mainVariant.id : rawProduct.value.id,
+      productId: rawProduct.value.id,
       slug: rawProduct.value.slug,
       name: name,
-      category: rawProduct.value.categories && rawProduct.value.categories[0] ? (rawProduct.value.categories[0].name.uk || rawProduct.value.categories[0].name.en) : 'Laptops',
-      subtitle: mainVariant && mainVariant.dimensions && mainVariant.dimensions.ram ? `${mainVariant.dimensions.ram} ОЗУ / ${mainVariant.dimensions.storage}` : 'Premium Tech Edition',
+      category: rawProduct.value.categories && rawProduct.value.categories[0] ? (rawProduct.value.categories[0].name.uk || rawProduct.value.categories[0].name.en) : 'Смартфони',
+      subtitle: subtitle,
       price: price,
       oldPrice: oldPrice || price * 1.15,
       image: image,
       rating: rawProduct.value.rating || 4.8,
       reviews: rawProduct.value.reviews || 84,
-      description: description,
-      specs: {
-        processor: mainVariant && mainVariant.dimensions && mainVariant.dimensions.processor ? mainVariant.dimensions.processor : 'Apple Silicon / Intel Core',
-        screen: mainVariant && mainVariant.dimensions && mainVariant.dimensions.screen ? mainVariant.dimensions.screen : '14" IPS',
-        storage: mainVariant && mainVariant.dimensions && mainVariant.dimensions.storage ? mainVariant.dimensions.storage : '512GB SSD',
-        os: mainVariant && mainVariant.dimensions && mainVariant.dimensions.os ? mainVariant.dimensions.os : 'Windows 11 / macOS',
-        weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : '1.5 кг'
-      }
+      description: description
     };
   }
   return null;
 });
 
 const galleryImages = computed(() => {
-  const mainImg = product.value?.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
-  return [
-    { label: 'Основний вигляд', src: mainImg },
-    { label: 'Вигляд збоку', src: src => mainImg },
-    { label: 'Детальний макро-вигляд', src: mainImg }
-  ];
+  if (!rawProduct.value) return [];
+  const mainVariant = activeVariant.value;
+  const images = [];
+  
+  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images && mainVariant.dimensions.images.length > 0) {
+    mainVariant.dimensions.images.forEach((img, idx) => {
+      images.push({
+        label: img.isPrimary ? 'Основний вигляд' : `Вигляд ${idx + 1}`,
+        src: img.url
+      });
+    });
+  }
+  
+  if (images.length === 0) {
+    const mainImg = product.value?.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q';
+    images.push(
+      { label: 'Основний вигляд', src: mainImg },
+      { label: 'Вигляд збоку', src: mainImg },
+      { label: 'Детальний макро-вигляд', src: mainImg }
+    );
+  }
+  
+  return images;
+});
+
+const availableColors = computed(() => {
+  if (!rawProduct.value?.variants) return [];
+  const colors = new Set();
+  rawProduct.value.variants.forEach(v => {
+    const colorAttr = v.attributeValues?.find(av => av.attribute?.code === 'color');
+    if (colorAttr) {
+      const val = colorAttr.customValue || colorAttr.attributeValue?.value?.uk || colorAttr.attributeValue?.value?.en;
+      if (val) colors.add(val);
+    }
+  });
+  return Array.from(colors);
+});
+
+const availableStorage = computed(() => {
+  if (!rawProduct.value?.variants) return [];
+  const storage = new Set();
+  rawProduct.value.variants.forEach(v => {
+    const storageAttr = v.attributeValues?.find(av => av.attribute?.code === 'storage' || av.attribute?.code === 'memory');
+    if (storageAttr) {
+      const val = storageAttr.customValue || storageAttr.attributeValue?.value?.uk || storageAttr.attributeValue?.value?.en;
+      if (val) storage.add(val);
+    }
+  });
+  return Array.from(storage);
 });
 
 const selectedImageIndex = ref(0);
-const selectedColor = ref('Space Black');
-const selectedStorage = ref('512GB');
+const selectedColor = ref('');
+const selectedStorage = ref('');
+
+const selectVariantByAttributes = (attributeCode, value) => {
+  if (!rawProduct.value?.variants) return;
+  
+  const matchedVariant = rawProduct.value.variants.find(v => {
+    const attr = v.attributeValues?.find(av => {
+      const code = av.attribute?.code;
+      if (attributeCode === 'memory') {
+        return code === 'memory' || code === 'storage' || code === 'ram';
+      }
+      return code === attributeCode;
+    });
+    if (!attr) return false;
+    const val = attr.customValue || attr.attributeValue?.value?.uk || attr.attributeValue?.value?.en;
+    return val === value;
+  });
+  
+  if (matchedVariant) {
+    activeVariantId.value = matchedVariant.id;
+  }
+};
+
+watch(activeVariant, (newVariant) => {
+  if (!newVariant) return;
+  selectedImageIndex.value = 0;
+  
+  const getAttrValue = (code) => {
+    const match = newVariant.attributeValues?.find(av => av.attribute?.code === code);
+    if (!match) return null;
+    return match.customValue || match.attributeValue?.value?.uk || match.attributeValue?.value?.en || match.attributeValue?.value;
+  };
+  
+  const colorVal = getAttrValue('color');
+  if (colorVal) selectedColor.value = colorVal;
+  
+  const storageVal = getAttrValue('storage') || getAttrValue('memory') || getAttrValue('ram');
+  if (storageVal) selectedStorage.value = storageVal;
+}, { immediate: true });
+
 const activeTab = ref('experience');
 const showStickyBar = ref(false);
 const selectedBundleIds = ref(['pods', 'charger']);
@@ -110,16 +208,52 @@ const tabs = [
 ];
 
 const productSpecs = computed(() => {
-  if (!product.value || !product.value.specs) return [];
-  const entries = Object.entries(product.value.specs);
-  const keyTranslation = {
-    processor: 'Процесор',
-    screen: 'Екран',
-    storage: 'Накопичувач',
-    os: 'Операційна система',
-    weight: 'Вага'
-  };
-  return entries.map(([key, val]) => [keyTranslation[key] || key, val]);
+  if (!rawProduct.value) return [];
+  
+  const specs = [];
+  const list = [];
+  
+  if (rawProduct.value.attributeValues) {
+    list.push(...rawProduct.value.attributeValues);
+  }
+  
+  const mainVariant = rawProduct.value.variants?.[0] || null;
+  if (mainVariant && mainVariant.attributeValues) {
+    list.push(...mainVariant.attributeValues);
+  }
+  
+  const seenCodes = new Set();
+  list.forEach(av => {
+    if (!av.attribute) return;
+    const code = av.attribute.code;
+    if (seenCodes.has(code)) return;
+    seenCodes.add(code);
+    
+    const label = av.attribute.name?.uk || av.attribute.name?.en || av.attribute.name || code;
+    
+    let val = '';
+    if (av.customValue !== null && av.customValue !== undefined) {
+      val = av.customValue;
+    } else if (av.attributeValue) {
+      val = av.attributeValue.value?.uk || av.attributeValue.value?.en || av.attributeValue.value || '';
+    }
+    
+    if (label && val) {
+      specs.push([label, val]);
+    }
+  });
+
+  if (mainVariant && mainVariant.weight && !seenCodes.has('weight')) {
+    specs.push(['Вага', `${mainVariant.weight} кг`]);
+  }
+  if (rawProduct.value.brand && !seenCodes.has('brand')) {
+    specs.push(['Бренд', rawProduct.value.brand.name]);
+  }
+  if (mainVariant && mainVariant.sku && !seenCodes.has('sku')) {
+    specs.push(['Артикул (SKU)', mainVariant.sku]);
+  }
+  
+  return specs;
 });
 
 const bundleItems = computed(() => {
@@ -393,26 +527,38 @@ onUnmounted(() => {
           </div>
 
           <!-- Color options selector -->
-          <div class="space-y-3">
+          <div v-if="availableColors.length > 0" class="space-y-3">
             <span class="font-black text-xs uppercase tracking-wider text-zinc-450 dark:text-zinc-500">Колір: {{ selectedColor }}</span>
             <div class="flex gap-3">
-              <button class="w-8 h-8 rounded-full bg-[#1c1c1c] hover:scale-105 transition-transform p-0.5 border border-white" :class="selectedColor === 'Space Black' ? 'ring-2 ring-[#00a046] ring-offset-2' : ''" type="button" @click="selectedColor = 'Space Black'"></button>
-              <button class="w-8 h-8 rounded-full bg-[#d1d1d1] hover:scale-105 transition-transform p-0.5 border border-zinc-300" :class="selectedColor === 'Lunar Silver' ? 'ring-2 ring-[#00a046] ring-offset-2' : ''" type="button" @click="selectedColor = 'Lunar Silver'"></button>
-              <button class="w-8 h-8 rounded-full bg-[#004d40] hover:scale-105 transition-transform p-0.5 border border-white" :class="selectedColor === 'Deep Emerald' ? 'ring-2 ring-[#00a046] ring-offset-2' : ''" type="button" @click="selectedColor = 'Deep Emerald'"></button>
+              <button 
+                v-for="color in availableColors"
+                :key="color"
+                :title="color"
+                class="w-8 h-8 rounded-full hover:scale-105 transition-transform p-0.5 border"
+                :class="[
+                  selectedColor === color ? 'ring-2 ring-[#00a046] ring-offset-2' : '',
+                  color === 'Space Black' || color.toLowerCase().includes('black') || color.toLowerCase().includes('чорн') ? 'bg-[#1c1c1c] border-white' : 
+                  color === 'Lunar Silver' || color.toLowerCase().includes('silver') || color.toLowerCase().includes('срібл') ? 'bg-[#d1d1d1] border-zinc-300' :
+                  color === 'Deep Emerald' || color.toLowerCase().includes('emerald') || color.toLowerCase().includes('зелен') ? 'bg-[#004d40] border-white' :
+                  'bg-zinc-400 border-zinc-300'
+                ]" 
+                type="button" 
+                @click="selectVariantByAttributes('color', color)"
+              ></button>
             </div>
           </div>
 
           <!-- Configuration selector -->
-          <div class="space-y-3">
-            <span class="font-black text-xs uppercase tracking-wider text-zinc-450 dark:text-zinc-500">Конфігурація пам'яті</span>
-            <div class="grid grid-cols-3 gap-2">
+          <div v-if="availableStorage.length > 0" class="space-y-3">
+            <span class="font-black text-xs uppercase tracking-wider text-zinc-450 dark:text-zinc-500">Конфігурація</span>
+            <div class="flex flex-wrap gap-2">
               <button
-                v-for="storage in ['256GB', '512GB', '1TB']"
+                v-for="storage in availableStorage"
                 :key="storage"
                 :class="selectedStorage === storage ? 'border-2 border-[#00a046] font-black text-[#00a046] bg-emerald-500/5 shadow-sm' : 'border border-zinc-250 dark:border-zinc-800 font-bold text-zinc-550 dark:text-zinc-400 hover:border-[#00a046] hover:text-[#00a046]'"
-                class="py-2 px-3 rounded-lg transition-all text-xs"
+                class="py-2 px-3 rounded-lg transition-all text-xs min-w-[70px]"
                 type="button"
-                @click="selectedStorage = storage"
+                @click="selectVariantByAttributes('memory', storage)"
               >
                 {{ storage }}
               </button>
@@ -519,12 +665,12 @@ onUnmounted(() => {
           <!-- Experience Tab -->
           <section v-if="activeTab === 'experience'" class="space-y-6">
             <div class="max-w-2xl space-y-4">
-              <h3 class="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug">Інновації та ергономіка у кожній деталі пристрою</h3>
-              <p class="text-sm text-zinc-550 dark:text-zinc-400 leading-relaxed">
-                Кожен компонент FilkxTech розроблений для максимальної продуктивності та стабільності. Ми використовуємо тільки найкращі матеріали та компоненти від лідерів ринку, щоб ви отримували задоволення від щоденної роботи.
+              <h3 class="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug">Опис товару</h3>
+              <p class="text-sm text-zinc-550 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
+                {{ product.description }}
               </p>
             </div>
-            <img alt="Детальний огляд плати" class="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlLPi4qPWW-pjg1qJFIjxIZKyFFhepLHkWr7dmmTfsPA-M94Tz3oVozEJ4-mN77JEATZieBYs6_9MPJKNZBIpA-0eFrFzVkd7s_nfCbkw9dFyH0F0Cwsnx3aE7dAmdQBmrm6qHr0oWhsyKzfNcimCHqfoChvRJQiDRpFFDdtfltbepaRt4_GntXGDbnBMOqWB9y_kw0QYy-g32zYaD67xLw0y8N2gvfzLQO_5tVsFm9zDvWtCXD-gOLSTpEDIra9-vc9wMXlwpT20" />
+            <img v-if="galleryImages[1]" :alt="product.name" class="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm object-contain max-h-[450px] bg-white p-4" :src="galleryImages[1].src" />
           </section>
 
           <!-- Specifications Tab -->

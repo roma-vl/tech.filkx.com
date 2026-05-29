@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { store } from '@/store.js';
 import { useAuthStore } from '@/stores/auth.js';
@@ -28,80 +28,70 @@ const popularQueries = [
   'Наушники'
 ];
 
-const allProducts = [
-  {
-    id: 1,
-    name: 'Studio Pro Noise Cancelling Wireless Headphones',
-    category: 'Audio Tech',
-    price: 189.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBiUjsdg3UEZ3Invqr34vCkdhNreoHpan9Pb-BGKmaVy0RU0uSQyzTsKkbXAwFc883Y5jTxMbVRUKZoDSaTo3FbaT7XaZnss_re9YT00JhaTBlC6yvueGFeJfKhhh6JIjDtiTNIfRdJjC8ZyTTSHtYB81L85eJ1STBcLutY96W12sDqOctNxTwyq1m0MT7_6PTUKAE858poN7UqRe7nE46hjcjRrp_larxv7sHMDVCn7iT7817fw1OcxPdOG2sWfInGcMEAEIPakTE',
-    description: 'Professional high-fidelity sound with advanced hybrid active noise cancellation, ambient pass-through mode, and up to 40 hours of battery life.'
-  },
-  {
-    id: 2,
-    name: '32" Ultra-Wide Curved Gaming Monitor 144Hz',
-    category: 'Gaming',
-    price: 499.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCVMdErktV3TxMtO3JGMvZ9zS0x0zYbKz1BOjfXYU1LCka8ZihAQRInqqCc_p8i-qxa_HPIqDZ5Kevwr5VKLqyqstWGjEH_WRir7OtrPCpV_H8AvfRt69AI8p1TEbtE5tbqG2zcqQqVYp5pEPBnpsxa17bgXzaPwXHLRwCkbNLOL2MDuK_HzBB7j5pEfGKiX20Mo3vcs919pbLNN6aCAU31C3gWvj4f1OiGSSrW_Xd-ECi9ml_qk2QQhzRko2TzwHZxUspi7SRTQJg',
-    description: 'Immersive curved screen with 144Hz refresh rate, 1ms response time, FreeSync Premium support, and breathtaking colors.'
-  },
-  {
-    id: 3,
-    name: 'FitTrack Pro 5 Health & GPS Smartwatch',
-    category: 'Wearables',
-    price: 129.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAG1j0OkwUBTuRJYlZq12iTWSfCx0hTSkVryqbF-FYIDY0p2IODoLkQCjdBzvMUE28jinrTZ-Yhx8ATbKeWyMq2bSKQehQZ5dUfTVBStqMLuWl_dnxdhw_-eZMoiP9_egaelvQQU7gzfXiv-g6KH0W1d7n6iYmoObJXDCEXbrnLagqWXZxOIyeHX_fQAyS84ZvkaGDv8Ld75VMMB-p3JQk_MupRVz9V0REcSykJQllrCavETBkPh8j054bmRUv5No-7faKEr_uRPp0',
-    description: 'Track daily activity, heart rate, blood oxygen levels, workouts, sleep stages, and route navigation with precision built-in GPS.'
-  },
-  {
-    id: 4,
-    name: 'Lumix Alpha Prime v2 Mirrorless Camera',
-    category: 'Cameras',
-    price: 1150.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATZZV5WGL8X21fMJ4zbzJqjOQrP5WtH59wdZ76aQq8CQz4N-_BW5kXynAsvxVY7V9KfXszWmJgUfQbJP92IJNVprYoqpbyPA1X8MLw3pVOwBJ8VSb4aH5zwNl18jlhXVFDAv8rEtCBSTQw23VkV72JflGsCm_YankTEulT2iRKpF041yLSapjVqyWOk9nP-vg3RI9GljpcKRP-ftNvSORJcNl0YjjQn6rD0krvStirsy_BBHTMZ8Dd3-OSCaaeIJZanzdpfzxUSuw',
-    description: 'Capture world-class details with a high-resolution full-frame sensor, 4K/60p video, fast auto-focus tracking, and dual image stabilization.'
-  },
-  {
-    id: 10,
-    name: 'Titan X Pro Max 512GB',
-    category: 'Smartphones',
-    price: 1299.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCD4mJ768diZ-3ohTcgiepF2WHyNgmK4O62kdfBqnXW26Z5JHFeznt335OWFBdTwki9yXaAiUyq9Q7u2iBU4LYrgn-E0C9aG3Fv8Bky0_kZLcZiRjMOe6cbDYUayleaLx4NVA4sjA2RgGRydL-H3j9etBD_FH7eauOIjS0Hfq8woxSFaXXSbRIouRCyGxlCXx7Iyghg58Y6rX3Gl55sPn4ut4Rv5zmj9lAJzc2iAOTLpTAU5EEd6r0y4V8J_KZ6vmI_Xjfo1wOWIYo',
-    description: 'Next-generation flagship smartphone with a titanium chassis, 512GB ultra-fast storage, pro-level triple camera array, and 5G speeds.'
-  },
-  {
-    id: 11,
-    name: 'ProBook Air M3 Titanium',
-    category: 'Laptops',
-    price: 1599.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJQNj0EC0emUkDyzp90oAj9LJPzpKPXT6LWZapnUxdjLR5TAEy9kuHaJr94uG2PzVeehWJTvry4Ee2usgri_YrTONN_qiozc1qDVA0IvjUJcjmfX4tlyXbG7cS55CYK0qdtU_5nNwNG1cvHRVWZ4RDHp1qQpcIlcPkq0kc54-dRRkNH3kiZOkglgTPglzSvbgSmBPllFt0kRkaUl6e5wMCrocXFoM-7JxcSFJb9mOT7tc5df8zDbGD5gV5FgaFM7ihaGDzCu-bE7Q',
-    description: 'Sleek, fanless titanium chassis ultrabook featuring the state-of-the-art M3 chip, high-resolution Liquid Retina display, and all-day battery life.'
-  },
-  {
-    id: 12,
-    name: 'Aurora RGB Gaming Desktop',
-    category: 'Gaming',
-    price: 2199.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAE9_IW8qjD9Nc7mEzTBtpVASRLILY00pNvfzJBc0ScXAbqlVP5-MBnPCK1_FQAYoA00CnZnnOf3DXUx5-3bjC9TfwHbFKDwu7kn1eTD6_9iS1v7zsuQvBzZd7Pui64wUk0nmM8DVTBsm1JxygZ0gvXHmgO2SnukHBkKJO8m_0nmqJ_M0lTRaSc9yTEpmjg7GtNXu6z3I_GpVNqH8x5MAutaaD-vKU1feM5vrr1dtaIrvVf5pqHczZWNOnPC4QB6kuwjAOed-Fn338',
-    description: 'High-performance prebuilt gaming rig featuring custom liquid cooling, liquid-smooth RGB lighting, NVIDIA RTX 4080 GPU, and AMD Ryzen 9 processor.'
-  },
-  {
-    id: 13,
-    name: 'Vintage Series Audiophile Headphones',
-    category: 'Audio Tech',
-    price: 450.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBVfw-53YUOGGnBoNP1DcRvTzsoRmMHBmiwJBD1k7x9SS1j74hj221NxSS2aY4rrQ2TGdYlU-TZEQTQrQL8VOYnj71VUijn7oUH0epVhUD9j-HYXKvcxT_WNN-QsdhR2CCjNflwttO8BRSJfO9nWXZqAwQGND-hcNG8NeHUOUtZqWnD0RJ65tirhUidkCux8eJ2F0J9AuoAZQzu9vG1rGiQD0_CM-36L3Z5vrvwifWeVwUUNFTLB0rYDFLbuosmr50rxsLVJl-ZuPA',
-    description: 'Retro-inspired open-back dynamic headphones hand-crafted with premium solid walnut and genuine leather ear cushions.'
-  },
-  {
-    id: 14,
-    name: 'EchoSphere G2 Smart Speaker',
-    category: 'Audio Tech',
-    price: 299.00,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDPj2jX_NI6YnhpUgDqDHkjRyeW2EKyfTQoHQmuLzpIobASQ4gxKuixqe5u8J708jdxV2Zaw2z1-PM4SOnpiwkUKpWsEYu1Xii-NQJ1Jipsi2nl68gkV_FcIr8iE4C7FaoN5xPauziyMouuW158Nmv0Ps76AzgZ_V6rOgna1wINGvttbUBNXrNG25VrdbNfqVa8yASlBuYZHn5qBvutaAW_iE4HCbzyslvJrI4BzUQuNKGnSK3UTe12q37KdLS-Gb_o_h9l1gHkV44',
-    description: 'Spherical premium smart speaker with voice assistant control, multi-room adaptive audio tuning, and high-excursion woofer.'
+const searchResults = ref([]);
+const isSearching = ref(false);
+
+const mapApiProduct = (prod) => {
+  const mainVariant = prod.variants?.[0] || null;
+  const price = mainVariant ? parseFloat(mainVariant.price) : 0;
+  
+  let image = '';
+  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+    const primary = mainVariant.dimensions.images.find(img => img.isPrimary) || mainVariant.dimensions.images[0];
+    if (primary && primary.url) {
+      image = primary.url;
+    }
   }
-];
+  
+  if (!image) {
+    image = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM';
+  }
+
+  const name = typeof prod.name === 'object' ? (prod.name.uk || prod.name.en) : prod.name;
+  
+  const categoryObj = prod.categories?.[0] || null;
+  const category = categoryObj 
+    ? (typeof categoryObj.name === 'object' ? (categoryObj.name.uk || categoryObj.name.en) : categoryObj.name) 
+    : 'Товари';
+
+  return {
+    id: prod.id,
+    slug: prod.slug,
+    name,
+    category,
+    price,
+    image
+  };
+};
+
+let debounceTimeout = null;
+
+watch(searchQuery, (newQuery) => {
+  if (debounceTimeout) clearTimeout(debounceTimeout);
+  
+  const query = newQuery.trim();
+  if (!query) {
+    searchResults.value = [];
+    return;
+  }
+  
+  debounceTimeout = setTimeout(async () => {
+    isSearching.value = true;
+    try {
+      const { data } = await axios.get('/v1/catalog/products', {
+        params: { search: query }
+      });
+      if (data && (data.success || data.status === 'success')) {
+        const productsList = data.data?.data || data.data || [];
+        searchResults.value = productsList.map(mapApiProduct);
+      }
+    } catch (error) {
+      console.error('Search query failed:', error);
+    } finally {
+      isSearching.value = false;
+    }
+  }, 300);
+});
 const getCategoryIcon = (slug) => {
   const mapping = {
     'phones': 'smartphone',
@@ -146,9 +136,9 @@ const triggerSearch = () => {
 };
 
 const selectSearchResult = (product) => {
-  store.addToCart(product);
   searchQuery.value = '';
   showDropdown.value = false;
+  router.push({ name: 'product-detail', params: { id: product.slug } });
 };
 
 const formatPrice = (price) => {
@@ -166,12 +156,7 @@ const highlightMatch = (name, query) => {
 };
 
 const filteredProducts = computed(() => {
-  if (!searchQuery.value.trim()) return [];
-  const q = searchQuery.value.toLowerCase().trim();
-  return allProducts.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.category.toLowerCase().includes(q)
-  ).slice(0, 8);
+  return searchResults.value;
 });
 
 const handleKeydown = (e) => {
@@ -320,7 +305,20 @@ onUnmounted(() => {
           class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-zinc-200 z-[110] overflow-hidden p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- Suggestions results -->
-          <div v-if="filteredProducts.length > 0" class="space-y-1">
+          <div v-if="isSearching" class="space-y-2 py-2">
+            <div class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">
+              Шукаємо товари...
+            </div>
+            <div v-for="n in 3" :key="n" class="flex items-center gap-3 p-2 animate-pulse">
+              <div class="w-10 h-10 bg-zinc-150 rounded shrink-0"></div>
+              <div class="flex-grow space-y-1.5">
+                <div class="h-2 bg-zinc-200 rounded w-1/4"></div>
+                <div class="h-3 bg-zinc-200 rounded w-3/4"></div>
+              </div>
+              <div class="w-12 h-3 bg-zinc-200 rounded shrink-0"></div>
+            </div>
+          </div>
+          <div v-else-if="filteredProducts.length > 0" class="space-y-1">
             <div class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">
               Результати пошуку
             </div>
