@@ -2,7 +2,7 @@
 set -euo pipefail
 
 COLOR="${1:-}"
-APP_DIR="/var/www/staging.live.filkx.com"
+APP_DIR="/var/www/staging.tech.filkx.com"
 
 TARGET_DIR="$APP_DIR/$COLOR/current"
 TARGET_COMPOSE="$TARGET_DIR/docker-compose-staging.yml"
