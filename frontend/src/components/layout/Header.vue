@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { store } from '@/store.js';
 import { useAuthStore } from '@/stores/auth.js';
 import Dropdown from '@/components/ui/Dropdown.vue';
+import axios from '@/services/api';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -101,123 +102,35 @@ const allProducts = [
     description: 'Spherical premium smart speaker with voice assistant control, multi-room adaptive audio tuning, and high-excursion woofer.'
   }
 ];
+const getCategoryIcon = (slug) => {
+  const mapping = {
+    'phones': 'smartphone',
+    'smartphones': 'smartphone',
+    'laptops': 'laptop',
+    'notebooks': 'laptop',
+    'gaming': 'sports_esports',
+    'audio': 'headphones',
+    'audio-headphones': 'headphones',
+    'wearables': 'watch',
+    'watches': 'watch',
+    'cameras': 'photo_camera',
+    'tablets': 'tablet',
+    'smart-home': 'home',
+    'home-appliances': 'home',
+  };
+  return mapping[slug] || 'grid_view';
+};
 
-const categories = [
-  {
-    id: 'smartphones',
-    label: 'Smartphones',
-    icon: 'smartphone',
-    sub: [
-      { name: 'iPhone 15 Series', badge: 'New' },
-      { name: 'Samsung Galaxy S24', badge: '' },
-      { name: 'Google Pixel 8', badge: '' },
-      { name: 'Folding Phones', badge: 'Trending' },
-      { name: 'Budget Phones', badge: '' },
-      { name: 'Accessories', badge: '' },
-    ],
-  },
-  {
-    id: 'laptops',
-    label: 'Laptops',
-    icon: 'laptop',
-    sub: [
-      { name: 'MacBook Pro & Air', badge: 'New' },
-      { name: 'Gaming Laptops', badge: 'Hot' },
-      { name: 'Ultrabooks', badge: '' },
-      { name: 'Workstations', badge: '' },
-      { name: 'Chromebooks', badge: '' },
-      { name: 'Laptop Accessories', badge: '' },
-    ],
-  },
-  {
-    id: 'gaming',
-    label: 'Gaming',
-    icon: 'sports_esports',
-    sub: [
-      { name: 'PlayStation 5', badge: 'Hot' },
-      { name: 'Xbox Series X', badge: '' },
-      { name: 'Nintendo Switch', badge: '' },
-      { name: 'Gaming PCs', badge: '' },
-      { name: 'Controllers & Pads', badge: '' },
-      { name: 'Gaming Chairs', badge: '' },
-    ],
-  },
-  {
-    id: 'audio',
-    label: 'Audio',
-    icon: 'headphones',
-    sub: [
-      { name: 'Noise Cancelling', badge: '' },
-      { name: 'True Wireless Earbuds', badge: 'New' },
-      { name: 'Home Theater', badge: '' },
-      { name: 'Smart Speakers', badge: '' },
-      { name: 'Studio Monitors', badge: '' },
-      { name: 'Soundbars', badge: '' },
-    ],
-  },
-  {
-    id: 'wearables',
-    label: 'Wearables',
-    icon: 'watch',
-    sub: [
-      { name: 'Apple Watch', badge: 'New' },
-      { name: 'Galaxy Watch', badge: '' },
-      { name: 'Fitness Trackers', badge: '' },
-      { name: 'Smart Rings', badge: 'Trending' },
-      { name: 'AR & VR Headsets', badge: '' },
-      { name: 'Smart Glasses', badge: '' },
-    ],
-  },
-  {
-    id: 'cameras',
-    label: 'Cameras',
-    icon: 'photo_camera',
-    sub: [
-      { name: 'DSLR Cameras', badge: '' },
-      { name: 'Mirrorless', badge: 'Hot' },
-      { name: 'Action Cameras', badge: '' },
-      { name: 'Drones', badge: '' },
-      { name: 'Lenses', badge: '' },
-      { name: 'Camera Bags', badge: '' },
-    ],
-  },
-  {
-    id: 'tablets',
-    label: 'Tablets',
-    icon: 'tablet',
-    sub: [
-      { name: 'iPad Pro & Air', badge: 'New' },
-      { name: 'Samsung Galaxy Tab', badge: '' },
-      { name: 'Android Tablets', badge: '' },
-      { name: 'E-Readers', badge: '' },
-      { name: 'Tablet Cases', badge: '' },
-      { name: 'Stylus & Pens', badge: '' },
-    ],
-  },
-  {
-    id: 'smart-home',
-    label: 'Smart Home',
-    icon: 'home',
-    sub: [
-      { name: 'Smart Displays', badge: '' },
-      { name: 'Smart Bulbs', badge: '' },
-      { name: 'Security Cameras', badge: '' },
-      { name: 'Smart Locks', badge: '' },
-      { name: 'Robot Vacuums', badge: 'Hot' },
-      { name: 'Smart Thermostats', badge: '' },
-    ],
-  },
-];
-
-const activeCat = ref(categories[0]);
+const categories = ref([]);
+const activeCat = ref(null);
 
 const selectCategory = (cat) => {
   activeCat.value = cat;
 };
 
-const clickCategorySub = (subName) => {
+const clickCategorySub = (sub) => {
   isMegaMenuOpen.value = false;
-  router.push({ name: 'catalog', query: { category: activeCat.value.id, sub: subName.toLowerCase() } });
+  router.push({ name: 'catalog', query: { category: sub.slug } });
 };
 
 const selectPopularQuery = (query) => {
@@ -291,9 +204,31 @@ const triggerVoiceSearch = () => {
   store.addToast("Voice search activated. Start speaking...", "info");
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('keydown', handleKeydown);
   document.addEventListener('click', handleClickOutside);
+
+  try {
+    const { data } = await axios.get('/v1/catalog/categories');
+    if (data && (data.success || data.status === 'success')) {
+      categories.value = data.data.map(cat => ({
+        id: cat.slug,
+        label: cat.name?.uk || cat.name?.en || cat.name || '',
+        icon: getCategoryIcon(cat.slug),
+        sub: (cat.children || []).map(child => ({
+          name: child.name?.uk || child.name?.en || child.name || '',
+          slug: child.slug,
+          badge: ''
+        }))
+      }));
+      
+      if (categories.value.length > 0) {
+        activeCat.value = categories.value[0];
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load mega menu categories:', error);
+  }
 });
 
 onUnmounted(() => {
@@ -546,61 +481,123 @@ onUnmounted(() => {
 
     <!-- Dropdown Floating Mega Menu Overlay -->
     <div 
-      v-if="isMegaMenuOpen" 
-      class="mega-menu-wrapper absolute left-0 right-0 top-full bg-white text-zinc-900 border-t border-zinc-200 shadow-2xl z-[120] duration-200 flex"
+      v-if="isMegaMenuOpen && categories.length > 0 && activeCat" 
+      class="mega-menu-wrapper absolute left-0 right-0 top-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-900 dark:text-zinc-100 border-t border-zinc-200 dark:border-zinc-800 shadow-2xl z-[120] duration-350 flex animate-in fade-in slide-in-from-top-4"
     >
       <div class="max-w-container-max mx-auto w-full flex min-h-[480px]">
         <!-- Left Sidebar: Category list -->
-        <div class="w-1/4 border-r border-zinc-200 bg-zinc-50 p-4">
-          <ul class="space-y-1">
+        <div class="w-1/4 border-r border-zinc-250/60 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/20 p-5">
+          <ul class="space-y-1.5">
             <li
               v-for="cat in categories"
               :key="cat.id"
               @mouseenter="selectCategory(cat)"
-              :class="activeCat.id === cat.id ? 'bg-[#00a046] text-white font-bold' : 'hover:bg-zinc-150 text-zinc-700'"
-              class="flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-colors"
+              :class="activeCat && activeCat.id === cat.id 
+                ? 'bg-gradient-to-r from-[#00a046] to-[#00b050] text-white shadow-md shadow-emerald-500/10 font-bold' 
+                : 'hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300'"
+              class="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group/item"
             >
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-[20px]">{{ cat.icon }}</span>
-                <span class="text-xs uppercase tracking-wider font-semibold">{{ cat.label }}</span>
+              <div class="flex items-center gap-3">
+                <span 
+                  class="material-symbols-outlined text-[21px] transition-transform duration-300"
+                  :class="activeCat && activeCat.id === cat.id ? 'scale-110' : 'group-hover/item:scale-110 text-zinc-400 dark:text-zinc-500'"
+                >
+                  {{ cat.icon }}
+                </span>
+                <span class="text-xs uppercase tracking-wider font-extrabold">{{ cat.label }}</span>
               </div>
-              <span class="material-symbols-outlined text-[16px] opacity-75">chevron_right</span>
+              <span 
+                class="material-symbols-outlined text-[16px] transition-transform duration-300"
+                :class="activeCat && activeCat.id === cat.id ? 'translate-x-0.5 opacity-100' : 'opacity-0 group-hover/item:opacity-75 group-hover/item:translate-x-0.5'"
+              >
+                chevron_right
+              </span>
             </li>
           </ul>
         </div>
 
-        <!-- Center/Right: Sub-categories Grid -->
-        <div class="flex-grow p-8 bg-white flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-2 mb-6 text-[#00a046] border-b border-zinc-100 pb-3">
-              <span class="material-symbols-outlined text-[24px]">{{ activeCat.icon }}</span>
-              <h3 class="text-base font-black uppercase tracking-wider">{{ activeCat.label }}</h3>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                v-for="sub in activeCat.sub"
-                :key="sub.name"
-                @click="clickCategorySub(sub.name)"
-                class="p-4 border border-zinc-100 hover:border-zinc-200 hover:bg-zinc-50 rounded-xl cursor-pointer transition-all flex flex-col justify-between h-20"
-              >
-                <div class="flex justify-between items-start gap-2">
-                  <span class="text-xs font-bold text-zinc-800 leading-snug">{{ sub.name }}</span>
-                  <span v-if="sub.badge" class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">{{ sub.badge }}</span>
-                </div>
-                <span class="text-[10px] text-zinc-400 group-hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase">
-                  Переглянути товари <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
-                </span>
+        <!-- Center/Right: Sub-categories Grid & Promo Widget -->
+        <div class="flex-grow p-8 bg-white dark:bg-zinc-900 flex gap-8 justify-between">
+          <!-- Left: Sub-categories grid -->
+          <div class="flex-grow flex flex-col justify-between max-w-4xl">
+            <div>
+              <div class="flex items-center gap-3 mb-6 text-[#00a046] dark:text-[#00b050] border-b border-zinc-150 dark:border-zinc-800 pb-3.5">
+                <span class="material-symbols-outlined text-[26px] font-bold">{{ activeCat.icon }}</span>
+                <h3 class="text-lg font-black uppercase tracking-wider">{{ activeCat.label }}</h3>
               </div>
+              
+              <div v-if="activeCat.sub && activeCat.sub.length > 0" class="grid grid-cols-2 lg:grid-cols-3 gap-5">
+                <div
+                  v-for="sub in activeCat.sub"
+                  :key="sub.slug"
+                  @click="clickCategorySub(sub)"
+                  class="p-4 border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/20 hover:border-zinc-200 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-850 rounded-2xl cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between h-24 group/sub"
+                >
+                  <div class="flex justify-between items-start gap-2">
+                    <span class="text-xs font-black text-zinc-800 dark:text-zinc-200 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors leading-snug">{{ sub.name }}</span>
+                    <span v-if="sub.badge" class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 animate-pulse">{{ sub.badge }}</span>
+                  </div>
+                  <span class="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors flex items-center gap-1 font-bold uppercase tracking-wider">
+                    Переглянути товари 
+                    <span class="material-symbols-outlined text-[13px] group-hover/sub:translate-x-1 transition-transform">arrow_forward</span>
+                  </span>
+                </div>
+              </div>
+              <div v-else class="text-center py-12 text-zinc-400 dark:text-zinc-500">
+                <span class="material-symbols-outlined text-4xl mb-2">category</span>
+                <p class="text-xs font-bold">У цій категорії поки що немає підкатегорій.</p>
+              </div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-zinc-150 dark:border-zinc-800 flex justify-between items-center">
+              <p class="text-[10px] text-zinc-400 dark:text-zinc-550 font-bold uppercase tracking-wider">
+                Швидка доставка та офіційна гарантія на всі товари
+              </p>
+              <button 
+                @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { category: activeCat.id } })"
+                class="inline-flex items-center gap-2 text-xs font-black text-[#00a046] hover:text-[#00b050] dark:text-[#00b050] dark:hover:text-[#00c060] transition-colors uppercase tracking-widest"
+              >
+                Всі товари {{ activeCat.label }} 
+                <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
+              </button>
             </div>
           </div>
 
-          <div class="mt-8 pt-4 border-t border-zinc-100 text-right">
-            <button 
-              @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { category: activeCat.id } })"
-              class="inline-flex items-center gap-1.5 text-xs font-black text-[#00a046] hover:underline uppercase tracking-widest"
-            >
-              Всі товари {{ activeCat.label }} <span class="material-symbols-outlined text-sm">arrow_forward</span>
-            </button>
+          <!-- Right Promo Widget (Featured Banner) -->
+          <div class="w-80 shrink-0 hidden xl:flex flex-col justify-between relative rounded-3xl overflow-hidden bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 shadow-lg p-6 text-white group/promo">
+            <!-- Glow Effect -->
+            <div class="absolute -right-16 -top-16 w-36 h-36 rounded-full bg-emerald-500/10 blur-2xl group-hover/promo:bg-emerald-500/20 transition-all duration-500"></div>
+            
+            <div class="relative z-10 space-y-4">
+              <span class="inline-block text-[9px] bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-2.5 py-0.5 rounded-full font-black uppercase tracking-widest">
+                Пропозиція тижня
+              </span>
+              <h4 class="font-extrabold text-lg leading-snug tracking-tight text-white group-hover/promo:text-[#00b050] transition-colors">
+                Оновлюйте гаджети на весну зі знижкою до 40%
+              </h4>
+              <p class="text-[11px] text-zinc-450 leading-relaxed">
+                Спеціальні ціни на преміальні смартфони, навушники та ноутбуки.
+              </p>
+            </div>
+
+            <div class="relative z-10 mt-6 space-y-3">
+              <div class="flex items-center gap-2 text-xs font-bold text-zinc-300">
+                <span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span>
+                <span>Офіційна гарантія</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-bold text-zinc-300">
+                <span class="material-symbols-outlined text-emerald-400 text-sm">local_shipping</span>
+                <span>Безкоштовна доставка</span>
+              </div>
+              
+              <button 
+                @click="isMegaMenuOpen = false; router.push({ name: 'catalog', query: { is_hot: 'true' } })"
+                class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-xl transition-all shadow-md hover:shadow-emerald-500/10 flex items-center justify-center gap-1.5"
+              >
+                <span>Перейти до акцій</span>
+                <span class="material-symbols-outlined text-sm font-bold group-hover/promo:translate-x-0.5 transition-transform">arrow_forward</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
