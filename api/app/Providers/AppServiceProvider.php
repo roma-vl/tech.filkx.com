@@ -14,6 +14,8 @@ use App\Api\V1\Repositories\BrandRepositoryInterface;
 use App\Api\V1\Repositories\BrandRepository;
 use App\Api\V1\Repositories\AttributeRepositoryInterface;
 use App\Api\V1\Repositories\AttributeRepository;
+use App\Api\V1\Repositories\CartRepositoryInterface;
+use App\Api\V1\Repositories\CartRepository;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PromotionRepositoryInterface::class, PromotionRepository::class);
         $this->app->bind(BrandRepositoryInterface::class, BrandRepository::class);
         $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
+        $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
     }
 
     /**
