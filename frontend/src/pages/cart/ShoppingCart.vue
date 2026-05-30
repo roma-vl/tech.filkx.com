@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { store } from "@/store.js";
 import api from "@/services/api.js";
@@ -10,6 +10,7 @@ const authStore = useAuthStore();
 
 const promoCode = ref("");
 const appliedPromo = ref("");
+const promoDiscountAmount = ref(0);
 const isCheckoutMode = ref(false);
 const isSuccessMode = ref(false);
 const isSubmitting = ref(false);
@@ -37,9 +38,7 @@ if (authStore.user) {
 const shipping = computed(() =>
   store.cartTotal >= 5000 || store.cart.length === 0 ? 0 : 250,
 );
-const discount = computed(() =>
-  appliedPromo.value ? store.cartTotal * 0.08 : 0,
-);
+const discount = computed(() => promoDiscountAmount.value);
 const tax = computed(() =>
   Math.max(0, (store.cartTotal - discount.value) * 0.075),
 );
@@ -105,11 +104,32 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const applyPromo = () => {
+const applyPromo = async () => {
   if (!promoCode.value.trim()) return;
-  appliedPromo.value = promoCode.value.trim().toUpperCase();
-  store.addToast(`Promo code ${appliedPromo.value} applied.`, "success");
+  const code = promoCode.value.trim().toUpperCase();
+  try {
+    const response = await api.post("/v1/coupons/validate", {
+      code: code,
+      cart_total: store.cartTotal,
+    });
+    if (response.data && response.data.status === "success") {
+      appliedPromo.value = code;
+      promoDiscountAmount.value = response.data.data.discount;
+      store.addToast(`Promo code ${code} applied successfully!`, "success");
+    }
+  } catch (error) {
+    const errMsg = error.response?.data?.message || "Invalid coupon code";
+    store.addToast(errMsg, "error");
+    appliedPromo.value = "";
+    promoDiscountAmount.value = 0;
+  }
 };
+
+watch(() => store.cart, () => {
+  if (appliedPromo.value) {
+    applyPromo();
+  }
+}, { deep: true });
 
 const addRecommended = (product) => {
   store.addToCart(product);
@@ -131,6 +151,7 @@ const handlePlaceOrder = async () => {
     const response = await api.post("/v1/checkout", {
       ...checkoutForm.value,
       session_id: localStorage.getItem("cart_session_id"),
+      coupon_code: appliedPromo.value,
     });
 
     if (response.data && response.data.status === "success") {

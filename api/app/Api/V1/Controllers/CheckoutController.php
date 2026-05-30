@@ -27,6 +27,7 @@ class CheckoutController extends BaseApiController
             'delivery_method' => 'required|string|max:100',
             'payment_method' => 'required|string|max:100',
             'session_id' => 'nullable|string',
+            'coupon_code' => 'nullable|string',
         ]);
 
         $user = auth('api')->user();
@@ -88,6 +89,45 @@ class CheckoutController extends BaseApiController
                 ];
             }
 
+            // Coupon validation
+            $discountAmount = 0.00;
+            $couponCode = $request->input('coupon_code');
+            $coupon = null;
+
+            if ($couponCode) {
+                $coupon = \App\Models\Coupon::where('code', strtoupper($couponCode))
+                    ->where('is_active', true)
+                    ->first();
+
+                if (! $coupon) {
+                    DB::rollBack();
+                    return self::errorResponse('Купон недійсний або неактивний', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                // Check expiry
+                if ($coupon->expires_at && $coupon->expires_at->isPast()) {
+                    DB::rollBack();
+                    return self::errorResponse('Термін дії купона закінчився', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                // Check usage limit
+                if ($coupon->usage_limit !== null && $coupon->used_count >= $coupon->usage_limit) {
+                    DB::rollBack();
+                    return self::errorResponse('Купон вичерпав ліміт використання', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                // Calculate discount
+                if ($coupon->type === 'percent') {
+                    $discountAmount = $totalPrice * ($coupon->amount / 100);
+                } else {
+                    $discountAmount = $coupon->amount;
+                }
+
+                if ($discountAmount > $totalPrice) {
+                    $discountAmount = $totalPrice;
+                }
+            }
+
             // Generate unique order number: FKX-YYYYMMDD-XXXXXX
             $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
             while (Order::where('order_number', $orderNumber)->exists()) {
@@ -108,13 +148,19 @@ class CheckoutController extends BaseApiController
                 'payment_method' => $request->input('payment_method'),
                 'payment_status' => 'pending',
                 'status' => 'pending_payment',
-                'total_price' => $totalPrice,
+                'total_price' => $totalPrice - $discountAmount,
+                'coupon_code' => $coupon ? $coupon->code : null,
+                'discount_amount' => $discountAmount,
             ]);
 
             // Save order items snapshot
             foreach ($orderItemsData as $itemData) {
                 $itemData['order_id'] = $order->id;
                 OrderItem::create($itemData);
+            }
+
+            if ($coupon) {
+                $coupon->increment('used_count');
             }
 
             // Clear Cart

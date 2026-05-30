@@ -11,7 +11,6 @@ import AdminLogs from "@/pages/admin/AdminLogs.vue";
 import AdminSystem from "@/pages/admin/AdminSystem.vue";
 import AdminRoles from "@/pages/admin/AdminRoles.vue";
 import AdminNotifications from "@/pages/admin/AdminNotifications.vue";
-import AdminEmailTemplates from "@/pages/admin/AdminEmailTemplates.vue";
 import AdminLayoutWrapper from "@/pages/admin/AdminLayoutWrapper.vue";
 import AdminServerLogs from "@/pages/admin/AdminServerLogs.vue";
 import AdminAccountingLedger from "@/pages/admin/accounting/AdminAccountingLedger.vue";
@@ -164,15 +163,6 @@ export default {
       meta: {
         titleKey: "admin.promotions.title",
         descriptionKey: "admin.promotions.description",
-      },
-    },
-    {
-      path: "emails",
-      name: "admin-emails",
-      component: AdminEmailTemplates,
-      meta: {
-        titleKey: "admin.emails.title",
-        descriptionKey: "admin.emails.description",
       },
     },
     {

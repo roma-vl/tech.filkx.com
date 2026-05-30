@@ -422,7 +422,6 @@ const navItems = shallowRef([
     children: [
       { name: t("admin.nav.coupons"), path: "/admin/coupons" },
       { name: t("admin.nav.promotions"), path: "/admin/promotions" },
-      { name: t("admin.nav.emailTemplates"), path: "/admin/emails" },
     ],
   },
   {
