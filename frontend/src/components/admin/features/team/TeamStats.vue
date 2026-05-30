@@ -16,7 +16,7 @@
         </span>
       </div>
 
-      <div class="w-px h-8 bg-gray-200 dark:bg-gray-700"/>
+      <div class="w-px h-8 bg-gray-200 dark:bg-gray-700" />
 
       <div class="flex flex-col">
         <span
@@ -46,7 +46,7 @@
           "
           @click="$emit('update:viewMode', 'grid')"
         >
-          <Squares2X2Icon class="w-5 h-5"/>
+          <Squares2X2Icon class="w-5 h-5" />
         </button>
         <button
           class="p-2 rounded-lg transition-all"
@@ -57,7 +57,7 @@
           "
           @click="$emit('update:viewMode', 'list')"
         >
-          <ListBulletIcon class="w-5 h-5"/>
+          <ListBulletIcon class="w-5 h-5" />
         </button>
       </div>
 
@@ -77,8 +77,12 @@
 </template>
 
 <script setup>
-import {ArrowPathIcon, ListBulletIcon, Squares2X2Icon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import {
+  ArrowPathIcon,
+  ListBulletIcon,
+  Squares2X2Icon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
 const { t } = useI18n();

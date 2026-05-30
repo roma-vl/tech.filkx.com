@@ -171,10 +171,14 @@
 </template>
 
 <script setup>
-import {ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import axios from "@/services/api";
-import {ClockIcon as HistoryIcon, InformationCircleIcon as InfoIcon, StarIcon,} from "@heroicons/vue/24/outline";
+import {
+  ClockIcon as HistoryIcon,
+  InformationCircleIcon as InfoIcon,
+  StarIcon,
+} from "@heroicons/vue/24/outline";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
 const { t } = useI18n();

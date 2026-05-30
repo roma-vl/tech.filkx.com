@@ -34,24 +34,25 @@ class GetHomeDataAction
                     }
                 }
             }
+
             return $maxDiscountPct;
         })
-        ->take(4)
-        ->values();
+            ->take(4)
+            ->values();
 
         // 3. Smart Recommendations Algorithm
         $recommendedIds = collect();
-        
+
         // Parse wishlist and viewed items sent by the frontend
         $wishlistIds = array_filter(explode(',', $request->query('wishlist_ids', '')));
         $viewedIds = array_filter(explode(',', $request->query('viewed_ids', '')));
-        
+
         $seedIds = array_merge($wishlistIds, $viewedIds);
 
-        if (!empty($seedIds)) {
+        if (! empty($seedIds)) {
             // Find categories and brands of viewed/wishlisted items
             $seedProducts = Product::whereIn('id', $seedIds)->with('categories')->get();
-            $seedCategoryIds = $seedProducts->flatMap(fn($p) => $p->categories->pluck('id'))->unique();
+            $seedCategoryIds = $seedProducts->flatMap(fn ($p) => $p->categories->pluck('id'))->unique();
             $seedBrandIds = $seedProducts->pluck('brand_id')->filter()->unique();
 
             if ($seedCategoryIds->isNotEmpty() || $seedBrandIds->isNotEmpty()) {
@@ -63,21 +64,21 @@ class GetHomeDataAction
                     'attributeValues.attribute',
                     'attributeValues.attributeValue',
                     'variants.attributeValues.attribute',
-                    'variants.attributeValues.attributeValue'
+                    'variants.attributeValues.attributeValue',
                 ])
-                ->where('status', 'active')
-                ->whereNotIn('id', $seedIds)
-                ->where(function ($query) use ($seedCategoryIds, $seedBrandIds) {
-                    if ($seedCategoryIds->isNotEmpty()) {
-                        $query->whereHas('categories', fn($q) => $q->whereIn('categories.id', $seedCategoryIds));
-                    }
-                    if ($seedBrandIds->isNotEmpty()) {
-                        $query->orWhereIn('brand_id', $seedBrandIds);
-                    }
-                })
-                ->orderBy('views_count', 'desc')
-                ->take(8)
-                ->get();
+                    ->where('status', 'active')
+                    ->whereNotIn('id', $seedIds)
+                    ->where(function ($query) use ($seedCategoryIds, $seedBrandIds) {
+                        if ($seedCategoryIds->isNotEmpty()) {
+                            $query->whereHas('categories', fn ($q) => $q->whereIn('categories.id', $seedCategoryIds));
+                        }
+                        if ($seedBrandIds->isNotEmpty()) {
+                            $query->orWhereIn('brand_id', $seedBrandIds);
+                        }
+                    })
+                    ->orderBy('views_count', 'desc')
+                    ->take(8)
+                    ->get();
 
                 $recommendedIds = $relatedProducts->pluck('id');
             }
@@ -98,19 +99,19 @@ class GetHomeDataAction
             'attributeValues.attribute',
             'attributeValues.attributeValue',
             'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue'
+            'variants.attributeValues.attributeValue',
         ])
-        ->whereIn('id', $combinedIds)
-        ->where('status', 'active')
-        ->get()
+            ->whereIn('id', $combinedIds)
+            ->where('status', 'active')
+            ->get()
         // Maintain the order of IDs
-        ->sortBy(fn($product) => array_search($product->id, $combinedIds));
+            ->sortBy(fn ($product) => array_search($product->id, $combinedIds));
 
         // Fallback to random popular active items if less than 8 items match
         if ($recommended->count() < 8) {
             $needed = 8 - $recommended->count();
             $excludeIds = array_merge($combinedIds, $seedIds);
-            
+
             $fallback = $this->productRepository->getRandomFallback($excludeIds, $needed);
             $recommended = $recommended->concat($fallback);
         }
@@ -118,7 +119,7 @@ class GetHomeDataAction
         return [
             'categories' => $categories,
             'flash_deals' => $flashDeals,
-            'recommended' => $recommended->values()
+            'recommended' => $recommended->values(),
         ];
     }
 }

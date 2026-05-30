@@ -4,10 +4,18 @@
     class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50 dark:bg-gray-900/10 relative"
   >
     <!-- Load More Trigger -->
-    <div ref="loadMoreTrigger" class="h-1 w-full" />
-    
-    <div v-if="isLoadingMore" class="flex justify-center py-2">
-      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+    <div
+      ref="loadMoreTrigger"
+      class="h-1 w-full"
+    />
+
+    <div
+      v-if="isLoadingMore"
+      class="flex justify-center py-2"
+    >
+      <div
+        class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"
+      />
     </div>
     <div
       v-for="msg in messages"
@@ -40,7 +48,7 @@
         class="max-w-[90%] bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-2xl p-4 shadow-sm relative group flex items-start gap-4"
       >
         <div class="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-xl">
-          <EyeSlashIcon class="w-4 h-4 text-amber-600 dark:text-amber-400"/>
+          <EyeSlashIcon class="w-4 h-4 text-amber-600 dark:text-amber-400" />
         </div>
         <div class="flex-1">
           <p
@@ -84,11 +92,24 @@
           v-if="!msg.isAdmin"
           class="flex items-center gap-2 mb-1.5"
         >
-          <div class="w-5 h-5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600">
-             <img v-if="msg.userAvatar" :src="msg.userAvatar" class="w-full h-full object-cover" />
-             <UserIcon v-else class="w-3 h-3 text-gray-400" />
+          <div
+            class="w-5 h-5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
+          >
+            <img
+              v-if="msg.userAvatar"
+              :src="msg.userAvatar"
+              class="w-full h-full object-cover"
+            >
+            <UserIcon
+              v-else
+              class="w-3 h-3 text-gray-400"
+            />
           </div>
-          <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">{{ userName }}</p>
+          <p
+            class="text-[10px] font-black opacity-40 uppercase tracking-widest"
+          >
+            {{ userName }}
+          </p>
         </div>
         <p
           v-if="msg.message"
@@ -159,8 +180,8 @@
         </div>
         <div class="flex items-center justify-end gap-2 mt-2 opacity-50">
           <span class="text-[9px] font-bold uppercase">{{
-              formatTime(msg.createdAt)
-            }}</span>
+            formatTime(msg.createdAt)
+          }}</span>
         </div>
       </div>
       <div
@@ -260,7 +281,7 @@ const setupScrollObserver = () => {
         emit("loadMore");
       }
     },
-    { root: chatContainer.value, threshold: 0.1 }
+    { root: chatContainer.value, threshold: 0.1 },
   );
 
   if (loadMoreTrigger.value) {
@@ -296,20 +317,20 @@ const setupReadObserver = () => {
         }
       });
     },
-    { root: chatContainer.value, threshold: 0.5 }
+    { root: chatContainer.value, threshold: 0.5 },
   );
 };
 
 const observeUnreadMessages = () => {
   if (!readObserver) return;
-  
+
   // Observe all unread messages that are NOT from admin
   // We need to use nextTick to ensure DOM is updated
   nextTick(() => {
-    props.messages.forEach(msg => {
+    props.messages.forEach((msg) => {
       if (!msg.isAdmin && !msg.readAt) {
-         const el = messageRefs.value.get(msg.id);
-         if (el) readObserver.observe(el);
+        const el = messageRefs.value.get(msg.id);
+        if (el) readObserver.observe(el);
       }
     });
   });
@@ -325,17 +346,19 @@ watch(
     } else {
       // If it's a new message (length increased and last message is different)
       // or initial load
-      const isNewMessage = newVal.length > oldVal.length && 
-                           (oldVal.length === 0 || newVal[newVal.length - 1].id !== oldVal[oldVal.length - 1].id);
-      
+      const isNewMessage =
+        newVal.length > oldVal.length &&
+        (oldVal.length === 0 ||
+          newVal[newVal.length - 1].id !== oldVal[oldVal.length - 1].id);
+
       if (isNewMessage) {
         scrollToBottom();
       }
     }
-    
+
     observeUnreadMessages();
   },
-  { deep: true }
+  { deep: true },
 );
 
 onMounted(() => {
@@ -349,7 +372,6 @@ onUnmounted(() => {
   if (readObserver) readObserver.disconnect();
   flushReadIds.cancel();
 });
-
 
 const formatTime = (date) => {
   if (!date) return "";

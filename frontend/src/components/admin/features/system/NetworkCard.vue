@@ -7,7 +7,7 @@
         <div
           class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 group-hover:text-indigo-500 transition-all duration-500 shadow-sm"
         >
-          <ArrowsRightLeftIcon class="w-7 h-7"/>
+          <ArrowsRightLeftIcon class="w-7 h-7" />
         </div>
         <div>
           <h3
@@ -38,7 +38,7 @@
               class="text-lg font-black text-indigo-600 dark:text-indigo-400 font-mono"
             >{{ incoming }} Mbps</span>
           </div>
-          <ArrowDownCircleIcon class="w-6 h-6 text-indigo-400 animate-bounce"/>
+          <ArrowDownCircleIcon class="w-6 h-6 text-indigo-400 animate-bounce" />
         </div>
         <div class="flex gap-1 h-12 items-end px-2">
           <div
@@ -78,7 +78,9 @@
       </div>
     </div>
 
-    <div class="mt-8 pt-8 border-t border-gray-50 dark:border-gray-700/50 space-y-3">
+    <div
+      class="mt-8 pt-8 border-t border-gray-50 dark:border-gray-700/50 space-y-3"
+    >
       <div
         class="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest"
       >
@@ -96,17 +98,21 @@
 </template>
 
 <script setup>
-import {ArrowDownCircleIcon, ArrowsRightLeftIcon, ArrowUpCircleIcon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import {
+  ArrowDownCircleIcon,
+  ArrowsRightLeftIcon,
+  ArrowUpCircleIcon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
-  incoming: {type: Number, default: 0},
-  outgoing: {type: Number, default: 0},
-  totalReceived: {type: Number, default: 0},
-  totalSent: {type: Number, default: 0},
-  maxBandwidth: {type: Number, default: 1000},
+  incoming: { type: Number, default: 0 },
+  outgoing: { type: Number, default: 0 },
+  totalReceived: { type: Number, default: 0 },
+  totalSent: { type: Number, default: 0 },
+  maxBandwidth: { type: Number, default: 1000 },
   history: {
     type: Object,
     default: () => ({

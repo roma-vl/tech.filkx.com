@@ -12,7 +12,7 @@
         @input="onSearch"
       >
         <template #prepend>
-          <MagnifyingGlassIcon class="h-4 w-4 text-gray-400"/>
+          <MagnifyingGlassIcon class="h-4 w-4 text-gray-400" />
         </template>
       </AppInput>
 
@@ -43,7 +43,7 @@
               class="text-gray-300 hover:text-primary-500 transition-colors p-1 rounded-lg hover:bg-white dark:hover:bg-gray-800 shadow-sm opacity-0 group-hover:opacity-100 transition-all font-sans"
               @click="copyToClipboard(item.code)"
             >
-              <ClipboardIcon class="w-4 h-4"/>
+              <ClipboardIcon class="w-4 h-4" />
             </button>
           </div>
         </td>
@@ -120,13 +120,13 @@
               class="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-400 hover:text-primary-500 hover:border-primary-200 dark:hover:border-primary-900 shadow-sm transition-all hover:scale-105 active:scale-95"
               @click="$emit('edit', item)"
             >
-              <PencilSquareIcon class="w-4 h-4"/>
+              <PencilSquareIcon class="w-4 h-4" />
             </button>
             <button
               class="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-400 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 shadow-sm transition-all hover:scale-105 active:scale-95"
               @click="$emit('delete', item)"
             >
-              <TrashIcon class="w-4 h-4"/>
+              <TrashIcon class="w-4 h-4" />
             </button>
           </div>
         </td>
@@ -151,16 +151,21 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
-import {ClipboardIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon,} from "@heroicons/vue/24/outline";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import {
+  ClipboardIcon,
+  MagnifyingGlassIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppPagination from "@/components/application/ui/Data/AppPagination.vue";
 import dayjs from "dayjs";
-import {useToast} from "vue-toastification";
+import { useToast } from "vue-toastification";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -186,9 +191,9 @@ const internalSearch = ref(props.search);
 const internalStatus = ref(props.statusFilter);
 
 const statusOptions = computed(() => [
-  {id: "", name: t("admin.marketing.coupons.filters.all") || "All Statuses"},
-  {id: "active", name: t("admin.marketing.coupons.filters.active")},
-  {id: "inactive", name: t("admin.marketing.coupons.filters.inactive")},
+  { id: "", name: t("admin.marketing.coupons.filters.all") || "All Statuses" },
+  { id: "active", name: t("admin.marketing.coupons.filters.active") },
+  { id: "inactive", name: t("admin.marketing.coupons.filters.inactive") },
 ]);
 
 const headers = [

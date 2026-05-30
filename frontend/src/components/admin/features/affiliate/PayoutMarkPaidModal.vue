@@ -89,9 +89,9 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, ref } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
@@ -112,10 +112,10 @@ const transactionReference = ref("");
 const notes = ref("");
 
 const methodOptions = computed(() => [
-  {id: "bank_card", name: t("admin.affiliates.actions.methods.bank_card")},
-  {id: "liqpay", name: t("admin.affiliates.actions.methods.liqpay")},
-  {id: "paypal", name: t("admin.affiliates.actions.methods.paypal")},
-  {id: "crypto", name: t("admin.affiliates.actions.methods.crypto")},
+  { id: "bank_card", name: t("admin.affiliates.actions.methods.bank_card") },
+  { id: "liqpay", name: t("admin.affiliates.actions.methods.liqpay") },
+  { id: "paypal", name: t("admin.affiliates.actions.methods.paypal") },
+  { id: "crypto", name: t("admin.affiliates.actions.methods.crypto") },
 ]);
 
 const markAsPaid = async () => {

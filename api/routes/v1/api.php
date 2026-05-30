@@ -1,9 +1,12 @@
 <?php
 
-use App\Api\Admin\Controllers\AdminAccountingController;
+use App\Api\Admin\Controllers\AdminAttributeController;
+use App\Api\Admin\Controllers\AdminBrandController;
+use App\Api\Admin\Controllers\AdminCategoryController;
 use App\Api\Admin\Controllers\AdminEmailController;
+use App\Api\Admin\Controllers\AdminOrderController;
+use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
-use App\Api\Admin\Controllers\AdminRunnerNodeController;
 use App\Api\Admin\Controllers\AdminServerLogController;
 use App\Api\Admin\Controllers\AdminSettingsController;
 use App\Api\Admin\Controllers\AdminStatsController;
@@ -11,40 +14,37 @@ use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
 use App\Api\Admin\Controllers\AdminUserController;
-use App\Api\Admin\Controllers\AdminProductController;
-use App\Api\Admin\Controllers\AdminCategoryController;
-use App\Api\Admin\Controllers\AdminBrandController;
-use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
 use App\Api\V1\Controllers\Auth\OAuthController;
+use App\Api\V1\Controllers\CartController;
+use App\Api\V1\Controllers\CatalogController;
+use App\Api\V1\Controllers\CheckoutController;
+use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
-use App\Api\V1\Controllers\CatalogController;
-use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\UserController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/system/status', [SystemController::class, 'status']);
 
-
 Route::prefix('v1')->group(function () {
-// Public auth routes
+    // Public auth routes
     Route::prefix('auth')->group(function () {
-        Route::post('/register',        [AuthController::class, 'register']);
-        Route::post('/login',           [AuthController::class, 'login']);
-        Route::get('/verify-email',     [AuthController::class, 'verifyEmailByParams']);
-        Route::post('/email/resend',    [AuthController::class, 'resendVerification']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::get('/verify-email', [AuthController::class, 'verifyEmailByParams']);
+        Route::post('/email/resend', [AuthController::class, 'resendVerification']);
         Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
-        Route::post('/password/reset',  [AuthController::class, 'resetPassword']);
+        Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
         // Protected auth routes
         Route::middleware('auth:api')->group(function () {
-            Route::get('/me',       [AuthController::class, 'me']);
-            Route::post('/logout',  [AuthController::class, 'logout']);
+            Route::get('/me', [AuthController::class, 'me']);
+            Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
         });
     });
@@ -58,15 +58,27 @@ Route::prefix('v1')->group(function () {
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
     });
+
+    // Cart routes
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'show']);
+        Route::post('/', [CartController::class, 'add']);
+        Route::put('/items/{itemId}', [CartController::class, 'updateItem']);
+        Route::delete('/items/{itemId}', [CartController::class, 'removeItem']);
+        Route::post('/merge', [CartController::class, 'merge'])->middleware('auth:api');
+    });
+
+    // Checkout route
+    Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
 });
 
 // OAuth routes
 Route::prefix('oauth/{provider}')->group(function () {
-    Route::get('/redirect',  [OAuthController::class, 'redirectToProvider']);
-    Route::get('/callback',  [OAuthController::class, 'callback']);
+    Route::get('/redirect', [OAuthController::class, 'redirectToProvider']);
+    Route::get('/callback', [OAuthController::class, 'callback']);
 
     Route::middleware('auth:api')->group(function () {
-        Route::post('/connect',    [OAuthController::class, 'connect']);
+        Route::post('/connect', [OAuthController::class, 'connect']);
         Route::delete('/disconnect', [OAuthController::class, 'disconnect']);
     });
 });
@@ -120,8 +132,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
     Route::post('notifications/{id}/read', [NotificationController::class, 'markRead']);
 
-
-
     Route::prefix('support')->group(function () {
         Route::get('/tickets', [SupportController::class, 'index']);
         Route::post('/tickets', [SupportController::class, 'store']);
@@ -131,7 +141,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('/tickets/{ticket}/transfer-to-ai', [SupportController::class, 'transferToAi']);
         Route::post('/tickets/{ticket}/mark-as-read', [SupportController::class, 'markAsRead']);
     });
-
 
     Route::prefix('admin')->middleware(['auth:api', IdentifyImpersonation::class, 'role:admin|administrator|moderator|support'])->group(function () {
 
@@ -189,6 +198,12 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::put('products/{id}', [AdminProductController::class, 'update']);
         Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
         Route::post('products/upload', [AdminProductController::class, 'uploadImage']);
+
+        // Order Management
+        Route::get('orders', [AdminOrderController::class, 'index']);
+        Route::get('orders/{id}', [AdminOrderController::class, 'show']);
+        Route::put('orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+        Route::delete('orders/{id}', [AdminOrderController::class, 'destroy']);
 
         // Categories CRUD
         Route::get('categories', [AdminCategoryController::class, 'index']);

@@ -2,7 +2,7 @@
   <div
     :class="[
       'flex gap-3',
-      vertical ? 'flex-col items-stretch w-full' : 'flex-wrap items-center'
+      vertical ? 'flex-col items-stretch w-full' : 'flex-wrap items-center',
     ]"
   >
     <UsageBadge

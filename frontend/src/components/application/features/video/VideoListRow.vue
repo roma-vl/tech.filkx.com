@@ -37,8 +37,14 @@
           class="p-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 group-hover:border-primary/20 group-hover:bg-primary/5 transition-all"
           :class="video.isOptimized ? 'text-primary' : 'text-gray-400'"
         >
-          <ZapIcon v-if="video.isOptimized" class="w-4 h-4" />
-          <VideoIcon v-else class="w-4 h-4" />
+          <ZapIcon
+            v-if="video.isOptimized"
+            class="w-4 h-4"
+          />
+          <VideoIcon
+            v-else
+            class="w-4 h-4"
+          />
         </div>
         <h4
           class="font-bold text-gray-900 dark:text-white truncate text-base group-hover:text-primary transition-colors"
@@ -62,7 +68,6 @@
           <div class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
           {{ t("media.videos.status.streamingRestricted") }}
         </div>
-
       </div>
 
       <!-- Delete original recommendation -->
@@ -105,30 +110,46 @@
           v-if="video.resolutionLabel"
           class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
           :class="resolutionBadgeClass"
-          :title="!isSupported ? t('streams.errors.resolutionNotSupported') : ''"
+          :title="
+            !isSupported ? t('streams.errors.resolutionNotSupported') : ''
+          "
         >
           <MonitorIcon class="w-3 h-3" />
           {{ video.resolutionLabel }}
-          <span v-if="!isSupported" class="ml-1 opacity-70">({{ t("common.notSupported") }})</span>
+          <span
+            v-if="!isSupported"
+            class="ml-1 opacity-70"
+          >({{ t("common.notSupported") }})</span>
         </div>
       </div>
     </div>
 
     <!-- Right status panel -->
-    <div class="flex flex-col items-start sm:items-end sm:mr-8 sm:w-48 font-mono mt-2 sm:mt-0">
-      <div v-if="video.status === 'processing' || video.status === 'queued_for_transcoding'">
+    <div
+      class="flex flex-col items-start sm:items-end sm:mr-8 sm:w-48 font-mono mt-2 sm:mt-0"
+    >
+      <div
+        v-if="
+          video.status === 'processing' ||
+            video.status === 'queued_for_transcoding'
+        "
+      >
         <div
           class="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-2 border border-gray-200 dark:border-gray-600"
         >
           <div
             class="h-full bg-primary transition-all duration-500"
             :style="{ width: (video.transcodingProgress || 0) + '%' }"
-            :class="{ 'animate-pulse': video.status === 'queued_for_transcoding' }"
+            :class="{
+              'animate-pulse': video.status === 'queued_for_transcoding',
+            }"
           />
         </div>
         <span
           class="text-[10px] uppercase font-bold tracking-widest"
-          :class="video.status === 'processing' ? 'text-primary' : 'text-gray-400'"
+          :class="
+            video.status === 'processing' ? 'text-primary' : 'text-gray-400'
+          "
         >
           {{
             video.status === "processing"
@@ -139,14 +160,18 @@
       </div>
 
       <div v-else-if="video.status === 'failed'">
-        <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+        <span
+          class="text-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"
+        >
           <AlertCircleIcon class="w-3.5 h-3.5" />
           {{ t("media.videos.status.failed") }}
         </span>
       </div>
 
       <div v-else-if="video.status === 'ready'">
-        <div class="text-[10px] text-gray-400 uppercase font-bold tracking-widest flex items-center gap-1">
+        <div
+          class="text-[10px] text-gray-400 uppercase font-bold tracking-widest flex items-center gap-1"
+        >
           <CheckCircleIcon class="w-3.5 h-3.5 text-green-500" />
           {{ t("media.videos.status.completed") }}
         </div>
@@ -156,7 +181,10 @@
     <div
       class="absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 flex items-center justify-center w-10 sm:w-12 sm:mr-2"
     >
-      <Dropdown align="right" width="48">
+      <Dropdown
+        align="right"
+        width="48"
+      >
         <template #trigger>
           <button
             class="flex items-center justify-center w-10 h-10 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-all outline-none border border-transparent hover:border-primary/10"
@@ -279,9 +307,12 @@ const resolutionBadgeClass = computed(() => {
     return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800/50";
   }
   const label = props.video.resolutionLabel;
-  if (label === "4K") return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50";
-  if (label === "1080p") return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50";
-  if (label === "720p") return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/50";
+  if (label === "4K")
+    return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50";
+  if (label === "1080p")
+    return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50";
+  if (label === "720p")
+    return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/50";
   return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 border border-gray-200 dark:border-gray-800/50";
 });
 </script>

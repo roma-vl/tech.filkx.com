@@ -35,13 +35,15 @@
     <span
       v-if="!collapsed"
       class="ml-3 truncate text-[15px]"
-    >{{ t(item.labelKey) }}</span>
+    >{{
+      t(item.labelKey)
+    }}</span>
   </router-link>
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
-import {LockIcon} from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
+import { LockIcon } from "lucide-vue-next";
 
 const { t } = useI18n();
 defineEmits(["click"]);

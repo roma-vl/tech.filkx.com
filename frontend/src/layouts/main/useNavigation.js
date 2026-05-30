@@ -28,7 +28,6 @@ export function useNavigation() {
   const getIsLocked = (item) => {
     if (!item.featureKey) return false;
     // Check if subscription exists and feature is explicitly false
-
   };
 
   const processedGroups = computed(() =>
@@ -38,7 +37,9 @@ export function useNavigation() {
         ...group,
         items: group.items.filter(isVisible).map((item) => ({
           ...item,
-          isActive: item.activeMatch ? route.path.startsWith(item.activeMatch) : route.path === item.to,
+          isActive: item.activeMatch
+            ? route.path.startsWith(item.activeMatch)
+            : route.path === item.to,
           isLocked: getIsLocked(item),
         })),
       }))

@@ -15,11 +15,11 @@ class Recaptcha implements ValidationRule
             'response' => $value,
         ]);
 
-        if (!$response->json('success')) {
+        if (! $response->json('success')) {
             \Log::error('reCAPTCHA failed', [
                 'success' => $response->json('success'),
                 'error-codes' => $response->json('error-codes'),
-                'secret_preview' => substr(config('services.recaptcha.secret'), 0, 10) . '...',
+                'secret_preview' => substr(config('services.recaptcha.secret'), 0, 10).'...',
             ]);
             $fail('The reCAPTCHA verification failed. Please try again.');
         }

@@ -31,23 +31,29 @@
       />
     </svg>
 
-    <slot name="prefix"/>
-    <slot/>
-    <slot name="suffix"/>
+    <slot name="prefix" />
+    <slot />
+    <slot name="suffix" />
   </component>
 </template>
 
 <script setup>
-import {computed, useAttrs} from "vue";
+import { computed, useAttrs } from "vue";
 
 const props = defineProps({
   variant: {
     type: String,
     default: "primary",
     validator: (val) =>
-      ["primary", "secondary", "white", "success", "danger", "ghost", "text"].includes(
-        val,
-      ),
+      [
+        "primary",
+        "secondary",
+        "white",
+        "success",
+        "danger",
+        "ghost",
+        "text",
+      ].includes(val),
   },
   size: {
     type: String,
@@ -75,7 +81,7 @@ const tag = computed(() => {
 });
 
 const filteredAttrs = computed(() => {
-  const {class: _, ...rest} = attrs;
+  const { class: _, ...rest } = attrs;
   return rest;
 });
 

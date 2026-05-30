@@ -72,7 +72,7 @@
             "
             :style="{ width: percentage + '%' }"
           >
-            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-white/20"/>
+            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-white/20" />
           </div>
         </div>
       </div>
@@ -170,10 +170,10 @@
 </template>
 
 <script setup>
-import {ArrowDownIcon, ArrowUpIcon} from "@heroicons/vue/24/solid";
-import {useI18n} from "vue-i18n";
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/vue/24/solid";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   type: {

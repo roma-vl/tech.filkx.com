@@ -1,131 +1,131 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const isMegaMenuOpen = ref(false);
 const activeCategory = ref(null);
 const navbarRef = ref(null);
 
-const navLinks = ['Smartphones', 'Laptops', 'Gaming', 'Audio', 'Wearables'];
+const navLinks = ["Smartphones", "Laptops", "Gaming", "Audio", "Wearables"];
 
-const activeNavLink = ref('Smartphones');
+const activeNavLink = ref("Smartphones");
 
 const categories = [
   {
-    id: 'smartphones',
-    label: 'Smartphones',
-    icon: 'smartphone',
+    id: "smartphones",
+    label: "Smartphones",
+    icon: "smartphone",
     sub: [
-      { name: 'iPhone 15 Series', badge: 'New' },
-      { name: 'Samsung Galaxy S24', badge: '' },
-      { name: 'Google Pixel 8', badge: '' },
-      { name: 'Folding Phones', badge: 'Trending' },
-      { name: 'Budget Phones', badge: '' },
-      { name: 'Accessories', badge: '' },
+      { name: "iPhone 15 Series", badge: "New" },
+      { name: "Samsung Galaxy S24", badge: "" },
+      { name: "Google Pixel 8", badge: "" },
+      { name: "Folding Phones", badge: "Trending" },
+      { name: "Budget Phones", badge: "" },
+      { name: "Accessories", badge: "" },
     ],
   },
   {
-    id: 'laptops',
-    label: 'Laptops',
-    icon: 'laptop',
+    id: "laptops",
+    label: "Laptops",
+    icon: "laptop",
     sub: [
-      { name: 'MacBook Pro & Air', badge: 'New' },
-      { name: 'Gaming Laptops', badge: 'Hot' },
-      { name: 'Ultrabooks', badge: '' },
-      { name: 'Workstations', badge: '' },
-      { name: 'Chromebooks', badge: '' },
-      { name: 'Laptop Accessories', badge: '' },
+      { name: "MacBook Pro & Air", badge: "New" },
+      { name: "Gaming Laptops", badge: "Hot" },
+      { name: "Ultrabooks", badge: "" },
+      { name: "Workstations", badge: "" },
+      { name: "Chromebooks", badge: "" },
+      { name: "Laptop Accessories", badge: "" },
     ],
   },
   {
-    id: 'gaming',
-    label: 'Gaming',
-    icon: 'sports_esports',
+    id: "gaming",
+    label: "Gaming",
+    icon: "sports_esports",
     sub: [
-      { name: 'PlayStation 5', badge: 'Hot' },
-      { name: 'Xbox Series X', badge: '' },
-      { name: 'Nintendo Switch', badge: '' },
-      { name: 'Gaming PCs', badge: '' },
-      { name: 'Controllers & Pads', badge: '' },
-      { name: 'Gaming Chairs', badge: '' },
+      { name: "PlayStation 5", badge: "Hot" },
+      { name: "Xbox Series X", badge: "" },
+      { name: "Nintendo Switch", badge: "" },
+      { name: "Gaming PCs", badge: "" },
+      { name: "Controllers & Pads", badge: "" },
+      { name: "Gaming Chairs", badge: "" },
     ],
   },
   {
-    id: 'audio',
-    label: 'Audio',
-    icon: 'headphones',
+    id: "audio",
+    label: "Audio",
+    icon: "headphones",
     sub: [
-      { name: 'Noise Cancelling', badge: '' },
-      { name: 'True Wireless Earbuds', badge: 'New' },
-      { name: 'Home Theater', badge: '' },
-      { name: 'Smart Speakers', badge: '' },
-      { name: 'Studio Monitors', badge: '' },
-      { name: 'Soundbars', badge: '' },
+      { name: "Noise Cancelling", badge: "" },
+      { name: "True Wireless Earbuds", badge: "New" },
+      { name: "Home Theater", badge: "" },
+      { name: "Smart Speakers", badge: "" },
+      { name: "Studio Monitors", badge: "" },
+      { name: "Soundbars", badge: "" },
     ],
   },
   {
-    id: 'wearables',
-    label: 'Wearables',
-    icon: 'watch',
+    id: "wearables",
+    label: "Wearables",
+    icon: "watch",
     sub: [
-      { name: 'Apple Watch', badge: 'New' },
-      { name: 'Galaxy Watch', badge: '' },
-      { name: 'Fitness Trackers', badge: '' },
-      { name: 'Smart Rings', badge: 'Trending' },
-      { name: 'AR & VR Headsets', badge: '' },
-      { name: 'Smart Glasses', badge: '' },
+      { name: "Apple Watch", badge: "New" },
+      { name: "Galaxy Watch", badge: "" },
+      { name: "Fitness Trackers", badge: "" },
+      { name: "Smart Rings", badge: "Trending" },
+      { name: "AR & VR Headsets", badge: "" },
+      { name: "Smart Glasses", badge: "" },
     ],
   },
   {
-    id: 'cameras',
-    label: 'Cameras',
-    icon: 'photo_camera',
+    id: "cameras",
+    label: "Cameras",
+    icon: "photo_camera",
     sub: [
-      { name: 'DSLR Cameras', badge: '' },
-      { name: 'Mirrorless', badge: 'Hot' },
-      { name: 'Action Cameras', badge: '' },
-      { name: 'Drones', badge: '' },
-      { name: 'Lenses', badge: '' },
-      { name: 'Camera Bags', badge: '' },
+      { name: "DSLR Cameras", badge: "" },
+      { name: "Mirrorless", badge: "Hot" },
+      { name: "Action Cameras", badge: "" },
+      { name: "Drones", badge: "" },
+      { name: "Lenses", badge: "" },
+      { name: "Camera Bags", badge: "" },
     ],
   },
   {
-    id: 'tablets',
-    label: 'Tablets',
-    icon: 'tablet',
+    id: "tablets",
+    label: "Tablets",
+    icon: "tablet",
     sub: [
-      { name: 'iPad Pro & Air', badge: 'New' },
-      { name: 'Samsung Galaxy Tab', badge: '' },
-      { name: 'Android Tablets', badge: '' },
-      { name: 'E-Readers', badge: '' },
-      { name: 'Tablet Cases', badge: '' },
-      { name: 'Stylus & Pens', badge: '' },
+      { name: "iPad Pro & Air", badge: "New" },
+      { name: "Samsung Galaxy Tab", badge: "" },
+      { name: "Android Tablets", badge: "" },
+      { name: "E-Readers", badge: "" },
+      { name: "Tablet Cases", badge: "" },
+      { name: "Stylus & Pens", badge: "" },
     ],
   },
   {
-    id: 'smart-home',
-    label: 'Smart Home',
-    icon: 'home',
+    id: "smart-home",
+    label: "Smart Home",
+    icon: "home",
     sub: [
-      { name: 'Smart Displays', badge: '' },
-      { name: 'Smart Bulbs', badge: '' },
-      { name: 'Security Cameras', badge: '' },
-      { name: 'Smart Locks', badge: '' },
-      { name: 'Robot Vacuums', badge: 'Hot' },
-      { name: 'Smart Thermostats', badge: '' },
+      { name: "Smart Displays", badge: "" },
+      { name: "Smart Bulbs", badge: "" },
+      { name: "Security Cameras", badge: "" },
+      { name: "Smart Locks", badge: "" },
+      { name: "Robot Vacuums", badge: "Hot" },
+      { name: "Smart Thermostats", badge: "" },
     ],
   },
 ];
 
 const promos = [
   {
-    img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80',
-    title: 'Weekly Special',
-    desc: 'Up to 30% off selected accessories.',
+    img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
+    title: "Weekly Special",
+    desc: "Up to 30% off selected accessories.",
   },
   {
-    img: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300&q=80',
-    title: 'New Arrivals',
-    desc: 'Fresh drops every Monday.',
+    img: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300&q=80",
+    title: "New Arrivals",
+    desc: "Fresh drops every Monday.",
   },
 ];
 
@@ -149,34 +149,56 @@ const handleClickOutside = (e) => {
   }
 };
 
-onMounted(() => document.addEventListener('mousedown', handleClickOutside));
-onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutside));
+onMounted(() => document.addEventListener("mousedown", handleClickOutside));
+onBeforeUnmount(() =>
+  document.removeEventListener("mousedown", handleClickOutside),
+);
 </script>
 
 <template>
-  <nav ref="navbarRef" class="navbar-secondary hidden md:block w-full">
-     <div class="max-w-container-max mx-auto h-16 px-margin-desktop flex items-center justify-between gap-gutter">
-
+  <nav
+    ref="navbarRef"
+    class="navbar-secondary hidden md:block w-full"
+  >
+    <div
+      class="max-w-container-max mx-auto h-16 px-margin-desktop flex items-center justify-between gap-gutter"
+    >
       <!-- Browse Categories Button -->
-      <div class="browse-trigger-wrap" @mouseenter="openMenu" @mouseleave="closeMenu">
+      <div
+        class="browse-trigger-wrap"
+        @mouseenter="openMenu"
+        @mouseleave="closeMenu"
+      >
         <button
           class="browse-btn"
           :class="{ 'browse-btn--active': isMegaMenuOpen }"
-          @click="isMegaMenuOpen = !isMegaMenuOpen"
           aria-haspopup="true"
           :aria-expanded="isMegaMenuOpen"
+          @click="isMegaMenuOpen = !isMegaMenuOpen"
         >
-          <span class="material-symbols-outlined browse-icon">{{ isMegaMenuOpen ? 'close' : 'menu' }}</span>
+          <span class="material-symbols-outlined browse-icon">{{
+            isMegaMenuOpen ? "close" : "menu"
+          }}</span>
           Browse Categories
-          <span class="material-symbols-outlined browse-chevron" :class="{ rotated: isMegaMenuOpen }">expand_more</span>
+          <span
+            class="material-symbols-outlined browse-chevron"
+            :class="{ rotated: isMegaMenuOpen }"
+          >expand_more</span>
         </button>
 
         <!-- Mega Menu -->
         <Transition name="mega">
-          <div v-if="isMegaMenuOpen" class="mega-menu" role="dialog" aria-label="Category Menu">
+          <div
+            v-if="isMegaMenuOpen"
+            class="mega-menu"
+            role="dialog"
+            aria-label="Category Menu"
+          >
             <!-- Left: Category Sidebar -->
             <div class="mega-sidebar">
-              <p class="mega-sidebar-label">All Categories</p>
+              <p class="mega-sidebar-label">
+                All Categories
+              </p>
               <ul class="mega-cat-list">
                 <li
                   v-for="cat in categories"
@@ -185,7 +207,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
                   :class="{ 'mega-cat-item--active': activeCat.id === cat.id }"
                   @mouseenter="hoverCategory(cat)"
                 >
-                  <span class="material-symbols-outlined cat-icon">{{ cat.icon }}</span>
+                  <span class="material-symbols-outlined cat-icon">{{
+                    cat.icon
+                  }}</span>
                   <span class="cat-label">{{ cat.label }}</span>
                   <span class="material-symbols-outlined cat-arrow">chevron_right</span>
                 </li>
@@ -193,11 +217,21 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
             </div>
 
             <!-- Center: Sub-categories Panel -->
-            <Transition name="slide-fade" mode="out-in">
-              <div :key="activeCat.id" class="mega-panel">
+            <Transition
+              name="slide-fade"
+              mode="out-in"
+            >
+              <div
+                :key="activeCat.id"
+                class="mega-panel"
+              >
                 <div class="mega-panel-header">
-                  <span class="material-symbols-outlined panel-icon">{{ activeCat.icon }}</span>
-                  <h3 class="panel-title">{{ activeCat.label }}</h3>
+                  <span class="material-symbols-outlined panel-icon">{{
+                    activeCat.icon
+                  }}</span>
+                  <h3 class="panel-title">
+                    {{ activeCat.label }}
+                  </h3>
                 </div>
                 <ul class="mega-sub-list">
                   <li
@@ -207,10 +241,17 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
                   >
                     <span class="material-symbols-outlined sub-dot">arrow_right</span>
                     <span class="sub-name">{{ sub.name }}</span>
-                    <span v-if="sub.badge" class="sub-badge" :class="`badge--${sub.badge.toLowerCase()}`">{{ sub.badge }}</span>
+                    <span
+                      v-if="sub.badge"
+                      class="sub-badge"
+                      :class="`badge--${sub.badge.toLowerCase()}`"
+                    >{{ sub.badge }}</span>
                   </li>
                 </ul>
-                <a href="#" class="view-all-link">
+                <a
+                  href="#"
+                  class="view-all-link"
+                >
                   View all {{ activeCat.label }}
                   <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
@@ -219,16 +260,26 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
             <!-- Right: Promo Cards -->
             <div class="mega-promos">
-              <p class="promos-label">Featured Deals</p>
+              <p class="promos-label">
+                Featured Deals
+              </p>
               <div
                 v-for="promo in promos"
                 :key="promo.title"
                 class="promo-card"
               >
-                <img :src="promo.img" :alt="promo.title" class="promo-img" />
+                <img
+                  :src="promo.img"
+                  :alt="promo.title"
+                  class="promo-img"
+                >
                 <div class="promo-body">
-                  <p class="promo-title">{{ promo.title }}</p>
-                  <p class="promo-desc">{{ promo.desc }}</p>
+                  <p class="promo-title">
+                    {{ promo.title }}
+                  </p>
+                  <p class="promo-desc">
+                    {{ promo.desc }}
+                  </p>
                   <button class="promo-cta">
                     Shop Now
                     <span class="material-symbols-outlined">arrow_forward</span>
@@ -334,7 +385,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   background: #ffffff;
   border: 1px solid #e4e4e7;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.02);
   margin-top: 8px;
   overflow: hidden;
   z-index: 60;
@@ -490,9 +543,19 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   text-transform: uppercase;
 }
 
-.badge--new    { background: #f4f4f5; color: #18181b; border: 1px solid #e4e4e7; }
-.badge--hot    { background: #fee2e2; color: #ef4444; }
-.badge--trending { background: #fef3c7; color: #d97706; }
+.badge--new {
+  background: #f4f4f5;
+  color: #18181b;
+  border: 1px solid #e4e4e7;
+}
+.badge--hot {
+  background: #fee2e2;
+  color: #ef4444;
+}
+.badge--trending {
+  background: #fef3c7;
+  color: #d97706;
+}
 
 .view-all-link {
   display: inline-flex;
@@ -621,7 +684,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 16px;
@@ -652,7 +715,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 /* ── Transitions ──────────────────────────────────────── */
 .mega-enter-active,
 .mega-leave-active {
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mega-enter-from,
@@ -663,7 +728,9 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
 
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .slide-fade-enter-from {
@@ -676,4 +743,3 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleClickOutsi
   transform: translateX(-4px);
 }
 </style>
-

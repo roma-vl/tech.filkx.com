@@ -64,8 +64,8 @@
 <script setup>
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {ExclamationTriangleIcon} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 
 defineProps({
   isOpen: Boolean,

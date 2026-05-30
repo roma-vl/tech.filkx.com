@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-8 animate-in fade-in duration-500">
-
     <AdminLogFilters
       v-model:search="filters.search"
       v-model:domain="filters.domain"
@@ -25,8 +24,8 @@
 </template>
 
 <script setup>
-import {onMounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import {
   ArrowRightOnRectangleIcon,
@@ -65,18 +64,18 @@ const filters = ref({
 const getUIConfig = (action, domain) => {
   const domainConfigs = {
     security: { icon: ShieldCheckIcon, color: "bg-indigo-500" },
-    billing: {icon: CreditCardIcon, color: "bg-emerald-500"},
+    billing: { icon: CreditCardIcon, color: "bg-emerald-500" },
     content: { icon: VideoCameraIcon, color: "bg-blue-500" },
     system: { icon: KeyIcon, color: "bg-amber-500" },
     team: { icon: UserIcon, color: "bg-purple-500" },
   };
 
   const actionConfigs = {
-    "auth.login": {icon: FingerPrintIcon, color: "bg-indigo-600"},
-    "auth.logout": {icon: ArrowRightOnRectangleIcon, color: "bg-gray-500"},
-    "auth.failed": {icon: ExclamationTriangleIcon, color: "bg-red-600"},
-    "video.deleted": {icon: TrashIcon, color: "bg-red-500"},
-    "user.deleted": {icon: TrashIcon, color: "bg-rose-600"},
+    "auth.login": { icon: FingerPrintIcon, color: "bg-indigo-600" },
+    "auth.logout": { icon: ArrowRightOnRectangleIcon, color: "bg-gray-500" },
+    "auth.failed": { icon: ExclamationTriangleIcon, color: "bg-red-600" },
+    "video.deleted": { icon: TrashIcon, color: "bg-red-500" },
+    "user.deleted": { icon: TrashIcon, color: "bg-rose-600" },
   };
 
   return (

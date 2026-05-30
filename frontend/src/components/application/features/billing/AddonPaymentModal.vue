@@ -7,15 +7,25 @@
     @update:model-value="$emit('close')"
   >
     <div class="space-y-6">
-      <div class="bg-white/50 dark:bg-gray-800/30 backdrop-blur-md rounded-[1.5rem] p-6 shadow-sm border border-white/60 dark:border-white/10">
-        <label class="flex items-center justify-between w-full text-sm font-bold text-gray-700 dark:text-gray-300 mb-6">
+      <div
+        class="bg-white/50 dark:bg-gray-800/30 backdrop-blur-md rounded-[1.5rem] p-6 shadow-sm border border-white/60 dark:border-white/10"
+      >
+        <label
+          class="flex items-center justify-between w-full text-sm font-bold text-gray-700 dark:text-gray-300 mb-6"
+        >
           <span>{{ t("subscription.buy_for_months", "Buy for") }}</span>
-          <div class="flex items-baseline gap-1 bg-white/60 dark:bg-gray-700/50 px-3 py-1 rounded-lg">
-            <span class="text-xl font-black text-primary-600 dark:text-primary-400">{{ duration }}</span>
-            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ t("pricing.billing_period_short", "mo") }}</span>
+          <div
+            class="flex items-baseline gap-1 bg-white/60 dark:bg-gray-700/50 px-3 py-1 rounded-lg"
+          >
+            <span
+              class="text-xl font-black text-primary-600 dark:text-primary-400"
+            >{{ duration }}</span>
+            <span
+              class="text-xs font-bold text-gray-500 uppercase tracking-widest"
+            >{{ t("pricing.billing_period_short", "mo") }}</span>
           </div>
         </label>
-        
+
         <div class="relative flex flex-col items-center px-2">
           <div class="flex items-center gap-4 w-full">
             <span class="text-xs font-bold text-gray-400 w-4 text-right">1</span>
@@ -116,18 +126,26 @@
               />
               <div class="flex flex-col h-full justify-between">
                 <div>
-                  <p class="font-bold text-sm text-gray-900 dark:text-white leading-tight">
+                  <p
+                    class="font-bold text-sm text-gray-900 dark:text-white leading-tight"
+                  >
                     {{ addon.name }}
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1 line-clamp-2">
+                  <p
+                    class="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1 line-clamp-2"
+                  >
                     {{ addon.description }}
                   </p>
                 </div>
                 <div class="mt-3 flex items-end justify-between w-full gap-2">
                   <p class="text-[10px] uppercase font-bold text-gray-400">
-                    ${{ addon.priceMonthly }}/{{ t("pricing.billing_period_short", "mo") }}
+                    ${{ addon.priceMonthly }}/{{
+                      t("pricing.billing_period_short", "mo")
+                    }}
                   </p>
-                  <p class="font-black text-sm text-primary-600 dark:text-primary-400">
+                  <p
+                    class="font-black text-sm text-primary-600 dark:text-primary-400"
+                  >
                     ${{ (addon.priceMonthly * duration).toFixed(2) }}
                   </p>
                 </div>
@@ -165,16 +183,24 @@
                   name="payment_method"
                   class="shrink-0"
                 />
-                <span class="font-bold text-gray-900 dark:text-white text-sm">{{ t(method.labelKey) }}</span>
+                <span class="font-bold text-gray-900 dark:text-white text-sm">{{
+                  t(method.labelKey)
+                }}</span>
               </div>
               <span
                 v-if="method.disabled"
                 class="absolute top-3 right-3 text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-gray-200/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400"
               >
-                {{ method.id === 'stripe' ? t('pricing.coming_soon') : t('pricing.in_development') }}
+                {{
+                  method.id === "stripe"
+                    ? t("pricing.coming_soon")
+                    : t("pricing.in_development")
+                }}
               </span>
             </div>
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed ml-7">
+            <p
+              class="text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed ml-7"
+            >
               {{ t(method.descKey) }}
             </p>
           </label>
@@ -182,7 +208,9 @@
       </div>
 
       <div class="border-t border-gray-200 dark:border-gray-700/50 pt-5 mt-2">
-        <div class="flex items-center justify-between font-black text-xl text-gray-900 dark:text-white tracking-tight">
+        <div
+          class="flex items-center justify-between font-black text-xl text-gray-900 dark:text-white tracking-tight"
+        >
           <span>{{ t("pricing.total") }}</span>
           <div class="text-right">
             <span>${{ totalPrice.toFixed(2) }}</span>
@@ -253,10 +281,10 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppCheckbox from "@/components/application/ui/Form/AppCheckbox.vue";
@@ -322,7 +350,7 @@ const remainingSubscriptionMonths = computed(() => {
   return Math.max(
     0,
     (end.getFullYear() - now.getFullYear()) * 12 +
-      (end.getMonth() - now.getMonth())
+      (end.getMonth() - now.getMonth()),
   );
 });
 
@@ -336,16 +364,36 @@ const showDurationWarning = computed(() => {
 
 const renewalPrice = computed(() => {
   if (!props.subscription?.plan) return 0;
-  
+
   const plan = props.subscription.plan;
-  const cycle = props.subscription.billingCycle || props.subscription.billing_cycle || 'monthly';
-  
-  const basePrice = Number(plan.priceMonthly) || Number(plan.price_monthly) || Number(plan.price) || 0;
-  
-  if (cycle === 'annual') return Number(plan.priceAnnual) || Number(plan.price_annual) || basePrice * 12;
-  if (cycle === 'semi_annual') return Number(plan.priceSemiAnnual) || Number(plan.price_semi_annual) || basePrice * 6;
-  if (cycle === 'quarterly') return Number(plan.priceQuarterly) || Number(plan.price_quarterly) || basePrice * 3;
-  
+  const cycle =
+    props.subscription.billingCycle ||
+    props.subscription.billing_cycle ||
+    "monthly";
+
+  const basePrice =
+    Number(plan.priceMonthly) ||
+    Number(plan.price_monthly) ||
+    Number(plan.price) ||
+    0;
+
+  if (cycle === "annual")
+    return (
+      Number(plan.priceAnnual) || Number(plan.price_annual) || basePrice * 12
+    );
+  if (cycle === "semi_annual")
+    return (
+      Number(plan.priceSemiAnnual) ||
+      Number(plan.price_semi_annual) ||
+      basePrice * 6
+    );
+  if (cycle === "quarterly")
+    return (
+      Number(plan.priceQuarterly) ||
+      Number(plan.price_quarterly) ||
+      basePrice * 3
+    );
+
   return basePrice;
 });
 

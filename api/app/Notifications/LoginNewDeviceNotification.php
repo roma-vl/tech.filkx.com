@@ -25,14 +25,14 @@ class LoginNewDeviceNotification extends Notification
     {
         return (new MailMessage)
             ->subject('New login from a new device')
-            ->greeting('Hello, ' . $notifiable->name . '!')
+            ->greeting('Hello, '.$notifiable->name.'!')
             ->line('We detected a new login to your account from an unrecognised device.')
-            ->line('**Device:** ' . $this->deviceName)
-            ->line('**Location / IP:** ' . $this->location)
-            ->line('**Time:** ' . $this->time)
+            ->line('**Device:** '.$this->deviceName)
+            ->line('**Location / IP:** '.$this->location)
+            ->line('**Time:** '.$this->time)
             ->line('If this was you, you can safely ignore this email.')
             ->line('If you did not log in, please change your password immediately.')
             ->action('Change Password', url('/auth/password/reset'))
-            ->salutation('The ' . config('app.name') . ' Team');
+            ->salutation('The '.config('app.name').' Team');
     }
 }

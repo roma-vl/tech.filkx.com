@@ -19,7 +19,9 @@
         v-if="formData.platform === 'youtube' && formData.isAutomatic"
         variant="info"
         :title="t('streams.addModal.youtubeSettings.betaNoticeTitle')"
-        :description="t('streams.addModal.youtubeSettings.betaNoticeDescription')"
+        :description="
+          t('streams.addModal.youtubeSettings.betaNoticeDescription')
+        "
       />
     </div>
 
@@ -113,10 +115,12 @@
           />
 
           <StreamPreview
-            :is-automatic-you-tube="formData.platform === 'youtube' && formData.isAutomatic"
+            :is-automatic-you-tube="
+              formData.platform === 'youtube' && formData.isAutomatic
+            "
             :preview-thumbnail="previewThumbnail"
             :preview-title="previewTitle"
-            @thumbnail-change="(file) => formData.youtubeThumbnail = file"
+            @thumbnail-change="(file) => (formData.youtubeThumbnail = file)"
           />
 
           <ScheduleSettings
@@ -162,13 +166,13 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api.js";
-import {useToast} from "vue-toastification";
-import {useSubscriptionStore} from "@/stores/subscription";
-import {useVideoStore} from "@/stores/application/data/videoStore";
-import {useYoutubeStore} from "@/stores/youtube";
+import { useToast } from "vue-toastification";
+import { useSubscriptionStore } from "@/stores/subscription";
+import { useVideoStore } from "@/stores/application/data/videoStore";
+import { useYoutubeStore } from "@/stores/youtube";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";
 import AppTextarea from "@/components/application/ui/Form/AppTextarea.vue";
@@ -222,7 +226,8 @@ const platformsList = computed(() => {
 
 const modalTitle = computed(() => {
   if (step.value === 1) return t("streams.addModal.steps.choosePlatform");
-  if (step.value === 1.5) return t("streams.addModal.youtubeSettings.methodLabel");
+  if (step.value === 1.5)
+    return t("streams.addModal.youtubeSettings.methodLabel");
   return t("streams.addModal.steps.configureStream");
 });
 
@@ -239,7 +244,7 @@ const getPlatformName = (platformId) => {
 
 const selectPlatform = (platform) => {
   formData.value.platform = platform.id;
-  if (platform.id === 'youtube') {
+  if (platform.id === "youtube") {
     step.value = 1.5;
   } else {
     formData.value.isAutomatic = false;
@@ -253,7 +258,7 @@ const selectYoutubeMethod = (isAutomatic) => {
 };
 
 const goBack = () => {
-  if (step.value === 2 && formData.value.platform === 'youtube') {
+  if (step.value === 2 && formData.value.platform === "youtube") {
     step.value = 1.5;
   } else {
     step.value = 1;
@@ -305,7 +310,11 @@ const selectionTypeOptions = computed(() => {
 });
 
 const previewThumbnail = computed(() => {
-  if (formData.value.platform === 'youtube' && formData.value.isAutomatic && formData.value.youtubeThumbnail) {
+  if (
+    formData.value.platform === "youtube" &&
+    formData.value.isAutomatic &&
+    formData.value.youtubeThumbnail
+  ) {
     return URL.createObjectURL(formData.value.youtubeThumbnail);
   }
 
@@ -375,7 +384,10 @@ const createStream = async () => {
 
   const fd = new FormData();
   fd.append("name", formData.value.name);
-  fd.append("platform", formData.value.platform === "twitch" ? "twitch" : formData.value.platform);
+  fd.append(
+    "platform",
+    formData.value.platform === "twitch" ? "twitch" : formData.value.platform,
+  );
   fd.append("scheduleType", formData.value.scheduleType);
   if (scheduledAt) fd.append("scheduledAt", scheduledAt);
   if (formData.value.comment) fd.append("comment", formData.value.comment);
@@ -387,9 +399,12 @@ const createStream = async () => {
     fd.append("youtubeChannelId", formData.value.youtubeChannelId);
     fd.append("privacyStatus", formData.value.privacyStatus);
     fd.append("isMadeForKids", formData.value.isMadeForKids ? "1" : "0");
-    if (formData.value.youtubeTags) fd.append("youtubeTags", formData.value.youtubeTags);
-    if (formData.value.youtubeDescription) fd.append("youtubeDescription", formData.value.youtubeDescription);
-    if (formData.value.youtubeCategoryId) fd.append("youtubeCategoryId", formData.value.youtubeCategoryId);
+    if (formData.value.youtubeTags)
+      fd.append("youtubeTags", formData.value.youtubeTags);
+    if (formData.value.youtubeDescription)
+      fd.append("youtubeDescription", formData.value.youtubeDescription);
+    if (formData.value.youtubeCategoryId)
+      fd.append("youtubeCategoryId", formData.value.youtubeCategoryId);
     if (formData.value.youtubeThumbnail) {
       fd.append("youtubeThumbnail", formData.value.youtubeThumbnail);
     }
@@ -424,37 +439,37 @@ const fetchPlaylists = async () => {
 };
 
 const youtubeCategories = ref([
-    { id: '1', name: 'Film & Animation' },
-    { id: '2', name: 'Autos & Vehicles' },
-    { id: '10', name: 'Music' },
-    { id: '15', name: 'Pets & Animals' },
-    { id: '17', name: 'Sports' },
-    { id: '18', name: 'Short Movies' },
-    { id: '19', name: 'Travel & Events' },
-    { id: '20', name: 'Gaming' },
-    { id: '21', name: 'Videoblogging' },
-    { id: '22', name: 'People & Blogs' },
-    { id: '23', name: 'Comedy' },
-    { id: '24', name: 'Entertainment' },
-    { id: '25', name: 'News & Politics' },
-    { id: '26', name: 'Howto & Style' },
-    { id: '27', name: 'Education' },
-    { id: '28', name: 'Science & Technology' },
-    { id: '30', name: 'Movies' },
-    { id: '31', name: 'Anime/Animation' },
-    { id: '32', name: 'Action/Adventure' },
-    { id: '33', name: 'Classics' },
-    { id: '34', name: 'Comedy' },
-    { id: '35', name: 'Documentary' },
-    { id: '36', name: 'Drama' },
-    { id: '37', name: 'Family' },
-    { id: '38', name: 'Foreign' },
-    { id: '39', name: 'Horror' },
-    { id: '40', name: 'Sci-Fi/Fantasy' },
-    { id: '41', name: 'Thriller' },
-    { id: '42', name: 'Shorts' },
-    { id: '43', name: 'Shows' },
-    { id: '44', name: 'Trailers' }
+  { id: "1", name: "Film & Animation" },
+  { id: "2", name: "Autos & Vehicles" },
+  { id: "10", name: "Music" },
+  { id: "15", name: "Pets & Animals" },
+  { id: "17", name: "Sports" },
+  { id: "18", name: "Short Movies" },
+  { id: "19", name: "Travel & Events" },
+  { id: "20", name: "Gaming" },
+  { id: "21", name: "Videoblogging" },
+  { id: "22", name: "People & Blogs" },
+  { id: "23", name: "Comedy" },
+  { id: "24", name: "Entertainment" },
+  { id: "25", name: "News & Politics" },
+  { id: "26", name: "Howto & Style" },
+  { id: "27", name: "Education" },
+  { id: "28", name: "Science & Technology" },
+  { id: "30", name: "Movies" },
+  { id: "31", name: "Anime/Animation" },
+  { id: "32", name: "Action/Adventure" },
+  { id: "33", name: "Classics" },
+  { id: "34", name: "Comedy" },
+  { id: "35", name: "Documentary" },
+  { id: "36", name: "Drama" },
+  { id: "37", name: "Family" },
+  { id: "38", name: "Foreign" },
+  { id: "39", name: "Horror" },
+  { id: "40", name: "Sci-Fi/Fantasy" },
+  { id: "41", name: "Thriller" },
+  { id: "42", name: "Shorts" },
+  { id: "43", name: "Shows" },
+  { id: "44", name: "Trailers" },
 ]);
 
 const planStreamQuality = computed(() => {
@@ -474,7 +489,10 @@ const isVideoSupported = (video) => {
 const selectableVideos = computed(() => {
   return videoStore.videos.map((v) => ({
     ...v,
-    disabled: v.isOriginalLocked || !isVideoSupported(v) || !["ready", "uploaded"].includes(v.status),
+    disabled:
+      v.isOriginalLocked ||
+      !isVideoSupported(v) ||
+      !["ready", "uploaded"].includes(v.status),
   }));
 });
 

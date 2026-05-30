@@ -6,10 +6,9 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Warehouse;
 use App\Models\Stock;
+use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class CatalogSeeder extends Seeder
 {
@@ -52,7 +51,7 @@ class CatalogSeeder extends Seeder
                 'children' => [
                     ['slug' => 'macbooks', 'name' => ['uk' => 'MacBook', 'en' => 'MacBook'], 'order' => 1],
                     ['slug' => 'gaming-laptops', 'name' => ['uk' => 'Ігрові ноутбуки', 'en' => 'Gaming Laptops'], 'order' => 2],
-                ]
+                ],
             ],
             [
                 'slug' => 'phones',
@@ -61,7 +60,7 @@ class CatalogSeeder extends Seeder
                 'children' => [
                     ['slug' => 'ios-phones', 'name' => ['uk' => 'iPhone', 'en' => 'iPhone'], 'order' => 1],
                     ['slug' => 'android-phones', 'name' => ['uk' => 'Android Смартфони', 'en' => 'Android Phones'], 'order' => 2],
-                ]
+                ],
             ],
             [
                 'slug' => 'audio',
@@ -70,7 +69,7 @@ class CatalogSeeder extends Seeder
                 'children' => [
                     ['slug' => 'tws-headphones', 'name' => ['uk' => 'TWS Навушники', 'en' => 'TWS Headphones'], 'order' => 1],
                     ['slug' => 'overhead-headphones', 'name' => ['uk' => 'Накладні навушники', 'en' => 'Overhead Headphones'], 'order' => 2],
-                ]
+                ],
             ],
         ];
 
@@ -103,11 +102,11 @@ class CatalogSeeder extends Seeder
                 'slug' => 'iphone-15-pro-max',
                 'name' => [
                     'uk' => 'Apple iPhone 15 Pro Max 256GB Natural Titanium',
-                    'en' => 'Apple iPhone 15 Pro Max 256GB Natural Titanium'
+                    'en' => 'Apple iPhone 15 Pro Max 256GB Natural Titanium',
                 ],
                 'description' => [
                     'uk' => 'Флагманський смартфон з титановим корпусом, новим процесором A17 Pro та професійною системою камер.',
-                    'en' => 'Flagship smartphone with titanium body, new A17 Pro chip and professional camera system.'
+                    'en' => 'Flagship smartphone with titanium body, new A17 Pro chip and professional camera system.',
                 ],
                 'categories' => ['phones', 'ios-phones'],
                 'status' => 'active',
@@ -118,19 +117,19 @@ class CatalogSeeder extends Seeder
                         'old_price' => 59999.00,
                         'weight' => 0.22,
                         'stock_qty' => 15,
-                    ]
-                ]
+                    ],
+                ],
             ],
             [
                 'brand' => 'Samsung',
                 'slug' => 'samsung-galaxy-s24-ultra',
                 'name' => [
                     'uk' => 'Samsung Galaxy S24 Ultra 12/512GB Titanium Gray',
-                    'en' => 'Samsung Galaxy S24 Ultra 12/512GB Titanium Gray'
+                    'en' => 'Samsung Galaxy S24 Ultra 12/512GB Titanium Gray',
                 ],
                 'description' => [
                     'uk' => 'Суперфлагман з підтримкою стилуса S Pen, процесором Snapdragon 8 Gen 3 та штучним інтелектом Galaxy AI.',
-                    'en' => 'Super flagship with S Pen support, Snapdragon 8 Gen 3 processor and Galaxy AI.'
+                    'en' => 'Super flagship with S Pen support, Snapdragon 8 Gen 3 processor and Galaxy AI.',
                 ],
                 'categories' => ['phones', 'android-phones'],
                 'status' => 'active',
@@ -141,19 +140,19 @@ class CatalogSeeder extends Seeder
                         'old_price' => 55999.00,
                         'weight' => 0.23,
                         'stock_qty' => 10,
-                    ]
-                ]
+                    ],
+                ],
             ],
             [
                 'brand' => 'Lenovo',
                 'slug' => 'lenovo-legion-5-pro',
                 'name' => [
                     'uk' => 'Lenovo Legion 5 Pro 16ARH7H Storm Grey',
-                    'en' => 'Lenovo Legion 5 Pro 16ARH7H Storm Grey'
+                    'en' => 'Lenovo Legion 5 Pro 16ARH7H Storm Grey',
                 ],
                 'description' => [
                     'uk' => 'Потужний ігровий ноутбук з екраном WQXGA 165Hz, процесором AMD Ryzen 7 та відеокартою RTX 3070 Ti.',
-                    'en' => 'Powerful gaming laptop with 165Hz WQXGA screen, AMD Ryzen 7 and RTX 3070 Ti.'
+                    'en' => 'Powerful gaming laptop with 165Hz WQXGA screen, AMD Ryzen 7 and RTX 3070 Ti.',
                 ],
                 'categories' => ['laptops', 'gaming-laptops'],
                 'status' => 'active',
@@ -164,19 +163,19 @@ class CatalogSeeder extends Seeder
                         'old_price' => null,
                         'weight' => 2.49,
                         'stock_qty' => 5,
-                    ]
-                ]
+                    ],
+                ],
             ],
             [
                 'brand' => 'Sony',
                 'slug' => 'sony-wh-1000xm5-black',
                 'name' => [
                     'uk' => 'Бездротові навушники Sony WH-1000XM5 Black',
-                    'en' => 'Wireless Headphones Sony WH-1000XM5 Black'
+                    'en' => 'Wireless Headphones Sony WH-1000XM5 Black',
                 ],
                 'description' => [
                     'uk' => 'Накладні навушники преміум класу з провідною в індустрії системою активного шумозаглушення ANC.',
-                    'en' => 'Premium over-ear headphones with industry leading Active Noise Canceling.'
+                    'en' => 'Premium over-ear headphones with industry leading Active Noise Canceling.',
                 ],
                 'categories' => ['audio', 'overhead-headphones'],
                 'status' => 'active',
@@ -187,19 +186,19 @@ class CatalogSeeder extends Seeder
                         'old_price' => 16999.00,
                         'weight' => 0.25,
                         'stock_qty' => 20,
-                    ]
-                ]
+                    ],
+                ],
             ],
             [
                 'brand' => 'Apple',
                 'slug' => 'apple-airpods-pro-2',
                 'name' => [
                     'uk' => 'Apple AirPods Pro 2nd Gen USB-C',
-                    'en' => 'Apple AirPods Pro 2nd Gen USB-C'
+                    'en' => 'Apple AirPods Pro 2nd Gen USB-C',
                 ],
                 'description' => [
                     'uk' => 'Найпопулярніші TWS навушники з активним шумозаглушенням, адаптивним аудіо та кейсом USB-C.',
-                    'en' => 'Most popular TWS headphones with Active Noise Canceling, adaptive audio and USB-C case.'
+                    'en' => 'Most popular TWS headphones with Active Noise Canceling, adaptive audio and USB-C case.',
                 ],
                 'categories' => ['audio', 'tws-headphones'],
                 'status' => 'active',
@@ -210,9 +209,9 @@ class CatalogSeeder extends Seeder
                         'old_price' => 10999.00,
                         'weight' => 0.05,
                         'stock_qty' => 30,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         foreach ($productsData as $pData) {
@@ -255,7 +254,7 @@ class CatalogSeeder extends Seeder
                 Stock::create([
                     'variant_id' => $variant->id,
                     'warehouse_id' => $reserveWarehouse->id,
-                    'quantity' => max(1, (int)($vData['stock_qty'] / 3)),
+                    'quantity' => max(1, (int) ($vData['stock_qty'] / 3)),
                     'reserved' => 0,
                 ]);
             }

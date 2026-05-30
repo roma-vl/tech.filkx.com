@@ -50,6 +50,7 @@ class AdminServerLogController extends BaseApiController
      *         name="filename",
      *         in="path",
      *         required=true,
+     *
      *         @OA\Schema(type="string", example="laravel.log")
      *     ),
      *
@@ -89,6 +90,7 @@ class AdminServerLogController extends BaseApiController
      *         name="filename",
      *         in="path",
      *         required=true,
+     *
      *         @OA\Schema(type="string", example="laravel.log")
      *     ),
      *

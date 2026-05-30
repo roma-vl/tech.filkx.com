@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class SupportMessage extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'support_ticket_id',
         'user_id',

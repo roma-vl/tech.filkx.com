@@ -11,7 +11,6 @@
         :label="t('media.editModal.titleLabel')"
         type="text"
       />
-
     </div>
 
     <template #footer>

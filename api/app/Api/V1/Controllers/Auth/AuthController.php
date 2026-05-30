@@ -45,6 +45,7 @@ class AuthController extends BaseApiController
         if ($user) {
             $user->load('roles');
         }
+
         return self::successfulResponseWithData(new UserResource($user));
     }
 

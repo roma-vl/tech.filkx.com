@@ -14,9 +14,11 @@
         class="h-4 w-4 flex-shrink-0"
       />
     </div>
-    
+
     <div class="flex items-center gap-2 whitespace-nowrap overflow-hidden">
-      <span class="text-[11px] uppercase tracking-widest text-gray-600 dark:text-gray-300">
+      <span
+        class="text-[11px] uppercase tracking-widest text-gray-600 dark:text-gray-300"
+      >
         {{ t(label) }}:
       </span>
 

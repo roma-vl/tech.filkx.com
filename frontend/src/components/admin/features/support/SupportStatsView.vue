@@ -63,8 +63,8 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import axios from "@/services/api";
 import Chart from "chart.js/auto";
 
@@ -85,7 +85,7 @@ const summaryStats = computed(() => [
     value: statsData.value?.resolvedTickets || 0,
     trend: 8,
   },
-  {label: t("admin.support.stats.avg_resolution"), value: "2.4h", trend: -5},
+  { label: t("admin.support.stats.avg_resolution"), value: "2.4h", trend: -5 },
 ]);
 
 const fetchStats = async () => {
@@ -139,7 +139,7 @@ const renderChart = () => {
         tooltip: {
           backgroundColor: "#1f2937",
           padding: 12,
-          titleFont: {size: 12, weight: "bold"},
+          titleFont: { size: 12, weight: "bold" },
           bodyFont: { size: 12 },
           displayColors: false,
         },
@@ -147,12 +147,12 @@ const renderChart = () => {
       scales: {
         y: {
           beginAtZero: true,
-          grid: {color: "rgba(156, 163, 175, 0.1)", drawBorder: false},
-          ticks: {font: {size: 10, weight: "bold"}, color: "#9ca3af"},
+          grid: { color: "rgba(156, 163, 175, 0.1)", drawBorder: false },
+          ticks: { font: { size: 10, weight: "bold" }, color: "#9ca3af" },
         },
         x: {
           grid: { display: false },
-          ticks: {font: {size: 10, weight: "bold"}, color: "#9ca3af"},
+          ticks: { font: { size: 10, weight: "bold" }, color: "#9ca3af" },
         },
       },
     },

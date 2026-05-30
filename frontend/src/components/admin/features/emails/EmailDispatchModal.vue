@@ -68,9 +68,7 @@
               <div
                 class="bg-gray-50 dark:bg-gray-800/50 px-8 py-5 flex flex-col sm:flex-row-reverse gap-3 border-t border-gray-100 dark:border-gray-700"
               >
-                <AppButton
-                  @click="$emit('confirm')"
-                >
+                <AppButton @click="$emit('confirm')">
                   <template #prefix>
                     <RocketLaunchIcon class="w-5 h-5" />
                   </template>

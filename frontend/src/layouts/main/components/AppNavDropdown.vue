@@ -3,7 +3,9 @@
     <button
       :class="[
         'flex items-center transition-all duration-300 group',
-        collapsed ? 'justify-center p-3 rounded-xl w-full' : 'justify-between w-full px-4 py-3 rounded-xl',
+        collapsed
+          ? 'justify-center p-3 rounded-xl w-full'
+          : 'justify-between w-full px-4 py-3 rounded-xl',
         isOpen || isAnyChildActive
           ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold'
           : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium',
@@ -15,7 +17,9 @@
           :is="item.icon"
           :class="[
             'h-6 w-6 flex-shrink-0 transition-transform duration-300 group-hover:scale-110',
-            isOpen || isAnyChildActive ? 'text-blue-600 dark:text-blue-400' : ''
+            isOpen || isAnyChildActive
+              ? 'text-blue-600 dark:text-blue-400'
+              : '',
           ]"
         />
         <span
@@ -27,7 +31,10 @@
       </div>
       <svg
         v-if="!collapsed"
-        :class="['h-4 w-4 transition-transform duration-300', isOpen ? 'rotate-180' : '']"
+        :class="[
+          'h-4 w-4 transition-transform duration-300',
+          isOpen ? 'rotate-180' : '',
+        ]"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -46,8 +53,10 @@
       class="mt-1 ml-9 space-y-1 relative"
     >
       <!-- Sub-item indicator line -->
-      <div class="absolute left-[-1.25rem] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-800 rounded-full" />
-      
+      <div
+        class="absolute left-[-1.25rem] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-800 rounded-full"
+      />
+
       <router-link
         v-for="child in item.items"
         :key="child.id"

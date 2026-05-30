@@ -31,17 +31,17 @@
         <div class="flex justify-between items-center">
           <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.plan") }}:</span>
           <span class="font-medium text-gray-800 dark:text-gray-300">{{
-              payment.subscription?.name ||
+            payment.subscription?.name ||
               payment.subscription?.plan?.name ||
               "N/A"
-            }}</span>
+          }}</span>
         </div>
 
         <div class="flex justify-between items-center">
           <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.created") }}:</span>
           <span class="text-xs text-gray-500">{{
-              formatDate(payment.createdAt)
-            }}</span>
+            formatDate(payment.createdAt)
+          }}</span>
         </div>
       </div>
 
@@ -110,8 +110,8 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
 

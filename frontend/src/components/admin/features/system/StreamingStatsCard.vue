@@ -11,7 +11,7 @@
         <div
           class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20 group-hover:text-rose-500 transition-all duration-500 shadow-sm"
         >
-          <VideoCameraIcon class="w-7 h-7"/>
+          <VideoCameraIcon class="w-7 h-7" />
         </div>
         <div>
           <h3
@@ -41,10 +41,10 @@
           {{ activeStreams }}
         </span>
         <div class="flex items-center gap-1 mt-3">
-          <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/>
+          <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
           <span class="text-[9px] font-black text-green-600 uppercase">{{
-              t("admin.system.streaming.live_now")
-            }}</span>
+            t("admin.system.streaming.live_now")
+          }}</span>
         </div>
       </div>
 
@@ -100,14 +100,14 @@
 </template>
 
 <script setup>
-import {VideoCameraIcon} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { VideoCameraIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
-  activeStreams: {type: Number, default: 0},
-  encoderLoad: {type: Number, default: 0},
+  activeStreams: { type: Number, default: 0 },
+  encoderLoad: { type: Number, default: 0 },
   streamingJobs: {
     type: Array,
     default: () => [],

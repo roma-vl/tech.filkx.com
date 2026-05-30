@@ -40,7 +40,7 @@
             {{ uptime || "00:00:00:00" }}
           </span>
         </div>
-        <div class="h-10 w-px bg-gray-100 dark:bg-gray-700"/>
+        <div class="h-10 w-px bg-gray-100 dark:bg-gray-700" />
         <div class="flex flex-col">
           <span
             class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1"
@@ -59,9 +59,9 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   uptime: String,

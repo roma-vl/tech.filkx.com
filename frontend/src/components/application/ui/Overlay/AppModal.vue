@@ -30,9 +30,18 @@ const props = defineProps({
     type: String,
     default: "lg",
     validator: (v) =>
-      ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "full", "screen"].includes(
-        v,
-      ),
+      [
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl",
+        "4xl",
+        "5xl",
+        "full",
+        "screen",
+      ].includes(v),
   },
 });
 

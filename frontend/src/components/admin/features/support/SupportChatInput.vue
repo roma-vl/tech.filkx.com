@@ -76,7 +76,7 @@
                   v-if="snippets.length === 0"
                   class="p-8 text-center"
                 >
-                  <CommandLineIcon class="w-8 h-8 text-gray-200 mx-auto mb-2"/>
+                  <CommandLineIcon class="w-8 h-8 text-gray-200 mx-auto mb-2" />
                   <p
                     class="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none"
                   >
@@ -119,8 +119,8 @@
                 <EyeSlashIcon class="w-4 h-4 mr-2" />
               </template>
               <span class="text-[10px] font-black uppercase tracking-widest">{{
-                  t("admin.support.chat.note")
-                }}</span>
+                t("admin.support.chat.note")
+              }}</span>
             </AppButton>
           </div>
           <AppButton
@@ -136,7 +136,7 @@
             @click="handleSend"
           >
             <template #prefix>
-               <PaperAirplaneIcon
+              <PaperAirplaneIcon
                 class="w-4 h-4 -rotate-12 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform mr-2"
               />
             </template>
@@ -153,10 +153,15 @@
 </template>
 
 <script setup>
-import {nextTick, ref, watch} from "vue";
-import {CommandLineIcon, EyeSlashIcon, PaperAirplaneIcon, PaperClipIcon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
-import {useToast} from "vue-toastification";
+import { nextTick, ref, watch } from "vue";
+import {
+  CommandLineIcon,
+  EyeSlashIcon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
 const { t } = useI18n();

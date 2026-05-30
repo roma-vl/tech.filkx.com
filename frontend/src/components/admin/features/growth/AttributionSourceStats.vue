@@ -37,7 +37,13 @@
           {{ source.avgDuration }}m
         </td>
         <td class="px-6 py-4 text-right tabular-nums">
-          <span :class="source.retention7d > 20 ? 'text-green-600 font-bold' : 'text-gray-500'">
+          <span
+            :class="
+              source.retention7d > 20
+                ? 'text-green-600 font-bold'
+                : 'text-gray-500'
+            "
+          >
             {{ source.retention7d }}%
           </span>
         </td>
@@ -55,11 +61,11 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
   data: {
@@ -69,8 +75,12 @@ const props = defineProps({
 });
 
 const headers = computed(() => [
-  {key: "source", label: t("admin.growth.attribution.source")},
-  {key: "users", label: t("admin.growth.attribution.users"), class: "text-right"},
+  { key: "source", label: t("admin.growth.attribution.source") },
+  {
+    key: "users",
+    label: t("admin.growth.attribution.users"),
+    class: "text-right",
+  },
   {
     key: "activated",
     label: t("admin.growth.funnel.activated"),
@@ -81,9 +91,17 @@ const headers = computed(() => [
     label: t("admin.growth.funnel.activation_rate"),
     class: "text-right",
   },
-  {key: "avg_duration", label: t("admin.growth.attribution.avg_duration"), class: "text-right"},
-  {key: "retention_7d", label: t("admin.growth.attribution.retention_7d"), class: "text-right"},
-  {key: "roi", label: t("admin.growth.attribution.roi"), class: "text-right"},
+  {
+    key: "avg_duration",
+    label: t("admin.growth.attribution.avg_duration"),
+    class: "text-right",
+  },
+  {
+    key: "retention_7d",
+    label: t("admin.growth.attribution.retention_7d"),
+    class: "text-right",
+  },
+  { key: "roi", label: t("admin.growth.attribution.roi"), class: "text-right" },
 ]);
 
 const sortedSources = computed(() => {
@@ -92,7 +110,10 @@ const sortedSources = computed(() => {
       name,
       count: data.signups,
       activated: data.activated,
-      rate: data.signups > 0 ? ((data.activated / data.signups) * 100).toFixed(1) : 0,
+      rate:
+        data.signups > 0
+          ? ((data.activated / data.signups) * 100).toFixed(1)
+          : 0,
       roiScore: data.roi_score || 0,
       retention7d: data.retained_7d_rate || 0,
       avgDuration: data.avg_duration_min || 0,

@@ -301,9 +301,9 @@
 </template>
 
 <script setup>
-import {computed, markRaw, onMounted, ref, shallowRef, watch} from "vue";
-import {useRoute} from "vue-router";
-import {useI18n} from "vue-i18n";
+import { computed, markRaw, onMounted, ref, shallowRef, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import AdminLogo from "@/assets/images/logo/logo_admin.png";
 import {
   ChartBarIcon,
@@ -320,7 +320,7 @@ import {
   UserGroupIcon,
   UsersIcon,
 } from "@heroicons/vue/24/outline";
-import {Popover, PopoverButton, PopoverPanel} from "@headlessui/vue";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 
 import ProfileMenuHeader from "@/layouts/topBar/ProfileMenuHeader.vue";
 import DashboardIcon from "@/components/Icon/DashboardIcon.vue";
@@ -400,8 +400,14 @@ const navItems = shallowRef([
     icon: markRaw(SignalIcon),
     children: [
       { name: t("admin.nav.billingOverview"), path: "/admin/billing" },
-      { name: t("admin.nav.accountingInvoices"), path: "/admin/accounting/invoices" },
-      { name: t("admin.nav.accountingLedger"), path: "/admin/accounting/ledger" },
+      {
+        name: t("admin.nav.accountingInvoices"),
+        path: "/admin/accounting/invoices",
+      },
+      {
+        name: t("admin.nav.accountingLedger"),
+        path: "/admin/accounting/ledger",
+      },
     ],
   },
   {

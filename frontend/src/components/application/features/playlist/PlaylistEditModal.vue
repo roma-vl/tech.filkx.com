@@ -8,7 +8,9 @@
   >
     <div class="space-y-6 sm:p-2">
       <!-- Header / Name Input -->
-      <div class="bg-white/50 dark:bg-gray-800/30 p-5 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm backdrop-blur-sm">
+      <div
+        class="bg-white/50 dark:bg-gray-800/30 p-5 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm backdrop-blur-sm"
+      >
         <AppInput
           v-model="form.name"
           :label="t('media.editPlaylistModal.nameLabel')"
@@ -19,21 +21,33 @@
       <!-- Dual Pane UX -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <!-- LEFT PANE: Available Videos -->
-        <div class="flex flex-col h-[500px] bg-gray-50/50 dark:bg-gray-800/20 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-inner overflow-hidden">
-          <div class="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex items-center justify-between">
-            <h4 class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+        <div
+          class="flex flex-col h-[500px] bg-gray-50/50 dark:bg-gray-800/20 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-inner overflow-hidden"
+        >
+          <div
+            class="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex items-center justify-between"
+          >
+            <h4
+              class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2"
+            >
               <LibraryIcon class="w-5 h-5 text-primary-500" />
               {{ t("media.editPlaylistModal.availableVideos") }}
             </h4>
-            <span class="text-xs font-bold text-gray-500 bg-gray-200/50 dark:bg-gray-700/50 px-2 py-1 rounded-md">
+            <span
+              class="text-xs font-bold text-gray-500 bg-gray-200/50 dark:bg-gray-700/50 px-2 py-1 rounded-md"
+            >
               {{ availableVideos.length }} items
             </span>
           </div>
 
           <!-- Video Search (Client-side fast search) -->
-          <div class="p-3 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/20 dark:bg-gray-800/20">
+          <div
+            class="p-3 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/20 dark:bg-gray-800/20"
+          >
             <div class="relative">
-              <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <SearchIcon
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              />
               <input
                 v-model="searchQuery"
                 type="text"
@@ -42,8 +56,8 @@
               >
             </div>
           </div>
-          
-          <div 
+
+          <div
             id="tour-playlist-video-select"
             class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar"
           >
@@ -56,16 +70,24 @@
                   isSelected(video.id)
                     ? 'border-primary-500 ring-1 ring-primary-500 bg-primary-50/30 dark:bg-primary-900/10'
                     : 'border-gray-200/60 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm cursor-pointer',
-                  isVideoDisabled(video) ? 'opacity-50 grayscale cursor-not-allowed' : ''
+                  isVideoDisabled(video)
+                    ? 'opacity-50 grayscale cursor-not-allowed'
+                    : '',
                 ]"
-                @click="!isVideoDisabled(video) && !isSelected(video.id) && toggle(video)"
+                @click="
+                  !isVideoDisabled(video) &&
+                    !isSelected(video.id) &&
+                    toggle(video)
+                "
               >
                 <!-- Selection Indicator -->
-                <div 
+                <div
                   v-if="isSelected(video.id)"
                   class="absolute inset-0 bg-white/60 dark:bg-gray-900/60 backdrop-blur-[1px] rounded-xl flex items-center justify-center z-10"
                 >
-                  <div class="bg-primary-500 text-white p-2 rounded-full shadow-lg transform scale-110">
+                  <div
+                    class="bg-primary-500 text-white p-2 rounded-full shadow-lg transform scale-110"
+                  >
                     <CheckIcon class="w-5 h-5" />
                   </div>
                 </div>
@@ -75,13 +97,17 @@
                     :src="video.thumbnails?.thumbnail"
                     class="w-20 h-12 object-cover rounded-md bg-gray-200 dark:bg-gray-700"
                   >
-                  <div class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-[9px] font-bold text-white leading-none">
+                  <div
+                    class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-[9px] font-bold text-white leading-none"
+                  >
                     {{ video.durationFormatted || "00:00" }}
                   </div>
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate pr-6 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  <p
+                    class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate pr-6 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
+                  >
                     {{ video.title }}
                   </p>
                   <!-- Preview-only label for locked originals -->
@@ -95,95 +121,141 @@
                   <div
                     v-else-if="video.resolutionLabel"
                     class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
-                    :class="getResolutionClass(video.resolutionLabel, isVideoDisabled(video))"
+                    :class="
+                      getResolutionClass(
+                        video.resolutionLabel,
+                        isVideoDisabled(video),
+                      )
+                    "
                   >
                     <MonitorIcon class="w-2.5 h-2.5" />
                     {{ video.resolutionLabel }}
-                    <span v-if="!isVideoSupported(video)" class="ml-0.5 opacity-70">({{ t("common.notSupported") }})</span>
+                    <span
+                      v-if="!isVideoSupported(video)"
+                      class="ml-0.5 opacity-70"
+                    >({{ t("common.notSupported") }})</span>
                   </div>
                 </div>
 
-                <div v-if="!isSelected(video.id) && !isVideoDisabled(video)" class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+                <div
+                  v-if="!isSelected(video.id) && !isVideoDisabled(video)"
+                  class="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <div
+                    class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400"
+                  >
                     <PlusIcon class="w-4 h-4" />
                   </div>
                 </div>
               </div>
             </template>
-            <div v-else class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 space-y-2 opacity-60">
+            <div
+              v-else
+              class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 space-y-2 opacity-60"
+            >
               <SearchXIcon class="w-8 h-8" />
-              <p class="text-sm font-medium">No videos found</p>
+              <p class="text-sm font-medium">
+                No videos found
+              </p>
             </div>
           </div>
         </div>
 
         <!-- RIGHT PANE: Selected Videos (Playlist) -->
-        <div class="flex flex-col h-[500px] bg-white/60 dark:bg-gray-800/40 rounded-2xl border border-primary-200/50 dark:border-primary-800/50 shadow-sm overflow-hidden backdrop-blur-md relative">
+        <div
+          class="flex flex-col h-[500px] bg-white/60 dark:bg-gray-800/40 rounded-2xl border border-primary-200/50 dark:border-primary-800/50 shadow-sm overflow-hidden backdrop-blur-md relative"
+        >
           <!-- Decorative glow -->
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />
+          <div
+            class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -z-10 pointer-events-none"
+          />
 
-          <div class="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex items-center justify-between z-10">
-            <h4 class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <div
+            class="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex items-center justify-between z-10"
+          >
+            <h4
+              class="font-semibold text-gray-900 dark:text-white flex items-center gap-2"
+            >
               <ListVideoIcon class="w-5 h-5 text-primary-500" />
               {{ t("media.editPlaylistModal.selectedVideos") }}
             </h4>
-            <span class="text-xs font-bold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/50 px-2 py-1 rounded-md border border-primary-200 dark:border-primary-800">
+            <span
+              class="text-xs font-bold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/50 px-2 py-1 rounded-md border border-primary-200 dark:border-primary-800"
+            >
               {{ selectedVideos.length }} selected
             </span>
           </div>
 
           <div class="flex-1 overflow-y-auto p-3 custom-scrollbar z-10">
             <template v-if="selectedVideos.length > 0">
-            <div id="tour-playlist-sort">
-              <Draggable
-                v-model="selectedVideos"
-                item-key="id"
-                handle=".drag-handle"
-                class="space-y-2"
-                ghost-class="opacity-50"
-                drag-class="sortable-drag"
-                animation="200"
-              >
-                <template #item="{ element, index }">
-                  <div class="group flex items-center gap-3 p-2.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:border-primary-300 dark:hover:border-primary-700 transition-all">
-                    
-                    <div class="drag-handle cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                      <GripVerticalIcon class="w-5 h-5" />
-                    </div>
-
-                    <div class="flex-1 min-w-0 flex items-center gap-3 bg-gray-50 rounded-lg dark:bg-gray-900/50 pr-2">
-                       <span class="text-[10px] font-mono font-bold text-gray-400 dark:text-gray-500 w-5 text-center shrink-0 ml-2">
-                        {{ index + 1 }}
-                      </span>
-                      <img
-                        :src="element.thumbnails?.thumbnail"
-                        class="w-12 h-8 object-cover rounded shadow-sm shrink-0"
-                      >
-                      <span class="truncate text-sm font-medium text-gray-700 dark:text-gray-200 py-2">
-                        {{ element.title }}
-                      </span>
-                    </div>
-
-                    <button
-                      class="shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                      title="Remove from playlist"
-                      @click="remove(element.id)"
+              <div id="tour-playlist-sort">
+                <Draggable
+                  v-model="selectedVideos"
+                  item-key="id"
+                  handle=".drag-handle"
+                  class="space-y-2"
+                  ghost-class="opacity-50"
+                  drag-class="sortable-drag"
+                  animation="200"
+                >
+                  <template #item="{ element, index }">
+                    <div
+                      class="group flex items-center gap-3 p-2.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:border-primary-300 dark:hover:border-primary-700 transition-all"
                     >
-                      <XIcon class="w-5 h-5" />
-                    </button>
-                  </div>
-                </template>
-              </Draggable>
-            </div>
+                      <div
+                        class="drag-handle cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                      >
+                        <GripVerticalIcon class="w-5 h-5" />
+                      </div>
+
+                      <div
+                        class="flex-1 min-w-0 flex items-center gap-3 bg-gray-50 rounded-lg dark:bg-gray-900/50 pr-2"
+                      >
+                        <span
+                          class="text-[10px] font-mono font-bold text-gray-400 dark:text-gray-500 w-5 text-center shrink-0 ml-2"
+                        >
+                          {{ index + 1 }}
+                        </span>
+                        <img
+                          :src="element.thumbnails?.thumbnail"
+                          class="w-12 h-8 object-cover rounded shadow-sm shrink-0"
+                        >
+                        <span
+                          class="truncate text-sm font-medium text-gray-700 dark:text-gray-200 py-2"
+                        >
+                          {{ element.title }}
+                        </span>
+                      </div>
+
+                      <button
+                        class="shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        title="Remove from playlist"
+                        @click="remove(element.id)"
+                      >
+                        <XIcon class="w-5 h-5" />
+                      </button>
+                    </div>
+                  </template>
+                </Draggable>
+              </div>
             </template>
-            
-            <div v-else class="h-full flex flex-col items-center justify-center text-center space-y-4 px-6 opacity-60">
-              <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600">
+
+            <div
+              v-else
+              class="h-full flex flex-col items-center justify-center text-center space-y-4 px-6 opacity-60"
+            >
+              <div
+                class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600"
+              >
                 <MousePointerClickIcon class="w-8 h-8 text-gray-400" />
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Playlist is empty</p>
-                <p class="text-xs text-gray-400 mt-1">Select videos from the left pane to add them here.</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                  Playlist is empty
+                </p>
+                <p class="text-xs text-gray-400 mt-1">
+                  Select videos from the left pane to add them here.
+                </p>
               </div>
             </div>
           </div>
@@ -219,11 +291,11 @@
 </template>
 
 <script setup>
-import {computed, watch, ref} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, watch, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api.js";
 import Draggable from "vuedraggable";
-import {usePlaylistForm} from "@/composables/usePlaylistForm";
+import { usePlaylistForm } from "@/composables/usePlaylistForm";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
@@ -238,9 +310,9 @@ import {
   XIcon,
   GripVerticalIcon,
   SearchXIcon,
-  MousePointerClickIcon
+  MousePointerClickIcon,
 } from "lucide-vue-next";
-import {useSubscriptionStore} from "@/stores/subscription";
+import { useSubscriptionStore } from "@/stores/subscription";
 
 const { t } = useI18n();
 
@@ -272,13 +344,13 @@ const {
 } = usePlaylistForm();
 
 const availableVideos = computed(() => {
-  return videos.value.filter(v => !isSelected(v.id));
+  return videos.value.filter((v) => !isSelected(v.id));
 });
 
 const filteredAvailableVideos = computed(() => {
   if (!searchQuery.value) return availableVideos.value;
   const q = searchQuery.value.toLowerCase();
-  return availableVideos.value.filter(v => v.title.toLowerCase().includes(q));
+  return availableVideos.value.filter((v) => v.title.toLowerCase().includes(q));
 });
 
 watch(

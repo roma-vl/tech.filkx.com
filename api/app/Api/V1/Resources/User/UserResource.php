@@ -30,17 +30,23 @@ class UserResource extends JsonResource
      * @OA\Property(
      *     property="roles",
      *     type="array",
+     *
      *     @OA\Items(type="string", example="user")
      * )
+     *
      * @OA\Property(
      *     property="permissions",
      *     type="array",
+     *
      *     @OA\Items(type="string", example="stream.start")
      * )
+     *
      * @OA\Property(
      *     property="oauthAccounts",
      *     type="array",
+     *
      *     @OA\Items(
+     *
      *         @OA\Property(property="provider", type="string", example="google"),
      *         @OA\Property(property="created_at", type="string", format="date-time")
      *     )
@@ -49,25 +55,25 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'             => $this->id,
-            'name'           => $this->name,
-            'email'          => $this->email,
-            'locale'         => $this->locale,
-            'timezone'       => $this->timezone,
-            'hasPassword'    => ! empty($this->password),
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'locale' => $this->locale,
+            'timezone' => $this->timezone,
+            'hasPassword' => ! empty($this->password),
             'oauth_accounts' => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($acc) => [
-                'provider'   => $acc->provider,
+                'provider' => $acc->provider,
                 'created_at' => $acc->created_at,
             ])),
             'emailVerifiedAt' => $this->email_verified_at,
-            'deletedAt'       => $this->deleted_at,
-            'avatarUrl'       => $this->avatar_path
+            'deletedAt' => $this->deleted_at,
+            'avatarUrl' => $this->avatar_path
                 ? Storage::disk('public')->url($this->avatar_path)
                 : null,
             'description' => $this->getDescriptionAttribute() ?? null,
-            'status'      => $this->status,
-            'createdAt'   => $this->created_at->toIso8601String(),
-            'roles'       => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
+            'status' => $this->status,
+            'createdAt' => $this->created_at->toIso8601String(),
+            'roles' => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
             'permissions' => $this->getPermissions(),
             // Subscription module not yet implemented
             'subscription' => null,

@@ -91,19 +91,19 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
-import {useRouter} from "vue-router";
-import {useToast} from "vue-toastification";
-import {useAuthStore} from "@/stores/auth";
-import {useI18n} from "vue-i18n";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
 import AppInput from "@/components/ui/AppInput.vue";
 import AppButton from "@/components/ui/AppButton.vue";
-import {useReCaptcha} from "vue-recaptcha-v3";
+import { useReCaptcha } from "vue-recaptcha-v3";
 
-const {executeRecaptcha, recaptchaLoaded} = useReCaptcha();
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
 
 const router = useRouter();
 const toast = useToast();

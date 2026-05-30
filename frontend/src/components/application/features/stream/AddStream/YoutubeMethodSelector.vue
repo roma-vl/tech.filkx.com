@@ -8,19 +8,22 @@
         <div
           class="absolute -top-3 right-4 px-3 py-1 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm"
         >
-          {{ $t('streams.addModal.youtubeSettings.recommended') }}
+          {{ $t("streams.addModal.youtubeSettings.recommended") }}
         </div>
         <div
           class="w-16 h-16 mb-4 rounded-full bg-blue-100 dark:bg-blue-800/30 flex items-center justify-center group-hover:scale-110 transition-transform"
         >
-          <ZapIcon class="w-8 h-8 text-blue-600 dark:text-blue-400"/>
+          <ZapIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
         </div>
         <h4 class="font-black text-gray-900 dark:text-white mb-2">
-          {{ $t('streams.addModal.youtubeSettings.automatic') }}
+          {{ $t("streams.addModal.youtubeSettings.automatic") }}
         </h4>
-        <p class="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed">
+        <p
+          class="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed"
+        >
           {{
-            $t('streams.addModal.youtubeSettings.automaticDesc') || 'Connect via API. We create the broadcast for you.'
+            $t("streams.addModal.youtubeSettings.automaticDesc") ||
+              "Connect via API. We create the broadcast for you."
           }}
         </p>
       </div>
@@ -32,14 +35,17 @@
         <div
           class="w-16 h-16 mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform"
         >
-          <KeyIcon class="w-8 h-8 text-gray-400"/>
+          <KeyIcon class="w-8 h-8 text-gray-400" />
         </div>
         <h4 class="font-black text-gray-900 dark:text-white mb-2">
-          {{ $t('streams.addModal.youtubeSettings.manual') }}
+          {{ $t("streams.addModal.youtubeSettings.manual") }}
         </h4>
-        <p class="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed">
+        <p
+          class="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed"
+        >
           {{
-            $t('streams.addModal.youtubeSettings.manualDesc') || 'Standard RTMP. Just enter your YouTube Stream Key.'
+            $t("streams.addModal.youtubeSettings.manualDesc") ||
+              "Standard RTMP. Just enter your YouTube Stream Key."
           }}
         </p>
       </div>
@@ -48,7 +54,7 @@
 </template>
 
 <script setup>
-import {KeyIcon, ZapIcon} from "lucide-vue-next";
+import { KeyIcon, ZapIcon } from "lucide-vue-next";
 
 defineEmits(["select"]);
 </script>

@@ -14,8 +14,8 @@ class GetProductDetailsAction
     public function execute(string $slug): Product
     {
         $product = $this->productRepository->findBySlug($slug);
-        
-        if (!$product) {
+
+        if (! $product) {
             abort(404, 'Product not found.');
         }
 

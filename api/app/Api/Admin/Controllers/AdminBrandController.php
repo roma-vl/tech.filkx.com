@@ -54,7 +54,7 @@ class AdminBrandController extends BaseApiController
         $brand = Brand::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|unique:brands,name,' . $brand->id,
+            'name' => 'required|string|unique:brands,name,'.$brand->id,
             'logoPath' => 'nullable|string',
             'description' => 'nullable|string',
         ]);

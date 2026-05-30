@@ -50,7 +50,7 @@
 <script setup>
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 defineProps({
@@ -65,9 +65,9 @@ defineProps({
 });
 
 const headers = [
-  {key: "user", label: t("admin.affiliates.table.user")},
-  {key: "plan", label: t("admin.affiliates.table.plan")},
-  {key: "earnings", label: t("admin.affiliates.table.earnings")},
+  { key: "user", label: t("admin.affiliates.table.user") },
+  { key: "plan", label: t("admin.affiliates.table.plan") },
+  { key: "earnings", label: t("admin.affiliates.table.earnings") },
   {
     key: "date",
     label: t("admin.affiliates.table.joined_at"),

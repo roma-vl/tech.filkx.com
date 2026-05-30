@@ -6,7 +6,7 @@
       <div
         class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 flex-shrink-0"
       >
-        <ShieldCheckIcon class="w-6 h-6"/>
+        <ShieldCheckIcon class="w-6 h-6" />
       </div>
 
       <div class="flex-1 min-w-0">
@@ -37,7 +37,7 @@
           class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 font-medium"
         >
           <div class="flex items-center gap-1">
-            <UsersIcon class="w-3.5 h-3.5 opacity-60"/>
+            <UsersIcon class="w-3.5 h-3.5 opacity-60" />
             {{ role.usersCount }}
             {{ t("admin.roles.table.users").toLowerCase() }}
           </div>
@@ -57,7 +57,7 @@
         class="!p-2.5 !rounded-xl !text-gray-400 hover:!text-primary-600 !border !border-transparent hover:!border-primary-100 dark:hover:!border-primary-800"
         @click="$emit('edit', role)"
       >
-        <PencilSquareIcon class="w-5 h-5"/>
+        <PencilSquareIcon class="w-5 h-5" />
       </AppButton>
       <AppButton
         v-if="!role.isSystem"
@@ -65,18 +65,23 @@
         class="!p-2.5 !rounded-xl !text-gray-400 hover:!text-red-600 !border !border-transparent hover:!border-red-100 dark:hover:!border-red-800"
         @click="$emit('delete', role.id)"
       >
-        <TrashIcon class="w-5 h-5"/>
+        <TrashIcon class="w-5 h-5" />
       </AppButton>
     </div>
   </div>
 </template>
 
 <script setup>
-import {PencilSquareIcon, ShieldCheckIcon, TrashIcon, UsersIcon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import {
+  PencilSquareIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+  UsersIcon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   role: {

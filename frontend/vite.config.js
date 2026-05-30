@@ -1,7 +1,7 @@
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import {fileURLToPath, URL} from "node:url";
-import {VitePWA} from "vite-plugin-pwa";
+import { fileURLToPath, URL } from "node:url";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode, isSsrBuild }) => ({
   plugins: [
@@ -68,10 +68,10 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       ...(isSsrBuild
         ? {
-          "vue-toastification": fileURLToPath(
-            new URL("./src/utils/toast-mock.js", import.meta.url),
-          ),
-        }
+            "vue-toastification": fileURLToPath(
+              new URL("./src/utils/toast-mock.js", import.meta.url),
+            ),
+          }
         : {}),
     },
   },

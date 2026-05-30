@@ -171,13 +171,19 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
-import {ArrowPathIcon, NoSymbolIcon, PencilSquareIcon, TagIcon, TrashIcon,} from "@heroicons/vue/24/outline";
+import {
+  ArrowPathIcon,
+  NoSymbolIcon,
+  PencilSquareIcon,
+  TagIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 

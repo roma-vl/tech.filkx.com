@@ -56,10 +56,10 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {CheckBadgeIcon} from "@heroicons/vue/24/outline";
+import { CheckBadgeIcon } from "@heroicons/vue/24/outline";
 
 defineProps({
   isOpen: Boolean,

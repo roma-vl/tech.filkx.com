@@ -2,11 +2,11 @@
   <div class="flex flex-wrap items-center gap-2">
     <!-- Tag List -->
     <div
-      v-for="tag in (tags || [])"
+      v-for="tag in tags || []"
       :key="tag"
       class="group relative flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700/50 rounded-xl shadow-sm hover:border-primary-500/30 transition-all duration-300"
     >
-      <TagIcon class="w-3.5 h-3.5 text-primary-500 opacity-50"/>
+      <TagIcon class="w-3.5 h-3.5 text-primary-500 opacity-50" />
       <span
         class="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover:text-primary-500 transition-colors"
       >{{ tag }}</span>
@@ -38,7 +38,11 @@
       >
         <!-- Custom Tag Input -->
         <div class="space-y-2">
-          <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">New Tag</p>
+          <p
+            class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 px-1"
+          >
+            New Tag
+          </p>
           <div class="flex gap-2">
             <AppInput
               v-model="customTag"
@@ -60,8 +64,14 @@
         <div class="h-px bg-gray-100 dark:bg-gray-700" />
 
         <div class="space-y-1">
-          <p class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2 px-1">Presets</p>
-          <div class="max-h-40 overflow-y-auto custom-scrollbar flex flex-wrap gap-1">
+          <p
+            class="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2 px-1"
+          >
+            Presets
+          </p>
+          <div
+            class="max-h-40 overflow-y-auto custom-scrollbar flex flex-wrap gap-1"
+          >
             <AppButton
               v-for="availableTag in availableTags"
               :key="availableTag"
@@ -91,7 +101,15 @@ const props = defineProps({
   },
   availableTags: {
     type: Array,
-    default: () => ["Bug", "Billing", "Feedback", "Urgent", "Question", "Feature", "Low Priority"],
+    default: () => [
+      "Bug",
+      "Billing",
+      "Feedback",
+      "Urgent",
+      "Question",
+      "Feature",
+      "Low Priority",
+    ],
   },
 });
 

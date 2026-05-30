@@ -123,14 +123,19 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {ArrowDownTrayIcon, FunnelIcon, MagnifyingGlassIcon, PlusIcon,} from "@heroicons/vue/24/outline";
+import { computed, onMounted, ref } from "vue";
+import {
+  ArrowDownTrayIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@heroicons/vue/24/outline";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppToggle from "@/components/admin/ui/Form/AppToggle.vue";
 import AppDatePicker from "@/components/admin/ui/Form/AppDatePicker.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
@@ -161,7 +166,7 @@ const showFilters = ref(false);
 
 const planOptions = computed(() => [
   { id: "", name: t("admin.users.filters.allPlans") },
-  ...props.availablePlans.map((plan) => ({id: plan, name: plan})),
+  ...props.availablePlans.map((plan) => ({ id: plan, name: plan })),
 ]);
 
 const statusOptions = computed(() => [

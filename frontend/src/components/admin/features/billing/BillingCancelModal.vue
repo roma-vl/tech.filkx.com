@@ -76,12 +76,12 @@
 </template>
 
 <script setup>
-import {ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {ExclamationTriangleIcon} from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
   isOpen: Boolean,

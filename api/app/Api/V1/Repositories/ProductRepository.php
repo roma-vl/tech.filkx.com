@@ -17,9 +17,9 @@ class ProductRepository
             'attributeValues.attribute',
             'attributeValues.attributeValue',
             'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue'
+            'variants.attributeValues.attributeValue',
         ])
-        ->where('status', 'active');
+            ->where('status', 'active');
     }
 
     public function findBySlug(string $slug): ?Product
@@ -38,17 +38,17 @@ class ProductRepository
             'attributeValues.attribute',
             'attributeValues.attributeValue',
             'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue'
+            'variants.attributeValues.attributeValue',
         ])
-        ->where('status', 'active')
-        ->where(function ($q) {
-            $q->where('is_hot', true)
-              ->orWhereHas('variants', function ($varQ) {
-                  $varQ->whereNotNull('old_price')
-                       ->whereRaw('old_price > price');
-              });
-        })
-        ->get();
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->where('is_hot', true)
+                    ->orWhereHas('variants', function ($varQ) {
+                        $varQ->whereNotNull('old_price')
+                            ->whereRaw('old_price > price');
+                    });
+            })
+            ->get();
     }
 
     public function getRecommended(int $limit = 8): Collection
@@ -60,12 +60,12 @@ class ProductRepository
             'attributeValues.attribute',
             'attributeValues.attributeValue',
             'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue'
+            'variants.attributeValues.attributeValue',
         ])
-        ->where('status', 'active')
-        ->where('is_recommended', true)
-        ->take($limit)
-        ->get();
+            ->where('status', 'active')
+            ->where('is_recommended', true)
+            ->take($limit)
+            ->get();
     }
 
     public function getRandomFallback(array $excludeIds, int $limit): Collection
@@ -77,12 +77,12 @@ class ProductRepository
             'attributeValues.attribute',
             'attributeValues.attributeValue',
             'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue'
+            'variants.attributeValues.attributeValue',
         ])
-        ->where('status', 'active')
-        ->whereNotIn('id', $excludeIds)
-        ->inRandomOrder()
-        ->take($limit)
-        ->get();
+            ->where('status', 'active')
+            ->whereNotIn('id', $excludeIds)
+            ->inRandomOrder()
+            ->take($limit)
+            ->get();
     }
 }

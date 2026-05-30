@@ -159,7 +159,7 @@
 </template>
 
 <script setup>
-import {computed, nextTick, onMounted, onUnmounted, ref} from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps({
   modelValue: {

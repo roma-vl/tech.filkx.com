@@ -8,13 +8,13 @@ class ShowServerLogAction
 {
     public function execute(string $filename): array
     {
-        if (!preg_match('/^[a-zA-Z0-9._-]+$/', $filename)) {
+        if (! preg_match('/^[a-zA-Z0-9._-]+$/', $filename)) {
             abort(400, 'Invalid filename');
         }
 
-        $path = storage_path('logs/' . $filename);
+        $path = storage_path('logs/'.$filename);
 
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             abort(404, 'Log file not found');
         }
 
@@ -49,7 +49,7 @@ class ShowServerLogAction
             $seek = min(ftell($f), $buffer);
             fseek($f, -$seek, SEEK_CUR);
             $chunk = fread($f, $seek);
-            $output = $chunk . $output;
+            $output = $chunk.$output;
             fseek($f, -$seek, SEEK_CUR);
             $lines -= substr_count($chunk, "\n");
         }

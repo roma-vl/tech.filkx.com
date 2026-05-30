@@ -3,7 +3,9 @@
     <div
       class="w-full lg:w-1/4 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
     >
-      <div class="p-5 border-b border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50">
+      <div
+        class="p-5 border-b border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/50"
+      >
         <h2 class="text-xs font-black uppercase tracking-widest text-gray-400">
           {{ $t("admin.logs.server_logs.title") }}
         </h2>
@@ -25,7 +27,11 @@
           <div class="flex items-center gap-3 min-w-0">
             <DocumentTextIcon
               class="w-4 h-4 flex-shrink-0"
-              :class="selectedFile?.name === file.name ? 'text-primary-500' : 'text-gray-400'"
+              :class="
+                selectedFile?.name === file.name
+                  ? 'text-primary-500'
+                  : 'text-gray-400'
+              "
             />
             <span class="truncate font-medium">{{ file.name }}</span>
           </div>
@@ -38,8 +44,15 @@
           </template>
         </AppButton>
 
-        <div v-if="loadingList" class="flex flex-col gap-2 p-2">
-           <div v-for="i in 5" :key="i" class="h-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl animate-pulse"></div>
+        <div
+          v-if="loadingList"
+          class="flex flex-col gap-2 p-2"
+        >
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="h-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl animate-pulse"
+          />
         </div>
       </div>
     </div>
@@ -50,18 +63,27 @@
         class="p-4 border-b border-gray-100 dark:border-gray-700/50 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50"
       >
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div
+            class="p-2 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700"
+          >
             <CommandLineIcon class="w-5 h-5 text-gray-400" />
           </div>
           <div>
             <h3 class="font-bold text-gray-900 dark:text-white leading-tight">
               <span v-if="selectedFile">{{ selectedFile.name }}</span>
-              <span v-else class="text-gray-400">
+              <span
+                v-else
+                class="text-gray-400"
+              >
                 {{ $t("admin.logs.server_logs.select_file") }}
               </span>
             </h3>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5" v-if="selectedFile">
-               {{ formatSize(selectedFile.size) }} &bull; {{ selectedFile.updated_at || 'Recently updated' }}
+            <p
+              v-if="selectedFile"
+              class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5"
+            >
+              {{ formatSize(selectedFile.size) }} &bull;
+              {{ selectedFile.updated_at || "Recently updated" }}
             </p>
           </div>
         </div>
@@ -122,7 +144,7 @@
             <div
               class="absolute left-0 top-0 bottom-0 w-1"
               :class="getBgColor(entry.level)"
-            ></div>
+            />
 
             <div class="flex items-start justify-between gap-4 mb-3">
               <div class="flex items-center gap-3 flex-wrap">
@@ -136,7 +158,9 @@
                   <ClockIcon class="w-3.5 h-3.5" />
                   <span class="text-xs font-semibold">{{ entry.date }}</span>
                 </div>
-                <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-700/30 text-gray-400 uppercase tracking-widest">{{ entry.env }}</span>
+                <span
+                  class="text-[10px] font-black px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-700/30 text-gray-400 uppercase tracking-widest"
+                >{{ entry.env }}</span>
               </div>
             </div>
 
@@ -201,7 +225,7 @@ import {
   DocumentTextIcon,
   CommandLineIcon,
   ArrowPathIcon,
-  ClockIcon
+  ClockIcon,
 } from "@heroicons/vue/24/outline";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 import { useI18n } from "vue-i18n";

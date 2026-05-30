@@ -1,53 +1,138 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-      <h2 class="text-lg font-bold text-gray-900 dark:text-white">Управління категоріями</h2>
+    <div
+      class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
+    >
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+        Управління категоріями
+      </h2>
       <AppButton
-        @click="openAddCategoryModal"
         variant="primary"
         class="flex items-center gap-2"
+        @click="openAddCategoryModal"
       >
         Додати категорію
       </AppButton>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
+    >
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (UK)</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (EN)</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Slug</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Батьківська категорія</th>
-              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                ID
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                Назва (UK)
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                Назва (EN)
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                Slug
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                Батьківська категорія
+              </th>
+              <th
+                class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                Дії
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="cat in categories" :key="cat.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{{ cat.id }}</td>
-              <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold">{{ cat.nameUk }}</td>
-              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ cat.nameEn }}</td>
-              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">{{ cat.slug }}</td>
-              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ cat.parentName || '—' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <tr
+              v-for="cat in categories"
+              :key="cat.id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            >
+              <td
+                class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white"
+              >
+                {{ cat.id }}
+              </td>
+              <td
+                class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold"
+              >
+                {{ cat.nameUk }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                {{ cat.nameEn }}
+              </td>
+              <td
+                class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono"
+              >
+                {{ cat.slug }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                {{ cat.parentName || "—" }}
+              </td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
                 <div class="flex justify-end gap-2">
-                  <AppButton @click="openEditCategoryModal(cat)" variant="ghost" size="sm" class="!p-2 text-blue-600 dark:text-blue-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    class="!p-2 text-blue-600 dark:text-blue-400"
+                    @click="openEditCategoryModal(cat)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                   </AppButton>
-                  <AppButton @click="deleteCategory(cat.id)" variant="ghost" size="sm" class="!p-2 text-red-600 dark:text-red-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    class="!p-2 text-red-600 dark:text-red-400"
+                    @click="deleteCategory(cat.id)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
                     </svg>
                   </AppButton>
                 </div>
               </td>
             </tr>
             <tr v-if="categories.length === 0">
-              <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <td
+                colspan="6"
+                class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
+              >
                 Категорій не створено.
               </td>
             </tr>
@@ -62,7 +147,10 @@
       :title="isEditing ? 'Редагувати категорію' : 'Додати категорію'"
       max-width="md"
     >
-      <form @submit.prevent="saveCategory" class="space-y-4">
+      <form
+        class="space-y-4"
+        @submit.prevent="saveCategory"
+      >
         <AppInput
           v-model="categoryForm.nameUk"
           required
@@ -81,7 +169,10 @@
           v-model="categoryForm.parentId"
           label="Батьківська категорія"
           placeholder="Немає (Головна категорія)"
-          :options="[{ id: null, nameUk: 'Немає (Головна категорія)' }, ...categories.filter(c => c.id !== categoryForm.id)]"
+          :options="[
+            { id: null, nameUk: 'Немає (Головна категорія)' },
+            ...categories.filter((c) => c.id !== categoryForm.id),
+          ]"
           option-value="id"
           option-label="nameUk"
         />
@@ -94,10 +185,17 @@
       </form>
 
       <template #footer>
-        <AppButton variant="secondary" @click="showCategoryModal = false" class="mr-2">
+        <AppButton
+          variant="secondary"
+          class="mr-2"
+          @click="showCategoryModal = false"
+        >
           Скасувати
         </AppButton>
-        <AppButton @click="saveCategory" variant="primary">
+        <AppButton
+          variant="primary"
+          @click="saveCategory"
+        >
           Зберегти
         </AppButton>
       </template>
@@ -106,33 +204,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import api from '@/services/api';
-import AppInput from '@/components/admin/ui/Form/AppInput.vue';
-import AppSelect from '@/components/admin/ui/Form/AppSelect.vue';
-import AppButton from '@/components/admin/ui/Button/AppButton.vue';
-import AppModal from '@/components/admin/ui/Feedback/AppModal.vue';
+import { ref } from "vue";
+import api from "@/services/api";
+import AppInput from "@/components/admin/ui/Form/AppInput.vue";
+import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
+import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 
 const props = defineProps({
   categories: { type: Array, required: true },
 });
 
-const emit = defineEmits(['refresh']);
+const emit = defineEmits(["refresh"]);
 
 const showCategoryModal = ref(false);
 const isEditing = ref(false);
 
 const categoryForm = ref({
   id: null,
-  nameUk: '',
-  nameEn: '',
+  nameUk: "",
+  nameEn: "",
   parentId: null,
-  order: 0
+  order: 0,
 });
 
 const openAddCategoryModal = () => {
   isEditing.value = false;
-  categoryForm.value = { id: null, nameUk: '', nameEn: '', parentId: null, order: 0 };
+  categoryForm.value = {
+    id: null,
+    nameUk: "",
+    nameEn: "",
+    parentId: null,
+    order: 0,
+  };
   showCategoryModal.value = true;
 };
 
@@ -143,7 +247,7 @@ const openEditCategoryModal = (cat) => {
     nameUk: cat.nameUk,
     nameEn: cat.nameEn,
     parentId: cat.parentId,
-    order: cat.order
+    order: cat.order,
   };
   showCategoryModal.value = true;
 };
@@ -151,24 +255,27 @@ const openEditCategoryModal = (cat) => {
 const saveCategory = async () => {
   try {
     if (isEditing.value) {
-      await api.put(`/admin/categories/${categoryForm.value.id}`, categoryForm.value);
+      await api.put(
+        `/admin/categories/${categoryForm.value.id}`,
+        categoryForm.value,
+      );
     } else {
-      await api.post('/admin/categories', categoryForm.value);
+      await api.post("/admin/categories", categoryForm.value);
     }
     showCategoryModal.value = false;
-    emit('refresh');
+    emit("refresh");
   } catch (error) {
-    console.error('Failed to save category:', error);
+    console.error("Failed to save category:", error);
   }
 };
 
 const deleteCategory = async (id) => {
-  if (confirm('Ви впевнені, що хочете видалити цю категорію?')) {
+  if (confirm("Ви впевнені, що хочете видалити цю категорію?")) {
     try {
       await api.delete(`/admin/categories/${id}`);
-      emit('refresh');
+      emit("refresh");
     } catch (error) {
-      console.error('Failed to delete category:', error);
+      console.error("Failed to delete category:", error);
     }
   }
 };

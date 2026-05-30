@@ -66,7 +66,6 @@ const truncateText = (text, length = 100) => {
         @click="toggleDropdown"
       >
         <BellIcon class="h-6 w-6" />
-       
       </button>
     </template>
 

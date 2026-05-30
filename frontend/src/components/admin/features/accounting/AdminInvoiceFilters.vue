@@ -50,8 +50,8 @@
             :model-value="filters.status"
             :label="$t('admin.accounting.filters.status')"
             :options="statusOptions"
-            optionValue="value"
-            optionLabel="label"
+            option-value="value"
+            option-label="label"
             @update:model-value="updateFilter('status', $event)"
           />
         </div>
@@ -59,7 +59,7 @@
         <div
           class="flex items-center justify-end pt-6 border-t border-gray-100 dark:border-gray-700/50"
         >
-            <AppButton
+          <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl"
             @click="$emit('reset')"
@@ -74,10 +74,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
-import {
-  FunnelIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/vue/24/outline";
+import { FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
@@ -92,19 +89,16 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "update:filters",
-  "reset",
-]);
+const emit = defineEmits(["update:filters", "reset"]);
 
 const showFilters = ref(false);
 
 const statusOptions = computed(() => [
-  { label: t('admin.accounting.status.all'), value: '' },
-  { label: t('admin.accounting.status.draft'), value: 'draft' },
-  { label: t('admin.accounting.status.issued'), value: 'issued' },
-  { label: t('admin.accounting.status.paid'), value: 'paid' },
-  { label: t('admin.accounting.status.cancelled'), value: 'cancelled' },
+  { label: t("admin.accounting.status.all"), value: "" },
+  { label: t("admin.accounting.status.draft"), value: "draft" },
+  { label: t("admin.accounting.status.issued"), value: "issued" },
+  { label: t("admin.accounting.status.paid"), value: "paid" },
+  { label: t("admin.accounting.status.cancelled"), value: "cancelled" },
 ]);
 
 const activeFiltersCount = computed(() => {

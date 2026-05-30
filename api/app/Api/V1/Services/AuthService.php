@@ -30,10 +30,10 @@ class AuthService
     public function register(RegisterDto $dto): array
     {
         $user = User::create([
-            'name'     => $dto->name,
-            'email'    => $dto->email,
+            'name' => $dto->name,
+            'email' => $dto->email,
             'password' => Hash::make($dto->password),
-            'locale'   => User::DEFAULT_LOCALE,
+            'locale' => User::DEFAULT_LOCALE,
             'timezone' => 'Europe/Kyiv',
         ]);
 
@@ -47,8 +47,8 @@ class AuthService
         $tokenDto = $this->createAccessToken($user);
 
         return [
-            'token'   => $tokenDto->toArray(),
-            'user'    => new UserResource($user),
+            'token' => $tokenDto->toArray(),
+            'user' => new UserResource($user),
             'message' => 'Registration successful. Please verify your email.',
         ];
     }
@@ -57,10 +57,10 @@ class AuthService
     {
         if (! Auth::attempt(['email' => $dto->email, 'password' => $dto->password])) {
             event(new AuditEvent(new AuditLogDto(
-                action:    'auth.failed',
-                domain:    'security',
-                message:   "Failed login attempt for email: {$dto->email}",
-                payload:   ['email' => $dto->email],
+                action: 'auth.failed',
+                domain: 'security',
+                message: "Failed login attempt for email: {$dto->email}",
+                payload: ['email' => $dto->email],
                 ipAddress: request()->ip(),
                 userAgent: request()->userAgent()
             )));
@@ -79,27 +79,27 @@ class AuthService
         $tokenDto = $this->createAccessToken($user);
 
         event(new AuditEvent(new AuditLogDto(
-            action:    'auth.login',
-            domain:    'security',
-            message:   "User {$user->name} logged in successfully",
-            userId:    $user->id,
+            action: 'auth.login',
+            domain: 'security',
+            message: "User {$user->name} logged in successfully",
+            userId: $user->id,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent()
         )));
 
         return [
             'token' => $tokenDto->toArray(),
-            'user'  => new UserResource($user),
+            'user' => new UserResource($user),
         ];
     }
 
     public function logout(User $user): void
     {
         event(new AuditEvent(new AuditLogDto(
-            action:    'auth.logout',
-            domain:    'security',
-            message:   "User {$user->name} logged out",
-            userId:    $user->id,
+            action: 'auth.logout',
+            domain: 'security',
+            message: "User {$user->name} logged out",
+            userId: $user->id,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent()
         )));
@@ -109,11 +109,11 @@ class AuthService
 
     public function refreshToken(User $user): array
     {
-        $currentToken   = $user->token();
+        $currentToken = $user->token();
         $impersonatorId = null;
 
         if ($currentToken) {
-            $dbToken        = DB::table('oauth_access_tokens')
+            $dbToken = DB::table('oauth_access_tokens')
                 ->where('id', $currentToken->id)
                 ->first();
             $impersonatorId = $dbToken?->impersonator_id;
@@ -174,9 +174,9 @@ class AuthService
     {
         $status = Password::reset(
             [
-                'email'    => $dto->email,
+                'email' => $dto->email,
                 'password' => $dto->password,
-                'token'    => $dto->token,
+                'token' => $dto->token,
             ],
             function ($user, $password) {
                 $user->password = Hash::make($password);
@@ -199,30 +199,30 @@ class AuthService
         $this->notifyIfNewDevice($user);
 
         event(new AuditEvent(new AuditLogDto(
-            action:    'auth.login_oauth',
-            domain:    'security',
-            message:   "User {$user->name} logged in via OAuth",
-            userId:    $user->id,
+            action: 'auth.login_oauth',
+            domain: 'security',
+            message: "User {$user->name} logged in via OAuth",
+            userId: $user->id,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent()
         )));
 
         return [
             'token' => $tokenDto->toArray(),
-            'user'  => new UserResource($user),
+            'user' => new UserResource($user),
         ];
     }
 
     private function createAccessToken(User $user, ?int $impersonatorId = null): AuthTokenDto
     {
         $tokenResult = $user->createToken(self::TOKEN_NAME);
-        $token       = $tokenResult->token;
+        $token = $tokenResult->token;
 
         if ($impersonatorId) {
             $token->impersonator_id = $impersonatorId;
         }
 
-        $expiresAt       = now()->addDays(config('auth.api_token_expired_in_days', self::TOKEN_EXPIRY_DAYS));
+        $expiresAt = now()->addDays(config('auth.api_token_expired_in_days', self::TOKEN_EXPIRY_DAYS));
         $token->expires_at = $expiresAt;
         $token->save();
 
@@ -230,9 +230,9 @@ class AuthService
 
         return new AuthTokenDto(
             accessToken: $tokenResult->accessToken,
-            tokenType:   'Bearer',
-            expiresIn:   $expiresIn,
-            expiresAt:   $expiresAt->toIso8601String()
+            tokenType: 'Bearer',
+            expiresIn: $expiresIn,
+            expiresAt: $expiresAt->toIso8601String()
         );
     }
 
@@ -259,8 +259,8 @@ class AuthService
         if ($isNew) {
             $user->notify(new LoginNewDeviceNotification(
                 deviceName: $this->parseDeviceName($currentUa),
-                location:   $currentIp,
-                time:       now()->toDateTimeString()
+                location: $currentIp,
+                time: now()->toDateTimeString()
             ));
         }
     }
@@ -268,7 +268,7 @@ class AuthService
     private function parseDeviceName(string $ua): string
     {
         // Simple UA-based device name without external packages
-        $browser  = 'Unknown Browser';
+        $browser = 'Unknown Browser';
         $platform = 'Unknown OS';
 
         if (str_contains($ua, 'Firefox')) {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useAuthStore} from "@/stores/auth";
+import { useAuthStore } from "@/stores/auth";
 // Remove static router import to avoid SSR crash
 
 const api = axios.create({
@@ -22,8 +22,20 @@ api.interceptors.request.use(
       if (store?.token) {
         config.headers.Authorization = `Bearer ${store.token}`;
       }
+
+      if (typeof window !== "undefined") {
+        let cartSessionId = localStorage.getItem("cart_session_id");
+        if (!cartSessionId) {
+          cartSessionId =
+            "anon_" +
+            Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+          localStorage.setItem("cart_session_id", cartSessionId);
+        }
+        config.headers["X-Cart-Session-ID"] = cartSessionId;
+      }
     } catch (error) {
-      console.warn("Auth store not available");
+      console.warn("Auth / localStorage not available in interceptor");
     }
 
     return config;

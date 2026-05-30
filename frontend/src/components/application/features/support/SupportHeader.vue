@@ -1,7 +1,13 @@
 <template>
-  <div class="relative overflow-hidden shrink-0 border-b border-white/10 dark:border-white/5 bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-900/80 dark:to-primary-800/80">
-    <div class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-    <div class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-black/10 blur-3xl pointer-events-none" />
+  <div
+    class="relative overflow-hidden shrink-0 border-b border-white/10 dark:border-white/5 bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-900/80 dark:to-primary-800/80"
+  >
+    <div
+      class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-white/10 blur-3xl pointer-events-none"
+    />
+    <div
+      class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-black/10 blur-3xl pointer-events-none"
+    />
 
     <div class="relative p-6 sm:p-8 text-white z-10">
       <div class="flex items-center justify-between mb-6">
@@ -86,8 +92,13 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
-import {ArrowLeftIcon, SparklesIcon, UserIcon, XMarkIcon as CrossIcon,} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
+import {
+  ArrowLeftIcon,
+  SparklesIcon,
+  UserIcon,
+  XMarkIcon as CrossIcon,
+} from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 

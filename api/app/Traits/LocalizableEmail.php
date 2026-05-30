@@ -7,7 +7,7 @@ trait LocalizableEmail
     /**
      * Get the localized view path.
      *
-     * @param string $baseView View name without 'emails.' prefix (e.g. 'auth.verify_email')
+     * @param  string  $baseView  View name without 'emails.' prefix (e.g. 'auth.verify_email')
      */
     public function getLocalizedView(string $baseView, ?string $locale = null): string
     {
@@ -16,7 +16,7 @@ trait LocalizableEmail
         // Ensure we support fallback if a language doesn't have the template yet
         $view = "emails.{$locale}.{$baseView}";
 
-        if (!view()->exists($view)) {
+        if (! view()->exists($view)) {
             $view = "emails.en.{$baseView}";
         }
 

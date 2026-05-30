@@ -1,8 +1,8 @@
-import {createRouter, createWebHistory} from "vue-router";
-import {useAuthStore} from "@/stores/auth";
-import {useSystemStore} from "@/stores/system";
-import {i18n} from "@/i18n";
-import {routes} from "./routes";
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { useSystemStore } from "@/stores/system";
+import { i18n } from "@/i18n";
+import { routes } from "./routes";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -35,8 +35,7 @@ router.beforeEach(async (to, from, next) => {
     if (auth.token && !auth.user) {
       try {
         await auth.fetchUser();
-      } catch {
-      }
+      } catch {}
     }
   }
 

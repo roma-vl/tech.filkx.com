@@ -14,13 +14,19 @@
         :empty-text="$t('common.no_data')"
       >
         <template #row="{ item }">
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+          <td
+            class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
+          >
             {{ item.invoiceNumber }}
           </td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-             {{ item.user?.name || '-' }}
+          <td
+            class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+          >
+            {{ item.user?.name || "-" }}
           </td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+          <td
+            class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"
+          >
             {{ formatMoney(item.totalMinor, item.currency) }}
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-sm">
@@ -28,40 +34,48 @@
               {{ item.status }}
             </AdminBadge>
           </td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-            {{ item.issuedAt || item.createdAt ? formatDate(item.issuedAt || item.createdAt) : '-' }}
+          <td
+            class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+          >
+            {{
+              item.issuedAt || item.createdAt
+                ? formatDate(item.issuedAt || item.createdAt)
+                : "-"
+            }}
           </td>
-           <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <td
+            class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium"
+          >
             <AppButton
-                variant="ghost"
-                size="sm"
-                @click="viewInvoice(item)"
-              >
-                {{ $t('admin.common.view') }}
-              </AppButton>
+              variant="ghost"
+              size="sm"
+              @click="viewInvoice(item)"
+            >
+              {{ $t("admin.common.view") }}
+            </AppButton>
           </td>
         </template>
       </AdminTable>
     </div>
 
     <InvoiceDetailsModal
-        v-model="showInvoiceModal"
-        :invoice="selectedInvoice"
+      v-model="showInvoiceModal"
+      :invoice="selectedInvoice"
     />
   </div>
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed} from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import AccountingService from '@/services/AccountingService';
-import { useI18n } from 'vue-i18n';
-import AppButton from '@/components/admin/ui/Button/AppButton.vue';
-import AdminInvoiceFilters from '@/components/admin/features/accounting/AdminInvoiceFilters.vue';
-import AdminTable from '@/components/admin/ui/Data/AdminTable.vue';
-import AdminBadge from '@/components/admin/ui/Data/AdminBadge.vue';
-import InvoiceDetailsModal from '@/components/admin/features/accounting/InvoiceDetailsModal.vue';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, watch, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import AccountingService from "@/services/AccountingService";
+import { useI18n } from "vue-i18n";
+import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AdminInvoiceFilters from "@/components/admin/features/accounting/AdminInvoiceFilters.vue";
+import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
+import InvoiceDetailsModal from "@/components/admin/features/accounting/InvoiceDetailsModal.vue";
+import { useToast } from "vue-toastification";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -74,8 +88,8 @@ const showInvoiceModal = ref(false);
 const selectedInvoice = ref(null);
 
 const filters = ref({
-  search: route.query.search || '',
-  status: route.query.status || '',
+  search: route.query.search || "",
+  status: route.query.status || "",
   page: parseInt(route.query.page) || 1,
 });
 
@@ -83,16 +97,16 @@ const updateUrl = () => {
   const query = {
     ...filters.value,
   };
-  Object.keys(query).forEach(key => {
-      if (!query[key]) delete query[key];
+  Object.keys(query).forEach((key) => {
+    if (!query[key]) delete query[key];
   });
   router.replace({ query });
 };
 
 const resetFilters = () => {
   filters.value = {
-    search: '',
-    status: '',
+    search: "",
+    status: "",
     page: 1,
   };
   updateUrl();
@@ -100,21 +114,32 @@ const resetFilters = () => {
 };
 
 let debounceTimer;
-watch(filters, (newFilters) => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    updateUrl();
-    fetchInvoices(newFilters.page);
-  }, 500);
-}, { deep: true });
+watch(
+  filters,
+  (newFilters) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      updateUrl();
+      fetchInvoices(newFilters.page);
+    }, 500);
+  },
+  { deep: true },
+);
 
 const columns = computed(() => [
-  { key: 'invoiceNumber', label: t('admin.accounting.invoices.columns.number') },
-  { key: 'user.name', label: t('admin.accounting.invoices.columns.user'), path: 'user.name' },
-  { key: 'totalMinor', label: t('admin.accounting.invoices.columns.total') },
-  { key: 'status', label: t('admin.accounting.invoices.columns.status') },
-  { key: 'issuedAt', label: t('admin.accounting.invoices.columns.issued') },
-  { key: 'actions', label: t('admin.accounting.invoices.columns.actions') },
+  {
+    key: "invoiceNumber",
+    label: t("admin.accounting.invoices.columns.number"),
+  },
+  {
+    key: "user.name",
+    label: t("admin.accounting.invoices.columns.user"),
+    path: "user.name",
+  },
+  { key: "totalMinor", label: t("admin.accounting.invoices.columns.total") },
+  { key: "status", label: t("admin.accounting.invoices.columns.status") },
+  { key: "issuedAt", label: t("admin.accounting.invoices.columns.issued") },
+  { key: "actions", label: t("admin.accounting.invoices.columns.actions") },
 ]);
 
 const fetchInvoices = async (page = 1) => {
@@ -124,15 +149,15 @@ const fetchInvoices = async (page = 1) => {
     const response = await AccountingService.getInvoices(filters.value);
     invoicesData.value = response.data.data;
   } catch (error) {
-    toast.error('Failed to load invoices');
+    toast.error("Failed to load invoices");
   } finally {
     loading.value = false;
   }
 };
 
-const formatMoney = (amountMinor, currency = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+const formatMoney = (amountMinor, currency = "USD") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency: currency,
   }).format(amountMinor / 100);
 };
@@ -142,18 +167,23 @@ const formatDate = (date) => {
 };
 
 const getStatusColor = (status) => {
-    switch (status) {
-        case 'paid': return 'green';
-        case 'issued': return 'blue';
-        case 'draft': return 'gray';
-        case 'cancelled': return 'red';
-        default: return 'gray';
-    }
+  switch (status) {
+    case "paid":
+      return "green";
+    case "issued":
+      return "blue";
+    case "draft":
+      return "gray";
+    case "cancelled":
+      return "red";
+    default:
+      return "gray";
+  }
 };
 
 const viewInvoice = (invoice) => {
-    selectedInvoice.value = invoice;
-    showInvoiceModal.value = true;
+  selectedInvoice.value = invoice;
+  showInvoiceModal.value = true;
 };
 
 onMounted(() => {

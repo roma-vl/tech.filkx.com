@@ -6,13 +6,12 @@
       customClass,
     ]"
   >
-    <slot name="icon"/>
-    <slot/>
+    <slot name="icon" />
+    <slot />
   </span>
 </template>
 
 <script setup>
-
 const props = defineProps({
   variant: {
     type: String,

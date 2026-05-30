@@ -33,7 +33,7 @@
               :src="ticket.user.avatar"
               class="w-full h-full object-cover"
               :alt="ticket.user.name"
-            />
+            >
             <template v-else>
               {{ ticket.user?.name?.charAt(0)?.toUpperCase() || "U" }}
             </template>
@@ -87,7 +87,7 @@
               v-if="ticket.handledBy === 'ai'"
               class="px-2 py-0.5 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest flex items-center gap-1 border border-purple-100 dark:border-purple-800/30"
             >
-              <SparklesIcon class="w-3 h-3"/>
+              <SparklesIcon class="w-3 h-3" />
               AI
             </span>
             <span
@@ -105,8 +105,8 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
-import {SparklesIcon} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
+import { SparklesIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 
@@ -137,9 +137,9 @@ const formatDate = (dateString) => {
   } else if (days === 1) {
     return "Вчора";
   } else if (days < 7) {
-    return date.toLocaleDateString("uk-UA", {weekday: "short"});
+    return date.toLocaleDateString("uk-UA", { weekday: "short" });
   }
-  return date.toLocaleDateString("uk-UA", {day: "2-digit", month: "2-digit"});
+  return date.toLocaleDateString("uk-UA", { day: "2-digit", month: "2-digit" });
 };
 
 const isImage = (fileType) => {

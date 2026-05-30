@@ -74,9 +74,9 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, ref, watch } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
@@ -93,10 +93,10 @@ const loading = ref(false);
 const newStatus = ref("");
 
 const statusOptions = computed(() => [
-  {id: "pending", name: t("admin.affiliates.status.pending")},
-  {id: "active", name: t("admin.affiliates.status.active")},
-  {id: "rejected", name: t("admin.affiliates.status.rejected")},
-  {id: "suspended", name: t("admin.affiliates.status.suspended")},
+  { id: "pending", name: t("admin.affiliates.status.pending") },
+  { id: "active", name: t("admin.affiliates.status.active") },
+  { id: "rejected", name: t("admin.affiliates.status.rejected") },
+  { id: "suspended", name: t("admin.affiliates.status.suspended") },
 ]);
 
 watch(

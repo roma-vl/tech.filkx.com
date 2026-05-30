@@ -76,7 +76,11 @@
       </div>
 
       <div
-        v-if="video.status !== 'uploading' && video.status !== 'failed' && !video.isTranscoding"
+        v-if="
+          video.status !== 'uploading' &&
+            video.status !== 'failed' &&
+            !video.isTranscoding
+        "
         class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
         @click="$emit('play', video)"
       >
@@ -95,9 +99,16 @@
         <Loader2Icon class="w-8 h-8 text-amber-400 animate-spin" />
         <div class="text-center px-4">
           <p class="text-white text-xs font-bold uppercase tracking-wider">
-            {{ video.status === 'queued_for_transcoding' ? 'В черзі на конвертацію' : 'Конвертується...' }}
+            {{
+              video.status === "queued_for_transcoding"
+                ? "В черзі на конвертацію"
+                : "Конвертується..."
+            }}
           </p>
-          <p v-if="video.transcodingProgress > 0" class="text-amber-400 text-sm font-black mt-1">
+          <p
+            v-if="video.transcodingProgress > 0"
+            class="text-amber-400 text-sm font-black mt-1"
+          >
             {{ video.transcodingProgress }}%
           </p>
         </div>
@@ -105,7 +116,9 @@
         <div class="w-3/4 h-1.5 bg-white/20 rounded-full overflow-hidden">
           <div
             class="h-full bg-amber-400 rounded-full transition-all duration-500"
-            :class="{ 'animate-pulse': video.status === 'queued_for_transcoding' }"
+            :class="{
+              'animate-pulse': video.status === 'queued_for_transcoding',
+            }"
             :style="{ width: (video.transcodingProgress || 5) + '%' }"
           />
         </div>
@@ -168,7 +181,9 @@
         <div class="p-1 rounded-lg bg-primary/10 text-primary mt-0.5">
           <InfoIcon class="w-3.5 h-3.5" />
         </div>
-        <p class="text-[11px] font-bold text-gray-600 dark:text-gray-400 leading-tight">
+        <p
+          class="text-[11px] font-bold text-gray-600 dark:text-gray-400 leading-tight"
+        >
           {{ t("media.videos.recommendation.deleteOriginal") }}
         </p>
       </div>
@@ -178,26 +193,49 @@
         v-if="video.isTranscoding"
         class="mb-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-800/40 px-3 py-2.5"
       >
-          <div class="flex items-center gap-2 mb-1.5">
-            <Loader2Icon class="w-3.5 h-3.5 text-amber-500 animate-spin flex-shrink-0" />
-            <p class="text-xs font-bold text-amber-700 dark:text-amber-400 truncate">
-              {{ video.status === 'queued_for_transcoding' ? t('media.videos.status.queued') + ' — водяний знак додається в фоні' : t('media.videos.status.processing') }}
-              <span v-if="video.status !== 'queued_for_transcoding' && video.transcodingProgress > 0" class="ml-1">
-                — {{ video.transcodingProgress }}%
-              </span>
-            </p>
-          </div>
-          <div class="w-full h-1 bg-amber-200/60 dark:bg-amber-800/60 rounded-full overflow-hidden">
-            <div
-              class="h-full bg-amber-500 rounded-full transition-all duration-700"
-              :class="{ 'animate-pulse': video.status === 'queued_for_transcoding' }"
-              :style="{ width: Math.max(video.transcodingProgress || 0, 5) + '%' }"
-            />
-          </div>
-          <p class="text-[10px] text-amber-500 dark:text-amber-500 mt-1.5 leading-tight">
-            Ви отримаєте сповіщення коли відео буде готове до стримінгу
+        <div class="flex items-center gap-2 mb-1.5">
+          <Loader2Icon
+            class="w-3.5 h-3.5 text-amber-500 animate-spin flex-shrink-0"
+          />
+          <p
+            class="text-xs font-bold text-amber-700 dark:text-amber-400 truncate"
+          >
+            {{
+              video.status === "queued_for_transcoding"
+                ? t("media.videos.status.queued") +
+                  " — водяний знак додається в фоні"
+                : t("media.videos.status.processing")
+            }}
+            <span
+              v-if="
+                video.status !== 'queued_for_transcoding' &&
+                  video.transcodingProgress > 0
+              "
+              class="ml-1"
+            >
+              — {{ video.transcodingProgress }}%
+            </span>
           </p>
         </div>
+        <div
+          class="w-full h-1 bg-amber-200/60 dark:bg-amber-800/60 rounded-full overflow-hidden"
+        >
+          <div
+            class="h-full bg-amber-500 rounded-full transition-all duration-700"
+            :class="{
+              'animate-pulse': video.status === 'queued_for_transcoding',
+            }"
+            :style="{
+              width: Math.max(video.transcodingProgress || 0, 5) + '%',
+            }"
+          />
+        </div>
+        <p
+          class="text-[10px] text-amber-500 dark:text-amber-500 mt-1.5 leading-tight"
+        >
+          Ви отримаєте сповіщення коли відео буде готове до стримінгу
+        </p>
+      </div>
       <div
         class="mt-auto flex items-center justify-between border-t border-gray-50 dark:border-gray-700/50 pt-4"
       >
@@ -235,9 +273,9 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
-import {useSubscriptionStore} from "@/stores/subscription";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useSubscriptionStore } from "@/stores/subscription";
 import Dropdown from "@/components/ui/Dropdown.vue";
 import {
   CalendarIcon,

@@ -28,9 +28,9 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between mb-1">
-                <span class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate pr-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{
-                  ticket.subject
-                }}</span>
+                <span
+                  class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate pr-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
+                >{{ ticket.subject }}</span>
                 <span
                   class="text-[10px] text-gray-400 dark:text-gray-500 font-bold whitespace-nowrap"
                 >{{ formatRelativeTime(ticket.updatedAt) }}</span>
@@ -62,14 +62,18 @@
       <div
         class="p-5 rounded-[2.5rem] bg-white/40 dark:bg-gray-800/20 backdrop-blur-md border border-white/60 dark:border-white/5 shadow-sm overflow-hidden relative group"
       >
-        <div class="absolute -right-4 -top-4 w-16 h-16 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors" />
+        <div
+          class="absolute -right-4 -top-4 w-16 h-16 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors"
+        />
         <ClockIcon class="w-7 h-7 text-orange-500 mb-3 relative z-10" />
         <p
           class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter mb-1 relative z-10"
         >
           {{ t("support.avg_response_time") }}
         </p>
-        <p class="text-sm font-black text-gray-700 dark:text-gray-200 relative z-10">
+        <p
+          class="text-sm font-black text-gray-700 dark:text-gray-200 relative z-10"
+        >
           {{ t("support.minutes") }}
         </p>
       </div>
@@ -78,7 +82,9 @@
         to="/faq"
         class="p-5 rounded-[2.5rem] bg-white/40 dark:bg-gray-800/20 backdrop-blur-md border border-white/60 dark:border-white/5 shadow-sm overflow-hidden relative cursor-pointer hover:border-primary-300 dark:hover:border-primary-700 group transition-all duration-300 block"
       >
-        <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary-500/10 rounded-full blur-xl group-hover:bg-primary-500/20 transition-colors" />
+        <div
+          class="absolute -right-4 -top-4 w-16 h-16 bg-primary-500/10 rounded-full blur-xl group-hover:bg-primary-500/20 transition-colors"
+        />
         <HelperCenterIcon
           class="w-7 h-7 text-primary-500 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-300"
         />
@@ -87,7 +93,9 @@
         >
           {{ t("support.help_center") }}
         </p>
-        <p class="text-sm font-black text-gray-700 dark:text-gray-200 relative z-10">
+        <p
+          class="text-sm font-black text-gray-700 dark:text-gray-200 relative z-10"
+        >
           {{ t("support.find_answer") }}
         </p>
       </router-link>
@@ -138,7 +146,7 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import {
   ClockIcon,
   PlusIcon,

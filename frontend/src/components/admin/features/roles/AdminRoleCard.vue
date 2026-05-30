@@ -8,7 +8,7 @@
           <div
             class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
           >
-            <ShieldCheckIcon class="w-6 h-6"/>
+            <ShieldCheckIcon class="w-6 h-6" />
           </div>
           <div>
             <h3
@@ -34,7 +34,7 @@
               <button
                 class="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <EllipsisVerticalIcon class="w-5 h-5"/>
+                <EllipsisVerticalIcon class="w-5 h-5" />
               </button>
             </template>
             <template #content>
@@ -45,7 +45,7 @@
                   @click="$emit('edit', role)"
                 >
                   <template #prefix>
-                    <PencilSquareIcon class="w-4 h-4 mr-2"/>
+                    <PencilSquareIcon class="w-4 h-4 mr-2" />
                   </template>
                   {{ t("common.actions.edit") }}
                 </AppButton>
@@ -56,7 +56,7 @@
                   @click="$emit('delete', role.id)"
                 >
                   <template #prefix>
-                    <TrashIcon class="w-4 h-4 mr-2"/>
+                    <TrashIcon class="w-4 h-4 mr-2" />
                   </template>
                   {{ t("common.actions.delete") }}
                 </AppButton>
@@ -87,12 +87,12 @@
             <div
               class="flex items-center gap-1.5 font-bold text-gray-700 dark:text-gray-200 text-sm"
             >
-              <UsersIcon class="w-3.5 h-3.5 text-gray-400"/>
+              <UsersIcon class="w-3.5 h-3.5 text-gray-400" />
               {{ role.usersCount }}
             </div>
           </div>
 
-          <div class="w-px h-6 bg-gray-100 dark:bg-gray-700"/>
+          <div class="w-px h-6 bg-gray-100 dark:bg-gray-700" />
 
           <div class="flex flex-col">
             <span
@@ -125,11 +125,11 @@ import {
   TrashIcon,
   UsersIcon,
 } from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import Dropdown from "@/components/ui/Dropdown.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   role: {

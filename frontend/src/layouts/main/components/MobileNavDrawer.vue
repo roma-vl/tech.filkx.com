@@ -39,7 +39,7 @@
                   class="flex h-full flex-col bg-white/90 dark:bg-gray-900/90 backdrop-blur-2xl shadow-2xl border-r border-white/20 dark:border-white/5"
                 >
                   <div class="px-6 py-8 flex items-center justify-between">
-                    <router-link 
+                    <router-link
                       to="/"
                       class="flex items-center"
                       @click="$emit('close')"
@@ -60,7 +60,9 @@
                     </button>
                   </div>
 
-                  <nav class="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
+                  <nav
+                    class="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar"
+                  >
                     <div class="mb-8">
                       <UsageSummary vertical />
                     </div>

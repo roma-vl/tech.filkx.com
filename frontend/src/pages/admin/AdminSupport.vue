@@ -3,7 +3,7 @@
     class="max-w-[1600px] mx-auto space-y-10 pb-20 animate-in fade-in duration-700"
   >
     <!-- Header KPI Stats -->
-    <SupportKpiStats :stats="kpiStats"/>
+    <SupportKpiStats :stats="kpiStats" />
 
     <!-- Navigation & Global Actions -->
     <div
@@ -79,8 +79,8 @@
               class="text-[11px] font-black uppercase tracking-widest text-gray-400"
             >
               <span class="text-gray-900 dark:text-white">{{
-                  pagination.currentPage
-                }}</span>
+                pagination.currentPage
+              }}</span>
               / {{ pagination.lastPage }}
             </span>
             <button
@@ -119,8 +119,8 @@
             :user-name="selectedTicket.user?.name"
             :has-more="hasMoreMessages"
             :is-loading-more="isLoadingMoreMessages"
-            @loadMore="loadMoreMessages"
-            @markRead="handleMarkMessagesRead"
+            @load-more="loadMoreMessages"
+            @mark-read="handleMarkMessagesRead"
           />
 
           <SupportChatInput
@@ -131,7 +131,7 @@
             @send="sendReply"
           />
         </template>
-        <SupportPlaceholder v-else/>
+        <SupportPlaceholder v-else />
       </div>
 
       <!-- Stats View -->
@@ -177,7 +177,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
@@ -187,11 +187,11 @@ import {
   InboxIcon,
   UserGroupIcon,
 } from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
-import {useToast} from "vue-toastification";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 import axios from "@/services/api";
-import {useAuthStore} from "@/stores/auth";
-import {debounce} from "lodash";
+import { useAuthStore } from "@/stores/auth";
+import { debounce } from "lodash";
 
 // Feature Components
 import SupportTicketTabs from "@/components/admin/features/support/SupportTicketTabs.vue";
@@ -373,22 +373,30 @@ const fetchTicketDetails = async (id) => {
 };
 
 const loadMoreMessages = async () => {
-  if (isLoadingMoreMessages.value || !selectedTicket.value || messages.value.length === 0) return;
+  if (
+    isLoadingMoreMessages.value ||
+    !selectedTicket.value ||
+    messages.value.length === 0
+  )
+    return;
 
   isLoadingMoreMessages.value = true;
   const oldestMessageId = messages.value[0].id;
 
   try {
-    const response = await axios.get(`/admin/support/tickets/${selectedTicket.value.id}/messages`, {
-      params: {
-        before_id: oldestMessageId,
-        limit: 5
-      }
-    });
+    const response = await axios.get(
+      `/admin/support/tickets/${selectedTicket.value.id}/messages`,
+      {
+        params: {
+          before_id: oldestMessageId,
+          limit: 5,
+        },
+      },
+    );
 
     const newMessages = response.data.data;
-    
-    // Backend returns messages in default order (newest first). 
+
+    // Backend returns messages in default order (newest first).
     // We need to reverse them to match chronological order (oldest -> newest) for prepending
     const orderedMessages = newMessages.reverse();
 
@@ -409,20 +417,28 @@ const handleMarkMessagesRead = async (ids) => {
 
   try {
     // Optimistic update
-    ids.forEach(id => {
-      const msg = messages.value.find(m => m.id === id);
+    ids.forEach((id) => {
+      const msg = messages.value.find((m) => m.id === id);
       if (msg) msg.readAt = new Date().toISOString();
     });
 
     // Update unread count locally (approximate)
     if (selectedTicket.value.unreadCount > 0) {
-       selectedTicket.value.unreadCount = Math.max(0, selectedTicket.value.unreadCount - ids.length);
-       // Also update in list
-       const listTicket = tickets.value.find(t => t.id === selectedTicket.value.id);
-       if (listTicket) listTicket.unreadCount = selectedTicket.value.unreadCount;
+      selectedTicket.value.unreadCount = Math.max(
+        0,
+        selectedTicket.value.unreadCount - ids.length,
+      );
+      // Also update in list
+      const listTicket = tickets.value.find(
+        (t) => t.id === selectedTicket.value.id,
+      );
+      if (listTicket) listTicket.unreadCount = selectedTicket.value.unreadCount;
     }
 
-    await axios.post(`/admin/support/tickets/${selectedTicket.value.id}/read-messages`, { ids });
+    await axios.post(
+      `/admin/support/tickets/${selectedTicket.value.id}/read-messages`,
+      { ids },
+    );
   } catch (error) {
     console.error("Failed to mark messages as read", error);
   }
@@ -500,7 +516,7 @@ const deleteTicket = async () => {
   try {
     await axios.delete(`/admin/support/tickets/${ticketId}`);
 
-    tickets.value = tickets.value.filter(t => t.id !== ticketId);
+    tickets.value = tickets.value.filter((t) => t.id !== ticketId);
     selectedTicket.value = null;
 
     toast.success(t("admin.support.alerts.deleteSuccess"));

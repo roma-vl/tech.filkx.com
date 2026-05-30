@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SupportTicket extends Model
 {
@@ -47,7 +48,7 @@ class SupportTicket extends Model
         return $this->messages()->where('is_internal', false);
     }
 
-    public function lastPublicMessage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function lastPublicMessage(): HasOne
     {
         return $this->hasOne(SupportMessage::class)->where('is_internal', false)->latestOfMany();
     }
@@ -62,7 +63,7 @@ class SupportTicket extends Model
         return $this->messages()->where('is_admin', false)->whereNull('read_at');
     }
 
-    public function lastMessage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function lastMessage(): HasOne
     {
         return $this->hasOne(SupportMessage::class)->latestOfMany();
     }

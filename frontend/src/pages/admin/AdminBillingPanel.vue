@@ -121,9 +121,9 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref, watch } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 
 import BillingStats from "@/components/admin/features/billing/BillingStats.vue";

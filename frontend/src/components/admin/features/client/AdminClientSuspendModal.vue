@@ -69,11 +69,11 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
+import { computed } from "vue";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {NoSymbolIcon} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { NoSymbolIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   isOpen: Boolean,
