@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { store } from "@/store.js";
 
 import AccountSidebar from "@/components/account/AccountSidebar.vue";
 import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.vue";
@@ -54,6 +55,12 @@ const tabComponents = {
 const currentTab = computed(
   () => tabComponents[activeTab.value] ?? AccountDashboardTab,
 );
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    store.fetchUnreadNotificationsCount();
+  }
+});
 </script>
 
 <template>

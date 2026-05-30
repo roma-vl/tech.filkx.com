@@ -32,6 +32,7 @@ const markAsRead = async (notification) => {
       notifications.value[index] = data.data?.data || data.data;
     }
     // Update store counter if needed
+    store.fetchUnreadNotificationsCount();
     store.addToast("Сповіщення прочитано", "success");
   } catch (err) {
     console.error("Failed to mark notification as read:", err);
@@ -46,6 +47,7 @@ const markAllRead = async () => {
       ...n,
       read_at: new Date().toISOString()
     }));
+    store.fetchUnreadNotificationsCount();
     store.addToast("Всі сповіщення позначено як прочитані", "success");
   } catch (err) {
     console.error("Failed to mark all notifications as read:", err);

@@ -206,27 +206,21 @@ const triggerVoiceSearch = () => {
   store.addToast("Voice search activated. Start speaking...", "info");
 };
 
-const unreadCount = ref(0);
+const unreadCount = computed(() => store.unreadNotificationsCount);
 
 const fetchUnreadCount = async () => {
   if (!authStore.isAuthenticated) {
-    unreadCount.value = 0;
+    store.unreadNotificationsCount = 0;
     return;
   }
-  try {
-    const { data } = await axios.get("/notifications");
-    const notificationsList = data.data?.data || data.data || [];
-    unreadCount.value = notificationsList.filter(n => !n.read_at).length;
-  } catch (error) {
-    console.error("Failed to load notifications for header:", error);
-  }
+  await store.fetchUnreadNotificationsCount();
 };
 
 watch(() => authStore.isAuthenticated, (newVal) => {
   if (newVal) {
     fetchUnreadCount();
   } else {
-    unreadCount.value = 0;
+    store.unreadNotificationsCount = 0;
   }
 });
 
