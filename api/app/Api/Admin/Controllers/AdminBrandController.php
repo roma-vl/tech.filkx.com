@@ -2,83 +2,43 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\Brand;
+use App\Api\Admin\Actions\Brand\CreateAdminBrandAction;
+use App\Api\Admin\Actions\Brand\DeleteAdminBrandAction;
+use App\Api\Admin\Actions\Brand\ListAdminBrandsAction;
+use App\Api\Admin\Actions\Brand\UpdateAdminBrandAction;
+use App\Api\Admin\Dto\BrandDto;
+use App\Api\Admin\Requests\StoreBrandRequest;
+use App\Api\Admin\Requests\UpdateBrandRequest;
+use App\Api\Admin\Resources\BrandResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminBrandController extends BaseApiController
 {
-    public function index(): JsonResponse
+    public function index(ListAdminBrandsAction $action): JsonResponse
     {
-        $brands = Brand::all()->map(function ($brand) {
-            return [
-                'id' => $brand->id,
-                'name' => $brand->name,
-                'slug' => $brand->slug,
-                'logoPath' => $brand->logo_path,
-                'description' => $brand->description,
-            ];
-        });
+        $brands = $action->execute();
 
-        return self::successfulResponseWithData($brands);
+        return self::successfulResponseWithData(BrandResource::collection($brands));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBrandRequest $request, CreateAdminBrandAction $action): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|unique:brands,name',
-            'logoPath' => 'nullable|string',
-            'description' => 'nullable|string',
-        ]);
+        $brand = $action->execute(BrandDto::fromRequest($request));
 
-        $brand = Brand::create([
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'logo_path' => $request->input('logoPath'),
-            'description' => $request->input('description'),
-        ]);
-
-        return self::successfulResponseWithData([
-            'id' => $brand->id,
-            'name' => $brand->name,
-            'slug' => $brand->slug,
-            'logoPath' => $brand->logo_path,
-            'description' => $brand->description,
-        ], Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new BrandResource($brand), Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateBrandRequest $request, int $id, UpdateAdminBrandAction $action): JsonResponse
     {
-        $brand = Brand::findOrFail($id);
+        $brand = $action->execute($id, BrandDto::fromRequest($request));
 
-        $request->validate([
-            'name' => 'required|string|unique:brands,name,'.$brand->id,
-            'logoPath' => 'nullable|string',
-            'description' => 'nullable|string',
-        ]);
-
-        $brand->update([
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'logo_path' => $request->input('logoPath'),
-            'description' => $request->input('description'),
-        ]);
-
-        return self::successfulResponseWithData([
-            'id' => $brand->id,
-            'name' => $brand->name,
-            'slug' => $brand->slug,
-            'logoPath' => $brand->logo_path,
-            'description' => $brand->description,
-        ]);
+        return self::successfulResponseWithData(new BrandResource($brand));
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $id, DeleteAdminBrandAction $action): JsonResponse
     {
-        $brand = Brand::findOrFail($id);
-        $brand->delete();
+        $action->execute($id);
 
         return self::successfulResponse();
     }

@@ -10,6 +10,10 @@ use App\Api\V1\Repositories\CouponRepositoryInterface;
 use App\Api\V1\Repositories\CouponRepository;
 use App\Api\V1\Repositories\PromotionRepositoryInterface;
 use App\Api\V1\Repositories\PromotionRepository;
+use App\Api\V1\Repositories\BrandRepositoryInterface;
+use App\Api\V1\Repositories\BrandRepository;
+use App\Api\V1\Repositories\AttributeRepositoryInterface;
+use App\Api\V1\Repositories\AttributeRepository;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -24,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(CouponRepositoryInterface::class, CouponRepository::class);
         $this->app->bind(PromotionRepositoryInterface::class, PromotionRepository::class);
+        $this->app->bind(BrandRepositoryInterface::class, BrandRepository::class);
+        $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
     }
 
     /**

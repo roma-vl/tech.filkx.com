@@ -2,151 +2,65 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\Order;
+use App\Api\Admin\Actions\Accounting\ConfirmAccountingPaymentAction;
+use App\Api\Admin\Actions\Accounting\ExportLedgerCsvAction;
+use App\Api\Admin\Actions\Accounting\GetAccountingStatsAction;
+use App\Api\Admin\Actions\Accounting\GetBillingStatsAction;
+use App\Api\Admin\Actions\Accounting\GetInvoicesAction;
+use App\Api\Admin\Actions\Accounting\GetLedgerAction;
+use App\Api\Admin\Actions\Accounting\GetPendingPaymentsAction;
+use App\Api\Admin\Dto\InvoiceFilterDto;
+use App\Api\Admin\Dto\LedgerFilterDto;
+use App\Api\Admin\Requests\ConfirmPaymentRequest;
+use App\Api\Admin\Requests\InvoiceFilterRequest;
+use App\Api\Admin\Requests\LedgerFilterRequest;
+use App\Api\Admin\Resources\InvoiceResource;
+use App\Api\Admin\Resources\LedgerResource;
+use App\Api\Admin\Resources\PendingPaymentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminAccountingController extends BaseApiController
 {
-    public function ledger(Request $request): JsonResponse
+    public function ledger(LedgerFilterRequest $request, GetLedgerAction $action): JsonResponse
     {
-        $query = Order::with('user');
-
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
-        }
-
-        if ($request->filled('type')) {
-            $type = $request->input('type');
-            if ($type === 'charge') {
-                $query->where('status', 'completed');
-            } elseif ($type === 'refund') {
-                $query->where('status', 'cancelled');
-            } else {
-                $query->whereNull('id');
-            }
-        } else {
-            $query->whereIn('status', ['completed', 'cancelled']);
-        }
-
-        if ($request->filled('from')) {
-            $query->where('created_at', '>=', $request->input('from'));
-        }
-        if ($request->filled('to')) {
-            $query->where('created_at', '<=', $request->input('to'));
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->paginate(self::PER_PAGE);
-
-        $items = collect($orders->items())->map(function ($order) {
-            $isCompleted = $order->status === 'completed';
-            return [
-                'id' => $order->id,
-                'user' => $order->user ? [
-                    'name' => $order->user->name,
-                    'email' => $order->user->email,
-                ] : [
-                    'name' => $order->customer_name,
-                    'email' => $order->customer_email,
-                ],
-                'type' => $isCompleted ? 'charge' : 'refund',
-                'amountMinor' => $isCompleted ? (int)($order->total_price * 100) : -(int)($order->total_price * 100),
-                'currency' => 'UAH',
-                'referenceType' => 'order',
-                'createdAt' => $order->created_at->toIso8601String(),
-            ];
-        });
+        $paginator = $action->execute(LedgerFilterDto::fromRequest($request), self::PER_PAGE);
 
         return self::successfulResponseWithData([
-            'data' => $items,
+            'data' => LedgerResource::collection($paginator->items()),
             'meta' => [
-                'current_page' => $orders->currentPage(),
-                'last_page' => $orders->lastPage(),
-                'per_page' => $orders->perPage(),
-                'total' => $orders->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
             ]
         ]);
     }
 
-    public function invoices(Request $request): JsonResponse
+    public function invoices(InvoiceFilterRequest $request, GetInvoicesAction $action): JsonResponse
     {
-        $query = Order::with('user');
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('status')) {
-            $status = $request->input('status');
-            if ($status === 'paid') {
-                $query->where('status', 'completed');
-            } elseif ($status === 'issued') {
-                $query->where('status', 'pending');
-            } elseif ($status === 'cancelled') {
-                $query->where('status', 'cancelled');
-            }
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->paginate(self::PER_PAGE);
-
-        $items = collect($orders->items())->map(function ($order) {
-            $status = 'draft';
-            if ($order->status === 'completed') {
-                $status = 'paid';
-            } elseif ($order->status === 'pending') {
-                $status = 'issued';
-            } elseif ($order->status === 'cancelled') {
-                $status = 'cancelled';
-            }
-
-            return [
-                'invoiceNumber' => $order->order_number,
-                'user' => $order->user ? [
-                    'name' => $order->user->name,
-                    'email' => $order->user->email,
-                ] : [
-                    'name' => $order->customer_name,
-                    'email' => $order->customer_email,
-                ],
-                'totalMinor' => (int)($order->total_price * 100),
-                'status' => $status,
-                'currency' => 'UAH',
-                'issuedAt' => $order->created_at->toIso8601String(),
-                'createdAt' => $order->created_at->toIso8601String(),
-            ];
-        });
+        $paginator = $action->execute(InvoiceFilterDto::fromRequest($request), self::PER_PAGE);
 
         return self::successfulResponseWithData([
-            'data' => $items,
+            'data' => InvoiceResource::collection($paginator->items()),
             'meta' => [
-                'current_page' => $orders->currentPage(),
-                'last_page' => $orders->lastPage(),
-                'per_page' => $orders->perPage(),
-                'total' => $orders->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
             ]
         ]);
     }
 
-    public function accountingStats(): JsonResponse
+    public function accountingStats(GetAccountingStatsAction $action): JsonResponse
     {
-        $revenue = Order::where('status', 'completed')->sum('total_price');
-        $refunds = Order::where('status', 'cancelled')->sum('total_price');
-
-        return self::successfulResponseWithData([
-            'totalRevenueMinor' => (int)($revenue * 100),
-            'totalRefundsMinor' => (int)($refunds * 100),
-            'netRevenueMinor' => (int)(($revenue - $refunds) * 100),
-        ]);
+        return self::successfulResponseWithData($action->execute());
     }
 
-    public function export(Request $request)
+    public function export(ExportLedgerCsvAction $action): StreamedResponse
     {
-        $orders = Order::with('user')->whereIn('status', ['completed', 'cancelled'])->get();
+        $orders = $action->execute();
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -176,70 +90,40 @@ class AdminAccountingController extends BaseApiController
         return response()->stream($callback, 200, $headers);
     }
 
-    public function billingStats(): JsonResponse
+    public function billingStats(GetBillingStatsAction $action): JsonResponse
     {
-        $revenue = Order::where('status', 'completed')->sum('total_price');
-        $pendingPayments = Order::where('status', 'pending')->count();
-
-        return self::successfulResponseWithData([
-            'revenueMinor' => (int)($revenue * 100),
-            'activeSubscriptions' => 0,
-            'pendingPaymentsCount' => $pendingPayments,
-        ]);
+        return self::successfulResponseWithData($action->execute());
     }
 
-    public function pendingPayments(): JsonResponse
+    public function pendingPayments(GetPendingPaymentsAction $action): JsonResponse
     {
-        $pendingOrders = Order::with('user')->where('status', 'pending')->paginate(self::PER_PAGE);
-
-        $items = collect($pendingOrders->items())->map(function ($order) {
-            return [
-                'id' => $order->id,
-                'user' => $order->user ? [
-                    'name' => $order->user->name,
-                    'email' => $order->user->email,
-                ] : [
-                    'name' => $order->customer_name,
-                    'email' => $order->customer_email,
-                ],
-                'amountMinor' => (int)($order->total_price * 100),
-                'currency' => 'UAH',
-                'createdAt' => $order->created_at->toIso8601String(),
-            ];
-        });
+        $paginator = $action->execute(self::PER_PAGE);
 
         return self::successfulResponseWithData([
-            'data' => $items,
+            'data' => PendingPaymentResource::collection($paginator->items()),
             'meta' => [
-                'current_page' => $pendingOrders->currentPage(),
-                'last_page' => $pendingOrders->lastPage(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
                 'per_page' => self::PER_PAGE,
-                'total' => $pendingOrders->total(),
+                'total' => $paginator->total(),
             ]
         ]);
     }
 
-    public function confirmPayment(Request $request, $id): JsonResponse
+    public function confirmPayment(ConfirmPaymentRequest $request, int $id, ConfirmAccountingPaymentAction $action): JsonResponse
     {
-        $order = Order::findOrFail($id);
-        $approve = $request->input('approve');
+        $approve = (bool) $request->input('approve');
+
+        $action->execute($id, $approve);
 
         if ($approve) {
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'completed',
-            ]);
             return self::successfulResponse('Payment approved and order completed.');
         } else {
-            $order->update([
-                'payment_status' => 'failed',
-                'status' => 'cancelled',
-            ]);
             return self::successfulResponse('Payment rejected and order cancelled.');
         }
     }
 
-    public function viewProof($id): JsonResponse
+    public function viewProof(int $id): JsonResponse
     {
         return self::successfulResponseWithData([
             'id' => $id,
