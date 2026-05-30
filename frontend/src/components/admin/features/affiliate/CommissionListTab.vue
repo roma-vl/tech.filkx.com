@@ -51,7 +51,7 @@
 <script setup>
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 defineProps({
@@ -70,9 +70,9 @@ const headers = [
     key: "partner_referral",
     label: t("admin.affiliates.table.partner_referral"),
   },
-  {key: "amount", label: t("admin.affiliates.table.amount")},
-  {key: "type", label: t("admin.affiliates.table.type")},
-  {key: "status", label: t("admin.affiliates.table.status")},
-  {key: "date", label: t("admin.affiliates.table.date"), class: "text-right"},
+  { key: "amount", label: t("admin.affiliates.table.amount") },
+  { key: "type", label: t("admin.affiliates.table.type") },
+  { key: "status", label: t("admin.affiliates.table.status") },
+  { key: "date", label: t("admin.affiliates.table.date"), class: "text-right" },
 ];
 </script>

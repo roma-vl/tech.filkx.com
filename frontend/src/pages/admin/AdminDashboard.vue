@@ -99,7 +99,8 @@ const fetchStats = async () => {
   try {
     const response = await axios.get("/admin/stats");
     quickStats.value = response.data.data.stats;
-    recentUsers.value = response.data.data.recent_users || response.data.data.recentUsers || [];
+    recentUsers.value =
+      response.data.data.recent_users || response.data.data.recentUsers || [];
   } catch (error) {
     console.error("Failed to fetch dashboard stats", error);
   } finally {

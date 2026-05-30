@@ -1,99 +1,99 @@
 <script setup>
-import { computed } from 'vue';
-import PriceRangeSlider from './PriceRangeSlider.vue';
-import { store } from '@/store.js';
+import { computed } from "vue";
+import PriceRangeSlider from "./PriceRangeSlider.vue";
+import { store } from "@/store.js";
 
 const props = defineProps({
   priceMin: {
     type: Number,
-    required: true
+    required: true,
   },
   priceMax: {
     type: Number,
-    required: true
+    required: true,
   },
   selectedBrands: {
     type: Array,
-    required: true
+    required: true,
   },
   selectedAttrs: {
     type: Object,
-    required: true
+    required: true,
   },
   selectedRating: {
     type: String,
-    required: true
+    required: true,
   },
   onlyDiscounts: {
     type: Boolean,
-    required: true
+    required: true,
   },
   onlyInStock: {
     type: Boolean,
-    required: true
+    required: true,
   },
   products: {
     type: Array,
-    required: true
+    required: true,
   },
   brands: {
     type: Array,
-    required: true
+    required: true,
   },
   dynamicAttributes: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   categoriesList: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   selectedCategory: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
 });
 
 const emit = defineEmits([
-  'update:priceMin',
-  'update:priceMax',
-  'update:selectedBrands',
-  'update:selectedAttrs',
-  'update:selectedRating',
-  'update:onlyDiscounts',
-  'update:onlyInStock',
-  'clear-filters',
-  'select-category'
+  "update:priceMin",
+  "update:priceMax",
+  "update:selectedBrands",
+  "update:selectedAttrs",
+  "update:selectedRating",
+  "update:onlyDiscounts",
+  "update:onlyInStock",
+  "clear-filters",
+  "select-category",
 ]);
 
 const localPriceMin = computed({
   get: () => props.priceMin,
-  set: (val) => emit('update:priceMin', val)
+  set: (val) => emit("update:priceMin", val),
 });
 
 const localPriceMax = computed({
   get: () => props.priceMax,
-  set: (val) => emit('update:priceMax', val)
+  set: (val) => emit("update:priceMax", val),
 });
 
 const localBrands = computed({
   get: () => props.selectedBrands,
-  set: (val) => emit('update:selectedBrands', val)
+  set: (val) => emit("update:selectedBrands", val),
 });
 
 const localRating = computed({
   get: () => props.selectedRating,
-  set: (val) => emit('update:selectedRating', val)
+  set: (val) => emit("update:selectedRating", val),
 });
 
 const localDiscounts = computed({
   get: () => props.onlyDiscounts,
-  set: (val) => emit('update:onlyDiscounts', val)
+  set: (val) => emit("update:onlyDiscounts", val),
 });
 
 const localStock = computed({
   get: () => props.onlyInStock,
-  set: (val) => emit('update:onlyInStock', val)
+  set: (val) => emit("update:onlyInStock", val),
 });
 
 const toggleAttr = (code, value) => {
@@ -103,19 +103,28 @@ const toggleAttr = (code, value) => {
   } else {
     current[code] = value;
   }
-  emit('update:selectedAttrs', current);
+  emit("update:selectedAttrs", current);
 };
 </script>
 
 <template>
-  <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm divide-y divide-zinc-100 dark:divide-zinc-800">
-    
+  <div
+    class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm divide-y divide-zinc-100 dark:divide-zinc-800"
+  >
     <!-- Categories Filter Header/Item -->
     <div class="p-5">
-      <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-3.5">Категорія</h3>
+      <h3
+        class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-3.5"
+      >
+        Категорія
+      </h3>
       <div class="space-y-1">
         <a
-          :class="!selectedCategory ? 'bg-emerald-500/10 text-[#00a046] font-extrabold' : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'"
+          :class="
+            !selectedCategory
+              ? 'bg-emerald-500/10 text-[#00a046] font-extrabold'
+              : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'
+          "
           class="flex items-center justify-between rounded-lg px-3 py-2 transition-all text-xs cursor-pointer"
           @click.prevent="emit('select-category', '')"
         >
@@ -127,15 +136,27 @@ const toggleAttr = (code, value) => {
         <a
           v-for="cat in categoriesList"
           :key="cat.id"
-          :class="selectedCategory === cat.slug ? 'bg-emerald-500/10 text-[#00a046] font-extrabold' : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'"
+          :class="
+            selectedCategory === cat.slug
+              ? 'bg-emerald-500/10 text-[#00a046] font-extrabold'
+              : 'text-zinc-550 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-semibold'
+          "
           class="flex items-center justify-between rounded-lg px-3 py-2 transition-all text-xs cursor-pointer"
           @click.prevent="emit('select-category', cat.slug)"
         >
           <span class="flex items-center gap-2">
             <span class="material-symbols-outlined text-[18px]">
-              {{ cat.slug === 'laptops' ? 'laptop_mac' : cat.slug === 'phones' ? 'smartphone' : cat.slug === 'audio' ? 'headphones' : 'category' }}
+              {{
+                cat.slug === "laptops"
+                  ? "laptop_mac"
+                  : cat.slug === "phones"
+                    ? "smartphone"
+                    : cat.slug === "audio"
+                      ? "headphones"
+                      : "category"
+              }}
             </span>
-            <span>{{ cat.name ? (cat.name.uk || cat.name.en) : '' }}</span>
+            <span>{{ cat.name ? cat.name.uk || cat.name.en : "" }}</span>
           </span>
         </a>
       </div>
@@ -143,23 +164,47 @@ const toggleAttr = (code, value) => {
 
     <!-- Quick Switches (Stock & Promo) -->
     <div class="p-5 space-y-3">
-      <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-1">Фільтри швидкого вибору</h3>
-      <label class="flex items-center justify-between group cursor-pointer py-0.5">
-        <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">Тільки в наявності</span>
-        <input v-model="localStock" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
+      <h3
+        class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-1"
+      >
+        Фільтри швидкого вибору
+      </h3>
+      <label
+        class="flex items-center justify-between group cursor-pointer py-0.5"
+      >
+        <span
+          class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
+        >Тільки в наявності</span>
+        <input
+          v-model="localStock"
+          type="checkbox"
+          class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+        >
       </label>
-      <label class="flex items-center justify-between group cursor-pointer py-0.5">
-        <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">Акційні пропозиції</span>
-        <input v-model="localDiscounts" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
+      <label
+        class="flex items-center justify-between group cursor-pointer py-0.5"
+      >
+        <span
+          class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
+        >Акційні пропозиції</span>
+        <input
+          v-model="localDiscounts"
+          type="checkbox"
+          class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+        >
       </label>
     </div>
 
     <!-- Price Range Slider component integration -->
     <div class="p-5">
-      <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-4">Ціновий діапазон</h3>
+      <h3
+        class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-4"
+      >
+        Ціновий діапазон
+      </h3>
       <PriceRangeSlider
-        v-model:minVal="localPriceMin"
-        v-model:maxVal="localPriceMax"
+        v-model:min-val="localPriceMin"
+        v-model:max-val="localPriceMax"
         :min="0"
         :max="200000"
         :step="1000"
@@ -169,39 +214,80 @@ const toggleAttr = (code, value) => {
     <!-- Brand Filter -->
     <div class="p-5">
       <div class="flex items-center justify-between mb-3.5">
-        <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500">Бренд</h3>
-        <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="localBrands = []">Очистити</button>
+        <h3
+          class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500"
+        >
+          Бренд
+        </h3>
+        <button
+          class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider"
+          type="button"
+          @click="localBrands = []"
+        >
+          Очистити
+        </button>
       </div>
       <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-        <label v-for="brand in brands" :key="brand.slug" class="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+        <label
+          v-for="brand in brands"
+          :key="brand.slug"
+          class="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+        >
           <div class="flex items-center gap-2.5">
-            <input v-model="localBrands" :value="brand.slug" class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox" />
-            <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors">{{ brand.name }}</span>
+            <input
+              v-model="localBrands"
+              :value="brand.slug"
+              class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+              type="checkbox"
+            >
+            <span
+              class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
+            >{{ brand.name }}</span>
           </div>
-          <span class="text-[10px] font-bold text-zinc-400">{{ brand.count }}</span>
+          <span class="text-[10px] font-bold text-zinc-400">{{
+            brand.count
+          }}</span>
         </label>
       </div>
     </div>
 
     <!-- Dynamic Attributes Filter -->
-    <div v-for="attr in dynamicAttributes" :key="attr.id" class="p-5">
+    <div
+      v-for="attr in dynamicAttributes"
+      :key="attr.id"
+      class="p-5"
+    >
       <div class="flex items-center justify-between mb-3.5">
-        <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500">
-          {{ attr.name ? (attr.name.uk || attr.name.en || attr.name) : attr.code }}
+        <h3
+          class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500"
+        >
+          {{
+            attr.name ? attr.name.uk || attr.name.en || attr.name : attr.code
+          }}
         </h3>
-        <button v-if="selectedAttrs[attr.code]" class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="toggleAttr(attr.code, '')">Очистити</button>
+        <button
+          v-if="selectedAttrs[attr.code]"
+          class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider"
+          type="button"
+          @click="toggleAttr(attr.code, '')"
+        >
+          Очистити
+        </button>
       </div>
 
       <!-- Color swatches -->
-      <div v-if="attr.type === 'color'" class="flex flex-wrap gap-2">
+      <div
+        v-if="attr.type === 'color'"
+        class="flex flex-wrap gap-2"
+      >
         <button
           v-for="val in attr.values"
           :key="val.id"
           :style="{ backgroundColor: val.value }"
           :class="[
-            selectedAttrs[attr.code] === val.value 
-              ? 'ring-2 ring-[#00a046] ring-offset-2 scale-110' 
-              : 'border border-zinc-200 dark:border-zinc-700 hover:scale-105'
+            selectedAttrs[attr.code] === val.value
+              ? 'ring-2 ring-[#00a046] ring-offset-2 scale-110'
+              : 'border border-zinc-200 dark:border-zinc-700 hover:scale-105',
           ]"
           class="w-6 h-6 rounded-full transition-all focus:outline-none"
           type="button"
@@ -211,18 +297,26 @@ const toggleAttr = (code, value) => {
       </div>
 
       <!-- Text/Select Options -->
-      <div v-else class="grid grid-cols-2 gap-2">
+      <div
+        v-else
+        class="grid grid-cols-2 gap-2"
+      >
         <button
           v-for="val in attr.values"
           :key="val.id"
-          :class="selectedAttrs[attr.code] === (val.value.uk || val.value.en || val.value)
-            ? 'bg-[#00a046] text-white shadow-sm' 
-            : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'"
+          :class="
+            selectedAttrs[attr.code] ===
+              (val.value.uk || val.value.en || val.value)
+              ? 'bg-[#00a046] text-white shadow-sm'
+              : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'
+          "
           class="py-2 px-1 rounded-lg text-xs font-extrabold transition-all truncate"
           type="button"
-          @click="toggleAttr(attr.code, val.value.uk || val.value.en || val.value)"
+          @click="
+            toggleAttr(attr.code, val.value.uk || val.value.en || val.value)
+          "
         >
-          {{ val.value ? (val.value.uk || val.value.en || val.value) : '' }}
+          {{ val.value ? val.value.uk || val.value.en || val.value : "" }}
         </button>
       </div>
     </div>
@@ -230,19 +324,43 @@ const toggleAttr = (code, value) => {
     <!-- Rating filter -->
     <div class="p-5">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500">Оцінка покупців</h3>
-        <button class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider" type="button" @click="localRating = ''">Очистити</button>
+        <h3
+          class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500"
+        >
+          Оцінка покупців
+        </h3>
+        <button
+          class="text-[9px] text-[#00a046] font-black hover:underline uppercase tracking-wider"
+          type="button"
+          @click="localRating = ''"
+        >
+          Очистити
+        </button>
       </div>
       <div class="space-y-1">
-        <label v-for="rate in ['4.8', '4.5', '4.0']" :key="rate" class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-          <input type="radio" v-model="localRating" :value="rate" class="w-3.5 h-3.5 border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer" />
-          <span class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-            {{ rate }}+ <span class="material-symbols-outlined text-[14px] text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
+        <label
+          v-for="rate in ['4.8', '4.5', '4.0']"
+          :key="rate"
+          class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+        >
+          <input
+            v-model="localRating"
+            type="radio"
+            :value="rate"
+            class="w-3.5 h-3.5 border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer"
+          >
+          <span
+            class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 flex items-center gap-1"
+          >
+            {{ rate }}+
+            <span
+              class="material-symbols-outlined text-[14px] text-amber-400"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+            >star</span>
           </span>
         </label>
       </div>
     </div>
-
   </div>
 </template>
 

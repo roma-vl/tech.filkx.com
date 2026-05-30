@@ -2,8 +2,8 @@
 
 namespace App\Api\V1\Actions;
 
-use App\Api\V1\Repositories\ProductRepository;
 use App\Api\V1\Repositories\CategoryRepository;
+use App\Api\V1\Repositories\ProductRepository;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -19,7 +19,7 @@ class ListProductsAction
         $query = $this->productRepository->queryActive();
 
         // 1. Meilisearch Integration for search keyword
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = $filters['search'];
             try {
                 // Perform Meilisearch query via Scout
@@ -28,7 +28,7 @@ class ListProductsAction
                     ->keys()
                     ->toArray();
 
-                if (!empty($meiliProductIds)) {
+                if (! empty($meiliProductIds)) {
                     $query->whereIn('products.id', $meiliProductIds);
                 } else {
                     // If no match found in Meilisearch, force empty result set
@@ -36,24 +36,24 @@ class ListProductsAction
                 }
             } catch (\Throwable $e) {
                 // Fallback to SQL search if Meilisearch service is down
-                logger()->error('Meilisearch query failed, falling back to SQL search: ' . $e->getMessage());
+                logger()->error('Meilisearch query failed, falling back to SQL search: '.$e->getMessage());
                 $query->where(function ($q) use ($search) {
                     $q->where('name->uk', 'like', "%{$search}%")
-                      ->orWhere('name->en', 'like', "%{$search}%")
-                      ->orWhere('description->uk', 'like', "%{$search}%")
-                      ->orWhere('description->en', 'like', "%{$search}%");
+                        ->orWhere('name->en', 'like', "%{$search}%")
+                        ->orWhere('description->uk', 'like', "%{$search}%")
+                        ->orWhere('description->en', 'like', "%{$search}%");
                 });
             }
         }
 
         // 2. Category filter
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $categorySlug = $filters['category'];
             $category = $this->categoryRepository->findBySlug($categorySlug);
             if ($category) {
                 $categoryIds = [$category->id];
                 $categoryIds = array_merge($categoryIds, $category->children()->pluck('id')->toArray());
-                
+
                 $query->whereHas('categories', function ($q) use ($categoryIds) {
                     $q->whereIn('categories.id', $categoryIds);
                 });
@@ -61,7 +61,7 @@ class ListProductsAction
         }
 
         // 3. Brand filter
-        if (!empty($filters['brand'])) {
+        if (! empty($filters['brand'])) {
             $brandSlugs = is_string($filters['brand']) ? explode(',', $filters['brand']) : $filters['brand'];
             $query->whereHas('brand', function ($q) use ($brandSlugs) {
                 $q->whereIn('slug', $brandSlugs);
@@ -98,16 +98,16 @@ class ListProductsAction
         }
 
         // 7. EAV Specs/Attributes filter
-        if (!empty($filters['attrs']) && is_array($filters['attrs'])) {
+        if (! empty($filters['attrs']) && is_array($filters['attrs'])) {
             foreach ($filters['attrs'] as $attrCode => $attrValues) {
                 if (empty($attrValues)) {
                     continue;
                 }
-                
+
                 if (is_string($attrValues)) {
                     $attrValues = explode(',', $attrValues);
                 }
-                
+
                 $query->where(function ($q) use ($attrCode, $attrValues) {
                     $q->whereHas('attributeValues', function ($attrValQ) use ($attrCode, $attrValues) {
                         $attrValQ->whereHas('attribute', function ($attrQ) use ($attrCode) {
@@ -117,28 +117,28 @@ class ListProductsAction
                                 $valQ->where(function ($jsonQ) use ($attrValues) {
                                     foreach ($attrValues as $val) {
                                         $jsonQ->orWhere('value->uk', 'like', $val)
-                                             ->orWhere('value->en', 'like', $val)
-                                             ->orWhere('value', 'like', $val);
+                                            ->orWhere('value->en', 'like', $val)
+                                            ->orWhere('value', 'like', $val);
                                     }
                                 });
                             })->orWhereIn('custom_value', $attrValues);
                         });
                     })
-                    ->orWhereHas('variants.attributeValues', function ($attrValQ) use ($attrCode, $attrValues) {
-                        $attrValQ->whereHas('attribute', function ($attrQ) use ($attrCode) {
-                            $attrQ->where('code', $attrCode);
-                        })->where(function ($subQ) use ($attrValues) {
-                            $subQ->whereHas('attributeValue', function ($valQ) use ($attrValues) {
-                                $valQ->where(function ($jsonQ) use ($attrValues) {
-                                    foreach ($attrValues as $val) {
-                                        $jsonQ->orWhere('value->uk', 'like', $val)
-                                             ->orWhere('value->en', 'like', $val)
-                                             ->orWhere('value', 'like', $val);
-                                    }
-                                });
-                            })->orWhereIn('custom_value', $attrValues);
+                        ->orWhereHas('variants.attributeValues', function ($attrValQ) use ($attrCode, $attrValues) {
+                            $attrValQ->whereHas('attribute', function ($attrQ) use ($attrCode) {
+                                $attrQ->where('code', $attrCode);
+                            })->where(function ($subQ) use ($attrValues) {
+                                $subQ->whereHas('attributeValue', function ($valQ) use ($attrValues) {
+                                    $valQ->where(function ($jsonQ) use ($attrValues) {
+                                        foreach ($attrValues as $val) {
+                                            $jsonQ->orWhere('value->uk', 'like', $val)
+                                                ->orWhere('value->en', 'like', $val)
+                                                ->orWhere('value', 'like', $val);
+                                        }
+                                    });
+                                })->orWhereIn('custom_value', $attrValues);
+                            });
                         });
-                    });
                 });
             }
         }

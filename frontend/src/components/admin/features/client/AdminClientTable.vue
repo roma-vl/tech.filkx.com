@@ -48,7 +48,10 @@
             >
               {{ role }}
             </span>
-            <span v-if="!row.roles || row.roles.length === 0" class="text-xs text-gray-400">
+            <span
+              v-if="!row.roles || row.roles.length === 0"
+              class="text-xs text-gray-400"
+            >
               Покупець
             </span>
           </div>
@@ -128,12 +131,17 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {IdentificationIcon, NoSymbolIcon, PencilSquareIcon, TrashIcon,} from "@heroicons/vue/24/outline";
+import {
+  IdentificationIcon,
+  NoSymbolIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 

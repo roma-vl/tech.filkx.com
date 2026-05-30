@@ -91,7 +91,12 @@
                   <div
                     v-else-if="option.resolutionLabel"
                     class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
-                    :class="getResolutionClass(option.resolutionLabel, option.disabled)"
+                    :class="
+                      getResolutionClass(
+                        option.resolutionLabel,
+                        option.disabled,
+                      )
+                    "
                   >
                     <MonitorIcon class="w-2.5 h-2.5" />
                     {{ option.resolutionLabel }}
@@ -241,17 +246,17 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api.js";
-import {useSubscriptionStore} from "@/stores/subscription";
-import {useYoutubeStore} from "@/stores/youtube";
+import { useSubscriptionStore } from "@/stores/subscription";
+import { useYoutubeStore } from "@/stores/youtube";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";
 import AppSelect from "@/components/application/ui/Form/AppSelect.vue";
 import AppTextarea from "@/components/application/ui/Form/AppTextarea.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {LockIcon, MonitorIcon, PlusIcon} from "lucide-vue-next";
+import { LockIcon, MonitorIcon, PlusIcon } from "lucide-vue-next";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -446,7 +451,10 @@ const isVideoSupported = (video) => {
 const selectableVideos = computed(() => {
   return videos.value.map((v) => ({
     ...v,
-    disabled: v.isOriginalLocked || !isVideoSupported(v) || !["ready", "uploaded"].includes(v.status),
+    disabled:
+      v.isOriginalLocked ||
+      !isVideoSupported(v) ||
+      !["ready", "uploaded"].includes(v.status),
   }));
 });
 

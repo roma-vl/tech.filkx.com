@@ -10,7 +10,7 @@
         <div
           class="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600"
         >
-          <UserPlusIcon class="w-7 h-7"/>
+          <UserPlusIcon class="w-7 h-7" />
         </div>
         <div>
           <h3
@@ -18,9 +18,7 @@
           >
             {{ t("admin.team.invite.title") }}
           </h3>
-          <p
-            class="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1"
-          >
+          <p class="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1">
             {{ t("admin.team.invite.description") }}
           </p>
         </div>
@@ -101,9 +99,9 @@
 </template>
 
 <script setup>
-import {ArrowPathIcon, UserPlusIcon} from "@heroicons/vue/24/outline";
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { ArrowPathIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
@@ -137,7 +135,7 @@ defineEmits([
 
 const roleOptions = computed(() => {
   return [
-    {id: "", name: t("admin.team.invite.select_role")},
+    { id: "", name: t("admin.team.invite.select_role") },
     ...props.roles.map((role) => ({
       id: role.id,
       name: role.name,

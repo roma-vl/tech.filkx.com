@@ -26,14 +26,14 @@
             v-if="option.isOriginalLocked"
             class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800/50 shrink-0"
           >
-            <LockIcon class="w-2.5 h-2.5"/>
+            <LockIcon class="w-2.5 h-2.5" />
           </div>
           <div
             v-else-if="option.resolutionLabel"
             class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
             :class="getResolutionClass(option.resolutionLabel, option.disabled)"
           >
-            <MonitorIcon class="w-2.5 h-2.5"/>
+            <MonitorIcon class="w-2.5 h-2.5" />
             {{ option.resolutionLabel }}
           </div>
         </div>
@@ -67,7 +67,7 @@
 
 <script setup>
 import AppSelect from "@/components/application/ui/Form/AppSelect.vue";
-import {LockIcon, MonitorIcon} from "lucide-vue-next";
+import { LockIcon, MonitorIcon } from "lucide-vue-next";
 
 defineProps({
   formData: {

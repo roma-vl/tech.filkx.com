@@ -1,7 +1,11 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+  <div
+    class="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm"
+  >
     <div class="flex items-center gap-4 mb-8">
-      <div class="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+      <div
+        class="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400"
+      >
         <VideoIcon class="h-6 w-6" />
       </div>
       <div>
@@ -19,19 +23,21 @@
         <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
           {{ $t("admin.settings.transcoding.watermark_label") }}
         </label>
-        
-        <div 
+
+        <div
           v-if="previewUrl"
           class="relative w-full max-w-sm aspect-video rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 group"
         >
-          <img 
-            :src="previewUrl" 
+          <img
+            :src="previewUrl"
             class="w-full h-full object-contain"
             alt="Watermark preview"
-          />
-          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <AppButton 
-              variant="danger" 
+          >
+          <div
+            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+          >
+            <AppButton
+              variant="danger"
               size="sm"
               @click="removeWatermark"
             >
@@ -50,11 +56,17 @@
           @change="handleFileUpload"
         >
           <template #icon>
-            <div v-if="isUploading" class="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-3" />
-            <ImageIcon v-else class="w-10 h-10 text-gray-400 mb-3" />
+            <div
+              v-if="isUploading"
+              class="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-3"
+            />
+            <ImageIcon
+              v-else
+              class="w-10 h-10 text-gray-400 mb-3"
+            />
           </template>
         </AppFileUpload>
-        
+
         <p class="text-xs text-gray-500 dark:text-gray-400">
           {{ $t("admin.settings.transcoding.watermark_hint") }}
         </p>
@@ -86,7 +98,10 @@ const { t } = useI18n();
 const isUploading = ref(false);
 
 const previewUrl = computed(() => {
-  return props.modelValue.platformWatermarkPreview || props.modelValue.platformWatermarkUrl;
+  return (
+    props.modelValue.platformWatermarkPreview ||
+    props.modelValue.platformWatermarkUrl
+  );
 });
 
 const handleFileUpload = async (file) => {
@@ -102,15 +117,15 @@ const handleFileUpload = async (file) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     const { url, key } = response.data.data;
-    
+
     emit("update:modelValue", {
       ...props.modelValue,
       platformWatermarkUrl: key,
       platformWatermarkPreview: url,
     });
-    
+
     toast.success(t("admin.settings.transcoding.upload_success"));
   } catch (error) {
     console.error(error);

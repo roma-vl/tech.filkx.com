@@ -7,14 +7,14 @@
         <div
           class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/10 flex items-center justify-center flex-shrink-0 shadow-sm border border-primary-100/50 dark:border-primary-500/10"
         >
-          <TicketIcon class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
+          <TicketIcon class="w-6 h-6 text-primary-600 dark:text-primary-400" />
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-3 mb-1">
             <span
               class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]"
             >Ticket #{{ ticket.id }}</span>
-            <div class="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700"/>
+            <div class="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
             <span
               class="text-[11px] font-black text-gray-400 uppercase tracking-widest"
             >{{ formatDate(ticket.createdAt) }}</span>
@@ -87,7 +87,11 @@
           <div
             class="w-5 h-5 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-[9px] font-black text-primary-600 overflow-hidden"
           >
-            <img v-if="ticket.user?.avatar" :src="ticket.user.avatar" class="w-full h-full object-cover" />
+            <img
+              v-if="ticket.user?.avatar"
+              :src="ticket.user.avatar"
+              class="w-full h-full object-cover"
+            >
             <template v-else>
               {{ ticket.user?.name?.charAt(0) || "U" }}
             </template>
@@ -108,8 +112,8 @@
 </template>
 
 <script setup>
-import {SparklesIcon, TicketIcon, TrashIcon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { SparklesIcon, TicketIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 import SupportTicketTags from "@/components/admin/features/support/SupportTicketTags.vue";
 

@@ -282,7 +282,7 @@ class UserController extends BaseApiController
     ): JsonResponse {
         $user = $request->user();
 
-        $hasPassword = !empty($user->password) && !Hash::check('', $user->password);
+        $hasPassword = ! empty($user->password) && ! Hash::check('', $user->password);
         $hasOAuth = $user->oauthAccounts()->exists();
 
         if ($hasPassword) {

@@ -10,14 +10,14 @@
       >
         <p>
           <strong class="text-gray-900 dark:text-gray-200">{{
-              t("admin.billing.subscriptions.changePlan.currentUser")
-            }}:</strong>
+            t("admin.billing.subscriptions.changePlan.currentUser")
+          }}:</strong>
           {{ subscription.user?.name }} ({{ subscription.user?.email }})
         </p>
         <p>
           <strong class="text-gray-900 dark:text-gray-200">{{
-              t("admin.billing.subscriptions.changePlan.currentPlan")
-            }}:</strong>
+            t("admin.billing.subscriptions.changePlan.currentPlan")
+          }}:</strong>
           {{ subscription.plan?.name }}
         </p>
       </div>
@@ -70,9 +70,9 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import { computed, ref } from "vue";
 import api from "@/services/api";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";

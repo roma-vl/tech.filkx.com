@@ -12,7 +12,7 @@ class MarkSupportTicketAsReadAction
     public function execute(SupportTicket $ticket): void
     {
         $updated = $ticket->unreadMessagesForAdmin()->update(['read_at' => now()]);
-        
+
         if ($updated > 0) {
             $ticket->touch();
         }

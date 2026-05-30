@@ -10,7 +10,7 @@
           @click="openPermissionModal"
         >
           <template #prefix>
-            <PlusIcon class="w-4 h-4 mr-2"/>
+            <PlusIcon class="w-4 h-4 mr-2" />
           </template>
           {{ t("admin.roles.create_permission") }}
         </AppButton>
@@ -20,7 +20,7 @@
           @click="openAddModal"
         >
           <template #prefix>
-            <PlusIcon class="w-4 h-4 mr-2"/>
+            <PlusIcon class="w-4 h-4 mr-2" />
           </template>
           {{ t("admin.roles.create_role") }}
         </AppButton>
@@ -81,9 +81,9 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {PlusIcon} from "@heroicons/vue/24/outline";
+import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { PlusIcon } from "@heroicons/vue/24/outline";
 import api from "@/services/api";
 
 // Feature Components
@@ -95,7 +95,7 @@ import AdminRoleTable from "@/components/admin/features/roles/AdminRoleTable.vue
 import AdminRoleModal from "@/components/admin/features/roles/AdminRoleModal.vue";
 import AdminPermissionModal from "@/components/admin/features/roles/AdminPermissionModal.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const roles = ref([]);
 const availablePermissions = ref([]);
@@ -203,7 +203,7 @@ const savePermission = async () => {
     console.error("Failed to create permission", e);
     alert(
       e.response?.data?.message ||
-      t("admin.roles.alerts.permission_create_error"),
+        t("admin.roles.alerts.permission_create_error"),
     );
   } finally {
     savingPermission.value = false;

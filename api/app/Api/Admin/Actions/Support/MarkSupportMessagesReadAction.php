@@ -9,8 +9,6 @@ class MarkSupportMessagesReadAction
     /**
      * Mark specific messages as read.
      *
-     * @param SupportTicket $ticket
-     * @param array $messageIds
      * @return int Number of messages updated
      */
     public function execute(SupportTicket $ticket, array $messageIds): int

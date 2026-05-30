@@ -63,7 +63,9 @@
         </AppBadge>
 
         <AppBadge
-          v-else-if="stream.status === 'starting' || stream.status === 'pending'"
+          v-else-if="
+            stream.status === 'starting' || stream.status === 'pending'
+          "
           variant="warning"
           class="!px-3 !py-1.5 !text-xs !font-bold !uppercase !tracking-wider !rounded-lg shadow-xl"
         >
@@ -103,8 +105,10 @@
         >
           <template #icon>
             <div class="relative w-2 h-2 mr-2">
-              <span class="absolute w-full h-full rounded-full bg-white opacity-75 animate-ping"/>
-              <span class="absolute w-full h-full rounded-full bg-white"/>
+              <span
+                class="absolute w-full h-full rounded-full bg-white opacity-75 animate-ping"
+              />
+              <span class="absolute w-full h-full rounded-full bg-white" />
             </div>
           </template>
           {{ t("streams.status.degraded") }}
@@ -186,15 +190,15 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AppCard from "@/components/application/ui/Data/AppCard.vue";
 import AppBadge from "@/components/application/ui/Feedback/AppBadge.vue";
 import EditIcon from "@/components/Icon/EditIcon.vue";
 import TrashIcon from "@/components/Icon/TrashIcon.vue";
 import CalendarIcon from "@/components/Icon/CalendarIcon.vue";
-import {PlayIcon} from "lucide-vue-next";
-import {ArrowPathIcon} from "@heroicons/vue/24/outline";
+import { PlayIcon } from "lucide-vue-next";
+import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 

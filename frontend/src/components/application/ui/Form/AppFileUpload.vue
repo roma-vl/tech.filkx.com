@@ -13,7 +13,10 @@
       @drop="handleDrop"
       @click="triggerSelect"
     >
-      <slot name="content" :trigger="triggerSelect">
+      <slot
+        name="content"
+        :trigger="triggerSelect"
+      >
         <div class="flex flex-col items-center">
           <slot name="icon">
             <svg

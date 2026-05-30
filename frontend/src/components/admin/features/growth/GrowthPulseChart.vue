@@ -10,17 +10,17 @@
       </h3>
     </div>
     <div class="relative h-[300px] w-full">
-      <canvas :id="chartId"/>
+      <canvas :id="chartId" />
     </div>
   </div>
 </template>
 
 <script setup>
-import {onBeforeUnmount, onMounted, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { onBeforeUnmount, onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import Chart from "chart.js/auto";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
   chartId: {
@@ -47,7 +47,10 @@ const updateChart = () => {
 
   const labels = props.data.map((item) => {
     const date = new Date(item.date);
-    return date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
   });
 
   chart = new Chart(ctx, {
@@ -68,8 +71,11 @@ const updateChart = () => {
         {
           label: t(`admin.growth.pulse.modes.${props.mode}`),
           data: props.data.map((item) => item[props.mode] || 0),
-          borderColor: props.mode === 'registrations' ? '#3b82f6' : '#10b981', // Blue if reg, green otherwise
-          backgroundColor: props.mode === 'registrations' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+          borderColor: props.mode === "registrations" ? "#3b82f6" : "#10b981", // Blue if reg, green otherwise
+          backgroundColor:
+            props.mode === "registrations"
+              ? "rgba(59, 130, 246, 0.1)"
+              : "rgba(16, 185, 129, 0.1)",
           fill: true,
           tension: 0.4,
           pointRadius: 3,
@@ -85,29 +91,29 @@ const updateChart = () => {
           position: "top",
           labels: {
             usePointStyle: true,
-            font: {family: "'Inter', sans-serif"},
+            font: { family: "'Inter', sans-serif" },
           },
         },
         tooltip: {
-          mode: 'index',
+          mode: "index",
           intersect: false,
         },
       },
       scales: {
         x: {
-          grid: {display: false},
-          ticks: {maxRotation: 0, autoSkip: true, maxTicksLimit: 10},
+          grid: { display: false },
+          ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 },
         },
         y: {
           beginAtZero: true,
-          grid: {color: "rgba(0,0,0,0.05)"},
+          grid: { color: "rgba(0,0,0,0.05)" },
         },
       },
       interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
-      }
+        mode: "nearest",
+        axis: "x",
+        intersect: false,
+      },
     },
   });
 };
@@ -117,7 +123,7 @@ watch(
   () => {
     updateChart();
   },
-  {deep: true},
+  { deep: true },
 );
 
 onMounted(() => {

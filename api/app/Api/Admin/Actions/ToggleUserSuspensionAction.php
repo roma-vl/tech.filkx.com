@@ -2,7 +2,10 @@
 
 namespace App\Api\Admin\Actions;
 
+use App\Api\V1\Dto\AuditLogDto;
+use App\Events\AuditEvent;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ToggleUserSuspensionAction
 {
@@ -13,13 +16,11 @@ class ToggleUserSuspensionAction
         $newStatus = $user->status === 'suspended' ? 'active' : 'suspended';
         $user->update(['status' => $newStatus]);
 
-
-
-        event(new \App\Events\AuditEvent(new \App\Api\V1\Dto\AuditLogDto(
+        event(new AuditEvent(new AuditLogDto(
             action: 'user.updated',
             domain: 'team',
             message: "Admin toggled suspension for user: {$user->name}. New status: ".($user->status === 'suspended' ? 'Suspended' : 'Active'),
-            userId: \Illuminate\Support\Facades\Auth::id(),
+            userId: Auth::id(),
             subjectType: User::class,
             subjectId: $user->id,
             payload: ['is_suspended' => $user->status === 'suspended'],

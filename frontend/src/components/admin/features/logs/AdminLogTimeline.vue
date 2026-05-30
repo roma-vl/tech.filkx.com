@@ -5,14 +5,17 @@
       <h3 class="font-black text-xs uppercase tracking-[0.2em] text-gray-400">
         {{ t("admin.logs.table.title") }}
       </h3>
-      <div class="h-px flex-1 mx-6 bg-gradient-to-r from-gray-100 via-gray-200 dark:via-gray-700 to-transparent"/>
+      <div
+        class="h-px flex-1 mx-6 bg-gradient-to-r from-gray-100 via-gray-200 dark:via-gray-700 to-transparent"
+      />
     </div>
 
     <!-- Timeline Container -->
     <div class="relative space-y-8 pb-12">
       <!-- Vertical Line -->
       <div
-        class="absolute left-6 top-6 bottom-0 w-px bg-gradient-to-b from-primary-500/50 via-gray-200 dark:via-gray-700 to-transparent"/>
+        class="absolute left-6 top-6 bottom-0 w-px bg-gradient-to-b from-primary-500/50 via-gray-200 dark:via-gray-700 to-transparent"
+      />
 
       <AdminLogItem
         v-for="log in logs"
@@ -36,8 +39,11 @@
               class="w-4 h-4 animate-spin text-primary-500"
             />
             <span
-              class="text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors">
-              {{ loading ? t("admin.logs.loading") : t("admin.logs.load_more") }}
+              class="text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors"
+            >
+              {{
+                loading ? t("admin.logs.loading") : t("admin.logs.load_more")
+              }}
             </span>
           </div>
         </button>
@@ -47,11 +53,11 @@
 </template>
 
 <script setup>
-import {ArrowPathIcon} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { ArrowPathIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AdminLogItem from "./AdminLogItem.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   logs: {

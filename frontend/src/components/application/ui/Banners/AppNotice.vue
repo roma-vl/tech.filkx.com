@@ -3,19 +3,35 @@
     class="rounded-2xl p-4 flex gap-4"
     :class="[
       center ? 'items-center' : 'items-start',
-      variant === 'info' ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800' : '',
-      variant === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800' : '',
-      variant === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800' : '',
-      variant === 'success' ? 'bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800' : '',
+      variant === 'info'
+        ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800'
+        : '',
+      variant === 'warning'
+        ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800'
+        : '',
+      variant === 'error'
+        ? 'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800'
+        : '',
+      variant === 'success'
+        ? 'bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800'
+        : '',
     ]"
   >
     <div
       class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
       :class="[
-        variant === 'info' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400' : '',
-        variant === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400' : '',
-        variant === 'error' ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400' : '',
-        variant === 'success' ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : '',
+        variant === 'info'
+          ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
+          : '',
+        variant === 'warning'
+          ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400'
+          : '',
+        variant === 'error'
+          ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+          : '',
+        variant === 'success'
+          ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+          : '',
       ]"
     >
       <slot name="icon">
@@ -30,9 +46,21 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
+          <path
+            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+          <line
+            x1="12"
+            y1="9"
+            x2="12"
+            y2="13"
+          />
+          <line
+            x1="12"
+            y1="17"
+            x2="12.01"
+            y2="17"
+          />
         </svg>
         <svg
           v-else-if="variant === 'error'"
@@ -45,9 +73,23 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="15" y1="9" x2="9" y2="15" />
-          <line x1="9" y1="9" x2="15" y2="15" />
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <line
+            x1="15"
+            y1="9"
+            x2="9"
+            y2="15"
+          />
+          <line
+            x1="9"
+            y1="9"
+            x2="15"
+            y2="15"
+          />
         </svg>
         <svg
           v-else-if="variant === 'success'"
@@ -108,7 +150,8 @@ defineProps({
   variant: {
     type: String,
     default: "info", // info, warning, error, success
-    validator: (value) => ["info", "warning", "error", "success"].includes(value),
+    validator: (value) =>
+      ["info", "warning", "error", "success"].includes(value),
   },
   center: {
     type: Boolean,

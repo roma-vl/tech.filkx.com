@@ -20,9 +20,9 @@ class CategoryRepository
         return Category::withCount(['products' => function ($q) {
             $q->where('status', 'active');
         }])
-        ->orderBy('products_count', 'desc')
-        ->take($limit)
-        ->get();
+            ->orderBy('products_count', 'desc')
+            ->take($limit)
+            ->get();
     }
 
     public function findBySlug(string $slug): ?Category

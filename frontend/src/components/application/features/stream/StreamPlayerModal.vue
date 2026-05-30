@@ -157,7 +157,9 @@
                 <img
                   :src="getVideoThumbnail(item)"
                   class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-                  :class="{ 'opacity-40 grayscale': currentVideoIndex !== index }"
+                  :class="{
+                    'opacity-40 grayscale': currentVideoIndex !== index,
+                  }"
                 >
                 <div
                   v-if="currentVideoIndex === index"
@@ -216,7 +218,9 @@
                     class="text-[10px] font-black uppercase text-gray-400 tracking-widest"
                   >{{
                     isPlaylist
-                      ? t("media.playerModal.videoIndex", { index: index + 1 })
+                      ? t("media.playerModal.videoIndex", {
+                        index: index + 1,
+                      })
                       : t("media.playerModal.source")
                   }}</span>
                   <span

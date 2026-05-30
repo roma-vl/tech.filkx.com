@@ -31,7 +31,7 @@ return new class extends Migration
             $table->foreignId('attribute_value_id')->nullable()->constrained('attribute_values')->cascadeOnDelete();
             $table->text('custom_value')->nullable(); // For free-text values
             $table->timestamps();
-            
+
             $table->unique(['product_id', 'variant_id', 'attribute_id'], 'prod_var_attr_unique');
         });
     }

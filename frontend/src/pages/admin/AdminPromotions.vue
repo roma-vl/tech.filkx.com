@@ -5,7 +5,7 @@
     >
       <AppButton @click="openCreateModal">
         <template #prefix>
-          <PlusIcon class="w-4 h-4 stroke-[3px]"/>
+          <PlusIcon class="w-4 h-4 stroke-[3px]" />
         </template>
         {{ t("admin.marketing.promotions.new") }}
       </AppButton>
@@ -42,10 +42,10 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
-import {PlusIcon} from "@heroicons/vue/24/outline";
-import {useToast} from "vue-toastification";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { PlusIcon } from "@heroicons/vue/24/outline";
+import { useToast } from "vue-toastification";
 import api from "@/services/api";
 
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";

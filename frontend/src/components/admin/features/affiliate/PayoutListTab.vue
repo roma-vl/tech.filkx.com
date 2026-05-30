@@ -81,11 +81,11 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
+import { computed, ref, watch } from "vue";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -111,18 +111,18 @@ const emit = defineEmits([
 const internalStatus = ref(props.statusFilter);
 
 const payoutOptions = computed(() => [
-  {id: "", name: t("admin.affiliates.filters.all_payouts")},
-  {id: "requested", name: t("admin.affiliates.status.requested")},
-  {id: "processing", name: t("admin.affiliates.status.processing")},
-  {id: "paid", name: t("admin.affiliates.status.paid")},
-  {id: "rejected", name: t("admin.affiliates.status.rejected")},
+  { id: "", name: t("admin.affiliates.filters.all_payouts") },
+  { id: "requested", name: t("admin.affiliates.status.requested") },
+  { id: "processing", name: t("admin.affiliates.status.processing") },
+  { id: "paid", name: t("admin.affiliates.status.paid") },
+  { id: "rejected", name: t("admin.affiliates.status.rejected") },
 ]);
 
 const headers = [
-  {key: "partner", label: t("admin.affiliates.table.partner")},
-  {key: "amount", label: t("admin.affiliates.table.amount")},
-  {key: "status", label: t("admin.affiliates.table.status")},
-  {key: "requested_at", label: t("admin.affiliates.table.requested_at")},
+  { key: "partner", label: t("admin.affiliates.table.partner") },
+  { key: "amount", label: t("admin.affiliates.table.amount") },
+  { key: "status", label: t("admin.affiliates.table.status") },
+  { key: "requested_at", label: t("admin.affiliates.table.requested_at") },
   {
     key: "actions",
     label: t("admin.affiliates.table.actions"),

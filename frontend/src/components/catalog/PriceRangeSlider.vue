@@ -1,45 +1,45 @@
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
   minVal: {
     type: Number,
-    required: true
+    required: true,
   },
   maxVal: {
     type: Number,
-    required: true
+    required: true,
   },
   min: {
     type: Number,
-    default: 0
+    default: 0,
   },
   max: {
     type: Number,
-    default: 200000
+    default: 200000,
   },
   step: {
     type: Number,
-    default: 1000
-  }
+    default: 1000,
+  },
 });
 
-const emit = defineEmits(['update:minVal', 'update:maxVal']);
+const emit = defineEmits(["update:minVal", "update:maxVal"]);
 
 const localMin = computed({
   get: () => props.minVal,
   set: (val) => {
     const value = Math.min(val, props.maxVal - props.step);
-    emit('update:minVal', value);
-  }
+    emit("update:minVal", value);
+  },
 });
 
 const localMax = computed({
   get: () => props.maxVal,
   set: (val) => {
     const value = Math.max(val, props.minVal + props.step);
-    emit('update:maxVal', value);
-  }
+    emit("update:maxVal", value);
+  },
 });
 
 const minPercent = computed(() => {
@@ -55,58 +55,64 @@ const maxPercent = computed(() => {
   <div class="space-y-4">
     <div class="relative w-full h-6 flex items-center select-none">
       <!-- Custom Slider Track -->
-      <div class="absolute left-0 right-0 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full"></div>
-      
+      <div
+        class="absolute left-0 right-0 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full"
+      />
+
       <!-- Custom Active Progress Track -->
       <div
         class="absolute h-1 bg-[#00a046] rounded-full"
         :style="{
           left: minPercent + '%',
-          right: (100 - maxPercent) + '%'
+          right: 100 - maxPercent + '%',
         }"
-      ></div>
+      />
 
       <!-- Real range inputs overlaid -->
       <input
-        type="range"
         v-model.number="localMin"
-        :min="min"
-        :max="max"
-        :step="step"
-        class="absolute w-full h-1 pointer-events-none appearance-none bg-transparent outline-none accent-[#00a046] slider-input"
-      />
-      <input
         type="range"
-        v-model.number="localMax"
         :min="min"
         :max="max"
         :step="step"
         class="absolute w-full h-1 pointer-events-none appearance-none bg-transparent outline-none accent-[#00a046] slider-input"
-      />
+      >
+      <input
+        v-model.number="localMax"
+        type="range"
+        :min="min"
+        :max="max"
+        :step="step"
+        class="absolute w-full h-1 pointer-events-none appearance-none bg-transparent outline-none accent-[#00a046] slider-input"
+      >
     </div>
 
     <!-- Text Inputs -->
     <div class="flex items-center gap-2">
       <div class="flex-1 relative">
-        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-455 dark:text-zinc-500 font-extrabold">₴</span>
+        <span
+          class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-455 dark:text-zinc-500 font-extrabold"
+        >₴</span>
         <input
-          type="number"
           v-model.number="localMin"
+          type="number"
           :min="min"
           :max="max"
           class="w-full h-9 pl-6 pr-2 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
-        />
+        >
       </div>
       <span class="text-zinc-450 dark:text-zinc-500 text-[10px] font-black">—</span>
       <div class="flex-1 relative">
-        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-455 dark:text-zinc-500 font-extrabold">₴</span>
+        <span
+          class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-zinc-455 dark:text-zinc-500 font-extrabold"
+        >₴</span>
         <input
-          type="number"
           v-model.number="localMax"
+          type="number"
           :min="min"
           :max="max"
           class="w-full h-9 pl-6 pr-2 border border-zinc-200 dark:border-zinc-700 rounded bg-zinc-50 dark:bg-zinc-800 text-xs font-extrabold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
-        />
+        >
       </div>
     </div>
   </div>

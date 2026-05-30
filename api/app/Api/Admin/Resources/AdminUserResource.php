@@ -50,7 +50,7 @@ class AdminUserResource extends JsonResource
                 'featuresSnapshot' => $sub->features_snapshot,
                 'effectiveLimits' => $limits,
                 'effectiveFeatures' => $sub->getEffectiveLimits(), // This returns the whole merged array
-                'addons' => $sub->addons->map(fn($a) => [
+                'addons' => $sub->addons->map(fn ($a) => [
                     'id' => $a->id,
                     'name' => $a->addon->name,
                     'quantity' => $a->quantity,

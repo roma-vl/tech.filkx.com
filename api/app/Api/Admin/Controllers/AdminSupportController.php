@@ -72,11 +72,11 @@ class AdminSupportController extends BaseApiController
     public function show(SupportTicket $ticket): JsonResponse
     {
         $ticket->load(['user']);
-        
+
         // Load latest 5 messages for initial view (descending by ID/created_at)
         // Then reverse to show in chronological order
         $messages = $ticket->messages()->with('user')->latest()->take(5)->get()->reverse()->values();
-        
+
         $ticket->setRelation('messages', $messages);
 
         return self::successfulResponseWithData(
@@ -251,10 +251,9 @@ class AdminSupportController extends BaseApiController
      */
     public function updateTags(
         UpdateSupportTicketTagsRequest $request,
-        SupportTicket                  $ticket,
-        UpdateSupportTicketTagsAction  $action
-    ): JsonResponse
-    {
+        SupportTicket $ticket,
+        UpdateSupportTicketTagsAction $action
+    ): JsonResponse {
         $ticket = $action->execute($ticket, $request->validated()['tags'] ?? []);
 
         return self::successfulResponseWithData(new AdminSupportTicketResource($ticket));
@@ -318,9 +317,11 @@ class AdminSupportController extends BaseApiController
      *     summary="List messages for a ticket (pagination)",
      *     tags={"Admin Support"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="before_id", in="query", @OA\Schema(type="integer"), description="Load messages older than this ID"),
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer"), description="Number of messages to load"),
+     *
      *     @OA\Response(response=200, description="Successful operation")
      * )
      */
@@ -341,11 +342,15 @@ class AdminSupportController extends BaseApiController
      *     summary="Mark specific messages as read",
      *     tags={"Admin Support"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(@OA\Property(property="ids", type="array", @OA\Items(type="integer")))
      *     ),
+     *
      *     @OA\Response(response=200, description="Updated count")
      * )
      */
@@ -353,7 +358,7 @@ class AdminSupportController extends BaseApiController
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'integer'
+            'ids.*' => 'integer',
         ]);
 
         $count = $action->execute($ticket, $request->input('ids'));

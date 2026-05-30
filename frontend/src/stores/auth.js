@@ -82,6 +82,10 @@ export const useAuthStore = defineStore("auth", {
       localStorage.removeItem(TOKEN_EXPIRES_KEY);
       localStorage.removeItem(ADMIN_TOKEN_KEY);
       localStorage.removeItem(ADMIN_TOKEN_EXPIRES_KEY);
+
+      import("@/store.js").then(({ store }) => {
+        store.clearCart();
+      });
     },
 
     async updateLocale(locale) {
@@ -112,6 +116,11 @@ export const useAuthStore = defineStore("auth", {
         this.setToken(token.accessToken, token.expiresIn);
         this.user = user;
         this._syncLocale(user.locale);
+
+        import("@/store.js").then(({ store }) => {
+          store.fetchCart();
+        });
+
         return { ok: true };
       } catch (error) {
         return this._handleError(error);
@@ -131,11 +140,18 @@ export const useAuthStore = defineStore("auth", {
         this.failedAttempts = 0;
         localStorage.removeItem("failed_login_attempts");
 
+        import("@/store.js").then(({ store }) => {
+          store.fetchCart();
+        });
+
         return { ok: true };
       } catch (error) {
         // Increment failed attempts
         this.failedAttempts = (this.failedAttempts || 0) + 1;
-        localStorage.setItem("failed_login_attempts", this.failedAttempts.toString());
+        localStorage.setItem(
+          "failed_login_attempts",
+          this.failedAttempts.toString(),
+        );
 
         return this._handleError(error);
       }
@@ -203,6 +219,10 @@ export const useAuthStore = defineStore("auth", {
         console.error("Logout error:", error);
       } finally {
         this.clear();
+
+        import("@/store.js").then(({ store }) => {
+          store.clearCart();
+        });
       }
     },
 

@@ -83,9 +83,9 @@
 </template>
 
 <script setup>
-import {computed, markRaw, onMounted, ref, watch} from "vue";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, markRaw, onMounted, ref, watch } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 
 // Components
@@ -218,7 +218,7 @@ const fetchPayouts = async () => {
     const params = {};
     if (payoutStatusFilter.value) params.status = payoutStatusFilter.value;
 
-    const {data} = await api.get("/admin/affiliates/payouts/list", {
+    const { data } = await api.get("/admin/affiliates/payouts/list", {
       params,
     });
     const responseData = data.data;

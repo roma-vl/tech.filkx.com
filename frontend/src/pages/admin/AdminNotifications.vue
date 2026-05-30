@@ -1,8 +1,8 @@
 <script setup>
-import {ref} from "vue";
-import {useI18n} from "vue-i18n";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
-import {useToast} from "vue-toastification";
+import { useToast } from "vue-toastification";
 
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
@@ -26,15 +26,15 @@ const isSending = ref(false);
 const error = ref(null);
 
 const typeOptions = [
-  {id: "info", name: "Info"},
-  {id: "success", name: "Success"},
-  {id: "warning", name: "Warning"},
-  {id: "error", name: "Error"},
+  { id: "info", name: "Info" },
+  { id: "success", name: "Success" },
+  { id: "warning", name: "Warning" },
+  { id: "error", name: "Error" },
 ];
 
 const recipientOptions = [
-  {value: "all", label: "admin.notifications.recipients.all"},
-  {value: "selected", label: "admin.notifications.recipients.selected"},
+  { value: "all", label: "admin.notifications.recipients.all" },
+  { value: "selected", label: "admin.notifications.recipients.selected" },
 ];
 
 const handleSubmit = async () => {
@@ -75,7 +75,6 @@ const handleSubmit = async () => {
     <div
       class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm relative z-10"
     >
-
       <div class="p-8">
         <form
           class="space-y-8 max-w-3xl"

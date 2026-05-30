@@ -1,10 +1,16 @@
 <template>
-  <div class="rounded-2xl border border-white/60 dark:border-white/5 bg-white/60 dark:bg-gray-800/40 backdrop-blur-md p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-    <div class="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">
+  <div
+    class="rounded-2xl border border-white/60 dark:border-white/5 bg-white/60 dark:bg-gray-800/40 backdrop-blur-md p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
+  >
+    <div
+      class="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-widest mb-2"
+    >
       {{ label }}
     </div>
 
-    <div class="mt-1 text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+    <div
+      class="mt-1 text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight"
+    >
       {{ formattedValue }}
     </div>
 

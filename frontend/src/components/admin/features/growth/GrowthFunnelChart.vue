@@ -11,18 +11,18 @@
     </div>
     <div class="relative flex items-center gap-8 h-[300px] w-full">
       <div class="flex-1 h-full">
-        <canvas :id="chartId"/>
+        <canvas :id="chartId" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, onMounted, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed, onBeforeUnmount, onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import Chart from "chart.js/auto";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
   chartId: {
@@ -97,11 +97,11 @@ const updateChart = () => {
       ],
     },
     options: {
-      indexAxis: 'y',
+      indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {display: false},
+        legend: { display: false },
         tooltip: {
           callbacks: {
             label: (context) => {
@@ -115,13 +115,13 @@ const updateChart = () => {
       scales: {
         x: {
           beginAtZero: true,
-          grid: {display: false},
+          grid: { display: false },
         },
         y: {
-          grid: {display: false},
+          grid: { display: false },
           ticks: {
-            font: {weight: 'bold', size: 14}
-          }
+            font: { weight: "bold", size: 14 },
+          },
         },
       },
     },
@@ -133,7 +133,7 @@ watch(
   () => {
     updateChart();
   },
-  {deep: true},
+  { deep: true },
 );
 
 onMounted(() => {

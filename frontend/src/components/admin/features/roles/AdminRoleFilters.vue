@@ -12,7 +12,7 @@
           @update:model-value="$emit('update:searchQuery', $event)"
         >
           <template #prepend>
-            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400"/>
+            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
           </template>
         </AppInput>
       </div>
@@ -31,7 +31,7 @@
             "
             @click="$emit('update:viewMode', 'grid')"
           >
-            <Squares2X2Icon class="w-5 h-5"/>
+            <Squares2X2Icon class="w-5 h-5" />
           </button>
           <button
             class="p-2 rounded-lg transition-all"
@@ -42,7 +42,7 @@
             "
             @click="$emit('update:viewMode', 'list')"
           >
-            <ListBulletIcon class="w-5 h-5"/>
+            <ListBulletIcon class="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -51,12 +51,16 @@
 </template>
 
 <script setup>
-import {ListBulletIcon, MagnifyingGlassIcon, Squares2X2Icon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import {
+  ListBulletIcon,
+  MagnifyingGlassIcon,
+  Squares2X2Icon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   searchQuery: {

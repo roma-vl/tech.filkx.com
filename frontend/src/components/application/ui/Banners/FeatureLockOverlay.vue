@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {LockIcon, ZapIcon} from "lucide-vue-next";
+import { LockIcon, ZapIcon } from "lucide-vue-next";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
 
 defineProps({

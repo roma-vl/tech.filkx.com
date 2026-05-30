@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
-  >
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
     <div
       v-for="member in members"
       :key="member.email"
@@ -15,9 +13,7 @@
           >
           <div
             class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-white dark:border-gray-800"
-            :class="
-              member.status === 'Active' ? 'bg-green-500' : 'bg-red-500'
-            "
+            :class="member.status === 'Active' ? 'bg-green-500' : 'bg-red-500'"
           />
         </div>
         <div>
@@ -50,8 +46,8 @@
             class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
           >{{ t("admin.team.member.last_active") }}</span>
           <span class="text-sm font-bold text-gray-700 dark:text-gray-200">{{
-              member.lastActive
-            }}</span>
+            member.lastActive
+          }}</span>
         </div>
       </div>
 
@@ -80,7 +76,7 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import avatarPlaceholder from "@/assets/images/avatars/info/empty.png";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 

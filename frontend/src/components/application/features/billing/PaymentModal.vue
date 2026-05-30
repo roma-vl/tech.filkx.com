@@ -366,16 +366,16 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useRouter} from "vue-router";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";
 import AppCheckbox from "@/components/application/ui/Form/AppCheckbox.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {XMarkIcon} from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 const landingUrl = import.meta.env.VITE_LANDING_URL || "https://live.filkx.com";

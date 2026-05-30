@@ -86,9 +86,9 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {useToast} from "vue-toastification";
-import {useI18n} from "vue-i18n";
+import { ref } from "vue";
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
@@ -120,7 +120,7 @@ const reject = async () => {
   } catch (err) {
     toast.error(
       err.response?.data?.message ||
-      t("admin.affiliates.messages.payout_reject_error"),
+        t("admin.affiliates.messages.payout_reject_error"),
     );
   } finally {
     loading.value = false;

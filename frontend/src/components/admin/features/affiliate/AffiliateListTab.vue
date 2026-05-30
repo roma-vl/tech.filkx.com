@@ -80,13 +80,16 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
+import { computed, ref, watch } from "vue";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import {MagnifyingGlassIcon, PencilSquareIcon,} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import {
+  MagnifyingGlassIcon,
+  PencilSquareIcon,
+} from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -114,20 +117,20 @@ const internalSearch = ref(props.searchQuery);
 const internalStatus = ref(props.statusFilter);
 
 const statusOptions = computed(() => [
-  {id: "", name: t("admin.affiliates.filters.all_statuses")},
-  {id: "pending", name: t("admin.affiliates.status.pending")},
-  {id: "active", name: t("admin.affiliates.status.active")},
-  {id: "rejected", name: t("admin.affiliates.status.rejected")},
-  {id: "suspended", name: t("admin.affiliates.status.suspended")},
+  { id: "", name: t("admin.affiliates.filters.all_statuses") },
+  { id: "pending", name: t("admin.affiliates.status.pending") },
+  { id: "active", name: t("admin.affiliates.status.active") },
+  { id: "rejected", name: t("admin.affiliates.status.rejected") },
+  { id: "suspended", name: t("admin.affiliates.status.suspended") },
 ]);
 
 const headers = [
-  {key: "partner", label: t("admin.affiliates.table.partner")},
-  {key: "code", label: t("admin.affiliates.table.code")},
-  {key: "referrals", label: t("admin.affiliates.table.referrals")},
-  {key: "earnings", label: t("admin.affiliates.table.earnings")},
-  {key: "available", label: t("admin.affiliates.table.available")},
-  {key: "status", label: t("admin.affiliates.table.status")},
+  { key: "partner", label: t("admin.affiliates.table.partner") },
+  { key: "code", label: t("admin.affiliates.table.code") },
+  { key: "referrals", label: t("admin.affiliates.table.referrals") },
+  { key: "earnings", label: t("admin.affiliates.table.earnings") },
+  { key: "available", label: t("admin.affiliates.table.available") },
+  { key: "status", label: t("admin.affiliates.table.status") },
   {
     key: "actions",
     label: t("admin.affiliates.table.actions"),

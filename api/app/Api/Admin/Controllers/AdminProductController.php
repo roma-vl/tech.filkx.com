@@ -3,12 +3,10 @@
 namespace App\Api\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
 use App\Models\Stock;
-use App\Models\Category;
-use App\Models\Brand;
 use App\Models\Warehouse;
-use App\Models\ProductAttributeValue;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -19,11 +17,11 @@ class AdminProductController extends BaseApiController
     public function index(Request $request): JsonResponse
     {
         $products = Product::with([
-            'brand', 
-            'categories', 
-            'variants.stocks', 
-            'variants.attributeValues.attribute', 
-            'variants.attributeValues.attributeValue'
+            'brand',
+            'categories',
+            'variants.stocks',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue',
         ])->get();
 
         $mappedProducts = $products->map(function ($product) {
@@ -51,10 +49,10 @@ class AdminProductController extends BaseApiController
                 return [
                     'id' => $variant->id,
                     'sku' => $variant->sku,
-                    'price' => (float)$variant->price,
-                    'oldPrice' => $variant->old_price ? (float)$variant->old_price : null,
+                    'price' => (float) $variant->price,
+                    'oldPrice' => $variant->old_price ? (float) $variant->old_price : null,
                     'stock' => $variant->stocks->sum('quantity'),
-                    'weight' => $variant->weight ? (float)$variant->weight : null,
+                    'weight' => $variant->weight ? (float) $variant->weight : null,
                     'images' => $images,
                     'attributes' => $attrsMapped,
                 ];
@@ -63,9 +61,9 @@ class AdminProductController extends BaseApiController
             // Mapped properties for list view (take first variant's details)
             $firstVar = $variantsMapped->first();
             $primaryImage = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop';
-            if ($firstVar && !empty($firstVar['images'])) {
+            if ($firstVar && ! empty($firstVar['images'])) {
                 foreach ($firstVar['images'] as $img) {
-                    if (!empty($img['isPrimary'])) {
+                    if (! empty($img['isPrimary'])) {
                         $primaryImage = $img['url'];
                         break;
                     }
@@ -82,6 +80,8 @@ class AdminProductController extends BaseApiController
                 'descriptionUk' => $product->description['uk'] ?? '',
                 'descriptionEn' => $product->description['en'] ?? '',
                 'status' => $product->status,
+                'isHot' => (bool) $product->is_hot,
+                'isRecommended' => (bool) $product->is_recommended,
                 'brandId' => $product->brand_id,
                 'brandName' => $product->brand ? $product->brand->name : null,
                 'categoryId' => $product->categories->first() ? $product->categories->first()->id : null,
@@ -110,6 +110,8 @@ class AdminProductController extends BaseApiController
             'descriptionUk' => 'nullable|string',
             'descriptionEn' => 'nullable|string',
             'status' => 'required|string|in:active,draft,hidden',
+            'isHot' => 'nullable|boolean',
+            'isRecommended' => 'nullable|boolean',
             'brandId' => 'nullable|exists:brands,id',
             'categoryId' => 'required|exists:categories,id',
             'variants' => 'required|array|min:1',
@@ -122,9 +124,17 @@ class AdminProductController extends BaseApiController
             'variants.*.attributes' => 'nullable|array',
         ]);
 
+        $slug = Str::slug($request->input('nameEn')) ?: 'product';
+        $originalSlug = $slug;
+        $count = 1;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug.'-'.$count;
+            $count++;
+        }
+
         $product = Product::create([
             'brand_id' => $request->input('brandId'),
-            'slug' => Str::slug($request->input('nameEn')),
+            'slug' => $slug,
             'name' => [
                 'uk' => $request->input('nameUk'),
                 'en' => $request->input('nameEn'),
@@ -134,6 +144,8 @@ class AdminProductController extends BaseApiController
                 'en' => $request->input('descriptionEn', ''),
             ],
             'status' => $request->input('status'),
+            'is_hot' => (bool) $request->input('isHot', false),
+            'is_recommended' => (bool) $request->input('isRecommended', false),
         ]);
 
         $product->categories()->sync([$request->input('categoryId')]);
@@ -160,7 +172,7 @@ class AdminProductController extends BaseApiController
                 'reserved' => 0,
             ]);
 
-            if (!empty($vData['attributes'])) {
+            if (! empty($vData['attributes'])) {
                 foreach ($vData['attributes'] as $attr) {
                     ProductAttributeValue::create([
                         'product_id' => $product->id,
@@ -186,6 +198,8 @@ class AdminProductController extends BaseApiController
             'descriptionUk' => 'nullable|string',
             'descriptionEn' => 'nullable|string',
             'status' => 'required|string|in:active,draft,hidden',
+            'isHot' => 'nullable|boolean',
+            'isRecommended' => 'nullable|boolean',
             'brandId' => 'nullable|exists:brands,id',
             'categoryId' => 'required|exists:categories,id',
             'variants' => 'required|array|min:1',
@@ -209,6 +223,8 @@ class AdminProductController extends BaseApiController
                 'en' => $request->input('descriptionEn', ''),
             ],
             'status' => $request->input('status'),
+            'is_hot' => (bool) $request->input('isHot', false),
+            'is_recommended' => (bool) $request->input('isRecommended', false),
         ]);
 
         $product->categories()->sync([$request->input('categoryId')]);
@@ -222,7 +238,7 @@ class AdminProductController extends BaseApiController
 
         foreach ($request->input('variants') as $vData) {
             $variant = null;
-            if (!empty($vData['id'])) {
+            if (! empty($vData['id'])) {
                 $variant = ProductVariant::where('product_id', $product->id)
                     ->where('id', $vData['id'])
                     ->first();
@@ -264,7 +280,7 @@ class AdminProductController extends BaseApiController
 
             // Sync attributes
             ProductAttributeValue::where('variant_id', $variant->id)->delete();
-            if (!empty($vData['attributes'])) {
+            if (! empty($vData['attributes'])) {
                 foreach ($vData['attributes'] as $attr) {
                     ProductAttributeValue::create([
                         'product_id' => $product->id,
@@ -302,11 +318,11 @@ class AdminProductController extends BaseApiController
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $path = $file->store('catalog', 'public');
-            $url = asset('storage/' . $path);
+            $url = asset('storage/'.$path);
 
             return self::successfulResponseWithData([
                 'url' => $url,
-                'path' => $path
+                'path' => $path,
             ]);
         }
 

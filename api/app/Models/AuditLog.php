@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class AuditLog extends Model
 {
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     public $timestamps = false;
@@ -30,7 +31,7 @@ class AuditLog extends Model
     protected function casts(): array
     {
         return [
-            'payload'    => 'array',
+            'payload' => 'array',
             'created_at' => 'datetime',
         ];
     }

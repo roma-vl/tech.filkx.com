@@ -29,25 +29,35 @@
           @change="handleFileSelect"
         >
           <template #content="{ trigger }">
-            <div 
+            <div
               class="relative overflow-hidden rounded-3xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/20 p-10 sm:p-14 text-center transition-all hover:border-primary-500 hover:bg-primary-50/50 dark:hover:border-primary-500 dark:hover:bg-primary-900/10 group cursor-pointer"
               @click.stop="trigger"
             >
               <!-- Decorative background glow -->
-              <div class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary-500/10 blur-3xl group-hover:bg-primary-500/20 transition-colors" />
-              <div class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl group-hover:bg-blue-500/20 transition-colors" />
+              <div
+                class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary-500/10 blur-3xl group-hover:bg-primary-500/20 transition-colors"
+              />
+              <div
+                class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl group-hover:bg-blue-500/20 transition-colors"
+              />
 
-              <div class="relative z-10 mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 transition-transform group-hover:scale-105 group-hover:shadow-md">
+              <div
+                class="relative z-10 mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 transition-transform group-hover:scale-105 group-hover:shadow-md"
+              >
                 <div
                   ref="container"
                   class="w-[120px] h-[120px]"
                 />
               </div>
 
-              <h3 class="mt-4 text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 relative z-10">
+              <h3
+                class="mt-4 text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 relative z-10"
+              >
                 {{ t("media.uploadModal.dragDropTitle") }}
               </h3>
-              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 relative z-10 font-medium">
+              <p
+                class="mt-2 text-sm text-gray-500 dark:text-gray-400 relative z-10 font-medium"
+              >
                 {{ t("media.uploadModal.dragDropSubtitle") }}
               </p>
 
@@ -69,7 +79,9 @@
           </template>
         </AppFileUpload>
 
-        <p class="text-sm font-medium text-gray-400 dark:text-gray-500 mt-6 text-center uppercase tracking-wider">
+        <p
+          class="text-sm font-medium text-gray-400 dark:text-gray-500 mt-6 text-center uppercase tracking-wider"
+        >
           {{ t("media.uploadModal.supportedFormats") }}
         </p>
       </div>
@@ -80,13 +92,23 @@
         class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6"
       >
         <!-- File Info Card -->
-        <div class="flex items-center gap-4 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/50 dark:bg-gray-800/50 p-4 shadow-sm backdrop-blur-sm">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 border border-primary-200/50 dark:border-primary-800/50">
+        <div
+          class="flex items-center gap-4 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/50 dark:bg-gray-800/50 p-4 shadow-sm backdrop-blur-sm"
+        >
+          <div
+            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 border border-primary-200/50 dark:border-primary-800/50"
+          >
             <FilmIcon class="h-7 w-7" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="truncate text-base font-semibold text-gray-900 dark:text-gray-100">{{ fileName }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ fileSize }}</p>
+            <p
+              class="truncate text-base font-semibold text-gray-900 dark:text-gray-100"
+            >
+              {{ fileName }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ fileSize }}
+            </p>
           </div>
           <button
             class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
@@ -98,29 +120,48 @@
         </div>
 
         <!-- Progress UI -->
-        <div class="rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/20 p-6 shadow-inner space-y-5">
+        <div
+          class="rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/20 p-6 shadow-inner space-y-5"
+        >
           <div class="flex justify-between items-end">
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              <span class="inline-block w-2 h-2 mr-2 rounded-full bg-primary-500 animate-pulse" />
+              <span
+                class="inline-block w-2 h-2 mr-2 rounded-full bg-primary-500 animate-pulse"
+              />
               {{ statusMessage }}
             </span>
-            <span class="text-2xl font-bold tracking-tight text-primary-600 dark:text-primary-400">{{ progress }}%</span>
+            <span
+              class="text-2xl font-bold tracking-tight text-primary-600 dark:text-primary-400"
+            >{{ progress }}%</span>
           </div>
-          
-          <AppProgressBar :value="progress" class="h-3" />
-          
+
+          <AppProgressBar
+            :value="progress"
+            class="h-3"
+          />
+
           <!-- Stats Grid -->
-          <div class="grid grid-cols-2 gap-4 pt-3 border-t border-gray-200 dark:border-gray-700/50">
+          <div
+            class="grid grid-cols-2 gap-4 pt-3 border-t border-gray-200 dark:border-gray-700/50"
+          >
             <div class="flex flex-col">
-              <span class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1">Upload Speed</span>
-              <span class="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
+              <span
+                class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1"
+              >Upload Speed</span>
+              <span
+                class="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1.5"
+              >
                 <ActivityIcon class="w-4 h-4 text-green-500" />
                 {{ uploadSpeed }} MB/s
               </span>
             </div>
             <div class="flex flex-col items-end">
-              <span class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1">Estimated Time</span>
-              <span class="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
+              <span
+                class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1"
+              >Estimated Time</span>
+              <span
+                class="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-1.5"
+              >
                 <ClockIcon class="w-4 h-4 text-blue-500" />
                 {{ timeLeft }}
               </span>
@@ -130,18 +171,28 @@
 
         <!-- Readiness Analysis -->
         <div
-          v-if="(clientMetadata || videoData?.meta?.readiness) && !hasReadinessError"
+          v-if="
+            (clientMetadata || videoData?.meta?.readiness) && !hasReadinessError
+          "
           class="rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/50 dark:bg-gray-800/50 p-5 shadow-sm backdrop-blur-sm"
         >
           <div class="flex items-center justify-between mb-4">
-            <h5 class="text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
+            <h5
+              class="text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400"
+            >
               Stream Readiness Analysis
             </h5>
-            <div v-if="!videoData?.meta?.readiness" class="flex items-center gap-2 text-primary-600 dark:text-primary-400 text-xs font-semibold">
+            <div
+              v-if="!videoData?.meta?.readiness"
+              class="flex items-center gap-2 text-primary-600 dark:text-primary-400 text-xs font-semibold"
+            >
               <Loader2Icon class="w-3.5 h-3.5 animate-spin" />
               <span>Analyzing...</span>
             </div>
-            <div v-else class="flex items-center gap-1.5 text-green-600 dark:text-green-500 text-xs font-semibold">
+            <div
+              v-else
+              class="flex items-center gap-1.5 text-green-600 dark:text-green-500 text-xs font-semibold"
+            >
               <CheckCircle2Icon class="w-3.5 h-3.5" />
               <span>Complete</span>
             </div>
@@ -156,18 +207,28 @@
         class="animate-in zoom-in-95 duration-500 flex flex-col items-center justify-center py-10 sm:py-14 text-center space-y-8"
       >
         <div class="relative">
-          <div class="absolute inset-0 block animate-ping rounded-full bg-green-400/20" />
-          <div class="absolute inset-0 block animate-pulse rounded-full bg-green-400/20 blur-xl" />
-          <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/60 dark:to-green-900/20 text-green-600 dark:text-green-400 shadow-xl shadow-green-500/20 border-4 border-white dark:border-gray-800">
+          <div
+            class="absolute inset-0 block animate-ping rounded-full bg-green-400/20"
+          />
+          <div
+            class="absolute inset-0 block animate-pulse rounded-full bg-green-400/20 blur-xl"
+          />
+          <div
+            class="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/60 dark:to-green-900/20 text-green-600 dark:text-green-400 shadow-xl shadow-green-500/20 border-4 border-white dark:border-gray-800"
+          >
             <CheckCircle2Icon class="h-14 w-14" />
           </div>
         </div>
 
         <div class="space-y-3">
-          <h4 class="text-3xl font-bold bg-gradient-to-br from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+          <h4
+            class="text-3xl font-bold bg-gradient-to-br from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent"
+          >
             {{ t("media.uploadModal.uploadComplete.successTitle") }}
           </h4>
-          <p class="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-base">
+          <p
+            class="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-base"
+          >
             {{ t("media.uploadModal.uploadComplete.successMessage") }}
           </p>
         </div>
@@ -179,7 +240,9 @@
           <StreamReadinessBlocks :readiness="combinedReadiness" />
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-sm pt-4">
+        <div
+          class="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-sm pt-4"
+        >
           <AppButton
             variant="secondary"
             class="w-full sm:w-auto hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -214,7 +277,15 @@ import AppFileUpload from "@/components/application/ui/Form/AppFileUpload.vue";
 import AppProgressBar from "@/components/application/ui/Feedback/AppProgressBar.vue";
 import AppAlert from "@/components/application/ui/Feedback/AppAlert.vue";
 import StreamReadinessBlocks from "@/components/application/features/video/StreamReadinessBlocks.vue";
-import { Loader2Icon, UploadCloudIcon, FilmIcon, XIcon, ActivityIcon, ClockIcon, CheckCircle2Icon } from "lucide-vue-next";
+import {
+  Loader2Icon,
+  UploadCloudIcon,
+  FilmIcon,
+  XIcon,
+  ActivityIcon,
+  ClockIcon,
+  CheckCircle2Icon,
+} from "lucide-vue-next";
 
 const { t } = useI18n();
 const emit = defineEmits(["close", "upload-complete"]);

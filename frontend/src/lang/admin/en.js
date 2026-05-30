@@ -120,15 +120,15 @@ export default {
       charge: "Charge",
       refund: "Refund",
       payout: "Payout",
-      adjustment: "Adjustment"
+      adjustment: "Adjustment",
     },
     status: {
       all: "All Statuses",
       draft: "Draft",
       issued: "Issued",
       paid: "Paid",
-      cancelled: "Cancelled"
-    }
+      cancelled: "Cancelled",
+    },
   },
   common: {
     aboutPage: "About this page",
@@ -434,7 +434,8 @@ export default {
     description: "Manage FFmpeg Runner nodes for processing live streams.",
     add: "Add Node",
     emptyTitle: "No Stream Nodes",
-    emptyDescription: "Add your first FFmpeg Runner node to start processing streams.",
+    emptyDescription:
+      "Add your first FFmpeg Runner node to start processing streams.",
     card: {
       status: "Status",
       lastChecked: "Last Checked",
@@ -463,14 +464,16 @@ export default {
       maxCapacity: "Max Streams Capacity",
       token: "API Token",
       tokenPlaceholder: "Enter the secure token for this runner",
-      tokenHint: "This token must match the RUNNER_API_TOKEN environment variable on the FFmpeg node.",
+      tokenHint:
+        "This token must match the RUNNER_API_TOKEN environment variable on the FFmpeg node.",
       activeImmediately: "Mark as Active immediately",
       save: "Save Node",
       cancel: "Cancel",
     },
     deleteModal: {
       title: "Delete Stream Node?",
-      warning: "Are you sure you want to delete the runner node \"{name}\"? Any streams currently assigned to this node may stop working.",
+      warning:
+        'Are you sure you want to delete the runner node "{name}"? Any streams currently assigned to this node may stop working.',
       confirm: "Yes, Delete Node",
       cancel: "Cancel",
     },
@@ -478,10 +481,12 @@ export default {
 
   transcoderNodes: {
     title: "Transcoder Nodes",
-    description: "Manage specialized nodes for video optimization & watermarking.",
+    description:
+      "Manage specialized nodes for video optimization & watermarking.",
     add: "Add Transcoder",
     emptyTitle: "No Transcoder Nodes",
-    emptyDescription: "Add your first transcoder node to process video optimizations.",
+    emptyDescription:
+      "Add your first transcoder node to process video optimizations.",
     card: {
       status: "Status",
       lastChecked: "Last Checked",
@@ -623,7 +628,7 @@ export default {
         activations: "Activations",
         streams: "Streams",
         value_heads: "Value Heads",
-      }
+      },
     },
     funnel: {
       title: "Value Funnel",
@@ -1341,7 +1346,8 @@ export default {
       title: "Transcoding & Watermark",
       subtitle: "Configure platform transcoding and watermark settings",
       watermark_label: "Platform Watermark",
-      watermark_hint: "This watermark will be applied to videos during transcoding (useful for trials). PNG recommended for transparency.",
+      watermark_hint:
+        "This watermark will be applied to videos during transcoding (useful for trials). PNG recommended for transparency.",
       upload_title: "Upload Watermark",
       upload_subtitle: "Drag and drop PNG/JPG or click to browse",
       upload_success: "Watermark uploaded successfully!",
@@ -1462,8 +1468,10 @@ export default {
     subtitle: "Monitor and manage video transcoding history and queue",
     history: "Conversion History",
     recode: "Recode",
-    recodeConfirm: "Are you sure you want to manually trigger re-encoding for this video? This will consume transcoder resources.",
-    recodeConfirmTrial: "This video was encoded as a trial. Do you want to re-run the trial encoding?",
+    recodeConfirm:
+      "Are you sure you want to manually trigger re-encoding for this video? This will consume transcoder resources.",
+    recodeConfirmTrial:
+      "This video was encoded as a trial. Do you want to re-run the trial encoding?",
     recodeSuccess: "Transcoding job has been dispatched successfully.",
     filters: {
       search: "Search by video or user...",
@@ -1472,7 +1480,7 @@ export default {
       queued: "Queued",
       processing: "Processing",
       ready: "Ready (Optimized)",
-      failed: "Failed"
+      failed: "Failed",
     },
     info: {
       title: "Conversion Details",
@@ -1484,7 +1492,7 @@ export default {
       deleted: "Deleted from Storage",
       type: "Conversion Type",
       started: "Started At",
-      finished: "Finished At"
-    }
-  }
+      finished: "Finished At",
+    },
+  },
 };

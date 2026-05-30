@@ -11,7 +11,7 @@
       :class="[
         isDragging
           ? 'border-primary bg-primary/5 scale-[1.02] shadow-lg'
-          : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+          : 'border-gray-200 dark:border-gray-700 hover:border-primary/50',
       ]"
       @dragover.prevent="handleDragOver"
       @dragleave="handleDragLeave"
@@ -34,14 +34,18 @@
         :class="{ 'opacity-100': isDragging }"
       >
         <div class="flex flex-col items-center text-white text-center p-4">
-          <div class="w-12 h-12 mb-2 rounded-full bg-white/20 flex items-center justify-center">
-            <UploadIcon class="w-6 h-6"/>
+          <div
+            class="w-12 h-12 mb-2 rounded-full bg-white/20 flex items-center justify-center"
+          >
+            <UploadIcon class="w-6 h-6" />
           </div>
-          <p class="text-xs font-black uppercase tracking-widest drop-shadow-md">
-            {{ $t('streams.addModal.youtubeSettings.selectThumbnail') }}
+          <p
+            class="text-xs font-black uppercase tracking-widest drop-shadow-md"
+          >
+            {{ $t("streams.addModal.youtubeSettings.selectThumbnail") }}
           </p>
           <p class="text-[10px] opacity-70 mt-1 uppercase tracking-tight">
-            {{ isDragging ? 'Drop to upload' : 'Click or Drag & Drop' }}
+            {{ isDragging ? "Drop to upload" : "Click or Drag & Drop" }}
           </p>
           <button
             class="absolute inset-0 w-full h-full cursor-pointer"
@@ -87,9 +91,7 @@
           {{ previewTitle }}
         </p>
         <div class="flex items-center gap-2 mt-1">
-          <span
-            class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"
-          />
+          <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
           <span
             class="text-[10px] text-white/80 font-bold uppercase tracking-widest"
           >{{ $t("streams.status.live") }}
@@ -110,8 +112,8 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {UploadIcon} from "lucide-vue-next";
+import { ref } from "vue";
+import { UploadIcon } from "lucide-vue-next";
 
 const props = defineProps({
   isAutomaticYouTube: {
@@ -154,7 +156,7 @@ const handleDrop = (e) => {
   if (!props.isAutomaticYouTube) return;
 
   const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) {
+  if (file && file.type.startsWith("image/")) {
     emit("thumbnail-change", file);
   }
 };

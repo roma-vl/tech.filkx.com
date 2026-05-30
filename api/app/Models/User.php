@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Notifications\ResetPasswordNotification;
@@ -161,5 +162,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(OAuthAccount::class);
     }
-
 }

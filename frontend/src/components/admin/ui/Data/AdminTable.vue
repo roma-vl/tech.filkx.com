@@ -21,7 +21,7 @@
       <p class="text-gray-500 dark:text-gray-400">
         {{ emptyText }}
       </p>
-      <slot name="empty-action"/>
+      <slot name="empty-action" />
     </div>
 
     <div

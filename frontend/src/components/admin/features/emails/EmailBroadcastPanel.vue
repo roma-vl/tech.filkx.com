@@ -25,9 +25,15 @@
           :model-value="targetAudience"
           :options="[
             { value: 'all', label: t('admin.emails.audience.all') },
-            { value: 'active_subscribers', label: t('admin.emails.audience.active_subscribers') },
-            { value: 'trial_expired', label: t('admin.emails.audience.trial_expired') },
-            { value: 'new_users', label: t('admin.emails.audience.new_users') }
+            {
+              value: 'active_subscribers',
+              label: t('admin.emails.audience.active_subscribers'),
+            },
+            {
+              value: 'trial_expired',
+              label: t('admin.emails.audience.trial_expired'),
+            },
+            { value: 'new_users', label: t('admin.emails.audience.new_users') },
           ]"
           class="!rounded-2xl"
           @update:model-value="$emit('update:targetAudience', $event)"

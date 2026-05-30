@@ -1,10 +1,14 @@
 <template>
   <div v-bind="$attrs">
-    <div class="md:hidden text-xs text-gray-500 dark:text-gray-400 px-4 mb-2 text-center">
-      {{ $t('ui.swipe_hint', '← Swipe to see more →') }}
+    <div
+      class="md:hidden text-xs text-gray-500 dark:text-gray-400 px-4 mb-2 text-center"
+    >
+      {{ $t("ui.swipe_hint", "← Swipe to see more →") }}
     </div>
 
-    <div class="rounded-[2.5rem] border border-white/60 dark:border-white/10 bg-white/40 dark:bg-gray-800/20 backdrop-blur-xl pt-4 grid shadow-sm overflow-hidden">
+    <div
+      class="rounded-[2.5rem] border border-white/60 dark:border-white/10 bg-white/40 dark:bg-gray-800/20 backdrop-blur-xl pt-4 grid shadow-sm overflow-hidden"
+    >
       <div
         v-if="headerEnabled"
         class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 px-6 mb-4"
@@ -83,9 +87,7 @@
         </slot>
       </div>
 
-      <div
-        class="overflow-x-auto custom-scrollbar w-full"
-      >
+      <div class="overflow-x-auto custom-scrollbar w-full">
         <table
           class="w-full table-auto border-collapse text-left text-sm text-gray-600 dark:text-gray-200 min-w-[900px]"
         >
@@ -150,7 +152,10 @@
         </table>
       </div>
 
-      <div v-if="paginationEnabled && pagination" class="px-6 py-4 border-t border-gray-200/50 dark:border-gray-700/50">
+      <div
+        v-if="paginationEnabled && pagination"
+        class="px-6 py-4 border-t border-gray-200/50 dark:border-gray-700/50"
+      >
         <AppPagination
           :pagination="pagination"
           @page-change="changePage"
@@ -161,7 +166,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import ArrowUpDownIcon from "@/components/Icon/ArrowUpDownIcon.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";

@@ -1,5 +1,7 @@
 <template>
-  <div class="px-6 pb-6 pt-2 bg-gradient-to-t from-white/90 to-transparent dark:from-gray-900/90 relative z-10">
+  <div
+    class="px-6 pb-6 pt-2 bg-gradient-to-t from-white/90 to-transparent dark:from-gray-900/90 relative z-10"
+  >
     <div
       class="relative bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.05)] focus-within:shadow-[0_8px_32px_rgba(var(--color-primary-500),0.15)] focus-within:border-primary-300 dark:focus-within:border-primary-700 transition-all duration-300 group"
     >
@@ -48,7 +50,9 @@
         >
           {{ selectedFile.name }}
         </p>
-        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+        <p
+          class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5"
+        >
           {{ (selectedFile.size / 1024).toFixed(1) }} KB
         </p>
       </div>

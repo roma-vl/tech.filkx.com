@@ -5,7 +5,7 @@
     >
       <AppButton @click="openCreateModal">
         <template #prefix>
-          <PlusIcon class="w-4 h-4 stroke-[3px]"/>
+          <PlusIcon class="w-4 h-4 stroke-[3px]" />
         </template>
         {{ t("admin.marketing.coupons.new") }}
       </AppButton>
@@ -43,9 +43,9 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
-import {useToast} from "vue-toastification";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 import api from "@/services/api";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
@@ -53,7 +53,7 @@ import CouponTable from "@/components/admin/features/marketing/coupons/CouponTab
 import CouponEditModal from "@/components/admin/features/marketing/coupons/CouponEditModal.vue";
 import CouponDeleteModal from "@/components/admin/features/marketing/coupons/CouponDeleteModal.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import {PlusIcon} from "@heroicons/vue/24/outline";
+import { PlusIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 const toast = useToast();

@@ -36,12 +36,12 @@ class AdminCategoryController extends BaseApiController
             'order' => 'nullable|integer',
         ]);
 
-        $slug = \Illuminate\Support\Str::slug($request->input('nameEn'));
-        
+        $slug = Str::slug($request->input('nameEn'));
+
         // Ensure uniqueness of slug
         $count = Category::where('slug', 'like', "{$slug}%")->count();
         if ($count > 0) {
-            $slug = "{$slug}-" . ($count + 1);
+            $slug = "{$slug}-".($count + 1);
         }
 
         $category = Category::create([

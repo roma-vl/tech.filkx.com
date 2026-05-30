@@ -40,22 +40,28 @@ class ActivityController extends BaseApiController
      *         in="query",
      *         description="Activity type filter (e.g. video, playlist, stream)",
      *         required=false,
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         name="dateFrom",
      *         in="query",
      *         description="Start date for filtering (YYYY-MM-DD)",
      *         required=false,
+     *
      *         @OA\Schema(type="string", format="date")
      *     ),
+     *
      *     @OA\Parameter(
      *         name="dateTo",
      *         in="query",
      *         description="End date for filtering (YYYY-MM-DD)",
      *         required=false,
+     *
      *         @OA\Schema(type="string", format="date")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="User activities list",
@@ -76,7 +82,7 @@ class ActivityController extends BaseApiController
     {
         $perPage = (int) $request->query('per_page', 15);
         $filters = $request->only(['type', 'dateFrom', 'dateTo']);
-        
+
         $activities = $action->execute($request->user(), $perPage, $filters);
 
         return self::successfulResponseWithData(

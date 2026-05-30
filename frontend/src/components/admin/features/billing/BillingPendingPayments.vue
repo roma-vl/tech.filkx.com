@@ -57,8 +57,8 @@
                 <span class="font-bold text-gray-900 dark:text-gray-100">
                   {{
                     payment.purchaseDetails?.plan?.name ||
-                    payment.subscription?.plan?.name ||
-                    "N/A"
+                      payment.subscription?.plan?.name ||
+                      "N/A"
                   }}
                 </span>
               </div>
@@ -89,17 +89,17 @@
                   v-if="payment.purchaseDetails?.campaign"
                   class="text-[9px] text-blue-600 dark:text-blue-400 font-bold flex items-center gap-0.5"
                 >
-                  <TagIcon class="w-2.5 h-2.5"/>
+                  <TagIcon class="w-2.5 h-2.5" />
                   {{
                     payment.purchaseDetails.campaign.name ||
-                    payment.purchaseDetails.campaign.slug
+                      payment.purchaseDetails.campaign.slug
                   }}
                 </span>
                 <span
                   v-if="payment.purchaseDetails?.coupon"
                   class="text-[9px] text-green-600 dark:text-green-400 font-bold flex items-center gap-0.5"
                 >
-                  <TagIcon class="w-2.5 h-2.5"/>
+                  <TagIcon class="w-2.5 h-2.5" />
                   {{ payment.purchaseDetails.coupon.code }}
                 </span>
               </div>
@@ -155,12 +155,12 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
 import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
-import {ArrowPathIcon, TagIcon} from "@heroicons/vue/24/outline";
+import { ArrowPathIcon, TagIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 

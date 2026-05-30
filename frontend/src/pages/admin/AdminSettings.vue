@@ -19,7 +19,7 @@
     <SecuritySettings v-model="allSettings.security" />
 
     <StorageSettings v-model="allSettings.storage" />
-    
+
     <TranscodingSettings v-model="allSettings.transcoding" />
 
     <SaveSettingsButton
@@ -78,12 +78,18 @@ const fetchSettings = async () => {
 
       if (groupData) {
         Object.keys(allSettings.value[group]).forEach((key) => {
-          const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-          const val = groupData[key] !== undefined ? groupData[key] : groupData[snakeKey];
-          
+          const snakeKey = key.replace(
+            /[A-Z]/g,
+            (letter) => `_${letter.toLowerCase()}`,
+          );
+          const val =
+            groupData[key] !== undefined ? groupData[key] : groupData[snakeKey];
+
           if (val !== undefined) {
-            if (val === "true" || val === true) allSettings.value[group][key] = true;
-            else if (val === "false" || val === false) allSettings.value[group][key] = false;
+            if (val === "true" || val === true)
+              allSettings.value[group][key] = true;
+            else if (val === "false" || val === false)
+              allSettings.value[group][key] = false;
             else allSettings.value[group][key] = val;
           }
         });

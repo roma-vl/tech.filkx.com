@@ -26,6 +26,7 @@ class AdminAttributeController extends BaseApiController
                             'value' => $val->value['value'] ?? $val->value,
                         ];
                     }
+
                     return [
                         'id' => $val->id,
                         'valueUk' => $val->value['uk'] ?? '',
@@ -67,7 +68,7 @@ class AdminAttributeController extends BaseApiController
         $attribute = Attribute::findOrFail($id);
 
         $request->validate([
-            'code' => 'required|string|unique:attributes,code,' . $attribute->id,
+            'code' => 'required|string|unique:attributes,code,'.$attribute->id,
             'nameUk' => 'required|string',
             'nameEn' => 'required|string',
             'type' => 'required|string|in:text,select,boolean,number,color',
@@ -111,7 +112,7 @@ class AdminAttributeController extends BaseApiController
                 ];
             }
 
-            if (!empty($valData['id'])) {
+            if (! empty($valData['id'])) {
                 $existingVal = AttributeValue::where('attribute_id', $attribute->id)
                     ->where('id', $valData['id'])
                     ->first();
@@ -137,6 +138,7 @@ class AdminAttributeController extends BaseApiController
     private function mapSingleAttribute(Attribute $attribute): array
     {
         $attribute->load('values');
+
         return [
             'id' => $attribute->id,
             'code' => $attribute->code,
@@ -150,6 +152,7 @@ class AdminAttributeController extends BaseApiController
                         'value' => $val->value['value'] ?? $val->value,
                     ];
                 }
+
                 return [
                     'id' => $val->id,
                     'valueUk' => $val->value['uk'] ?? '',

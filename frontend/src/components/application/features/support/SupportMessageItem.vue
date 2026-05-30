@@ -66,11 +66,17 @@
             <div class="flex-1 min-w-0">
               <span
                 class="block truncate font-bold text-gray-800 dark:text-gray-200 text-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
-                :class="{ '!text-white group-hover:!text-gray-200': !(message.isAdmin || message.isAi) }"
+                :class="{
+                  '!text-white group-hover:!text-gray-200': !(
+                    message.isAdmin || message.isAi
+                  ),
+                }"
               >{{ message.fileName }}</span>
               <span
                 class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 block"
-                :class="{ '!text-white/70': !(message.isAdmin || message.isAi) }"
+                :class="{
+                  '!text-white/70': !(message.isAdmin || message.isAi),
+                }"
               >{{ (message.fileSize / 1024).toFixed(1) }} KB</span>
             </div>
           </a>

@@ -2,7 +2,11 @@
   <AppModal
     :model-value="modelValue"
     max-width="2xl"
-    :title="isEditing ? t('admin.roles.modal.edit_title') : t('admin.roles.modal.create_title')"
+    :title="
+      isEditing
+        ? t('admin.roles.modal.edit_title')
+        : t('admin.roles.modal.create_title')
+    "
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template #header>
@@ -10,7 +14,7 @@
         <div
           class="p-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 shadow-sm"
         >
-          <ShieldCheckIcon class="w-6 h-6"/>
+          <ShieldCheckIcon class="w-6 h-6" />
         </div>
         <div>
           <h2
@@ -198,8 +202,8 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import {
   CheckIcon,
   CreditCardIcon,
@@ -214,7 +218,7 @@ import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: Boolean,

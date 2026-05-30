@@ -43,7 +43,9 @@
         v-if="video.isOriginalLocked"
         class="flex items-center gap-3 p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-800/30 text-orange-700 dark:text-orange-400"
       >
-        <div class="p-2 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex-shrink-0">
+        <div
+          class="p-2 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex-shrink-0"
+        >
           <AlertCircleIcon class="w-5 h-5 animate-pulse" />
         </div>
         <div class="min-w-0">
@@ -125,13 +127,19 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
+import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/services/api.js";
 import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
 import StreamReadinessBlocks from "@/components/application/features/video/StreamReadinessBlocks.vue";
-import {AlertCircleIcon, DownloadIcon, Loader2Icon, VideoIcon, ZapIcon,} from "lucide-vue-next";
+import {
+  AlertCircleIcon,
+  DownloadIcon,
+  Loader2Icon,
+  VideoIcon,
+  ZapIcon,
+} from "lucide-vue-next";
 
 const { t } = useI18n();
 

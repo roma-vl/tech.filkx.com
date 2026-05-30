@@ -11,7 +11,7 @@
         @click="fetchHealth"
       >
         <template #prepend>
-          <ArrowPathIcon class="w-4 h-4"/>
+          <ArrowPathIcon class="w-4 h-4" />
         </template>
         {{ t("admin.system.refresh") }}
       </AppButton>
@@ -118,9 +118,14 @@
 </template>
 
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {ArrowPathIcon, CircleStackIcon, CpuChipIcon, FolderIcon,} from "@heroicons/vue/24/outline";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import {
+  ArrowPathIcon,
+  CircleStackIcon,
+  CpuChipIcon,
+  FolderIcon,
+} from "@heroicons/vue/24/outline";
 import api from "@/services/api";
 
 // Feature Components
@@ -131,14 +136,14 @@ import NetworkCard from "@/components/admin/features/system/NetworkCard.vue";
 import StreamingStatsCard from "@/components/admin/features/system/StreamingStatsCard.vue";
 import ServicesTable from "@/components/admin/features/system/ServicesTable.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const health = ref({
   server: { cpu: {}, ram: {}, disk: {} },
   database: {},
   services: [],
-  network: {incoming: 0, outgoing: 0},
-  streaming: {activeStreams: 0, encoderLoad: 0, jobs: []},
+  network: { incoming: 0, outgoing: 0 },
+  streaming: { activeStreams: 0, encoderLoad: 0, jobs: [] },
 });
 const loading = ref(true);
 let pollInterval = null;

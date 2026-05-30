@@ -2,11 +2,11 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\Api\V1\Actions\ListCategoriesAction;
-use App\Api\V1\Actions\ListBrandsAction;
 use App\Api\V1\Actions\GetCatalogFiltersAction;
-use App\Api\V1\Actions\ListProductsAction;
 use App\Api\V1\Actions\GetProductDetailsAction;
+use App\Api\V1\Actions\ListBrandsAction;
+use App\Api\V1\Actions\ListCategoriesAction;
+use App\Api\V1\Actions\ListProductsAction;
 use App\Api\V1\Requests\ListProductsRequest;
 use Illuminate\Http\JsonResponse;
 

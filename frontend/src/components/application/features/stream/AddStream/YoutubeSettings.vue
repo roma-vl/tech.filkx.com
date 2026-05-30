@@ -1,6 +1,9 @@
 <template>
   <div class="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
-    <div v-if="youtubeStore.channels.length > 0" class="flex items-end gap-2">
+    <div
+      v-if="youtubeStore.channels.length > 0"
+      class="flex items-end gap-2"
+    >
       <div class="flex-1">
         <AppSelect
           v-model="formData.youtubeChannelId"
@@ -24,10 +27,11 @@
         variant="secondary"
         size="md"
         class="!px-3 !py-2.5"
-        @click="youtubeStore.connect()"
         :title="$t('streams.addModal.youtubeSettings.connectButton')"
+        @click="youtubeStore.connect()"
       >
-        <PlusIcon class="w-5 h-5 !mr-1" /> {{ $t('streams.addModal.youtubeSettings.connectButton') }}
+        <PlusIcon class="w-5 h-5 !mr-1" />
+        {{ $t("streams.addModal.youtubeSettings.connectButton") }}
       </AppButton>
     </div>
     <div
@@ -35,13 +39,13 @@
       class="p-4 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg text-center"
     >
       <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
-        {{ $t('streams.addModal.youtubeSettings.noChannels') }}
+        {{ $t("streams.addModal.youtubeSettings.noChannels") }}
       </p>
       <AppButton
         size="sm"
         @click="youtubeStore.connect()"
       >
-        {{ $t('streams.addModal.youtubeSettings.connectButton') }}
+        {{ $t("streams.addModal.youtubeSettings.connectButton") }}
       </AppButton>
     </div>
 
@@ -52,7 +56,7 @@
         :options="[
           { id: 'public', name: 'Public' },
           { id: 'unlisted', name: 'Unlisted' },
-          { id: 'private', name: 'Private' }
+          { id: 'private', name: 'Private' },
         ]"
         option-value="id"
         option-label="name"
@@ -60,12 +64,14 @@
       <div class="flex flex-col justify-end pb-2">
         <label class="flex items-center gap-2 cursor-pointer select-none">
           <input
-            type="checkbox"
             v-model="formData.isMadeForKids"
+            type="checkbox"
             class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-          />
-          <span class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-widest opacity-50">
-            {{ $t('streams.addModal.youtubeSettings.madeForKids') }}
+          >
+          <span
+            class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-widest opacity-50"
+          >
+            {{ $t("streams.addModal.youtubeSettings.madeForKids") }}
           </span>
         </label>
       </div>
@@ -89,7 +95,9 @@
     <AppTextarea
       v-model="formData.youtubeDescription"
       :label="$t('streams.addModal.youtubeSettings.descriptionLabel')"
-      :placeholder="$t('streams.addModal.youtubeSettings.descriptionPlaceholder')"
+      :placeholder="
+        $t('streams.addModal.youtubeSettings.descriptionPlaceholder')
+      "
       rows="4"
       class="!text-base"
     />
@@ -97,12 +105,12 @@
 </template>
 
 <script setup>
-import {useYoutubeStore} from "@/stores/youtube";
+import { useYoutubeStore } from "@/stores/youtube";
 import AppSelect from "@/components/application/ui/Form/AppSelect.vue";
 import AppInput from "@/components/application/ui/Form/AppInput.vue";
 import AppTextarea from "@/components/application/ui/Form/AppTextarea.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {PlusIcon} from "lucide-vue-next";
+import { PlusIcon } from "lucide-vue-next";
 
 defineProps({
   formData: {

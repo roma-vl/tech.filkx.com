@@ -81,7 +81,7 @@ class GetSystemHealthAction
                 $buffers = (int) filter_var($meminfo['Buffers'] ?? '0', FILTER_SANITIZE_NUMBER_INT) / 1024 / 1024;
                 $cached = (int) filter_var($meminfo['Cached'] ?? '0', FILTER_SANITIZE_NUMBER_INT) / 1024 / 1024;
                 $sreclaimable = (int) filter_var($meminfo['SReclaimable'] ?? '0', FILTER_SANITIZE_NUMBER_INT) / 1024 / 1024;
-                
+
                 $available = (int) filter_var($meminfo['MemAvailable'] ?? ($free + $buffers + $cached), FILTER_SANITIZE_NUMBER_INT) / 1024 / 1024;
                 $used = $total - $available;
             }
@@ -143,7 +143,7 @@ class GetSystemHealthAction
                 $connections = $connectionsData[0]->count ?? '0';
             }
 
-            $maxConnections = (int)(DB::select('SHOW max_connections')[0]->max_connections ?? 100);
+            $maxConnections = (int) (DB::select('SHOW max_connections')[0]->max_connections ?? 100);
 
             return [
                 'status' => 'online',
@@ -181,7 +181,7 @@ class GetSystemHealthAction
 
         $getData = function () {
             $data = @file_get_contents('/proc/net/dev');
-            if (!$data) {
+            if (! $data) {
                 return null;
             }
 
@@ -191,18 +191,18 @@ class GetSystemHealthAction
 
             foreach ($lines as $line) {
                 $line = trim($line);
-                if (empty($line) || !str_contains($line, ':')) {
+                if (empty($line) || ! str_contains($line, ':')) {
                     continue;
                 }
-                
+
                 $parts = explode(':', $line);
                 $iface = trim($parts[0]);
-                
+
                 // Exclude virtual/local interfaces, keep physical or tunnels like CloudflareWARP
                 if (
-                    $iface === 'lo' || 
-                    str_starts_with($iface, 'veth') || 
-                    str_starts_with($iface, 'br-') || 
+                    $iface === 'lo' ||
+                    str_starts_with($iface, 'veth') ||
+                    str_starts_with($iface, 'br-') ||
                     str_starts_with($iface, 'docker')
                 ) {
                     continue;
@@ -210,8 +210,8 @@ class GetSystemHealthAction
 
                 $parts = preg_split('/\s+/', trim($parts[1]));
                 if (count($parts) >= 9) {
-                    $totalIn += (int)$parts[0];
-                    $totalOut += (int)$parts[8];
+                    $totalIn += (int) $parts[0];
+                    $totalOut += (int) $parts[8];
                 }
             }
 
@@ -222,7 +222,7 @@ class GetSystemHealthAction
         usleep(1000000); // 1s for better stability
         $t2 = $getData();
 
-        if (!$t1 || !$t2) {
+        if (! $t1 || ! $t2) {
             return ['incoming' => 0, 'outgoing' => 0, 'max' => 1000];
         }
 
@@ -260,6 +260,7 @@ class GetSystemHealthAction
             ];
         } catch (Exception $e) {
             Log::error('Failed to get streaming stats', ['error' => $e->getMessage()]);
+
             return [
                 'active_streams' => 0,
                 'youtube_active' => 0,

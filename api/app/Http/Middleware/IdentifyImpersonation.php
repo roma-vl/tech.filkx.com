@@ -28,7 +28,7 @@ class IdentifyImpersonation
                         ->where('id', $token->id)
                         ->first();
 
-                    if ($dbToken && $dbToken->impersonator_id) {
+                    if ($dbToken && isset($dbToken->impersonator_id) && $dbToken->impersonator_id) {
                         Log::info("Impersonation detected for user {$user->id} by admin {$dbToken->impersonator_id}");
                         $request->merge(['impersonator_id' => $dbToken->impersonator_id]);
                         $request->merge(['is_impersonating' => true]);

@@ -10,7 +10,7 @@
         @click="showInviteModal = true"
       >
         <template #prefix>
-          <UserPlusIcon class="w-5 h-5 mr-3"/>
+          <UserPlusIcon class="w-5 h-5 mr-3" />
         </template>
         {{ t("admin.team.invite_admin") }}
       </AppButton>
@@ -59,7 +59,7 @@
             <div
               class="w-24 h-24 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-dashed border-gray-200 dark:border-gray-800"
             >
-              <UsersIcon class="w-12 h-12 text-gray-300 dark:text-gray-700"/>
+              <UsersIcon class="w-12 h-12 text-gray-300 dark:text-gray-700" />
             </div>
             <p
               class="text-gray-500 dark:text-gray-400 font-black text-sm uppercase tracking-widest"
@@ -86,10 +86,10 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {useToast} from "vue-toastification";
-import {UserPlusIcon, UsersIcon} from "@heroicons/vue/24/outline";
+import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
+import { UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
 import axios from "@/services/api";
 
 import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";

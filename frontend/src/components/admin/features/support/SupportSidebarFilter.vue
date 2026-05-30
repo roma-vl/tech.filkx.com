@@ -7,7 +7,7 @@
       <div
         class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-500 transition-colors duration-300"
       >
-        <MagnifyingGlassIcon class="w-4 h-4"/>
+        <MagnifyingGlassIcon class="w-4 h-4" />
       </div>
       <input
         :value="search"
@@ -26,19 +26,19 @@
       @update:model-value="(value) => $emit('update:tag', value)"
     >
       <template #prepend>
-        <TagIcon class="w-4 h-4 text-gray-400"/>
+        <TagIcon class="w-4 h-4 text-gray-400" />
       </template>
     </AppSelect>
   </div>
 </template>
 
 <script setup>
-import {computed} from "vue";
-import {MagnifyingGlassIcon, TagIcon} from "@heroicons/vue/24/outline";
-import {useI18n} from "vue-i18n";
+import { computed } from "vue";
+import { MagnifyingGlassIcon, TagIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const props = defineProps({
   search: String,
@@ -50,8 +50,8 @@ const props = defineProps({
 });
 
 const tagOptions = computed(() => [
-  {id: "", name: t("admin.support.filters.all_tags")},
-  ...props.availableTags.map((tag) => ({id: tag, name: tag})),
+  { id: "", name: t("admin.support.filters.all_tags") },
+  ...props.availableTags.map((tag) => ({ id: tag, name: tag })),
 ]);
 
 defineEmits(["update:search", "update:tag"]);

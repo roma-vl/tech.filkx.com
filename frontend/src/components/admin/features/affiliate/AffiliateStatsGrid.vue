@@ -42,7 +42,12 @@
 
 <script setup>
 import AppStatCard from "@/components/admin/ui/Data/AppStatCard.vue";
-import {ArrowPathIcon, CurrencyDollarIcon, LinkIcon, UsersIcon,} from "@heroicons/vue/24/outline";
+import {
+  ArrowPathIcon,
+  CurrencyDollarIcon,
+  LinkIcon,
+  UsersIcon,
+} from "@heroicons/vue/24/outline";
 
 defineProps({
   stats: {

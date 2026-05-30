@@ -42,8 +42,8 @@
       <div class="flex items-center gap-3">
         <AppButton
           variant="secondary"
-          @click="$emit('export')"
           :loading="loading"
+          @click="$emit('export')"
         >
           <template #prefix>
             <ArrowDownTrayIcon class="w-4 h-4" />
@@ -63,8 +63,8 @@
             :model-value="filters.type"
             :label="$t('admin.accounting.filters.type')"
             :options="typeOptions"
-            optionValue="value"
-            optionLabel="label"
+            option-value="value"
+            option-label="label"
             @update:model-value="updateFilter('type', $event)"
           />
 
@@ -86,7 +86,7 @@
         <div
           class="flex items-center justify-end pt-6 border-t border-gray-100 dark:border-gray-700/50"
         >
-            <AppButton
+          <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl"
             @click="$emit('reset')"
@@ -119,25 +119,21 @@ const props = defineProps({
     required: true,
   },
   loading: {
-      type: Boolean,
-      default: false
-  }
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits([
-  "update:filters",
-  "export",
-  "reset",
-]);
+const emit = defineEmits(["update:filters", "export", "reset"]);
 
 const showFilters = ref(false);
 
 const typeOptions = computed(() => [
-  { label: t('admin.accounting.types.all'), value: '' },
-  { label: t('admin.accounting.types.charge'), value: 'charge' },
-  { label: t('admin.accounting.types.refund'), value: 'refund' },
-  { label: t('admin.accounting.types.payout'), value: 'payout' },
-  { label: t('admin.accounting.types.adjustment'), value: 'adjustment' },
+  { label: t("admin.accounting.types.all"), value: "" },
+  { label: t("admin.accounting.types.charge"), value: "charge" },
+  { label: t("admin.accounting.types.refund"), value: "refund" },
+  { label: t("admin.accounting.types.payout"), value: "payout" },
+  { label: t("admin.accounting.types.adjustment"), value: "adjustment" },
 ]);
 
 const activeFiltersCount = computed(() => {

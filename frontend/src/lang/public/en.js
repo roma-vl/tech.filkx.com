@@ -30,12 +30,14 @@ export default {
       hasAccount: "Already have an account?",
       signIn: "Sign In",
       passwordsMismatch: "Passwords do not match.",
-      successMessage: "Registration successful! Please check your email for a verification link.",
+      successMessage:
+        "Registration successful! Please check your email for a verification link.",
       errorMessage: "Registration failed. Please check the entered data.",
     },
     forgotPassword: {
       title: "Forgot Password",
-      subtitle: "Enter your email address and we'll send you a link to reset your password.",
+      subtitle:
+        "Enter your email address and we'll send you a link to reset your password.",
       emailLabel: "Email Address",
       emailPlaceholder: "name.company.com",
       submit: "Send Reset Link",
@@ -62,22 +64,25 @@ export default {
     verifyEmailNotice: {
       title: "Verify your email",
       subtitle: "Please verify your email address to access all features.",
-      instructions: "We sent a verification link to your email address. Please click it to verify your account.",
+      instructions:
+        "We sent a verification link to your email address. Please click it to verify your account.",
       resendButton: "Resend Verification Email",
       resendSuccess: "Verification email has been resent successfully!",
       logout: "Log Out",
       toastNoEmail: "No email address found. Please log in again.",
-      toastError: "Failed to resend verification email. Please try again later.",
+      toastError:
+        "Failed to resend verification email. Please try again later.",
     },
     verifyEmail: {
       verifying: "Verifying your email...",
       verifyingSubtitle: "Please wait while we confirm your email address.",
       successTitle: "Email Verified!",
-      successSubtitle: "Thank you for verifying your email. You can now access all features.",
+      successSubtitle:
+        "Thank you for verifying your email. You can now access all features.",
       cta: "Go to Dashboard",
       errorTitle: "Verification Failed",
       resendButton: "Resend Verification Link",
       invalidLink: "The verification link is invalid or has expired.",
-    }
-  }
+    },
+  },
 };

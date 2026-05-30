@@ -13,8 +13,10 @@
       <!-- Left Column: Basic Info & Roles -->
       <div class="space-y-6">
         <div>
-          <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">
-            {{ $t('admin.users.modal.basicInfo') || 'Basic Information' }}
+          <h3
+            class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4"
+          >
+            {{ $t("admin.users.modal.basicInfo") || "Basic Information" }}
           </h3>
           <div class="grid grid-cols-1 gap-4">
             <AppInput
@@ -76,58 +78,95 @@
       </div>
 
       <!-- Right Column: Overrides -->
-      <div v-if="isEditing && internalForm.subscription" class="space-y-6">
+      <div
+        v-if="isEditing && internalForm.subscription"
+        class="space-y-6"
+      >
         <!-- Features Snapshot -->
-        <div class="p-5 bg-amber-50/50 dark:bg-amber-900/5 rounded-2xl border border-amber-100 dark:border-amber-900/20 overflow-hidden">
+        <div
+          class="p-5 bg-amber-50/50 dark:bg-amber-900/5 rounded-2xl border border-amber-100 dark:border-amber-900/20 overflow-hidden"
+        >
           <div class="flex items-center justify-between mb-2">
-            <h3 class="text-xs font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest">
+            <h3
+              class="text-xs font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest"
+            >
               {{ $t("admin.users.modal.jsonOverrides") }}
             </h3>
-            <button 
+            <button
               class="text-[10px] font-bold text-amber-600 underline"
               @click="toggleMode('features')"
             >
-              {{ editModes.features === 'visual' ? 'Switch to JSON' : 'Switch to Visual' }}
+              {{
+                editModes.features === "visual"
+                  ? "Switch to JSON"
+                  : "Switch to Visual"
+              }}
             </button>
           </div>
-          
-          <div class="p-2 mb-4 bg-amber-100/50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-900/40">
-            <p class="text-[10px] leading-tight text-amber-900 dark:text-amber-200 font-medium">
+
+          <div
+            class="p-2 mb-4 bg-amber-100/50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-900/40"
+          >
+            <p
+              class="text-[10px] leading-tight text-amber-900 dark:text-amber-200 font-medium"
+            >
               {{ $t("admin.users.modal.sensitiveDataWarning") }}
             </p>
           </div>
 
-          <div v-if="editModes.features === 'visual'" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+          <div
+            v-if="editModes.features === 'visual'"
+            class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+          >
             <!-- Feature Toggles -->
-            <div v-if="featuresData.features" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div 
-                v-for="key in booleanFeatures" 
+            <div
+              v-if="featuresData.features"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+            >
+              <div
+                v-for="key in booleanFeatures"
                 :key="key"
                 class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
               >
-                <span class="text-[11px] font-medium text-gray-600 dark:text-gray-400 capitalize">{{ key }}</span>
+                <span
+                  class="text-[11px] font-medium text-gray-600 dark:text-gray-400 capitalize"
+                >{{ key }}</span>
                 <AppToggle v-model="featuresData.features[key]" />
               </div>
             </div>
 
             <!-- Platforms Selection -->
-            <div v-if="featuresData.platforms" class="pt-2 border-t border-amber-100 dark:border-amber-900/20">
-              <h4 class="text-[10px] font-bold text-amber-900/50 uppercase mb-2">
+            <div
+              v-if="featuresData.platforms"
+              class="pt-2 border-t border-amber-100 dark:border-amber-900/20"
+            >
+              <h4
+                class="text-[10px] font-bold text-amber-900/50 uppercase mb-2"
+              >
                 {{ $t("admin.plans.platforms") }}
               </h4>
               <div class="flex flex-wrap gap-x-4 gap-y-2">
-                <label 
-                  v-for="platform in ['youtube', 'twitch', 'tiktok', 'facebook', 'kick', 'local']" 
+                <label
+                  v-for="platform in [
+                    'youtube',
+                    'twitch',
+                    'tiktok',
+                    'facebook',
+                    'kick',
+                    'local',
+                  ]"
                   :key="platform"
                   class="flex items-center gap-2 cursor-pointer group"
                 >
-                  <input 
-                    type="checkbox" 
-                    :value="platform" 
+                  <input
                     v-model="featuresData.platforms"
+                    type="checkbox"
+                    :value="platform"
                     class="w-4 h-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
-                  />
-                  <span class="text-[10px] uppercase font-black text-amber-700 dark:text-amber-400 group-hover:text-amber-900 transition-colors">
+                  >
+                  <span
+                    class="text-[10px] uppercase font-black text-amber-700 dark:text-amber-400 group-hover:text-amber-900 transition-colors"
+                  >
                     {{ platform }}
                   </span>
                 </label>
@@ -135,7 +174,9 @@
             </div>
 
             <!-- Limits & Main Params -->
-            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-amber-100 dark:border-amber-900/20">
+            <div
+              class="grid grid-cols-2 gap-3 pt-2 border-t border-amber-100 dark:border-amber-900/20"
+            >
               <AppInput
                 v-model="featuresData.streamQuality"
                 :label="$t('admin.users.modal.quality')"
@@ -161,16 +202,29 @@
                   type="number"
                 >
                   <template #append>
-                    <span class="text-[10px] text-amber-600 font-bold pr-2 bg-white dark:bg-gray-800">
-                      {{ (featuresData.storageLimit / (1024 * 1024 * 1024)).toFixed(1) }} GB
+                    <span
+                      class="text-[10px] text-amber-600 font-bold pr-2 bg-white dark:bg-gray-800"
+                    >
+                      {{
+                        (
+                          featuresData.storageLimit /
+                          (1024 * 1024 * 1024)
+                        ).toFixed(1)
+                      }}
+                      GB
                     </span>
                   </template>
                 </AppInput>
               </div>
             </div>
 
-            <div v-if="featuresData.limits" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-amber-100 dark:border-amber-900/20">
-              <h4 class="col-span-2 text-[10px] font-bold text-amber-900/50 uppercase">
+            <div
+              v-if="featuresData.limits"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-amber-100 dark:border-amber-900/20"
+            >
+              <h4
+                class="col-span-2 text-[10px] font-bold text-amber-900/50 uppercase"
+              >
                 {{ $t("admin.users.modal.limits") }}
               </h4>
               <AppInput
@@ -188,38 +242,71 @@
             v-model="featuresJson"
             rows="12"
             class="font-mono text-[10px]"
-            :error="jsonError ? $t('admin.users.modal.invalidJson') + ': ' + jsonError : null"
+            :error="
+              jsonError
+                ? $t('admin.users.modal.invalidJson') + ': ' + jsonError
+                : null
+            "
           />
         </div>
 
         <!-- Effective Limits Summary (If addons exist) -->
-        <div 
-          v-if="internalForm.subscription.addons && internalForm.subscription.addons.length > 0" 
+        <div
+          v-if="
+            internalForm.subscription.addons &&
+              internalForm.subscription.addons.length > 0
+          "
           class="p-4 bg-primary-50/50 dark:bg-primary-900/10 rounded-2xl border border-primary-100 dark:border-primary-900/20 shadow-sm"
         >
-          <h3 class="text-[10px] font-black text-primary-800 dark:text-primary-400 uppercase tracking-widest mb-3">
+          <h3
+            class="text-[10px] font-black text-primary-800 dark:text-primary-400 uppercase tracking-widest mb-3"
+          >
             {{ $t("admin.users.modal.effectiveLimits") }}
           </h3>
           <div class="grid grid-cols-2 gap-4 mb-3">
-            <div class="p-2 rounded-xl bg-white dark:bg-gray-800 border border-primary-100 dark:border-primary-800">
-              <p class="text-[9px] text-gray-400 uppercase font-black">{{ $t("admin.users.modal.streams") }}</p>
+            <div
+              class="p-2 rounded-xl bg-white dark:bg-gray-800 border border-primary-100 dark:border-primary-800"
+            >
+              <p class="text-[9px] text-gray-400 uppercase font-black">
+                {{ $t("admin.users.modal.streams") }}
+              </p>
               <p class="text-lg font-black text-primary-600">
-                {{ internalForm.subscription.effectiveLimits?.concurrent_streams || internalForm.subscription.effectiveLimits?.concurrentStreams || '-' }}
+                {{
+                  internalForm.subscription.effectiveLimits
+                    ?.concurrent_streams ||
+                    internalForm.subscription.effectiveLimits
+                      ?.concurrentStreams ||
+                    "-"
+                }}
               </p>
             </div>
-            <div class="p-2 rounded-xl bg-white dark:bg-gray-800 border border-primary-100 dark:border-primary-800">
-              <p class="text-[9px] text-gray-400 uppercase font-black">{{ $t("admin.users.modal.storageLimit") }}</p>
+            <div
+              class="p-2 rounded-xl bg-white dark:bg-gray-800 border border-primary-100 dark:border-primary-800"
+            >
+              <p class="text-[9px] text-gray-400 uppercase font-black">
+                {{ $t("admin.users.modal.storageLimit") }}
+              </p>
               <p class="text-lg font-black text-primary-600">
-                {{ formatStorageGB(internalForm.subscription.effectiveLimits?.storage_limit || internalForm.subscription.effectiveLimits?.storageLimit) }} GB
+                {{
+                  formatStorageGB(
+                    internalForm.subscription.effectiveLimits?.storage_limit ||
+                      internalForm.subscription.effectiveLimits?.storageLimit,
+                  )
+                }}
+                GB
               </p>
             </div>
           </div>
-          
+
           <div class="pt-3 border-t border-primary-100 dark:border-primary-800">
-            <h4 class="text-[9px] font-black text-primary-400 uppercase tracking-widest mb-1">{{ $t("admin.users.modal.addonsTitle") }}</h4>
-            <div 
-              v-for="addon in internalForm.subscription.addons" 
-              :key="addon.id" 
+            <h4
+              class="text-[9px] font-black text-primary-400 uppercase tracking-widest mb-1"
+            >
+              {{ $t("admin.users.modal.addonsTitle") }}
+            </h4>
+            <div
+              v-for="addon in internalForm.subscription.addons"
+              :key="addon.id"
               class="flex items-center justify-between text-[11px] font-medium text-gray-700 dark:text-gray-300"
             >
               <span>{{ addon.name }}</span>
@@ -229,20 +316,31 @@
         </div>
 
         <!-- Usage Overrides -->
-        <div class="p-5 bg-blue-50/50 dark:bg-blue-900/5 rounded-2xl border border-blue-100 dark:border-blue-900/20">
+        <div
+          class="p-5 bg-blue-50/50 dark:bg-blue-900/5 rounded-2xl border border-blue-100 dark:border-blue-900/20"
+        >
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest">
+            <h3
+              class="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest"
+            >
               {{ $t("admin.users.modal.usage.title") }}
             </h3>
-            <button 
+            <button
               class="text-[10px] font-bold text-blue-600 underline"
               @click="toggleMode('usage')"
             >
-              {{ editModes.usage === 'visual' ? 'Switch to JSON' : 'Switch to Visual' }}
+              {{
+                editModes.usage === "visual"
+                  ? "Switch to JSON"
+                  : "Switch to Visual"
+              }}
             </button>
           </div>
 
-          <div v-if="editModes.usage === 'visual'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            v-if="editModes.usage === 'visual'"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
             <AppInput
               v-model.number="usageData.streamsActive"
               :label="$t('admin.users.modal.usage.streamsActive')"
@@ -260,8 +358,13 @@
               type="number"
             >
               <template #append>
-                <span class="text-[10px] text-blue-600 font-bold pr-2 bg-white dark:bg-gray-800">
-                  {{ (usageData.storageUsed / (1024 * 1024 * 1024)).toFixed(2) }} GB
+                <span
+                  class="text-[10px] text-blue-600 font-bold pr-2 bg-white dark:bg-gray-800"
+                >
+                  {{
+                    (usageData.storageUsed / (1024 * 1024 * 1024)).toFixed(2)
+                  }}
+                  GB
                 </span>
               </template>
             </AppInput>
@@ -278,7 +381,11 @@
             v-model="usageJson"
             rows="8"
             class="font-mono text-[10px]"
-            :error="usageJsonError ? $t('admin.users.modal.invalidJson') + ': ' + usageJsonError : null"
+            :error="
+              usageJsonError
+                ? $t('admin.users.modal.invalidJson') + ': ' + usageJsonError
+                : null
+            "
           />
         </div>
       </div>
@@ -310,14 +417,14 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
+import { computed, ref, watch } from "vue";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
 import AppToggle from "@/components/admin/ui/Form/AppToggle.vue";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
@@ -347,37 +454,39 @@ const GB = 1024 * 1024 * 1024;
 
 const booleanFeatures = computed(() => {
   if (!featuresData.value.features) return [];
-  return Object.keys(featuresData.value.features).filter(key => typeof featuresData.value.features[key] === 'boolean');
+  return Object.keys(featuresData.value.features).filter(
+    (key) => typeof featuresData.value.features[key] === "boolean",
+  );
 });
 
 const editModes = ref({
-  features: 'visual',
-  usage: 'visual'
+  features: "visual",
+  usage: "visual",
 });
 
 const featuresData = ref({});
 const usageData = ref({});
 
 const toggleMode = (type) => {
-  if (editModes.value[type] === 'visual') {
+  if (editModes.value[type] === "visual") {
     // Switching to JSON
-    if (type === 'features') {
+    if (type === "features") {
       featuresJson.value = JSON.stringify(featuresData.value, null, 2);
     } else {
       usageJson.value = JSON.stringify(usageData.value, null, 2);
     }
-    editModes.value[type] = 'json';
+    editModes.value[type] = "json";
   } else {
     // Switching to Visual
     try {
-      if (type === 'features') {
+      if (type === "features") {
         featuresData.value = JSON.parse(featuresJson.value);
       } else {
         usageData.value = JSON.parse(usageJson.value);
       }
-      editModes.value[type] = 'visual';
+      editModes.value[type] = "visual";
     } catch (e) {
-      alert('Invalid JSON, cannot switch to visual mode');
+      alert("Invalid JSON, cannot switch to visual mode");
     }
   }
 };
@@ -413,7 +522,9 @@ watch(
   (newForm) => {
     internalForm.value = { ...newForm };
     if (newForm.subscription?.featuresSnapshot) {
-      featuresData.value = JSON.parse(JSON.stringify(newForm.subscription.featuresSnapshot));
+      featuresData.value = JSON.parse(
+        JSON.stringify(newForm.subscription.featuresSnapshot),
+      );
       featuresJson.value = JSON.stringify(featuresData.value, null, 2);
     } else {
       featuresData.value = {};
@@ -437,17 +548,25 @@ watch(
   { deep: true, immediate: true },
 );
 
-watch(featuresData, (val) => {
-  if (editModes.value.features === 'visual') {
-    featuresJson.value = JSON.stringify(val, null, 2);
-  }
-}, { deep: true });
+watch(
+  featuresData,
+  (val) => {
+    if (editModes.value.features === "visual") {
+      featuresJson.value = JSON.stringify(val, null, 2);
+    }
+  },
+  { deep: true },
+);
 
-watch(usageData, (val) => {
-  if (editModes.value.usage === 'visual') {
-    usageJson.value = JSON.stringify(val, null, 2);
-  }
-}, { deep: true });
+watch(
+  usageData,
+  (val) => {
+    if (editModes.value.usage === "visual") {
+      usageJson.value = JSON.stringify(val, null, 2);
+    }
+  },
+  { deep: true },
+);
 
 watch(featuresJson, (val) => {
   if (!val) {
@@ -457,7 +576,7 @@ watch(featuresJson, (val) => {
   try {
     const parsed = JSON.parse(val);
     jsonError.value = null;
-    if (editModes.value.features === 'json') {
+    if (editModes.value.features === "json") {
       featuresData.value = parsed;
     }
   } catch (e) {
@@ -473,7 +592,7 @@ watch(usageJson, (val) => {
   try {
     const parsed = JSON.parse(val);
     usageJsonError.value = null;
-    if (editModes.value.usage === 'json') {
+    if (editModes.value.usage === "json") {
       usageData.value = parsed;
     }
   } catch (e) {

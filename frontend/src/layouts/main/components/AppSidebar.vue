@@ -8,7 +8,7 @@
     <div
       :class="[
         'flex items-center justify-between transition-all duration-300',
-        collapsed ? 'flex-col gap-4 px-2 py-6' : 'px-6 py-8'
+        collapsed ? 'flex-col gap-4 px-2 py-6' : 'px-6 py-8',
       ]"
     >
       <router-link

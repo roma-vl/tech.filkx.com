@@ -4,6 +4,7 @@ namespace App\Api\Admin\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Schema(
@@ -47,7 +48,7 @@ class AuditLogResource extends JsonResource
                 'name' => $this->user?->name,
                 'email' => $this->user?->email,
                 'avatar' => $this->user?->avatar_path
-                    ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->user?->avatar_path)
+                    ? Storage::disk('public')->url($this->user?->avatar_path)
                     : null,
             ],
             'subjectType' => $this->subject_type,

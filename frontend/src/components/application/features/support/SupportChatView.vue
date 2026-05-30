@@ -10,10 +10,16 @@
         v-if="activeTicket?.handled_by === 'ai'"
         class="p-4 rounded-[2rem] bg-gradient-to-r from-primary-50 to-white dark:from-primary-900/20 dark:to-gray-800/40 border border-primary-100/50 dark:border-primary-800/30 mb-2 shadow-sm relative overflow-hidden group"
       >
-        <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary-500/10 rounded-full blur-xl group-hover:bg-primary-500/20 transition-colors" />
+        <div
+          class="absolute -right-4 -top-4 w-16 h-16 bg-primary-500/10 rounded-full blur-xl group-hover:bg-primary-500/20 transition-colors"
+        />
         <div class="flex gap-4 relative z-10">
-          <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0 shadow-inner">
-             <SparklesIcon class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+          <div
+            class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0 shadow-inner"
+          >
+            <SparklesIcon
+              class="w-4 h-4 text-primary-600 dark:text-primary-400"
+            />
           </div>
           <div
             class="text-[11px] font-medium leading-relaxed text-gray-600 dark:text-gray-300 pt-0.5"
@@ -30,9 +36,13 @@
         <div
           class="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-900/30 dark:to-primary-800/10 flex items-center justify-center mb-6 shadow-sm border border-primary-200/50 dark:border-primary-700/30"
         >
-          <SparklesIcon class="w-10 h-10 text-primary-600 dark:text-primary-500 animate-pulse" />
+          <SparklesIcon
+            class="w-10 h-10 text-primary-600 dark:text-primary-500 animate-pulse"
+          />
         </div>
-        <h4 class="font-black text-xl mb-3 text-gray-800 dark:text-gray-100 tracking-tight">
+        <h4
+          class="font-black text-xl mb-3 text-gray-800 dark:text-gray-100 tracking-tight"
+        >
           {{ t("support.hi") }}
         </h4>
         <p

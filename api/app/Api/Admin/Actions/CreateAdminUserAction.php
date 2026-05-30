@@ -2,7 +2,10 @@
 
 namespace App\Api\Admin\Actions;
 
+use App\Api\V1\Dto\AuditLogDto;
+use App\Events\AuditEvent;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class CreateAdminUserAction
@@ -16,11 +19,11 @@ class CreateAdminUserAction
             'status' => 'active',
         ]);
 
-        event(new \App\Events\AuditEvent(new \App\Api\V1\Dto\AuditLogDto(
+        event(new AuditEvent(new AuditLogDto(
             action: 'user.created',
             domain: 'team',
             message: "Admin created new user: {$user->name} ({$user->email})",
-            userId: \Illuminate\Support\Facades\Auth::id(),
+            userId: Auth::id(),
             subjectType: User::class,
             subjectId: $user->id,
             payload: ['user_id' => $user->id, 'email' => $user->email],

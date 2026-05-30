@@ -31,11 +31,11 @@
           class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 font-medium"
         >
           <div class="flex items-center gap-1">
-            <MailIcon class="w-3.5 h-3.5 opacity-60"/>
+            <MailIcon class="w-3.5 h-3.5 opacity-60" />
             {{ member.email }}
           </div>
           <div class="flex items-center gap-1">
-            <ClockIcon class="w-3.5 h-3.5 opacity-60"/>
+            <ClockIcon class="w-3.5 h-3.5 opacity-60" />
             {{ t("admin.team.member.last_active") }}: {{ member.lastActive }}
           </div>
         </div>
@@ -64,12 +64,12 @@
 </template>
 
 <script setup>
-import {useI18n} from "vue-i18n";
-import {ClockIcon, MailIcon} from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
+import { ClockIcon, MailIcon } from "lucide-vue-next";
 import avatarPlaceholder from "@/assets/images/avatars/info/empty.png";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   member: {
