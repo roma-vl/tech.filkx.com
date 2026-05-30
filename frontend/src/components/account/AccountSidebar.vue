@@ -69,30 +69,30 @@ const handleLogout = async () => {
     <!-- Promo Banners (Rozetka style) -->
     <div class="flex flex-col gap-3">
       <!-- Green Card Banner -->
-<!--      <div class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-lg p-4 flex gap-3 items-start relative overflow-hidden group hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all">-->
-<!--        <span class="material-symbols-outlined text-[22px] text-[#00a046] shrink-0 mt-0.5">credit_card</span>-->
-<!--        <div class="min-w-0">-->
-<!--          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200">-->
-<!--            Картка FilkxTech-->
-<!--          </h4>-->
-<!--          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5 font-medium">-->
-<!--            Персональні знижки та накопичувальні бонуси-->
-<!--          </p>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-lg p-4 flex gap-3 items-start relative overflow-hidden group hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all">-->
+      <!--        <span class="material-symbols-outlined text-[22px] text-[#00a046] shrink-0 mt-0.5">credit_card</span>-->
+      <!--        <div class="min-w-0">-->
+      <!--          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200">-->
+      <!--            Картка FilkxTech-->
+      <!--          </h4>-->
+      <!--          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5 font-medium">-->
+      <!--            Персональні знижки та накопичувальні бонуси-->
+      <!--          </p>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <!-- Yellow Card Banner -->
-<!--      <div class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-lg p-4 flex gap-3 items-start relative overflow-hidden group hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all">-->
-<!--        <span class="material-symbols-outlined text-[22px] text-amber-500 shrink-0 mt-0.5">star</span>-->
-<!--        <div class="min-w-0">-->
-<!--          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 font-sans">-->
-<!--            Підписка Smart-->
-<!--          </h4>-->
-<!--          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5 font-medium">-->
-<!--            Безкоштовна доставка та пріоритетна підтримка-->
-<!--          </p>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-lg p-4 flex gap-3 items-start relative overflow-hidden group hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all">-->
+      <!--        <span class="material-symbols-outlined text-[22px] text-amber-500 shrink-0 mt-0.5">star</span>-->
+      <!--        <div class="min-w-0">-->
+      <!--          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 font-sans">-->
+      <!--            Підписка Smart-->
+      <!--          </h4>-->
+      <!--          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5 font-medium">-->
+      <!--            Безкоштовна доставка та пріоритетна підтримка-->
+      <!--          </p>-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
     <!-- User info -->
@@ -143,7 +143,7 @@ const handleLogout = async () => {
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
         >{{ item.icon }}</span>
-        <span class="text-xs tracking-wide">{{ item.name }}</span>
+        <span class="text-[15px] tracking-wide">{{ item.name }}</span>
 
         <!-- Badges (Rozetka style) -->
         <span
@@ -183,7 +183,7 @@ const handleLogout = async () => {
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
         >{{ item.icon }}</span>
-        <span class="text-xs tracking-wide">{{ item.name }}</span>
+        <span class="text-[15px] tracking-wide">{{ item.name }}</span>
         <span
           v-if="isActive(item)"
           class="ml-auto material-symbols-outlined text-[16px]"
@@ -191,7 +191,7 @@ const handleLogout = async () => {
       </button>
 
       <button
-        class="flex items-center gap-3 text-rose-500 hover:bg-rose-500/8 dark:hover:bg-rose-500/12 rounded-xl px-3 py-2.5 transition-all duration-200 mt-2 w-full text-left font-black text-xs"
+        class="flex items-center gap-3 text-rose-500 hover:bg-rose-500/8 dark:hover:bg-rose-500/12 rounded-xl px-3 py-2.5 transition-all duration-200 mt-2 w-full text-left font-black text-[15px]"
         @click="handleLogout"
       >
         <span class="material-symbols-outlined text-[20px]">logout</span>
