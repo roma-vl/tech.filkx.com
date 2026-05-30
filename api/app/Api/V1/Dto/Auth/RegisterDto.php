@@ -8,6 +8,5 @@ readonly class RegisterDto
         public string $name,
         public string $email,
         public string $password,
-        public ?string $affiliateRef = null,
     ) {}
 }

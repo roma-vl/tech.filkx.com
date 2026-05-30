@@ -411,12 +411,6 @@ const navItems = shallowRef([
     ],
   },
   {
-    key: "affiliates",
-    name: "Партнери",
-    path: "/admin/affiliates",
-    icon: markRaw(UserCircleIcon),
-  },
-  {
     key: "marketing",
     name: t("admin.nav.marketing"),
     icon: markRaw(TagIcon),

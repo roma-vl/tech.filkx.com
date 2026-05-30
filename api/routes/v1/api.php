@@ -105,7 +105,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::delete('/user/avatar', [UserController::class, 'deleteAvatar']);
 
     // User settings
-    Route::post('/user/settings/referrer', [UserController::class, 'setReferrer']);
     Route::get('/user/settings/preferences', [UserController::class, 'getPreferences']);
     Route::put('/user/settings/preferences', [UserController::class, 'updatePreferences']);
 

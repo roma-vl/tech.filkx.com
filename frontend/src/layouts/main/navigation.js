@@ -5,7 +5,6 @@ import CalendarIcon from "@/components/Icon/CalendarIcon.vue";
 import SettingsIcon from "@/components/Icon/SettingsIcon.vue";
 import HelperCenterIcon from "@/components/Icon/HelperCenterIcon.vue";
 import SubscriptionIcon from "@/components/Icon/SubscriptionIcon.vue";
-import AffiliateIcon from "@/components/Icon/AffiliateIcon.vue";
 import AdminIcon from "@/components/Icon/AdminIcon.vue";
 
 export const navigationGroups = [
@@ -37,23 +36,6 @@ export const navigationGroups = [
         icon: CalendarIcon,
         to: "/scheduler",
         featureKey: "hasScheduler",
-      },
-      {
-        id: "affiliate",
-        labelKey: "navigation.affiliate",
-        icon: AffiliateIcon,
-        items: [
-          {
-            id: "affiliate-dashboard",
-            labelKey: "navigation.affiliateDashboard",
-            to: "/affiliate/dashboard",
-          },
-          {
-            id: "affiliate-docs",
-            labelKey: "navigation.affiliateDocs",
-            to: "/affiliate/docs",
-          },
-        ],
       },
     ],
   },

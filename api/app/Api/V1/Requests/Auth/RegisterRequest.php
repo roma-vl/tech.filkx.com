@@ -28,7 +28,6 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'affiliate_ref' => ['nullable', 'string'],
             'recaptcha_token' => ['sometimes', 'nullable', 'string', new Recaptcha],
         ];
     }
