@@ -16,12 +16,9 @@
     </div>
 
     <div v-else>
-      <ProductsTab
-        :products="dbProducts"
-        :categories="dbCategories"
-        :brands="dbBrands"
+      <AttributesTab
         :attributes="dbAttributes"
-        @refresh="fetchAllData"
+        @refresh="fetchAttributes"
       />
     </div>
   </div>
@@ -30,36 +27,24 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import api from "@/services/api";
-import ProductsTab from "@/components/admin/features/catalog/ProductsTab.vue";
+import AttributesTab from "@/components/admin/features/catalog/AttributesTab.vue";
 
 const isLoading = ref(false);
-const dbProducts = ref([]);
-const dbCategories = ref([]);
-const dbBrands = ref([]);
 const dbAttributes = ref([]);
 
-const fetchAllData = async () => {
+const fetchAttributes = async () => {
   isLoading.value = true;
   try {
-    const productsRes = await api.get("/admin/products");
-    dbProducts.value = productsRes.data.data;
-
-    const catsRes = await api.get("/admin/categories");
-    dbCategories.value = catsRes.data.data;
-
-    const brandsRes = await api.get("/admin/brands");
-    dbBrands.value = brandsRes.data.data;
-
     const attrsRes = await api.get("/admin/attributes");
     dbAttributes.value = attrsRes.data.data;
   } catch (error) {
-    console.error("Failed to load catalog data:", error);
+    console.error("Failed to load attributes:", error);
   } finally {
     isLoading.value = false;
   }
 };
 
 onMounted(() => {
-  fetchAllData();
+  fetchAttributes();
 });
 </script>

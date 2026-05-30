@@ -377,10 +377,15 @@ const navItems = shallowRef([
     icon: markRaw(Squares2X2Icon),
   },
   {
-    key: "products",
-    name: t("admin.nav.products"),
-    path: "/admin/products",
+    key: "catalog",
+    name: t("admin.nav.catalog"),
     icon: markRaw(ShoppingBagIcon),
+    children: [
+      { name: t("admin.nav.products"), path: "/admin/products" },
+      { name: t("admin.nav.categories"), path: "/admin/categories" },
+      { name: t("admin.nav.brands"), path: "/admin/brands" },
+      { name: t("admin.nav.attributes"), path: "/admin/attributes" },
+    ],
   },
   {
     key: "orders",

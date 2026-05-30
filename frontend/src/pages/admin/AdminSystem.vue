@@ -65,20 +65,13 @@
       />
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Network Monitoring (NEW) -->
+    <div class="grid grid-cols-1 gap-8">
+      <!-- Network Monitoring -->
       <NetworkCard
         :incoming="health.network?.incoming || 0"
         :outgoing="health.network?.outgoing || 0"
         :total-received="health.network?.totalReceived || 0"
         :total-sent="health.network?.totalSent || 0"
-      />
-
-      <!-- Streaming SaaS Metrics (NEW) -->
-      <StreamingStatsCard
-        :active-streams="streamingStats.active"
-        :encoder-load="streamingStats.encoderLoad"
-        :streaming-jobs="streamingStats.jobs"
       />
     </div>
 
@@ -118,7 +111,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   ArrowPathIcon,
@@ -133,7 +126,6 @@ import AppButton from "@/components/application/ui/Button/AppButton.vue";
 import SystemHealthStatus from "@/components/admin/features/system/SystemHealthStatus.vue";
 import ResourceCard from "@/components/admin/features/system/ResourceCard.vue";
 import NetworkCard from "@/components/admin/features/system/NetworkCard.vue";
-import StreamingStatsCard from "@/components/admin/features/system/StreamingStatsCard.vue";
 import ServicesTable from "@/components/admin/features/system/ServicesTable.vue";
 
 const { t } = useI18n();
@@ -143,16 +135,9 @@ const health = ref({
   database: {},
   services: [],
   network: { incoming: 0, outgoing: 0 },
-  streaming: { activeStreams: 0, encoderLoad: 0, jobs: [] },
 });
 const loading = ref(true);
 let pollInterval = null;
-
-const streamingStats = computed(() => ({
-  active: health.value.streaming?.activeStreams || 0,
-  encoderLoad: health.value.streaming?.encoderLoad || 0,
-  jobs: health.value.streaming?.jobs || [],
-}));
 
 const fetchHealth = async () => {
   loading.value = true;

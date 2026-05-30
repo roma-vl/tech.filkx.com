@@ -18,6 +18,9 @@ import AdminAccountingLedger from "@/pages/admin/accounting/AdminAccountingLedge
 import AdminAccountingInvoices from "@/pages/admin/accounting/AdminAccountingInvoices.vue";
 import AdminProducts from "@/pages/admin/AdminProducts.vue";
 import AdminOrders from "@/pages/admin/AdminOrders.vue";
+import AdminCategories from "@/pages/admin/AdminCategories.vue";
+import AdminBrands from "@/pages/admin/AdminBrands.vue";
+import AdminAttributes from "@/pages/admin/AdminAttributes.vue";
 
 export default {
   path: "/admin",
@@ -44,6 +47,33 @@ export default {
       meta: {
         titleKey: "admin.products.title",
         descriptionKey: "admin.products.description",
+      },
+    },
+    {
+      path: "categories",
+      name: "admin-categories",
+      component: AdminCategories,
+      meta: {
+        titleKey: "admin.categories.title",
+        descriptionKey: "admin.categories.description",
+      },
+    },
+    {
+      path: "brands",
+      name: "admin-brands",
+      component: AdminBrands,
+      meta: {
+        titleKey: "admin.brands.title",
+        descriptionKey: "admin.brands.description",
+      },
+    },
+    {
+      path: "attributes",
+      name: "admin-attributes",
+      component: AdminAttributes,
+      meta: {
+        titleKey: "admin.attributes.title",
+        descriptionKey: "admin.attributes.description",
       },
     },
     {

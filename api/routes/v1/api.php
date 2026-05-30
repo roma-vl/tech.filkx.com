@@ -1,5 +1,6 @@
 <?php
 
+use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
@@ -144,6 +145,9 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::prefix('admin')->middleware(['auth:api', IdentifyImpersonation::class, 'role:admin|administrator|moderator|support'])->group(function () {
 
         Route::get('stats', [AdminStatsController::class, 'index']);
+        Route::get('analytics/overview', [AdminStatsController::class, 'overview']);
+        Route::get('analytics/charts', [AdminStatsController::class, 'charts']);
+        Route::get('analytics/distributions', [AdminStatsController::class, 'distributions']);
         Route::get('system/health', [AdminSystemController::class, 'health']);
 
         Route::get('emails/campaigns', [AdminEmailController::class, 'index']);
@@ -223,6 +227,16 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::delete('attributes/{id}', [AdminAttributeController::class, 'destroy']);
 
         // Accounting Module
+        Route::get('accounting/ledger', [AdminAccountingController::class, 'ledger']);
+        Route::get('accounting/invoices', [AdminAccountingController::class, 'invoices']);
+        Route::get('accounting/stats', [AdminAccountingController::class, 'accountingStats']);
+        Route::get('accounting/export', [AdminAccountingController::class, 'export']);
+
+        Route::get('billing/stats', [AdminAccountingController::class, 'billingStats']);
+        Route::get('billing/payments/pending', [AdminAccountingController::class, 'pendingPayments']);
+        Route::post('billing/payments/{id}/confirm', [AdminAccountingController::class, 'confirmPayment']);
+        Route::get('billing/payments/{id}/proof', [AdminAccountingController::class, 'viewProof']);
+        Route::get('billing/subscriptions', [AdminAccountingController::class, 'subscriptions']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);
