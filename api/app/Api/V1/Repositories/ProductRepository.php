@@ -6,8 +6,45 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-class ProductRepository
+class ProductRepository implements ProductRepositoryInterface
 {
+    public function all(): Collection
+    {
+        return Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue',
+        ])->get();
+    }
+
+    public function find(int $id): ?Product
+    {
+        return Product::find($id);
+    }
+
+    public function create(array $data): Product
+    {
+        return Product::create($data);
+    }
+
+    public function update(Product $product, array $data): Product
+    {
+        $product->update($data);
+        return $product;
+    }
+
+    public function delete(Product $product): bool
+    {
+        return (bool) $product->delete();
+    }
+
+    public function slugExists(string $slug): bool
+    {
+        return Product::where('slug', $slug)->exists();
+    }
+
     public function queryActive(): Builder
     {
         return Product::with([

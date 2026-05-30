@@ -2,330 +2,53 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\Product;
-use App\Models\ProductAttributeValue;
-use App\Models\ProductVariant;
-use App\Models\Stock;
-use App\Models\Warehouse;
+use App\Api\Admin\Actions\Product\CreateAdminProductAction;
+use App\Api\Admin\Actions\Product\DeleteAdminProductAction;
+use App\Api\Admin\Actions\Product\ListAdminProductsAction;
+use App\Api\Admin\Actions\Product\UpdateAdminProductAction;
+use App\Api\Admin\Actions\Product\UploadProductImageAction;
+use App\Api\Admin\Dto\ProductDto;
+use App\Api\Admin\Requests\StoreProductRequest;
+use App\Api\Admin\Requests\UpdateProductRequest;
+use App\Api\Admin\Requests\UploadProductImageRequest;
+use App\Api\Admin\Resources\AdminProductResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminProductController extends BaseApiController
 {
-    public function index(Request $request): JsonResponse
+    public function index(ListAdminProductsAction $action): JsonResponse
     {
-        $products = Product::with([
-            'brand',
-            'categories',
-            'variants.stocks',
-            'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue',
-        ])->get();
+        $products = $action->execute();
 
-        $mappedProducts = $products->map(function ($product) {
-            $variantsMapped = $product->variants->map(function ($variant) {
-                // Read images from dimensions json
-                $images = $variant->dimensions['images'] ?? [];
-                if (empty($images)) {
-                    // Fallback to legacy single image if present
-                    $legacyImage = $variant->dimensions['image'] ?? null;
-                    if ($legacyImage) {
-                        $images = [['url' => $legacyImage, 'isPrimary' => true]];
-                    }
-                }
-
-                $attrsMapped = $variant->attributeValues->map(function ($pav) {
-                    return [
-                        'attributeId' => $pav->attribute_id,
-                        'attributeCode' => $pav->attribute->code ?? '',
-                        'attributeName' => $pav->attribute->name['uk'] ?? $pav->attribute->name['en'] ?? '',
-                        'valueId' => $pav->attribute_value_id,
-                        'value' => $pav->attributeValue ? ($pav->attributeValue->value['uk'] ?? $pav->attributeValue->value['value'] ?? $pav->attributeValue->value) : $pav->custom_value,
-                    ];
-                });
-
-                return [
-                    'id' => $variant->id,
-                    'sku' => $variant->sku,
-                    'price' => (float) $variant->price,
-                    'oldPrice' => $variant->old_price ? (float) $variant->old_price : null,
-                    'stock' => $variant->stocks->sum('quantity'),
-                    'weight' => $variant->weight ? (float) $variant->weight : null,
-                    'images' => $images,
-                    'attributes' => $attrsMapped,
-                ];
-            });
-
-            // Mapped properties for list view (take first variant's details)
-            $firstVar = $variantsMapped->first();
-            $primaryImage = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop';
-            if ($firstVar && ! empty($firstVar['images'])) {
-                foreach ($firstVar['images'] as $img) {
-                    if (! empty($img['isPrimary'])) {
-                        $primaryImage = $img['url'];
-                        break;
-                    }
-                }
-                if ($primaryImage === 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop') {
-                    $primaryImage = $firstVar['images'][0]['url'] ?? $primaryImage;
-                }
-            }
-
-            return [
-                'id' => $product->id,
-                'nameUk' => $product->name['uk'] ?? '',
-                'nameEn' => $product->name['en'] ?? '',
-                'descriptionUk' => $product->description['uk'] ?? '',
-                'descriptionEn' => $product->description['en'] ?? '',
-                'status' => $product->status,
-                'isHot' => (bool) $product->is_hot,
-                'isRecommended' => (bool) $product->is_recommended,
-                'brandId' => $product->brand_id,
-                'brandName' => $product->brand ? $product->brand->name : null,
-                'categoryId' => $product->categories->first() ? $product->categories->first()->id : null,
-                'categoryName' => $product->categories->first() ? ($product->categories->first()->name['uk'] ?? $product->categories->first()->name['en']) : null,
-                'variants' => $variantsMapped,
-                // Quick fields for table compatibility
-                'name' => $product->name['uk'] ?? $product->name['en'] ?? '',
-                'sku' => $firstVar ? $firstVar['sku'] : '',
-                'category' => $product->categories->first() ? ($product->categories->first()->name['uk'] ?? $product->categories->first()->name['en']) : '',
-                'price' => $firstVar ? $firstVar['price'] : 0,
-                'discountPrice' => $firstVar ? $firstVar['oldPrice'] : null,
-                'stock' => $firstVar ? $firstVar['stock'] : 0,
-                'image' => $primaryImage,
-                'description' => $product->description['uk'] ?? $product->description['en'] ?? '',
-            ];
-        });
-
-        return self::successfulResponseWithData($mappedProducts);
+        return self::successfulResponseWithData(AdminProductResource::collection($products));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request, CreateAdminProductAction $action): JsonResponse
     {
-        $request->validate([
-            'nameUk' => 'required|string',
-            'nameEn' => 'required|string',
-            'descriptionUk' => 'nullable|string',
-            'descriptionEn' => 'nullable|string',
-            'status' => 'required|string|in:active,draft,hidden',
-            'isHot' => 'nullable|boolean',
-            'isRecommended' => 'nullable|boolean',
-            'brandId' => 'nullable|exists:brands,id',
-            'categoryId' => 'required|exists:categories,id',
-            'variants' => 'required|array|min:1',
-            'variants.*.sku' => 'required|string|unique:product_variants,sku',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.oldPrice' => 'nullable|numeric|min:0',
-            'variants.*.stock' => 'required|integer|min:0',
-            'variants.*.weight' => 'nullable|numeric|min:0',
-            'variants.*.images' => 'required|array',
-            'variants.*.attributes' => 'nullable|array',
-        ]);
-
-        $slug = Str::slug($request->input('nameEn')) ?: 'product';
-        $originalSlug = $slug;
-        $count = 1;
-        while (Product::where('slug', $slug)->exists()) {
-            $slug = $originalSlug.'-'.$count;
-            $count++;
-        }
-
-        $product = Product::create([
-            'brand_id' => $request->input('brandId'),
-            'slug' => $slug,
-            'name' => [
-                'uk' => $request->input('nameUk'),
-                'en' => $request->input('nameEn'),
-            ],
-            'description' => [
-                'uk' => $request->input('descriptionUk', ''),
-                'en' => $request->input('descriptionEn', ''),
-            ],
-            'status' => $request->input('status'),
-            'is_hot' => (bool) $request->input('isHot', false),
-            'is_recommended' => (bool) $request->input('isRecommended', false),
-        ]);
-
-        $product->categories()->sync([$request->input('categoryId')]);
-
-        $warehouse = Warehouse::first() ?: Warehouse::create([
-            'name' => 'Головний склад',
-            'address' => 'Київ',
-        ]);
-
-        foreach ($request->input('variants') as $vData) {
-            $variant = ProductVariant::create([
-                'product_id' => $product->id,
-                'sku' => $vData['sku'],
-                'price' => $vData['price'],
-                'old_price' => $vData['oldPrice'] ?? null,
-                'weight' => $vData['weight'] ?? null,
-                'dimensions' => ['images' => $vData['images']],
-            ]);
-
-            Stock::create([
-                'variant_id' => $variant->id,
-                'warehouse_id' => $warehouse->id,
-                'quantity' => $vData['stock'],
-                'reserved' => 0,
-            ]);
-
-            if (! empty($vData['attributes'])) {
-                foreach ($vData['attributes'] as $attr) {
-                    ProductAttributeValue::create([
-                        'product_id' => $product->id,
-                        'variant_id' => $variant->id,
-                        'attribute_id' => $attr['attributeId'],
-                        'attribute_value_id' => $attr['valueId'] ?? null,
-                        'custom_value' => $attr['value'] ?? null,
-                    ]);
-                }
-            }
-        }
+        $product = $action->execute(ProductDto::fromRequest($request));
 
         return self::successfulResponseWithData(['id' => $product->id], Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateProductRequest $request, int $id, UpdateAdminProductAction $action): JsonResponse
     {
-        $product = Product::findOrFail($id);
-
-        $request->validate([
-            'nameUk' => 'required|string',
-            'nameEn' => 'required|string',
-            'descriptionUk' => 'nullable|string',
-            'descriptionEn' => 'nullable|string',
-            'status' => 'required|string|in:active,draft,hidden',
-            'isHot' => 'nullable|boolean',
-            'isRecommended' => 'nullable|boolean',
-            'brandId' => 'nullable|exists:brands,id',
-            'categoryId' => 'required|exists:categories,id',
-            'variants' => 'required|array|min:1',
-            'variants.*.sku' => 'required|string',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.oldPrice' => 'nullable|numeric|min:0',
-            'variants.*.stock' => 'required|integer|min:0',
-            'variants.*.weight' => 'nullable|numeric|min:0',
-            'variants.*.images' => 'required|array',
-            'variants.*.attributes' => 'nullable|array',
-        ]);
-
-        $product->update([
-            'brand_id' => $request->input('brandId'),
-            'name' => [
-                'uk' => $request->input('nameUk'),
-                'en' => $request->input('nameEn'),
-            ],
-            'description' => [
-                'uk' => $request->input('descriptionUk', ''),
-                'en' => $request->input('descriptionEn', ''),
-            ],
-            'status' => $request->input('status'),
-            'is_hot' => (bool) $request->input('isHot', false),
-            'is_recommended' => (bool) $request->input('isRecommended', false),
-        ]);
-
-        $product->categories()->sync([$request->input('categoryId')]);
-
-        $warehouse = Warehouse::first() ?: Warehouse::create([
-            'name' => 'Головний склад',
-            'address' => 'Київ',
-        ]);
-
-        $incomingVariantIds = [];
-
-        foreach ($request->input('variants') as $vData) {
-            $variant = null;
-            if (! empty($vData['id'])) {
-                $variant = ProductVariant::where('product_id', $product->id)
-                    ->where('id', $vData['id'])
-                    ->first();
-            }
-
-            if ($variant) {
-                $variant->update([
-                    'sku' => $vData['sku'],
-                    'price' => $vData['price'],
-                    'old_price' => $vData['oldPrice'] ?? null,
-                    'weight' => $vData['weight'] ?? null,
-                    'dimensions' => ['images' => $vData['images']],
-                ]);
-            } else {
-                $variant = ProductVariant::create([
-                    'product_id' => $product->id,
-                    'sku' => $vData['sku'],
-                    'price' => $vData['price'],
-                    'old_price' => $vData['oldPrice'] ?? null,
-                    'weight' => $vData['weight'] ?? null,
-                    'dimensions' => ['images' => $vData['images']],
-                ]);
-            }
-
-            $incomingVariantIds[] = $variant->id;
-
-            // Sync stocks
-            $stock = Stock::where('variant_id', $variant->id)->where('warehouse_id', $warehouse->id)->first();
-            if ($stock) {
-                $stock->update(['quantity' => $vData['stock']]);
-            } else {
-                Stock::create([
-                    'variant_id' => $variant->id,
-                    'warehouse_id' => $warehouse->id,
-                    'quantity' => $vData['stock'],
-                    'reserved' => 0,
-                ]);
-            }
-
-            // Sync attributes
-            ProductAttributeValue::where('variant_id', $variant->id)->delete();
-            if (! empty($vData['attributes'])) {
-                foreach ($vData['attributes'] as $attr) {
-                    ProductAttributeValue::create([
-                        'product_id' => $product->id,
-                        'variant_id' => $variant->id,
-                        'attribute_id' => $attr['attributeId'],
-                        'attribute_value_id' => $attr['valueId'] ?? null,
-                        'custom_value' => $attr['value'] ?? null,
-                    ]);
-                }
-            }
-        }
-
-        // Delete variants not present in the update payload
-        ProductVariant::where('product_id', $product->id)
-            ->whereNotIn('id', $incomingVariantIds)
-            ->delete();
+        $product = $action->execute($id, ProductDto::fromRequest($request));
 
         return self::successfulResponseWithData(['id' => $product->id]);
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $id, DeleteAdminProductAction $action): JsonResponse
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        $action->execute($id);
 
         return self::successfulResponse();
     }
 
-    public function uploadImage(Request $request): JsonResponse
+    public function uploadImage(UploadProductImageRequest $request, UploadProductImageAction $action): JsonResponse
     {
-        $request->validate([
-            'image' => 'required|image|max:10240', // Max 10MB
-        ]);
+        $result = $action->execute($request->file('image'));
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('catalog', 'public');
-            $url = asset('storage/'.$path);
-
-            return self::successfulResponseWithData([
-                'url' => $url,
-                'path' => $path,
-            ]);
-        }
-
-        return self::errorResponse('File not found', Response::HTTP_BAD_REQUEST);
+        return self::successfulResponseWithData($result);
     }
 }
