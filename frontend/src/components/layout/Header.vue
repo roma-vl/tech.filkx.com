@@ -206,9 +206,34 @@ const triggerVoiceSearch = () => {
   store.addToast("Voice search activated. Start speaking...", "info");
 };
 
+const unreadCount = ref(0);
+
+const fetchUnreadCount = async () => {
+  if (!authStore.isAuthenticated) {
+    unreadCount.value = 0;
+    return;
+  }
+  try {
+    const { data } = await axios.get("/notifications");
+    const notificationsList = data.data?.data || data.data || [];
+    unreadCount.value = notificationsList.filter(n => !n.read_at).length;
+  } catch (error) {
+    console.error("Failed to load notifications for header:", error);
+  }
+};
+
+watch(() => authStore.isAuthenticated, (newVal) => {
+  if (newVal) {
+    fetchUnreadCount();
+  } else {
+    unreadCount.value = 0;
+  }
+});
+
 onMounted(async () => {
   window.addEventListener("keydown", handleKeydown);
   document.addEventListener("click", handleClickOutside);
+  fetchUnreadCount();
 
   try {
     const { data } = await axios.get("/v1/catalog/categories");
@@ -522,6 +547,21 @@ onUnmounted(() => {
             </template>
           </template>
         </Dropdown>
+
+        <!-- Notifications -->
+        <button
+          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          title="Notifications"
+          @click="router.push({ name: 'account', query: { tab: 'notifications' } })"
+        >
+          <span class="material-symbols-outlined text-[24px]">notifications</span>
+          <span
+            v-if="unreadCount > 0"
+            class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
+          >
+            {{ unreadCount }}
+          </span>
+        </button>
 
         <!-- Compare -->
         <button

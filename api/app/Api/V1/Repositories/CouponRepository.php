@@ -42,6 +42,11 @@ class CouponRepository implements CouponRepositoryInterface
         return Coupon::find($id);
     }
 
+    public function findByCode(string $code): ?Coupon
+    {
+        return Coupon::where('code', strtoupper($code))->first();
+    }
+
     public function create(array $data): Coupon
     {
         return Coupon::create($data);

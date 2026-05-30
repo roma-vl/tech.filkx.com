@@ -14,6 +14,7 @@ use App\Api\Admin\Controllers\AdminStatsController;
 use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
+use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
@@ -246,6 +247,12 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('marketing/promotions', [AdminMarketingController::class, 'storePromotion']);
         Route::put('marketing/promotions/{id}', [AdminMarketingController::class, 'updatePromotion']);
         Route::delete('marketing/promotions/{id}', [AdminMarketingController::class, 'destroyPromotion']);
+
+        // Notifications CRUD
+        Route::get('notifications', [AdminNotificationController::class, 'index']);
+        Route::post('notifications', [AdminNotificationController::class, 'store']);
+        Route::post('notifications/broadcast', [AdminNotificationController::class, 'broadcast']);
+        Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);

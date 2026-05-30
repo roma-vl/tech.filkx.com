@@ -30,6 +30,7 @@ const navItems = [
     icon: "compare_arrows",
     query: { tab: "compare" },
   },
+  { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" } },
 ];
 
 const footerItems = [

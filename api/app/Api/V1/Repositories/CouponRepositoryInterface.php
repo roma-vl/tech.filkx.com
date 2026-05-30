@@ -11,6 +11,8 @@ interface CouponRepositoryInterface
 
     public function find(int $id): ?Coupon;
 
+    public function findByCode(string $code): ?Coupon;
+
     public function create(array $data): Coupon;
 
     public function update(Coupon $coupon, array $data): Coupon;
