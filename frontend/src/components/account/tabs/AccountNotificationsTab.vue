@@ -13,6 +13,7 @@ const fetchNotifications = async () => {
   try {
     const { data } = await api.get("/notifications");
     notifications.value = data.data?.data || data.data || [];
+    console.log("Loaded notifications:", JSON.parse(JSON.stringify(notifications.value)));
   } catch (err) {
     console.error("Failed to load notifications:", err);
     error.value = "Не вдалося завантажити сповіщення";
@@ -188,8 +189,8 @@ onMounted(fetchNotifications);
           <div class="space-y-1">
             <div class="flex flex-wrap items-center gap-2">
               <h3
-                class="font-black text-sm md:text-base leading-snug"
-                :class="item.read_at ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-900 dark:text-white'"
+                class="text-sm md:text-base leading-snug"
+                :class="item.read_at ? 'font-medium text-zinc-500 dark:text-zinc-400' : 'font-black text-zinc-900 dark:text-white'"
               >
                 {{ item.title }}
               </h3>

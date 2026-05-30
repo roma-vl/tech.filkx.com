@@ -20,14 +20,17 @@ class BroadcastNotificationAction
             $link = $data['action_url'] ?? null;
 
             if ($data['recipients'] === 'all') {
-                // Create a single global notification
-                $this->notificationRepository->create([
-                    'user_id' => null,
-                    'title' => $title,
-                    'content' => $content,
-                    'type' => $type,
-                    'link' => $link,
-                ]);
+                // Create separate notifications for all users
+                $userIds = \App\Models\User::pluck('id');
+                foreach ($userIds as $userId) {
+                    $this->notificationRepository->create([
+                        'user_id' => $userId,
+                        'title' => $title,
+                        'content' => $content,
+                        'type' => $type,
+                        'link' => $link,
+                    ]);
+                }
             } else {
                 // Create separate notifications for selected users
                 foreach ($data['user_ids'] as $userId) {

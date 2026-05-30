@@ -14,7 +14,7 @@ class CreateNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'nullable|integer|exists:users,id',
+            'user_id' => 'required|integer|exists:users,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'type' => 'required|string|in:system,promo,news,order',

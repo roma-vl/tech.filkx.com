@@ -557,7 +557,7 @@ onUnmounted(() => {
           <span class="material-symbols-outlined text-[24px]">notifications</span>
           <span
             v-if="unreadCount > 0"
-            class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
+            class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
             {{ unreadCount }}
           </span>
