@@ -7,7 +7,7 @@
         :key="tab.id"
         @click="activeTab = tab.id"
         :class="activeTab === tab.id 
-          ? 'bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold' 
+          ? 'bg-primary text-white dark:bg-white dark:text-primary font-bold shadow-md' 
           : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'"
         class="px-5 py-2.5 rounded-xl text-sm transition-all duration-300 flex items-center gap-2"
       >

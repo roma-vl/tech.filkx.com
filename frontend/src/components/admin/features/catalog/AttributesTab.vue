@@ -2,12 +2,13 @@
   <div class="space-y-6">
     <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
       <h2 class="text-lg font-bold text-gray-900 dark:text-white">Характеристики та атрибути</h2>
-      <button
+      <AppButton
         @click="openAddAttributeModal"
-        class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm transition-all"
+        variant="primary"
+        class="flex items-center gap-2"
       >
         Додати атрибут
-      </button>
+      </AppButton>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -46,16 +47,16 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end gap-2">
-                  <button @click="openEditAttributeModal(attr)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                  <AppButton @click="openEditAttributeModal(attr)" variant="ghost" size="sm" class="!p-2 text-blue-600 dark:text-blue-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                  </button>
-                  <button @click="deleteAttribute(attr.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                  </AppButton>
+                  <AppButton @click="deleteAttribute(attr.id)" variant="ghost" size="sm" class="!p-2 text-red-600 dark:text-red-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                  </button>
+                  </AppButton>
                 </div>
               </td>
             </tr>
@@ -116,7 +117,9 @@
         <div v-if="attributeForm.type === 'select' || attributeForm.type === 'color'" class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700">
           <div class="flex justify-between items-center">
             <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
-            <button type="button" @click="addAttributeValue" class="text-xs font-bold text-primary-500 hover:text-primary-600">+ Додати значення</button>
+            <AppButton type="button" @click="addAttributeValue" variant="text" size="sm">
+              + Додати значення
+            </AppButton>
           </div>
 
           <div v-for="(val, vIdx) in attributeForm.values" :key="vIdx" class="flex gap-2 items-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border">
@@ -129,7 +132,9 @@
               <input v-model="val.valueEn" required type="text" placeholder="Value (EN)" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs" />
             </div>
 
-            <button type="button" @click="removeAttributeValue(vIdx)" class="text-red-500 hover:text-red-700 text-xs font-bold px-1">Х</button>
+            <AppButton type="button" @click="removeAttributeValue(vIdx)" variant="ghost" size="sm" class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-950/20">
+              Х
+            </AppButton>
           </div>
         </div>
       </form>
