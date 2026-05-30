@@ -82,6 +82,8 @@ class AdminProductController extends BaseApiController
                 'descriptionUk' => $product->description['uk'] ?? '',
                 'descriptionEn' => $product->description['en'] ?? '',
                 'status' => $product->status,
+                'isHot' => (bool)$product->is_hot,
+                'isRecommended' => (bool)$product->is_recommended,
                 'brandId' => $product->brand_id,
                 'brandName' => $product->brand ? $product->brand->name : null,
                 'categoryId' => $product->categories->first() ? $product->categories->first()->id : null,
@@ -110,6 +112,8 @@ class AdminProductController extends BaseApiController
             'descriptionUk' => 'nullable|string',
             'descriptionEn' => 'nullable|string',
             'status' => 'required|string|in:active,draft,hidden',
+            'isHot' => 'nullable|boolean',
+            'isRecommended' => 'nullable|boolean',
             'brandId' => 'nullable|exists:brands,id',
             'categoryId' => 'required|exists:categories,id',
             'variants' => 'required|array|min:1',
@@ -122,9 +126,17 @@ class AdminProductController extends BaseApiController
             'variants.*.attributes' => 'nullable|array',
         ]);
 
+        $slug = Str::slug($request->input('nameEn')) ?: 'product';
+        $originalSlug = $slug;
+        $count = 1;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
         $product = Product::create([
             'brand_id' => $request->input('brandId'),
-            'slug' => Str::slug($request->input('nameEn')),
+            'slug' => $slug,
             'name' => [
                 'uk' => $request->input('nameUk'),
                 'en' => $request->input('nameEn'),
@@ -134,6 +146,8 @@ class AdminProductController extends BaseApiController
                 'en' => $request->input('descriptionEn', ''),
             ],
             'status' => $request->input('status'),
+            'is_hot' => (bool)$request->input('isHot', false),
+            'is_recommended' => (bool)$request->input('isRecommended', false),
         ]);
 
         $product->categories()->sync([$request->input('categoryId')]);
@@ -186,6 +200,8 @@ class AdminProductController extends BaseApiController
             'descriptionUk' => 'nullable|string',
             'descriptionEn' => 'nullable|string',
             'status' => 'required|string|in:active,draft,hidden',
+            'isHot' => 'nullable|boolean',
+            'isRecommended' => 'nullable|boolean',
             'brandId' => 'nullable|exists:brands,id',
             'categoryId' => 'required|exists:categories,id',
             'variants' => 'required|array|min:1',
@@ -209,6 +225,8 @@ class AdminProductController extends BaseApiController
                 'en' => $request->input('descriptionEn', ''),
             ],
             'status' => $request->input('status'),
+            'is_hot' => (bool)$request->input('isHot', false),
+            'is_recommended' => (bool)$request->input('isRecommended', false),
         ]);
 
         $product->categories()->sync([$request->input('categoryId')]);

@@ -84,7 +84,11 @@
                     <div class="flex items-center gap-3">
                       <img :src="product.image" alt="" class="w-12 h-12 rounded-xl object-cover border border-gray-200 dark:border-gray-700 bg-gray-100" />
                       <div>
-                        <div class="font-bold text-gray-900 dark:text-white">{{ product.nameUk }}</div>
+                        <div class="flex items-center gap-1.5">
+                          <div class="font-bold text-gray-900 dark:text-white">{{ product.nameUk }}</div>
+                          <span v-if="product.isHot" title="Гаряча пропозиція" class="text-xs">🔥</span>
+                          <span v-if="product.isRecommended" title="Рекомендовано" class="text-xs">👍</span>
+                        </div>
                         <div class="text-xs text-gray-400">{{ product.nameEn }}</div>
                       </div>
                     </div>
@@ -400,6 +404,27 @@
                 option-value="id"
                 option-label="name"
               />
+            </div>
+
+            <!-- Promotion Tags -->
+            <div class="flex flex-wrap items-center gap-6 pt-2">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  v-model="productForm.isHot"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">🔥 Гаряча пропозиція (Hot Offer)</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  v-model="productForm.isRecommended"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">👍 Рекомендовано (Recommended)</span>
+              </label>
             </div>
           </div>
 
@@ -801,6 +826,8 @@ const productForm = ref({
   categoryId: '',
   brandId: null,
   status: 'active',
+  isHot: false,
+  isRecommended: false,
   variants: []
 });
 
@@ -879,6 +906,8 @@ const openAddProductModal = () => {
     categoryId: dbCategories.value[0]?.id || '',
     brandId: null,
     status: 'active',
+    isHot: false,
+    isRecommended: false,
     variants: [
       {
         id: null,
@@ -932,6 +961,8 @@ const openEditProductModal = (product) => {
     categoryId: product.categoryId || '',
     brandId: product.brandId,
     status: product.status,
+    isHot: !!product.isHot,
+    isRecommended: !!product.isRecommended,
     variants: variantsCloned.length > 0 ? variantsCloned : [
       {
         id: null,
