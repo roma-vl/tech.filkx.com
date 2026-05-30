@@ -1,92 +1,182 @@
 <template>
   <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div
-      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
-    >
-      <div class="flex-1 w-full sm:w-auto relative">
-        <span
-          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-        >
-          <svg
-            class="h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <div class="space-y-4">
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
+      >
+        <div class="flex flex-1 items-center gap-3">
+          <div class="flex-1 max-w-md">
+            <AppInput
+              v-model="searchQuery"
+              placeholder="Пошук за номером замовлення, клієнтом або email..."
+            >
+              <template #prepend>
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </template>
+            </AppInput>
+          </div>
+
+          <AppButton
+            variant="secondary"
+            class="!p-2.5 relative h-[46px]"
+            :class="{
+              'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
+                showFilters,
+            }"
+            title="Фільтри"
+            @click="showFilters = !showFilters"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </span>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Пошук за номером замовлення, клієнтом або email..."
-          class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        >
+            <svg
+              class="w-5 h-5 transition-colors"
+              :class="showFilters ? 'text-primary-600' : 'text-gray-500'"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
+            </svg>
+            <span
+              v-if="activeFiltersCount > 0"
+              class="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-[10px] flex items-center justify-center rounded-full font-black shadow-lg shadow-primary-500/30 ring-2 ring-white dark:ring-gray-800"
+            >
+              {{ activeFiltersCount }}
+            </span>
+          </AppButton>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <AppButton
+            variant="secondary"
+            class="flex items-center gap-2 shrink-0 h-[46px]"
+            @click="exportCsv"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Експорт CSV
+          </AppButton>
+        </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-        <select
-          v-model="statusFilter"
-          class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm px-4 py-2.5 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+      <!-- Toggleable Filters Panel -->
+      <transition name="expand">
+        <div
+          v-if="showFilters"
+          class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl space-y-6 animate-in slide-in-from-top-2 duration-300"
         >
-          <option value="">
-            Усі статуси
-          </option>
-          <option value="pending_payment">
-            Очікує оплати
-          </option>
-          <option value="paid">
-            Оплачено
-          </option>
-          <option value="processing">
-            Обробляється
-          </option>
-          <option value="packed">
-            Запаковано
-          </option>
-          <option value="shipped">
-            Відправлено
-          </option>
-          <option value="delivered">
-            Доставлено
-          </option>
-          <option value="completed">
-            Виконано
-          </option>
-          <option value="cancelled">
-            Скасовано
-          </option>
-          <option value="refunded">
-            Повернуто кошти
-          </option>
-        </select>
-
-        <button
-          class="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-          @click="exportCsv"
-        >
-          <svg
-            class="w-5 h-5 text-gray-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AppSelect
+              v-model="statusFilter"
+              label="Статус"
+              placeholder="Усі статуси"
+              :options="[
+                { id: '', name: 'Усі статуси' },
+                { id: 'pending_payment', name: 'Очікує оплати' },
+                { id: 'paid', name: 'Оплачено' },
+                { id: 'processing', name: 'Обробляється' },
+                { id: 'packed', name: 'Запаковано' },
+                { id: 'shipped', name: 'Відправлено' },
+                { id: 'delivered', name: 'Доставлено' },
+                { id: 'completed', name: 'Виконано' },
+                { id: 'cancelled', name: 'Скасовано' },
+                { id: 'refunded', name: 'Повернуто кошти' },
+              ]"
+              option-value="id"
+              option-label="name"
             />
-          </svg>
-          Експорт CSV
-        </button>
-      </div>
+
+            <AppSelect
+              v-model="paymentFilter"
+              label="Спосіб оплати"
+              placeholder="Усі способи"
+              :options="[
+                { id: '', name: 'Усі способи' },
+                { id: 'cod', name: 'Оплата при отриманні' },
+                { id: 'card', name: 'Карткою онлайн' },
+                { id: 'bank', name: 'Банківський переказ' },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
+
+            <AppSelect
+              v-model="deliveryFilter"
+              label="Спосіб доставки"
+              placeholder="Усі способи"
+              :options="[
+                { id: '', name: 'Усі способи' },
+                { id: 'nova_poshta', name: 'Нова Пошта' },
+                { id: 'ukrposhta', name: 'Укрпошта' },
+                { id: 'courier', name: 'Кур\'єр' },
+                { id: 'pickup', name: 'Самовивіз' },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
+
+            <AppSelect
+              v-model="sortFilter"
+              label="Сортування"
+              placeholder="За замовчуванням"
+              :options="[
+                { id: 'created-desc', name: 'Спочатку нові' },
+                { id: 'created-asc', name: 'Спочатку старі' },
+                { id: 'price-desc', name: 'Сума (від більшої)' },
+                { id: 'price-asc', name: 'Сума (від меншої)' },
+                { id: 'order-asc', name: 'Номер (А-Я)' },
+                { id: 'order-desc', name: 'Номер (Я-А)' },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
+          </div>
+
+          <div
+            class="flex items-center justify-between pt-6 border-t border-gray-150 dark:border-gray-700"
+          >
+            <AppButton
+              variant="secondary"
+              @click="resetFilters"
+            >
+              Скинути фільтри
+            </AppButton>
+            <AppButton
+              variant="primary"
+              @click="showFilters = false"
+            >
+              Застосувати
+            </AppButton>
+          </div>
+        </div>
+      </transition>
     </div>
 
     <!-- Orders Table -->
@@ -400,17 +490,41 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import api from "@/services/api";
+import AppInput from "@/components/admin/ui/Form/AppInput.vue";
+import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
+import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 
 const orders = ref([]);
 const isLoading = ref(false);
 const searchQuery = ref("");
 const statusFilter = ref("");
+const paymentFilter = ref("");
+const deliveryFilter = ref("");
+const sortFilter = ref("created-desc");
+const showFilters = ref(false);
 const selectedOrder = ref(null);
+
+const activeFiltersCount = computed(() => {
+  let count = 0;
+  if (statusFilter.value) count++;
+  if (paymentFilter.value) count++;
+  if (deliveryFilter.value) count++;
+  if (sortFilter.value !== "created-desc") count++;
+  return count;
+});
+
+const resetFilters = () => {
+  statusFilter.value = "";
+  paymentFilter.value = "";
+  deliveryFilter.value = "";
+  sortFilter.value = "created-desc";
+  searchQuery.value = "";
+};
 
 const fetchOrders = async () => {
   isLoading.value = true;
   try {
-    const response = await api.get("/v1/admin/orders");
+    const response = await api.get("/admin/orders");
     if (response.data && response.data.status === "success") {
       orders.value = response.data.data;
     }
@@ -426,17 +540,72 @@ onMounted(() => {
 });
 
 const filteredOrders = computed(() => {
-  return orders.value.filter((order) => {
-    const q = searchQuery.value.toLowerCase();
-    const matchesSearch =
-      (order.orderNumber || "").toLowerCase().includes(q) ||
-      (order.customerName || "").toLowerCase().includes(q) ||
-      (order.customerEmail || "").toLowerCase().includes(q);
-    const matchesStatus =
-      !statusFilter.value || order.status === statusFilter.value;
+  let result = [...orders.value];
 
-    return matchesSearch && matchesStatus;
-  });
+  // Search filter
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    result = result.filter((order) => {
+      return (
+        (order.orderNumber || "").toLowerCase().includes(q) ||
+        (order.customerName || "").toLowerCase().includes(q) ||
+        (order.customerEmail || "").toLowerCase().includes(q) ||
+        (order.customerPhone || "").toLowerCase().includes(q)
+      );
+    });
+  }
+
+  // Status filter
+  if (statusFilter.value) {
+    result = result.filter((order) => order.status === statusFilter.value);
+  }
+
+  // Payment method filter
+  if (paymentFilter.value) {
+    result = result.filter(
+      (order) => order.paymentMethod === paymentFilter.value,
+    );
+  }
+
+  // Delivery method filter
+  if (deliveryFilter.value) {
+    result = result.filter(
+      (order) => order.deliveryMethod === deliveryFilter.value,
+    );
+  }
+
+  // Sorting
+  if (sortFilter.value) {
+    result.sort((a, b) => {
+      if (sortFilter.value === "created-desc") {
+        return (
+          new Date(b.createdAt || b.created_at) -
+          new Date(a.createdAt || a.created_at)
+        );
+      }
+      if (sortFilter.value === "created-asc") {
+        return (
+          new Date(a.createdAt || a.created_at) -
+          new Date(b.createdAt || b.created_at)
+        );
+      }
+      if (sortFilter.value === "price-desc") {
+        return (b.total || 0) - (a.total || 0);
+      }
+      if (sortFilter.value === "price-asc") {
+        return (a.total || 0) - (b.total || 0);
+      }
+      if (sortFilter.value === "order-asc") {
+        return (a.orderNumber || "").localeCompare(b.orderNumber || "");
+      }
+      if (sortFilter.value === "order-desc") {
+        return (b.orderNumber || "").localeCompare(a.orderNumber || "");
+      }
+      return 0;
+    });
+  }
+
+  return result;
 });
 
 const getStatusLabel = (status) => {
@@ -485,7 +654,7 @@ const updateStatus = async () => {
   if (!selectedOrder.value) return;
   try {
     const response = await api.put(
-      `/v1/admin/orders/${selectedOrder.value.id}/status`,
+      `/admin/orders/${selectedOrder.value.id}/status`,
       {
         status: selectedOrder.value.status,
       },
