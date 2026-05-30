@@ -149,6 +149,7 @@ export const store = reactive({
       this.wishlist.push({
         id: product.id,
         name: product.name,
+        slug: product.slug,
         price: product.price,
         image: product.image,
         category: product.category || "Electronics",
@@ -181,6 +182,7 @@ export const store = reactive({
       this.compare.push({
         id: product.id,
         name: product.name,
+        slug: product.slug,
         price: product.price,
         image: product.image,
         category: product.category || "Electronics",
@@ -238,7 +240,7 @@ export const store = reactive({
     if (product && typeof window !== "undefined") {
       this.trackProductView(product.id);
       const { default: router } = await import("@/router");
-      router.push({ name: "product-detail", params: { id: product.slug } });
+      router.push({ name: "product-detail", params: { id: product.slug || product.id } });
     }
   },
 

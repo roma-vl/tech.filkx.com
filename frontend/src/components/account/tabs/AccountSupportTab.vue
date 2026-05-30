@@ -237,7 +237,10 @@ onMounted(() => {
           >
             Історія звернень
           </h3>
-          <div v-if="loadingTickets" class="py-10 text-center text-zinc-400 text-xs italic">
+          <div
+            v-if="loadingTickets"
+            class="py-10 text-center text-zinc-400 text-xs italic"
+          >
             Завантаження звернень...
           </div>
           <div
@@ -336,8 +339,14 @@ onMounted(() => {
             :disabled="isSubmitting"
             class="w-full bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 rounded-lg transition-all uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
           >
-            <span v-if="isSubmitting" class="animate-spin material-symbols-outlined text-[16px] md:text-[18px]">progress_activity</span>
-            <span v-else class="material-symbols-outlined text-[16px] md:text-[18px]">send</span>
+            <span
+              v-if="isSubmitting"
+              class="animate-spin material-symbols-outlined text-[16px] md:text-[18px]"
+            >progress_activity</span>
+            <span
+              v-else
+              class="material-symbols-outlined text-[16px] md:text-[18px]"
+            >send</span>
             Надіслати
           </button>
         </form>
@@ -401,25 +410,40 @@ onMounted(() => {
                 ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-tl-none' 
                 : 'bg-[#00a046] text-white rounded-tr-none'"
             >
-              <p class="whitespace-pre-line leading-relaxed">{{ msg.message }}</p>
+              <p class="whitespace-pre-line leading-relaxed">
+                {{ msg.message }}
+              </p>
               
               <!-- Attachment if any -->
-              <div v-if="msg.file_path" class="mt-2 pt-2 border-t border-white/10 dark:border-zinc-700/50 flex items-center gap-2 text-xs">
+              <div
+                v-if="msg.file_path"
+                class="mt-2 pt-2 border-t border-white/10 dark:border-zinc-700/50 flex items-center gap-2 text-xs"
+              >
                 <span class="material-symbols-outlined text-[16px]">attachment</span>
-                <a :href="msg.file_path" target="_blank" class="underline hover:opacity-80 truncate max-w-[150px]">
+                <a
+                  :href="msg.file_path"
+                  target="_blank"
+                  class="underline hover:opacity-80 truncate max-w-[150px]"
+                >
                   {{ msg.file_name || 'Файл' }}
                 </a>
               </div>
             </div>
           </div>
-          <div v-if="selectedTicketMessages.length === 0" class="text-center text-zinc-400 py-10 italic text-xs">
+          <div
+            v-if="selectedTicketMessages.length === 0"
+            class="text-center text-zinc-400 py-10 italic text-xs"
+          >
             Повідомлень немає.
           </div>
         </div>
 
         <!-- Chat Input Footer -->
         <div class="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-          <form @submit.prevent="sendTicketReply" class="flex gap-3 items-end">
+          <form
+            class="flex gap-3 items-end"
+            @submit.prevent="sendTicketReply"
+          >
             <div class="flex-1 relative">
               <textarea
                 v-model="replyText"
@@ -435,8 +459,14 @@ onMounted(() => {
               :disabled="replying || !replyText.trim()"
               class="bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs py-3.5 px-6 rounded-xl transition-all uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed h-fit shadow-sm"
             >
-              <span v-if="replying" class="animate-spin material-symbols-outlined text-[18px]">progress_activity</span>
-              <span v-else class="material-symbols-outlined text-[18px]">send</span>
+              <span
+                v-if="replying"
+                class="animate-spin material-symbols-outlined text-[18px]"
+              >progress_activity</span>
+              <span
+                v-else
+                class="material-symbols-outlined text-[18px]"
+              >send</span>
               <span>Надіслати</span>
             </button>
           </form>
