@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { store } from "@/store.js";
 
 import AccountSidebar from "@/components/account/AccountSidebar.vue";
 import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.vue";
@@ -10,6 +11,7 @@ import AccountFavoritesTab from "@/components/account/tabs/AccountFavoritesTab.v
 import AccountCompareTab from "@/components/account/tabs/AccountCompareTab.vue";
 import AccountSettingsTab from "@/components/account/tabs/AccountSettingsTab.vue";
 import AccountSupportTab from "@/components/account/tabs/AccountSupportTab.vue";
+import AccountNotificationsTab from "@/components/account/tabs/AccountNotificationsTab.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -25,6 +27,7 @@ const tabTitles = {
   compare: "Порівняння товарів",
   settings: "Налаштування профілю",
   support: "Служба підтримки",
+  notifications: "Сповіщення та новини",
 };
 
 const navTabs = [
@@ -32,6 +35,7 @@ const navTabs = [
   { label: "Замовлення", icon: "shopping_bag", tab: "orders" },
   { label: "Обране", icon: "favorite", tab: "favorites" },
   { label: "Порівняння", icon: "compare_arrows", tab: "compare" },
+  { label: "Сповіщення", icon: "notifications", tab: "notifications" },
   { label: "Налаштування", icon: "settings", tab: "settings" },
   { label: "Підтримка", icon: "help", tab: "support" },
 ];
@@ -45,11 +49,18 @@ const tabComponents = {
   compare: AccountCompareTab,
   settings: AccountSettingsTab,
   support: AccountSupportTab,
+  notifications: AccountNotificationsTab,
 };
 
 const currentTab = computed(
   () => tabComponents[activeTab.value] ?? AccountDashboardTab,
 );
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    store.fetchUnreadNotificationsCount();
+  }
+});
 </script>
 
 <template>

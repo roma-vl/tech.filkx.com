@@ -59,6 +59,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'locale' => $this->locale,
+            'phone' => $this->phone,
+            'language' => $this->language,
             'timezone' => $this->timezone,
             'hasPassword' => ! empty($this->password),
             'oauth_accounts' => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($acc) => [
@@ -75,6 +77,8 @@ class UserResource extends JsonResource
             'createdAt' => $this->created_at->toIso8601String(),
             'roles' => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
             'permissions' => $this->getPermissions(),
+            'addresses' => $this->settings['addresses'] ?? [],
+            'cards' => $this->settings['cards'] ?? [],
             // Subscription module not yet implemented
             'subscription' => null,
         ];

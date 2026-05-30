@@ -95,7 +95,8 @@ const formatPrice = (price) => {
                 <div
                   v-for="prod in products"
                   :key="prod.id"
-                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform"
+                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform cursor-pointer"
+                  @click="store.viewProduct(prod)"
                 >
                   <img
                     :src="prod.image"
@@ -236,10 +237,12 @@ const formatPrice = (price) => {
                   <img
                     :src="product.image"
                     :alt="product.name"
-                    class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2"
+                    class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 cursor-pointer hover:border-[#00a046]/40 transition-all"
+                    @click="store.viewProduct(product)"
                   >
                   <h4
-                    class="font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-800 dark:text-zinc-200 max-w-[180px]"
+                    class="font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-800 dark:text-zinc-200 max-w-[180px] cursor-pointer hover:text-[#00a046] transition-colors"
+                    @click="store.viewProduct(product)"
                   >
                     {{ product.name }}
                   </h4>

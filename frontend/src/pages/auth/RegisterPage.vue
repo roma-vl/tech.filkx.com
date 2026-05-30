@@ -162,8 +162,7 @@ async function handleSubmit() {
     form.recaptcha_token = token;
   }
 
-  const affiliateRef = router.currentRoute.value.query.ref;
-  const result = await store.register({ ...form, affiliate_ref: affiliateRef });
+  const result = await store.register(form);
   loading.value = false;
 
   if (result.ok) {

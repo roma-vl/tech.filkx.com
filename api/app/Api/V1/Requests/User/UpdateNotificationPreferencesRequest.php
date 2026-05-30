@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Api\V1\Requests\User;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateNotificationPreferencesRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'newsletter' => ['required', 'boolean'],
+            'product_updates' => ['required', 'boolean'],
+            'marketing_emails' => ['required', 'boolean'],
+        ];
+    }
+}

@@ -8,13 +8,11 @@ use App\Api\V1\Actions\User\GetUserSessionsAction;
 use App\Api\V1\Actions\User\InitiateAccountDeletionAction;
 use App\Api\V1\Actions\User\RestoreDeletedAccountAction;
 use App\Api\V1\Actions\User\RevokeAllUserSessionsAction;
-use App\Api\V1\Actions\User\SetAffiliateReferrerAction;
 use App\Api\V1\Actions\User\SetUserPasswordAction;
 use App\Api\V1\Actions\User\UpdateUserLocaleAction;
 use App\Api\V1\Actions\User\UpdateUserPasswordAction;
 use App\Api\V1\Actions\User\UpdateUserProfileAction;
 use App\Api\V1\Actions\User\UploadUserAvatarAction;
-use App\Api\V1\Requests\User\SetReferrerRequest;
 use App\Api\V1\Requests\User\SetUserPasswordRequest;
 use App\Api\V1\Requests\User\UpdateNotificationPreferencesRequest;
 use App\Api\V1\Requests\User\UpdateUserLocaleRequest;
@@ -308,51 +306,6 @@ class UserController extends BaseApiController
             'success' => true,
             'message' => 'Password set successfully',
         ], 200);
-    }
-
-    /**
-     * @OA\Post(
-     *     path="/api/user/settings/referrer",
-     *     summary="Set affiliate referrer (one-time only)",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/SetReferrerRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Referrer set successfully"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Referrer already set or invalid code"
-     *     )
-     * )
-     */
-    public function setReferrer(
-        SetReferrerRequest $request,
-        SetAffiliateReferrerAction $action
-    ): JsonResponse {
-        try {
-            $referral = $action->execute(
-                user: $request->user(),
-                referralCode: $request->validated('referral_code')
-            );
-
-            return self::successfulResponseWithData(
-                data: ['message' => 'Referrer set successfully'],
-                status: 200
-            );
-        } catch (Exception $e) {
-            return self::errorResponse(
-                message: $e->getMessage(),
-                status: 400
-            );
-        }
     }
 
     /**

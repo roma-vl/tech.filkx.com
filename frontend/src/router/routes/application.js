@@ -10,8 +10,6 @@ import UserCabinetPage from "@/pages/account/UserCabinetPage.vue";
 // import PlaylistsPage from "@/pages/application/PlaylistsPage.vue";
 // import VideosPlaylistsPage from "@/pages/application/VideosPlaylistsPage.vue";
 // import ActivitiesPage from "@/pages/application/ActivitiesPage.vue";
-// import AffiliateDashboard from "@/pages/application/AffiliateDashboard.vue";
-// import AffiliateDocs from "@/pages/application/AffiliateDocs.vue";
 // import FaqPage from "@/pages/application/FaqPage.vue";
 
 import MainLayout from "@/layouts/main/MainLayout.vue";

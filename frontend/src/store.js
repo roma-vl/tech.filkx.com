@@ -17,6 +17,7 @@ export const store = reactive({
       ? JSON.parse(localStorage.getItem("electro_compare"))
       : [],
   toasts: [],
+  unreadNotificationsCount: 0,
 
   // Modals visibility state
   activeDrawer: null, // 'cart', 'wishlist', 'compare', 'account', or null
@@ -148,6 +149,7 @@ export const store = reactive({
       this.wishlist.push({
         id: product.id,
         name: product.name,
+        slug: product.slug,
         price: product.price,
         image: product.image,
         category: product.category || "Electronics",
@@ -180,6 +182,7 @@ export const store = reactive({
       this.compare.push({
         id: product.id,
         name: product.name,
+        slug: product.slug,
         price: product.price,
         image: product.image,
         category: product.category || "Electronics",
@@ -237,7 +240,17 @@ export const store = reactive({
     if (product && typeof window !== "undefined") {
       this.trackProductView(product.id);
       const { default: router } = await import("@/router");
-      router.push({ name: "product-detail", params: { id: product.slug } });
+      router.push({ name: "product-detail", params: { id: product.slug || product.id } });
+    }
+  },
+
+  async fetchUnreadNotificationsCount() {
+    try {
+      const response = await api.get("/notifications");
+      const list = response.data?.data?.data || response.data?.data || [];
+      this.unreadNotificationsCount = list.filter(n => !n.read_at).length;
+    } catch (e) {
+      console.warn("Failed to fetch unread notifications count", e);
     }
   },
 });

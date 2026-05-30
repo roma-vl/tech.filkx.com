@@ -10,7 +10,51 @@ const authStore = useAuthStore();
 const userName = computed(() => authStore.user?.name || "Клієнт");
 const userEmail = computed(() => authStore.user?.email || "");
 
-const summaryStats = [
+const recentOrders = [
+  {
+    id: "120934812",
+    date: "24 Тра, 2025",
+    total: 62999.0,
+    status: "В дорозі - очікується завтра",
+    statusIcon: "local_shipping",
+    statusClass:
+      "text-[#00a046] bg-emerald-500/10 border border-emerald-500/20",
+    statusCode: "shipped",
+    items: [
+      {
+        id: 3,
+        slug: "lenovo-legion-5-pro",
+        name: "Lenovo Legion 5 Pro 16ARH7H Storm Grey",
+        price: 62999.0,
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E",
+        returnWindow: "24 Чер, 2025",
+      },
+    ],
+  },
+  {
+    id: "992184021",
+    date: "12 Вер, 2024",
+    total: 14999.0,
+    status: "Доставлено 15 Вер, 2024",
+    statusIcon: "check_circle",
+    statusClass:
+      "text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800",
+    statusCode: "delivered",
+    items: [
+      {
+        id: 4,
+        slug: "sony-wh-1000xm5-black",
+        name: "Бездротові навушники Sony WH-1000XM5 Black",
+        price: 14999.0,
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA",
+      },
+    ],
+  },
+];
+
+const summaryStats = computed(() => [
   {
     icon: "local_shipping",
     label: "Активні доставки",
@@ -21,64 +65,20 @@ const summaryStats = [
     tab: "orders",
   },
   {
-    icon: "account_balance_wallet",
-    label: "Заощаджено коштів",
-    value: "4 280 ₴",
-    color: "text-amber-500",
-    trend: "+12% цього року",
-    trendIcon: "trending_up",
-    tab: "dashboard",
-  },
-  {
-    icon: "verified",
-    label: "Бонусні бали",
-    value: "15 400",
+    icon: "shopping_bag",
+    label: "Всього замовлень",
+    value: String(recentOrders.length).padStart(2, "0"),
     color: "text-blue-500",
-    action: "Використати зараз",
-  },
-];
-
-const recentOrders = [
-  {
-    id: "120934812",
-    date: "24 Тра, 2025",
-    total: 12990.0,
-    status: "В дорозі - очікується завтра",
-    statusIcon: "local_shipping",
-    statusClass:
-      "text-[#00a046] bg-emerald-500/10 border border-emerald-500/20",
-    statusCode: "shipped",
-    items: [
-      {
-        id: 101,
-        name: 'Ноутбук FilkxTech ProBook 16" - M3 Max / 32GB RAM / 1TB SSD',
-        price: 12990.0,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBuVg-kXP_Dz4eDubPsXwLRjC9ddkd7vuALwu9d44EXhvUcmau1ettEqBuExcpfD_u05Iro8mRrCfjRLlEyElDWNK2XCXugMhg8BlFQmzkH5QXS1DmI_-nGJmj7Qj2nzbNxTaMQKQp0bQWxjEJSBQKmRMm8yVY7heCmjBY2zXzrTzybDqI72Tff2a3iARsbv4capMzqEVs456EoLHm-kOY-mlW9RKHwerz8Fm73OO4YjBf74fI_5VFz-bK8GP4E1iscPSLxhUpP1ho",
-        returnWindow: "24 Чер, 2025",
-      },
-    ],
+    tab: "orders",
   },
   {
-    id: "992184021",
-    date: "12 Вер, 2024",
-    total: 3499.0,
-    status: "Доставлено 15 Вер, 2024",
-    statusIcon: "check_circle",
-    statusClass:
-      "text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700",
-    statusCode: "delivered",
-    items: [
-      {
-        id: 105,
-        name: "Бездротові навушники FilkxTech SonicPro ANC Black",
-        price: 3499.0,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA",
-      },
-    ],
+    icon: "favorite",
+    label: "Товарів в обраному",
+    value: String(store.wishlist.length).padStart(2, "0"),
+    color: "text-rose-500",
+    tab: "favorites",
   },
-];
+]);
 
 const defaultAddress = {
   recipient: "Роман Шевченко",
@@ -87,11 +87,6 @@ const defaultAddress = {
   zip: "01001",
 };
 
-const handleRedeem = () =>
-  store.addToast(
-    "Успішно використано 1000 бонусів для отримання знижки 100 ₴!",
-    "success",
-  );
 const go = (tab) => router.push({ name: "account", query: { tab } });
 </script>
 
@@ -238,13 +233,15 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
                 class="flex gap-4 flex-col sm:flex-row items-center sm:items-start"
               >
                 <img
-                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1"
+                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
                   :src="item.image"
                   :alt="item.name"
+                  @click="store.viewProduct(item)"
                 >
                 <div class="flex-1 text-center sm:text-left">
                   <h3
-                    class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2"
+                    class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 cursor-pointer hover:text-[#00a046] transition-colors"
+                    @click="store.viewProduct(item)"
                   >
                     {{ item.name }}
                   </h3>

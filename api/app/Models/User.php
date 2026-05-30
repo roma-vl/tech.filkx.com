@@ -80,6 +80,31 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->attributes['settings'] = json_encode($settings);
     }
 
+    public function getPhoneAttribute(): ?string
+    {
+        return $this->settings['phone'] ?? null;
+    }
+
+    public function setPhoneAttribute(?string $value): void
+    {
+        $settings = $this->settings ?? [];
+        $settings['phone'] = $value;
+        $this->attributes['settings'] = json_encode($settings);
+    }
+
+    public function getLanguageAttribute(): ?string
+    {
+        return $this->settings['language'] ?? null;
+    }
+
+    public function setLanguageAttribute(?string $value): void
+    {
+        $settings = $this->settings ?? [];
+        $settings['language'] = $value;
+        $this->attributes['settings'] = json_encode($settings);
+    }
+
+
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyEmailNotification);

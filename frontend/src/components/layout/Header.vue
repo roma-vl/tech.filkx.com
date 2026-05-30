@@ -206,9 +206,28 @@ const triggerVoiceSearch = () => {
   store.addToast("Voice search activated. Start speaking...", "info");
 };
 
+const unreadCount = computed(() => store.unreadNotificationsCount);
+
+const fetchUnreadCount = async () => {
+  if (!authStore.isAuthenticated) {
+    store.unreadNotificationsCount = 0;
+    return;
+  }
+  await store.fetchUnreadNotificationsCount();
+};
+
+watch(() => authStore.isAuthenticated, (newVal) => {
+  if (newVal) {
+    fetchUnreadCount();
+  } else {
+    store.unreadNotificationsCount = 0;
+  }
+});
+
 onMounted(async () => {
   window.addEventListener("keydown", handleKeydown);
   document.addEventListener("click", handleClickOutside);
+  fetchUnreadCount();
 
   try {
     const { data } = await axios.get("/v1/catalog/categories");
@@ -522,6 +541,21 @@ onUnmounted(() => {
             </template>
           </template>
         </Dropdown>
+
+        <!-- Notifications -->
+        <button
+          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          title="Notifications"
+          @click="router.push({ name: 'account', query: { tab: 'notifications' } })"
+        >
+          <span class="material-symbols-outlined text-[24px]">notifications</span>
+          <span
+            v-if="unreadCount > 0"
+            class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
+          >
+            {{ unreadCount }}
+          </span>
+        </button>
 
         <!-- Compare -->
         <button

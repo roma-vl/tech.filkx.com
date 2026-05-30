@@ -79,8 +79,7 @@ class AuthController extends BaseApiController
         $dto = new RegisterDto(
             name: $request->string('name')->toString(),
             email: $request->string('email')->toString(),
-            password: $request->string('password')->toString(),
-            affiliateRef: $request->string('affiliate_ref')->toString() ?: null
+            password: $request->string('password')->toString()
         );
 
         $result = $this->service->register($dto);

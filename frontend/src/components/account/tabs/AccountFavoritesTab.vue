@@ -19,7 +19,8 @@ import { store } from "@/store.js";
           <img
             :src="product.image"
             :alt="product.name"
-            class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+            class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+            @click="store.viewProduct(product)"
           >
           <button
             class="absolute top-3 right-3 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-550 rounded-full transition-colors"
@@ -36,7 +37,8 @@ import { store } from "@/store.js";
               {{ product.category }}
             </p>
             <h3
-              class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors"
+              class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors cursor-pointer"
+              @click="store.viewProduct(product)"
             >
               {{ product.name }}
             </h3>

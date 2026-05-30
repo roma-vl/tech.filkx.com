@@ -1,9 +1,10 @@
 <?php
 
+use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
-use App\Api\Admin\Controllers\AdminEmailController;
+use App\Api\Admin\Controllers\AdminMarketingController;
 use App\Api\Admin\Controllers\AdminOrderController;
 use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
@@ -13,6 +14,7 @@ use App\Api\Admin\Controllers\AdminStatsController;
 use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
+use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
@@ -20,6 +22,7 @@ use App\Api\V1\Controllers\Auth\OAuthController;
 use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\CheckoutController;
+use App\Api\V1\Controllers\CouponController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
@@ -70,6 +73,7 @@ Route::prefix('v1')->group(function () {
 
     // Checkout route
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
+    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
 });
 
 // OAuth routes
@@ -105,7 +109,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::delete('/user/avatar', [UserController::class, 'deleteAvatar']);
 
     // User settings
-    Route::post('/user/settings/referrer', [UserController::class, 'setReferrer']);
     Route::get('/user/settings/preferences', [UserController::class, 'getPreferences']);
     Route::put('/user/settings/preferences', [UserController::class, 'updatePreferences']);
 
@@ -145,11 +148,10 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::prefix('admin')->middleware(['auth:api', IdentifyImpersonation::class, 'role:admin|administrator|moderator|support'])->group(function () {
 
         Route::get('stats', [AdminStatsController::class, 'index']);
+        Route::get('analytics/overview', [AdminStatsController::class, 'overview']);
+        Route::get('analytics/charts', [AdminStatsController::class, 'charts']);
+        Route::get('analytics/distributions', [AdminStatsController::class, 'distributions']);
         Route::get('system/health', [AdminSystemController::class, 'health']);
-
-        Route::get('emails/campaigns', [AdminEmailController::class, 'index']);
-        Route::post('emails/broadcast', [AdminEmailController::class, 'send']);
-        Route::post('emails/preview', [AdminEmailController::class, 'preview']);
 
         Route::get('settings', [AdminSettingsController::class, 'index']);
         Route::post('settings', [AdminSettingsController::class, 'update']);
@@ -224,6 +226,33 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::delete('attributes/{id}', [AdminAttributeController::class, 'destroy']);
 
         // Accounting Module
+        Route::get('accounting/ledger', [AdminAccountingController::class, 'ledger']);
+        Route::get('accounting/invoices', [AdminAccountingController::class, 'invoices']);
+        Route::get('accounting/stats', [AdminAccountingController::class, 'accountingStats']);
+        Route::get('accounting/export', [AdminAccountingController::class, 'export']);
+
+        Route::get('billing/stats', [AdminAccountingController::class, 'billingStats']);
+        Route::get('billing/payments/pending', [AdminAccountingController::class, 'pendingPayments']);
+        Route::post('billing/payments/{id}/confirm', [AdminAccountingController::class, 'confirmPayment']);
+        Route::get('billing/payments/{id}/proof', [AdminAccountingController::class, 'viewProof']);
+        Route::get('billing/subscriptions', [AdminAccountingController::class, 'subscriptions']);
+
+        // Marketing Module
+        Route::get('marketing/coupons', [AdminMarketingController::class, 'coupons']);
+        Route::post('marketing/coupons', [AdminMarketingController::class, 'storeCoupon']);
+        Route::put('marketing/coupons/{id}', [AdminMarketingController::class, 'updateCoupon']);
+        Route::delete('marketing/coupons/{id}', [AdminMarketingController::class, 'destroyCoupon']);
+
+        Route::get('marketing/promotions', [AdminMarketingController::class, 'promotions']);
+        Route::post('marketing/promotions', [AdminMarketingController::class, 'storePromotion']);
+        Route::put('marketing/promotions/{id}', [AdminMarketingController::class, 'updatePromotion']);
+        Route::delete('marketing/promotions/{id}', [AdminMarketingController::class, 'destroyPromotion']);
+
+        // Notifications CRUD
+        Route::get('notifications', [AdminNotificationController::class, 'index']);
+        Route::post('notifications', [AdminNotificationController::class, 'store']);
+        Route::post('notifications/broadcast', [AdminNotificationController::class, 'broadcast']);
+        Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);

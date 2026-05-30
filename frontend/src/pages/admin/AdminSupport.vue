@@ -177,7 +177,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch, nextTick } from "vue";
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
@@ -464,9 +464,14 @@ const sendReply = async (isInternal = false) => {
         },
       },
     );
-    messages.value.push(response.data.data);
+    messages.value = [...messages.value, response.data.data];
     replyMessage.value = "";
     selectedFile.value = null;
+    nextTick(() => {
+      if (chatMessages.value) {
+        chatMessages.value.scrollToBottom();
+      }
+    });
   } catch (error) {
     console.error(error);
     toast.error(t("admin.support.alerts.replyError"));

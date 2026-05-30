@@ -6,7 +6,7 @@ const defaultOrders = [
   {
     id: "120934812",
     date: "24 Жов, 2025",
-    total: 12990.0,
+    total: 63149.0,
     shipTo: "Роман Шевченко",
     status: "В дорозі - прибуває завтра",
     statusIcon: "local_shipping",
@@ -39,19 +39,20 @@ const defaultOrders = [
     paymentMethod: { type: "Visa", number: "•••• 4242" },
     items: [
       {
-        id: 101,
-        name: "Флагманський смартфон FilkxTech Titan X Pro Max 512GB",
-        price: 12990.0,
+        id: 3,
+        slug: "lenovo-legion-5-pro",
+        name: "Lenovo Legion 5 Pro 16ARH7H Storm Grey",
+        price: 62999.0,
         returnWindow: "24 Лис, 2025",
         image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBuVg-kXP_Dz4eDubPsXwLRjC9ddkd7vuALwu9d44EXhvUcmau1ettEqBuExcpfD_u05Iro8mRrCfjRLlEyElDWNK2XCXugMhg8BlFQmzkH5QXS1DmI_-nGJmj7Qj2nzbNxTaMQKQp0bQWxjEJSBQKmRMm8yVY7heCmjBY2zXzrTzybDqI72Tff2a3iARsbv4capMzqEVs456EoLHm-kOY-mlW9RKHwerz8Fm73OO4YjBf74fI_5VFz-bK8GP4E1iscPSLxhUpP1ho",
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E",
       },
     ],
   },
   {
     id: "992184021",
     date: "12 Вер, 2025",
-    total: 3499.0,
+    total: 15149.0,
     shipTo: "Роман Шевченко",
     status: "Доставлено 15 Вер, 2025",
     statusIcon: "check_circle",
@@ -80,9 +81,10 @@ const defaultOrders = [
     paymentMethod: { type: "Mastercard", number: "•••• 9876" },
     items: [
       {
-        id: 105,
-        name: "Безпровідні навушники FilkxTech Studio Pro ANC Black",
-        price: 3499.0,
+        id: 4,
+        slug: "sony-wh-1000xm5-black",
+        name: "Бездротові навушники Sony WH-1000XM5 Black",
+        price: 14999.0,
         note: "Залишене біля дверей.",
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA",
@@ -92,7 +94,7 @@ const defaultOrders = [
   {
     id: "483920194",
     date: "02 Тра, 2025",
-    total: 19990.0,
+    total: 55149.0,
     shipTo: "Роман Шевченко",
     status: "Скасовано 02 Тра, 2025",
     statusIcon: "cancel",
@@ -113,9 +115,10 @@ const defaultOrders = [
     paymentMethod: { type: "Visa", number: "•••• 4242" },
     items: [
       {
-        id: 101,
-        name: 'Ультрабук FilkxTech ProBook 16" Plus Space Gray',
-        price: 19990.0,
+        id: 1,
+        slug: "iphone-15-pro-max",
+        name: "Apple iPhone 15 Pro Max 256GB Natural Titanium",
+        price: 54999.0,
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM",
       },
@@ -312,13 +315,15 @@ const filterBtns = [
             class="flex gap-6 flex-col sm:flex-row"
           >
             <img
-              class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2"
+              class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 cursor-pointer hover:border-[#00a046]/40 transition-colors"
               :src="item.image"
               :alt="item.name"
+              @click="store.viewProduct(item)"
             >
             <div class="flex-1">
               <h3
-                class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight"
+                class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight cursor-pointer hover:text-[#00a046] transition-colors"
+                @click="store.viewProduct(item)"
               >
                 {{ item.name }}
               </h3>
@@ -431,11 +436,13 @@ const filterBtns = [
             <img
               :src="item.image"
               :alt="item.name"
-              class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1"
+              class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
+              @click="store.viewProduct(item)"
             >
             <div class="flex-1">
               <p
-                class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1"
+                class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 cursor-pointer hover:text-[#00a046] transition-colors"
+                @click="store.viewProduct(item)"
               >
                 {{ item.name }}
               </p>

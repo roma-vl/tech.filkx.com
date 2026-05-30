@@ -377,10 +377,15 @@ const navItems = shallowRef([
     icon: markRaw(Squares2X2Icon),
   },
   {
-    key: "products",
-    name: t("admin.nav.products"),
-    path: "/admin/products",
+    key: "catalog",
+    name: t("admin.nav.catalog"),
     icon: markRaw(ShoppingBagIcon),
+    children: [
+      { name: t("admin.nav.products"), path: "/admin/products" },
+      { name: t("admin.nav.categories"), path: "/admin/categories" },
+      { name: t("admin.nav.brands"), path: "/admin/brands" },
+      { name: t("admin.nav.attributes"), path: "/admin/attributes" },
+    ],
   },
   {
     key: "orders",
@@ -411,19 +416,12 @@ const navItems = shallowRef([
     ],
   },
   {
-    key: "affiliates",
-    name: "Партнери",
-    path: "/admin/affiliates",
-    icon: markRaw(UserCircleIcon),
-  },
-  {
     key: "marketing",
     name: t("admin.nav.marketing"),
     icon: markRaw(TagIcon),
     children: [
       { name: t("admin.nav.coupons"), path: "/admin/coupons" },
       { name: t("admin.nav.promotions"), path: "/admin/promotions" },
-      { name: t("admin.nav.emailTemplates"), path: "/admin/emails" },
     ],
   },
   {
