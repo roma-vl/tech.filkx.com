@@ -82,18 +82,18 @@ const filteredAttrs = computed(() => {
 const variantClasses = computed(() => {
   const map = {
     primary:
-      "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm hover:shadow-lg hover:shadow-primary/30 focus:ring-primary-500",
+      "bg-primary text-white hover:bg-primary/90 active:bg-primary/80 shadow-sm focus:ring-primary dark:bg-white dark:text-primary dark:hover:bg-gray-100",
     secondary:
       "bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 hover:shadow-md focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:active:bg-gray-500",
     white:
-      "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 shadow-sm hover:shadow-lg focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600",
+      "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 shadow-sm hover:shadow-lg focus:ring-primary dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600",
     success:
       "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm hover:shadow-lg hover:shadow-emerald-500/30 focus:ring-emerald-500",
     danger:
       "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow-lg hover:shadow-red-500/30 focus:ring-red-500",
     ghost:
-      "text-primary-600 hover:bg-primary-50 active:bg-primary-100 hover:shadow-sm dark:text-primary-400 dark:hover:bg-primary-900/20 dark:active:bg-primary-900/40",
-    text: "text-primary-600 hover:text-primary-700 active:text-primary-800 underline-offset-4 hover:underline p-0 shadow-none dark:text-primary-400 dark:hover:text-primary-300 dark:active:text-primary-200",
+      "text-primary hover:bg-primary/5 active:bg-primary/10 hover:shadow-sm dark:text-white dark:hover:bg-white/5 dark:active:bg-white/10",
+    text: "text-primary hover:text-primary/80 active:text-primary/70 underline-offset-4 hover:underline p-0 shadow-none dark:text-white dark:hover:text-gray-300",
   };
   return map[props.variant];
 });

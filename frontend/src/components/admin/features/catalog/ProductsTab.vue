@@ -1,39 +1,41 @@
 <template>
   <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-      <div class="flex-1 w-full sm:w-auto relative">
-        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </span>
-        <input
+    <div class="flex flex-col sm:flex-row justify-between items-end sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div class="flex-1 w-full sm:w-auto">
+        <AppInput
           v-model="productSearch"
-          type="text"
           placeholder="Пошук товарів за назвою чи SKU..."
-          class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        />
+        >
+          <template #prepend>
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </template>
+        </AppInput>
       </div>
 
       <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-        <select
-          v-model="productCategoryFilter"
-          class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm px-4 py-2.5 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-        >
-          <option value="">Усі категорії</option>
-          <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.nameUk }}</option>
-        </select>
+        <div class="min-w-[180px]">
+          <AppSelect
+            v-model="productCategoryFilter"
+            placeholder="Усі категорії"
+            :options="[{ id: '', nameUk: 'Усі категорії' }, ...categories]"
+            option-value="id"
+            option-label="nameUk"
+          />
+        </div>
 
-        <button
+        <AppButton
           @click="openAddProductModal"
-          class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all shrink-0"
+          variant="primary"
+          class="flex items-center gap-2 shrink-0 h-[46px]"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
           Додати товар
-        </button>
+        </AppButton>
       </div>
     </div>
 
@@ -92,16 +94,16 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end gap-2">
-                  <button @click="openEditProductModal(product)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors">
+                  <AppButton @click="openEditProductModal(product)" variant="ghost" size="sm" class="!p-2 text-blue-600 dark:text-blue-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                  </button>
-                  <button @click="deleteProduct(product.id)" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors">
+                  </AppButton>
+                  <AppButton @click="deleteProduct(product.id)" variant="ghost" size="sm" class="!p-2 text-red-600 dark:text-red-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                  </button>
+                  </AppButton>
                 </div>
               </td>
             </tr>
@@ -189,15 +191,54 @@
           </div>
 
           <!-- Promotion Tags -->
-          <div class="flex flex-wrap items-center gap-6 pt-2">
-            <AppCheckbox
-              v-model="productForm.isHot"
-              label="🔥 Гаряча пропозиція (Hot Offer)"
-            />
-            <AppCheckbox
-              v-model="productForm.isRecommended"
-              label="👍 Рекомендовано (Recommended)"
-            />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <!-- Hot Offer Card Selector -->
+            <button
+              type="button"
+              @click="productForm.isHot = !productForm.isHot"
+              :class="productForm.isHot
+                ? 'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300 ring-2 ring-amber-500/20'
+                : 'border-gray-200 dark:border-gray-700 hover:border-amber-500/30 text-gray-600 dark:text-gray-400 hover:bg-amber-50/30 dark:hover:bg-amber-950/5'"
+              class="flex items-center justify-between p-3.5 rounded-xl border font-bold text-sm transition-all text-left cursor-pointer active:scale-98"
+            >
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">🔥</span>
+                <div>
+                  <div class="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-wider">Гаряча пропозиція</div>
+                  <div class="text-[11px] text-gray-400 font-normal">Відображати бейдж вогника та висувати в топ</div>
+                </div>
+              </div>
+              <div
+                :class="productForm.isHot ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700'"
+                class="w-5 h-5 rounded-full flex items-center justify-center transition-all"
+              >
+                <svg v-if="productForm.isHot" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+              </div>
+            </button>
+
+            <!-- Recommended Card Selector -->
+            <button
+              type="button"
+              @click="productForm.isRecommended = !productForm.isRecommended"
+              :class="productForm.isRecommended
+                ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500/20'
+                : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500/30 text-gray-600 dark:text-gray-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/5'"
+              class="flex items-center justify-between p-3.5 rounded-xl border font-bold text-sm transition-all text-left cursor-pointer active:scale-98"
+            >
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">👍</span>
+                <div>
+                  <div class="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-wider">Рекомендовано</div>
+                  <div class="text-[11px] text-gray-400 font-normal">Відображати рекомендацію та показувати на головній</div>
+                </div>
+              </div>
+              <div
+                :class="productForm.isRecommended ? 'bg-indigo-500 text-white' : 'bg-gray-200 dark:bg-gray-700'"
+                class="w-5 h-5 rounded-full flex items-center justify-center transition-all"
+              >
+                <svg v-if="productForm.isRecommended" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -205,15 +246,15 @@
         <div class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 space-y-6">
           <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
             <h4 class="font-bold text-gray-900 dark:text-white">2. Варіанти товару та наявність</h4>
-            <button type="button" @click="addProductVariant" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1">
+            <AppButton type="button" @click="addProductVariant" size="sm" variant="success" class="flex items-center gap-1">
               + Додати варіант
-            </button>
+            </AppButton>
           </div>
 
-          <div v-for="(v, index) in productForm.variants" :key="index" class="bg-white dark:bg-gray-850 p-5 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4 shadow-sm relative">
-            <button v-if="productForm.variants.length > 1" type="button" @click="removeProductVariant(index)" class="absolute top-4 right-4 text-red-500 hover:text-red-700">
+          <div v-for="(v, index) in productForm.variants" :key="index" class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4 shadow-sm relative">
+            <AppButton v-if="productForm.variants.length > 1" type="button" @click="removeProductVariant(index)" variant="ghost" size="sm" class="absolute top-4 right-4 !text-red-500 hover:!bg-red-50 dark:hover:!bg-red-950/20">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            </button>
+            </AppButton>
 
             <h5 class="text-base font-bold text-primary-500">Варіант #{{ index + 1 }}</h5>
 
@@ -318,32 +359,49 @@
             <div class="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
               <div class="flex justify-between items-center">
                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Характеристики варіанту (Атрибути)</label>
-                <button type="button" @click="addVariantAttribute(v)" class="text-xs font-bold text-primary-500 hover:text-primary-600 transition-colors">+ Додати характеристику</button>
+                <AppButton type="button" @click="addVariantAttribute(v)" variant="text" size="sm">
+                  + Додати характеристику
+                </AppButton>
               </div>
 
               <div v-for="(attr, aIdx) in v.attributes" :key="aIdx" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-gray-50 dark:bg-gray-900/60 p-4 rounded-xl border border-gray-200/40">
                 <div>
-                  <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Атрибут</label>
-                  <select v-model="attr.attributeId" @change="onAttributeSelected(attr)" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500">
-                    <option value="" disabled>Оберіть характеристику</option>
-                    <option v-for="dbAttr in attributes" :key="dbAttr.id" :value="dbAttr.id">{{ dbAttr.nameUk }}</option>
-                  </select>
+                  <AppSelect
+                    v-model="attr.attributeId"
+                    required
+                    label="Атрибут"
+                    placeholder="Оберіть характеристику"
+                    :options="attributes"
+                    option-value="id"
+                    option-label="nameUk"
+                    @change="onAttributeSelected(attr)"
+                  />
                 </div>
                 
                 <div>
-                  <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Значення</label>
-                  <select v-if="getAttributeType(attr.attributeId) === 'select' || getAttributeType(attr.attributeId) === 'color'" v-model="attr.valueId" required class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500">
-                    <option v-for="val in getAttributeValues(attr.attributeId)" :key="val.id" :value="val.id">
-                      {{ val.valueUk || val.value }}
-                    </option>
-                  </select>
-                  <input v-else v-model="attr.value" required type="text" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-primary-500" placeholder="напр. 8GB чи M2" />
+                  <AppSelect
+                    v-if="getAttributeType(attr.attributeId) === 'select' || getAttributeType(attr.attributeId) === 'color'"
+                    v-model="attr.valueId"
+                    required
+                    label="Значення"
+                    placeholder="Оберіть значення"
+                    :options="getAttributeValues(attr.attributeId).map(val => ({ id: val.id, name: val.valueUk || val.value }))"
+                    option-value="id"
+                    option-label="name"
+                  />
+                  <AppInput
+                    v-else
+                    v-model="attr.value"
+                    required
+                    label="Значення"
+                    placeholder="напр. 8GB чи M2"
+                  />
                 </div>
 
                 <div class="flex justify-end">
-                  <button type="button" @click="removeVariantAttribute(v, aIdx)" class="text-red-500 hover:text-red-700 text-sm font-bold py-2 transition-colors">
+                  <AppButton type="button" @click="removeVariantAttribute(v, aIdx)" variant="danger" size="sm">
                     Видалити
-                  </button>
+                  </AppButton>
                 </div>
               </div>
             </div>

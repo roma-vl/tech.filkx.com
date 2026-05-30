@@ -12,7 +12,7 @@
         :placeholder="placeholder"
         :rows="rows"
         :disabled="disabled"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 focus:border-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-900 transition-colors shadow-sm font-inherit text-gray-800 dark:text-gray-200"
+        class="w-full px-4 py-2.5 text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 focus:border-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-900 transition-colors shadow-sm font-inherit text-gray-800 dark:text-gray-200"
         :class="[
           error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : '',
           inputClass,
