@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Api\V1\Repositories\ProductRepositoryInterface;
 use App\Api\V1\Repositories\ProductRepository;
+use App\Api\V1\Repositories\OrderRepositoryInterface;
+use App\Api\V1\Repositories\OrderRepository;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -15,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
     }
 
     /**
