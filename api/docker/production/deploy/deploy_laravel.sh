@@ -84,7 +84,7 @@ TIMESTAMP=$(date +%s)
 echo "ℹ️ Writing version.json → $VERSION / $COMMIT_SHA"
 
 docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
-mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/bootstrap/cache /app/storage/app/public/var
+mkdir -p /app/storage/logs /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache /app/storage/app/public/var
 cat <<EOF > /app/storage/app/public/var/version.json
 {
   \"version\": \"$VERSION\",
