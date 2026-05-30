@@ -10,6 +10,7 @@ use App\Models\Stock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutController extends BaseApiController
@@ -88,9 +89,9 @@ class CheckoutController extends BaseApiController
             }
 
             // Generate unique order number: FKX-YYYYMMDD-XXXXXX
-            $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(str_random(6));
+            $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
             while (Order::where('order_number', $orderNumber)->exists()) {
-                $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(str_random(6));
+                $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
             }
 
             // Create Order

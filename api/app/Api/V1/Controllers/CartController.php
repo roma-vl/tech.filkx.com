@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends BaseApiController
@@ -21,7 +22,7 @@ class CartController extends BaseApiController
 
         $sessionId = $request->header('X-Cart-Session-ID') ?: $request->input('session_id');
         if (! $sessionId) {
-            $sessionId = 'anon_'.session_id().'_'.str_random(16);
+            $sessionId = 'anon_'.session_id().'_'.Str::random(16);
         }
 
         return Cart::firstOrCreate(['session_id' => $sessionId]);
