@@ -39,6 +39,10 @@ export const productApi = {
     return apiClient.get("/v1/catalog/filters");
   },
 
+  catalogGetHome(params?: Record<string, any>) {
+    return apiClient.get("/v1/catalog/home", { params });
+  },
+
   // Admin Catalog Management APIs
   adminGetProducts(params?: Record<string, any>) {
     return apiClient.get("/admin/products", { params });

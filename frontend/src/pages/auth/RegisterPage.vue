@@ -90,36 +90,37 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
-const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;
 
 const router = useRouter();
 const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 const form = reactive({
@@ -127,9 +128,10 @@ const form = reactive({
   email: "",
   password: "",
   password_confirmation: "",
+  recaptcha_token: "" as string | undefined,
 });
 
-const errors = reactive({
+const errors = reactive<Record<string, any>>({
   name: null,
   email: null,
   password: null,
@@ -157,12 +159,14 @@ async function handleSubmit() {
   loading.value = true;
 
   if (store.failedAttempts >= 3) {
-    await recaptchaLoaded();
-    const token = await executeRecaptcha("register");
-    form.recaptcha_token = token;
+    if (recaptchaLoaded) {
+      await recaptchaLoaded();
+      const token = await executeRecaptcha("register");
+      form.recaptcha_token = token;
+    }
   }
 
-  const result = await store.register(form);
+  const result: any = await store.register(form);
   loading.value = false;
 
   if (result.ok) {
@@ -173,7 +177,8 @@ async function handleSubmit() {
       Object.keys(result.errors).forEach((key) => {
         if (errors.hasOwnProperty(key)) errors[key] = result.errors[key][0];
       });
-      toast.error(Object.values(result.errors)[0][0]);
+      const errValues: any = Object.values(result.errors);
+      toast.error(errValues[0][0]);
     } else {
       toast.error(result.error || t("auth.register.errorMessage"));
     }

@@ -98,21 +98,20 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import OAuthButtons from "@/components/auth/OAuthButtons.vue";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
-const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;
 
 const router = useRouter();
 const route = useRoute();
@@ -120,27 +119,30 @@ const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 const loading = ref(false);
 
 const form = reactive({
   email: "",
   password: "",
+  recaptcha_token: "" as string | undefined,
 });
 
-const errors = reactive({
+const errors = reactive<Record<string, any>>({
   email: null,
   password: null,
 });
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 async function handleSubmit() {
@@ -149,18 +151,20 @@ async function handleSubmit() {
   loading.value = true;
 
   if (store.failedAttempts >= 3) {
-    await recaptchaLoaded();
-    const token = await executeRecaptcha("login");
-    form.recaptcha_token = token;
+    if (recaptchaLoaded) {
+      await recaptchaLoaded();
+      const token = await executeRecaptcha("login");
+      form.recaptcha_token = token;
+    }
   }
 
-  const result = await store.login(form);
+  const result: any = await store.login(form);
 
   loading.value = false;
 
   if (result.ok) {
     toast.success(t("auth.login.successMessage"));
-    const redirect = route.query.redirect || "/dashboard";
+    const redirect = (route.query.redirect as string) || "/dashboard";
     router.push(redirect);
   } else {
     if (result.errors) {

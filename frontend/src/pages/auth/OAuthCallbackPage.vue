@@ -116,10 +116,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useToast } from "vue-toastification";
 
 const route = useRoute();
@@ -127,19 +127,19 @@ const router = useRouter();
 const store = useAuthStore();
 const toast = useToast();
 
-const error = ref(null);
+const error = ref<string | null>(null);
 const showRestorationModal = ref(false);
 
 const confirmRestoration = () => {
   showRestorationModal.value = false;
-  const redirect = route.query.redirect || "/dashboard";
+  const redirect = (route.query.redirect as string) || "/dashboard";
   router.push(redirect);
 };
 
 onMounted(async () => {
-  const token = route.query.token;
+  const token = route.query.token as string | undefined;
   const wasRestored = route.query.restored === "true";
-  const errorMessage = route.query.error;
+  const errorMessage = route.query.error as string | undefined;
 
   if (errorMessage) {
     error.value = decodeURIComponent(errorMessage);
@@ -165,10 +165,10 @@ onMounted(async () => {
     if (wasRestored) {
       showRestorationModal.value = true;
     } else {
-      const redirect = route.query.redirect || "/dashboard";
+      const redirect = (route.query.redirect as string) || "/dashboard";
       router.push(redirect);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error("OAuth callback error:", err);
     error.value = err.message || "Failed to complete authentication";
     store.clear(); // Clear any partial auth state

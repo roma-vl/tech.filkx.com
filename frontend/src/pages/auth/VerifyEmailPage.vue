@@ -102,13 +102,13 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppButton } from "@/shared/ui";
 
 const route = useRoute();
 const store = useAuthStore();
@@ -129,15 +129,15 @@ onMounted(async () => {
 
   try {
     const result = await store.verifyEmailByParams({
-      id,
-      hash,
-      expires,
-      signature,
+      id: id as string,
+      hash: hash as string,
+      expires: expires as string,
+      signature: signature as string,
     });
 
     verified.value = true;
     errorMessage.value = "";
-  } catch (err) {
+  } catch (err: any) {
     errorMessage.value =
       err?.message || t("auth.verifyEmail.verifyingSubtitle"); // Fallback
   } finally {

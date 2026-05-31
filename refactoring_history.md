@@ -63,3 +63,23 @@ This document tracks the steps taken during the Vue 3 + TypeScript SPA frontend 
     - `QuickViewModal.vue` (renders detailed specs and add-to-cart controls in a dialog overlay).
   - Updated `src/pages/catalog/CatalogPage.vue` to compose these widgets, ensuring strict type safety and a fully clean build (`vue-tsc --noEmit` passes with exit code 0).
 
+### Phase 7: Product Detail, Home, and Authentication FSD Migration
+- **Product Detail Page**:
+  - Abstracted variant attributes, interactive zoom magnifier calculations, combo bundle builder math, and tabs/spec tables out of `ProductDetailPage.vue` into `src/features/product/composables/useProductDetail.ts`.
+  - Created dedicated widgets under `src/widgets/ProductDetail/`:
+    - `ProductGallery.vue` (renders thumbnails, main photo, and hover zoom magnifier).
+    - `ProductPurchase.vue` (renders color options, configurations, add to cart/quick order, and wishlist/compare triggers).
+    - `ComboDeal.vue` (renders companion accessory discount bundle builder and cart addition).
+    - `ProductTabs.vue` (renders detailed descriptions, specs tables, rating distribution, and support items).
+  - Updated `src/pages/product/ProductDetailPage.vue` as a thin layout coordinator.
+- **Home Page**:
+  - Created `src/features/home/composables/useHome.ts` to manage home categories, flash deals, and recommendations queries.
+  - Added the `catalogGetHome` method to `src/shared/services/api/productApi.ts` to consolidate home API access under FSD.
+  - Updated `src/pages/home/HomePage.vue` to consume the new composable.
+- **Authentication Pages FSD Alignment**:
+  - Updated `LoginPage.vue`, `RegisterPage.vue`, `ForgotPasswordPage.vue`, `ResetPasswordPage.vue`, `VerifyEmailNoticePage.vue`, `VerifyEmailPage.vue`, and `OAuthCallbackPage.vue` to import components from the shared UI library (`@/shared/ui`) and auth store from user entity store (`@/entities/user/model/authStore`).
+  - Added strict typescript typing and typecast assertions for error response mappings and third-party recaptcha tools.
+- **Verification**:
+  - Executed `vue-tsc --noEmit` and confirmed zero compilation errors across the codebase.
+
+

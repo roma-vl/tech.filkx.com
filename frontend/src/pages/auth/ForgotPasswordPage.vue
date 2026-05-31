@@ -73,14 +73,13 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import ArrowRightIcon from "@/components/Icon/ArrowRightIcon.vue";
 
 const toast = useToast();
@@ -88,15 +87,15 @@ const store = useAuthStore();
 const { t } = useI18n();
 
 const email = ref("");
-const error = ref(null);
+const error = ref<string>();
 const loading = ref(false);
 const sent = ref(false);
 
 async function handleSubmit() {
-  error.value = null;
+  error.value = undefined;
   loading.value = true;
 
-  const result = await store.forgotPassword(email.value);
+  const result: any = await store.forgotPassword(email.value);
 
   loading.value = false;
 

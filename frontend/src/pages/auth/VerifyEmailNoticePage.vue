@@ -62,14 +62,14 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppButton } from "@/shared/ui";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Checked.json";
 
@@ -78,18 +78,20 @@ const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 const loading = ref(false);
 const sent = ref(false);
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 async function resendEmail() {
@@ -100,7 +102,7 @@ async function resendEmail() {
 
   loading.value = true;
 
-  const result = await store.resendVerification(store.user.email);
+  const result: any = await store.resendVerification(store.user.email);
 
   loading.value = false;
 
