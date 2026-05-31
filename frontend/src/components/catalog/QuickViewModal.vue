@@ -1,20 +1,41 @@
-<script setup>
-import { store } from "@/store.js";
+<script setup lang="ts">
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    required: true,
-  },
-  product: {
-    type: Object,
-    default: null,
-  },
-});
+interface QuickViewProduct {
+  id: string | number;
+  name: string;
+  brand: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  price: number;
+  oldPrice?: number;
+  inStock: boolean;
+  description: string;
+  ram?: string;
+  badge?: string;
+  badgeClass?: string;
+  specs: {
+    processor?: string;
+    screen?: string;
+    storage?: string;
+    os?: string;
+    weight?: string;
+  };
+}
 
-const emit = defineEmits(["close"]);
+const props = defineProps<{
+  isOpen: boolean;
+  product: QuickViewProduct | null;
+}>();
 
-const formatPrice = (price) => {
+const emit = defineEmits<{
+  (e: "close"): void;
+}>();
+
+const cartStore = useCartStore();
+
+const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
     style: "currency",
     currency: "UAH",
@@ -178,10 +199,10 @@ const formatPrice = (price) => {
       >
         <button
           class="border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-colors flex items-center justify-center gap-1.5"
-          @click="store.toggleCompare(product)"
+          @click="cartStore.toggleCompare(product as any)"
         >
           <span class="material-symbols-outlined text-[16px] md:text-[18px]">compare_arrows</span>
-          {{ store.isInCompare(product.id) ? "У порівнянні" : "Порівняти" }}
+          {{ cartStore.isInCompare(product.id as any) ? "У порівнянні" : "Порівняти" }}
         </button>
         <button
           :disabled="!product.inStock"
@@ -192,7 +213,7 @@ const formatPrice = (price) => {
           "
           class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
           @click="
-            store.addToCart(product);
+            cartStore.addToCart(product as any);
             emit('close');
           "
         >

@@ -1,20 +1,42 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
-import { store } from "@/store.js";
-import { useAuthStore } from "@/stores/auth.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/services/api.js";
 
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+interface AddressItem {
+  id: number;
+  type: string;
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  phone: string;
+  isDefault: boolean;
+}
+
+interface CardItem {
+  id: number;
+  type: string;
+  number: string;
+  holder: string;
+  expiry: string;
+  isDefault: boolean;
+}
 
 // Accordion Expand/Collapse State
-const expandedSections = reactive({
+const expandedSections = reactive<Record<string, boolean>>({
   profile: true,
   password: false,
   addresses: false,
   cards: false,
 });
 
-const toggleSection = (section) => {
+const toggleSection = (section: string) => {
   expandedSections[section] = !expandedSections[section];
 };
 
@@ -32,12 +54,22 @@ const passwordForm = reactive({
   confirm: "",
 });
 
-const addressesList = ref([]);
-const cardsList = ref([]);
+const addressesList = ref<AddressItem[]>([]);
+const cardsList = ref<CardItem[]>([]);
 
 // Modals
 const isAddressModalOpen = ref(false);
-const addressForm = reactive({
+const addressForm = reactive<{
+  id: number | null;
+  type: string;
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  phone: string;
+}>({
   id: null,
   type: "Дім",
   recipient: "",
@@ -61,13 +93,14 @@ const cardForm = reactive({
 // Initialization
 const initData = () => {
   if (authStore.user) {
-    profileForm.name = authStore.user.name || "";
-    profileForm.email = authStore.user.email || "";
-    profileForm.phone = authStore.user.phone || "";
-    profileForm.language = authStore.user.language || "Українська";
+    const user = authStore.user as any;
+    profileForm.name = user.name || "";
+    profileForm.email = user.email || "";
+    profileForm.phone = user.phone || "";
+    profileForm.language = user.language || "Українська";
 
-    addressesList.value = authStore.user.addresses || [];
-    cardsList.value = authStore.user.cards || [];
+    addressesList.value = user.addresses || [];
+    cardsList.value = user.cards || [];
   }
 };
 
@@ -91,11 +124,11 @@ const saveProfile = async () => {
     });
     if (response.data.success) {
       await authStore.fetchUser();
-      store.addToast("Профіль успішно оновлено!", "success");
+      cartStore.addToast("Профіль успішно оновлено!", "success");
     }
-  } catch (e) {
+  } catch (e: any) {
     const msg = e.response?.data?.message || "Не вдалося оновити профіль.";
-    store.addToast(msg, "error");
+    cartStore.addToast(msg, "error");
   } finally {
     isSavingProfile.value = false;
   }
@@ -104,11 +137,11 @@ const saveProfile = async () => {
 const isUpdatingPassword = ref(false);
 const updatePassword = async () => {
   if (!passwordForm.current || !passwordForm.new || !passwordForm.confirm) {
-    store.addToast("Будь ласка, заповніть усі поля пароля.", "warning");
+    cartStore.addToast("Будь ласка, заповніть усі поля пароля.", "warning");
     return;
   }
   if (passwordForm.new !== passwordForm.confirm) {
-    store.addToast("Нові паролі не співпадають.", "error");
+    cartStore.addToast("Нові паролі не співпадають.", "error");
     return;
   }
   isUpdatingPassword.value = true;
@@ -118,14 +151,14 @@ const updatePassword = async () => {
       newPassword: passwordForm.new,
     });
     if (response.data.success) {
-      store.addToast("Пароль успішно змінено!", "success");
+      cartStore.addToast("Пароль успішно змінено!", "success");
       passwordForm.current = "";
       passwordForm.new = "";
       passwordForm.confirm = "";
     }
-  } catch (e) {
+  } catch (e: any) {
     const msg = e.response?.data?.message || "Поточний пароль вказано невірно.";
-    store.addToast(msg, "error");
+    cartStore.addToast(msg, "error");
   } finally {
     isUpdatingPassword.value = false;
   }
@@ -145,12 +178,12 @@ const syncSettingsWithBackend = async () => {
     await authStore.fetchUser();
   } catch (e) {
     console.error("Failed to sync settings with backend:", e);
-    store.addToast("Не вдалося зберегти зміни на сервері.", "error");
+    cartStore.addToast("Не вдалося зберегти зміни на сервері.", "error");
   }
 };
 
 // Address Book Handlers
-const openAddressModal = (address = null) => {
+const openAddressModal = (address: AddressItem | null = null) => {
   if (address) {
     Object.assign(addressForm, address);
   } else {
@@ -176,15 +209,15 @@ const saveAddress = async () => {
     !addressForm.city ||
     !addressForm.zip
   ) {
-    store.addToast("Будь ласка, заповніть усі обов'язкові поля.", "warning");
+    cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "warning");
     return;
   }
   if (addressForm.id) {
     const idx = addressesList.value.findIndex((a) => a.id === addressForm.id);
     if (idx !== -1) {
-      addressesList.value[idx] = { ...addressForm };
+      addressesList.value[idx] = { ...addressForm } as any;
     }
-    store.addToast("Адресу оновлено!", "success");
+    cartStore.addToast("Адресу оновлено!", "success");
   } else {
     const newId = addressesList.value.length
       ? Math.max(...addressesList.value.map((a) => a.id), 0) + 1
@@ -193,14 +226,14 @@ const saveAddress = async () => {
       ...addressForm,
       id: newId,
       isDefault: addressesList.value.length === 0,
-    });
-    store.addToast("Нову адресу збережено!", "success");
+    } as any);
+    cartStore.addToast("Нову адресу збережено!", "success");
   }
   isAddressModalOpen.value = false;
   await syncSettingsWithBackend();
 };
 
-const deleteAddress = async (id) => {
+const deleteAddress = async (id: number) => {
   const idx = addressesList.value.findIndex((a) => a.id === id);
   if (idx !== -1) {
     const wasDefault = addressesList.value[idx].isDefault;
@@ -208,14 +241,14 @@ const deleteAddress = async (id) => {
     if (wasDefault && addressesList.value.length > 0) {
       addressesList.value[0].isDefault = true;
     }
-    store.addToast("Адресу видалено.", "info");
+    cartStore.addToast("Адресу видалено.", "info");
     await syncSettingsWithBackend();
   }
 };
 
-const setAddressDefault = async (id) => {
+const setAddressDefault = async (id: number) => {
   addressesList.value.forEach((a) => (a.isDefault = a.id === id));
-  store.addToast("Адресу за замовчуванням оновлено.", "success");
+  cartStore.addToast("Адресу за замовчуванням оновлено.", "success");
   await syncSettingsWithBackend();
 };
 
@@ -238,7 +271,7 @@ const saveCard = async () => {
     !cardForm.expiry ||
     !cardForm.cvv
   ) {
-    store.addToast("Будь ласка, заповніть усі дані картки.", "warning");
+    cartStore.addToast("Будь ласка, заповніть усі дані картки.", "warning");
     return;
   }
   const digits = cardForm.number.replace(/\D/g, "");
@@ -254,12 +287,12 @@ const saveCard = async () => {
     expiry: cardForm.expiry,
     isDefault: cardsList.value.length === 0,
   });
-  store.addToast("Картку додано успішно!", "success");
+  cartStore.addToast("Картку додано успішно!", "success");
   isCardModalOpen.value = false;
   await syncSettingsWithBackend();
 };
 
-const deleteCard = async (id) => {
+const deleteCard = async (id: number) => {
   const idx = cardsList.value.findIndex((c) => c.id === id);
   if (idx !== -1) {
     const wasDefault = cardsList.value[idx].isDefault;
@@ -267,14 +300,14 @@ const deleteCard = async (id) => {
     if (wasDefault && cardsList.value.length > 0) {
       cardsList.value[0].isDefault = true;
     }
-    store.addToast("Картку видалено.", "info");
+    cartStore.addToast("Картку видалено.", "info");
     await syncSettingsWithBackend();
   }
 };
 
-const setCardDefault = async (id) => {
+const setCardDefault = async (id: number) => {
   cardsList.value.forEach((c) => (c.isDefault = c.id === id));
-  store.addToast("Основну картку оновлено.", "success");
+  cartStore.addToast("Основну картку оновлено.", "success");
   await syncSettingsWithBackend();
 };
 

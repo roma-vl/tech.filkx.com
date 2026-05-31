@@ -1,15 +1,37 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const props = defineProps({
-  products: {
-    type: Array,
-    default: () => [],
-  },
-});
+interface FlashProduct {
+  id: string | number;
+  slug: string;
+  category: string;
+  name: string;
+  reviews: number;
+  price: number;
+  oldPrice?: number;
+  image: string;
+  discount: string;
+  soldPercent?: number;
+  leftCount?: number;
+  description?: string;
+  features?: string[];
+  specs?: {
+    availability?: string;
+    brand?: string;
+    sku?: string;
+    warranty?: string;
+    colors?: string[];
+  };
+}
 
-const formatPrice = (price) => {
+const props = defineProps<{
+  products: FlashProduct[];
+}>();
+
+const cartStore = useCartStore();
+
+const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
     style: "currency",
     currency: "UAH",
@@ -21,7 +43,7 @@ const formatPrice = (price) => {
 const hours = ref(23);
 const minutes = ref(59);
 const seconds = ref(59);
-let timerId = null;
+let timerId: ReturnType<typeof setInterval> | null = null;
 
 const startCountdown = () => {
   timerId = setInterval(() => {
@@ -54,17 +76,17 @@ onUnmounted(() => {
   if (timerId) clearInterval(timerId);
 });
 
-const formatNumber = (num) => {
+const formatNumber = (num: number) => {
   return num < 10 ? `0${num}` : num;
 };
 
 // Quick View Modal Logic
 const showModal = ref(false);
-const activeProduct = ref(null);
+const activeProduct = ref<FlashProduct | null>(null);
 const selectedColor = ref(0);
 const quantity = ref(1);
 
-const openQuickView = (product) => {
+const openQuickView = (product: FlashProduct) => {
   activeProduct.value = product;
   selectedColor.value = 0;
   quantity.value = 1;
@@ -148,13 +170,13 @@ const decrementQty = () => {
           <!-- Wishlist Button -->
           <button
             class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm shadow hover:scale-110 active:scale-95 transition-all flex items-center justify-center text-zinc-400 hover:text-rose-600 z-10"
-            @click.stop="store.toggleWishlist(prod)"
+            @click.stop="cartStore.toggleWishlist(prod)"
           >
             <span
               class="material-symbols-outlined text-[18px]"
-              :class="{ 'fill text-rose-600': store.isInWishlist(prod.id) }"
+              :class="{ 'fill text-rose-600': cartStore.isInWishlist(prod.id as any) }"
               :style="
-                store.isInWishlist(prod.id)
+                cartStore.isInWishlist(prod.id as any)
                   ? 'font-variation-settings: \'FILL\' 1;'
                   : ''
               "
@@ -220,7 +242,7 @@ const decrementQty = () => {
               <span class="font-black text-xl md:text-2xl text-[#00a046]">{{
                 formatPrice(prod.price)
               }}</span>
-              <span class="text-xs text-zinc-400 line-through">{{
+              <span v-if="prod.oldPrice" class="text-xs text-zinc-400 line-through">{{
                 formatPrice(prod.oldPrice)
               }}</span>
             </div>
@@ -253,7 +275,7 @@ const decrementQty = () => {
           <div class="px-4 md:px-5 pb-5 mt-auto flex flex-col gap-2.5">
             <button
               class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3 rounded-xl text-sm font-extrabold shadow-sm shadow-emerald-700/10 transition-colors flex items-center justify-center gap-2"
-              @click="store.addToCart(prod)"
+              @click="cartStore.addToCart(prod as any)"
             >
               В кошик
               <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
@@ -269,14 +291,14 @@ const decrementQty = () => {
                 class="col-span-1 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-xl font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
                 :class="{
                   'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]':
-                    store.isInCompare(prod.id),
+                    cartStore.isInCompare(prod.id as any),
                 }"
                 title="Порівняти"
-                @click="store.toggleCompare(prod)"
+                @click="cartStore.toggleCompare(prod)"
               >
                 <span
                   class="material-symbols-outlined text-[16px]"
-                  :class="{ fill: store.isInCompare(prod.id) }"
+                  :class="{ fill: cartStore.isInCompare(prod.id as any) }"
                 >compare_arrows</span>
               </button>
             </div>
@@ -392,7 +414,7 @@ const decrementQty = () => {
                   <span
                     class="text-3xl font-black text-zinc-900 dark:text-white"
                   >{{ formatPrice(activeProduct.price) }}</span>
-                  <span class="text-sm text-zinc-400 line-through">{{
+                  <span v-if="activeProduct.oldPrice" class="text-sm text-zinc-400 line-through">{{
                     formatPrice(activeProduct.oldPrice)
                   }}</span>
                 </div>
@@ -482,7 +504,7 @@ const decrementQty = () => {
                 <button
                   class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-xl text-sm font-extrabold transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-700/10"
                   @click="
-                    store.addToCart(activeProduct);
+                    cartStore.addToCart(activeProduct as any);
                     closeModal();
                   "
                 >

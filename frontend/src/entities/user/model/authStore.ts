@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { authApi, RegisterDto, LoginDto, ResetPasswordDto } from "@/shared/services/api/authApi";
 import { User } from "../types";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 const TOKEN_KEY = "filkx_auth";
 const ADMIN_TOKEN_KEY = "filkx_admin_auth";
@@ -88,9 +89,8 @@ export const useAuthStore = defineStore("auth", {
       localStorage.removeItem(ADMIN_TOKEN_KEY);
       localStorage.removeItem(ADMIN_TOKEN_EXPIRES_KEY);
 
-      import("@/store.js").then(({ store }) => {
-        store.clearCart();
-      });
+      const cartStore = useCartStore();
+      cartStore.clearCart();
     },
 
     async updateLocale(locale: string) {
@@ -116,9 +116,8 @@ export const useAuthStore = defineStore("auth", {
         this.user = user;
         this._syncLocale(user.locale);
 
-        import("@/store.js").then(({ store }) => {
-          store.fetchCart();
-        });
+        const cartStore = useCartStore();
+        cartStore.fetchCart();
 
         return { ok: true };
       } catch (error) {
@@ -138,9 +137,8 @@ export const useAuthStore = defineStore("auth", {
         this.failedAttempts = 0;
         localStorage.removeItem("failed_login_attempts");
 
-        import("@/store.js").then(({ store }) => {
-          store.fetchCart();
-        });
+        const cartStore = useCartStore();
+        cartStore.fetchCart();
 
         return { ok: true };
       } catch (error) {
@@ -206,9 +204,8 @@ export const useAuthStore = defineStore("auth", {
       } finally {
         this.clear();
 
-        import("@/store.js").then(({ store }) => {
-          store.clearCart();
-        });
+        const cartStore = useCartStore();
+        cartStore.clearCart();
       }
     },
 

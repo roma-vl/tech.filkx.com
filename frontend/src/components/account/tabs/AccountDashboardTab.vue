@@ -1,11 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { store } from "@/store.js";
-import { useAuthStore } from "@/stores/auth.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
 const userName = computed(() => authStore.user?.name || "Клієнт");
 const userEmail = computed(() => authStore.user?.email || "");
@@ -63,6 +64,9 @@ const summaryStats = computed(() => [
     progress: "75%",
     progressColor: "bg-[#00a046]",
     tab: "orders",
+    action: "",
+    trend: "",
+    trendIcon: ""
   },
   {
     icon: "shopping_bag",
@@ -70,13 +74,19 @@ const summaryStats = computed(() => [
     value: String(recentOrders.length).padStart(2, "0"),
     color: "text-blue-500",
     tab: "orders",
+    action: "",
+    trend: "",
+    trendIcon: ""
   },
   {
     icon: "favorite",
     label: "Товарів в обраному",
-    value: String(store.wishlist.length).padStart(2, "0"),
+    value: String(cartStore.wishlist.length).padStart(2, "0"),
     color: "text-rose-500",
     tab: "favorites",
+    action: "",
+    trend: "",
+    trendIcon: ""
   },
 ]);
 
@@ -87,7 +97,7 @@ const defaultAddress = {
   zip: "01001",
 };
 
-const go = (tab) => router.push({ name: "account", query: { tab } });
+const go = (tab: string) => router.push({ name: "account", query: { tab } });
 </script>
 
 <template>
@@ -104,7 +114,7 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
           :class="stat.color"
         >{{ stat.icon }}</span>
         <p
-          class="font-extrabold text-xs text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-1"
+          class="font-extrabold text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-wider mt-1"
         >
           {{ stat.label }}
         </p>
@@ -134,15 +144,7 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
           {{ stat.trend }}
         </p>
         <button
-          v-if="stat.action"
-          class="text-[#00a046] hover:text-[#00b050] text-xs font-extrabold uppercase tracking-wider flex items-center gap-1 mt-3 text-left hover:underline"
-          @click="handleRedeem"
-        >
-          {{ stat.action }}
-          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-        </button>
-        <button
-          v-else-if="stat.tab"
+          v-if="stat.tab"
           class="absolute top-4 right-4 text-zinc-400 hover:text-[#00a046] transition-colors"
           @click="go(stat.tab)"
         >
@@ -236,33 +238,33 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
                   class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
                   :src="item.image"
                   :alt="item.name"
-                  @click="store.viewProduct(item)"
+                  @click="cartStore.viewProduct(item as any)"
                 >
                 <div class="flex-1 text-center sm:text-left">
                   <h3
-                    class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 cursor-pointer hover:text-[#00a046] transition-colors"
-                    @click="store.viewProduct(item)"
+                    class="font-extrabold text-zinc-850 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 cursor-pointer hover:text-[#00a046] transition-colors"
+                    @click="cartStore.viewProduct(item as any)"
                   >
                     {{ item.name }}
                   </h3>
                   <p
-                    v-if="item.returnWindow"
+                    v-if="(item as any).returnWindow"
                     class="text-xs text-zinc-450 dark:text-zinc-500 mt-1.5"
                   >
-                    Повернення можливе до {{ item.returnWindow }}
+                    Повернення можливе до {{ (item as any).returnWindow }}
                   </p>
                 </div>
                 <div class="flex gap-2.5">
                   <button
                     v-if="order.statusCode !== 'cancelled'"
-                    class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg text-xs md:text-sm font-extrabold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+                    class="border border-zinc-200 dark:border-zinc-850 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg text-xs md:text-sm font-extrabold hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
                     @click="go('orders')"
                   >
                     Відстежити
                   </button>
                   <button
                     class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs md:text-sm font-extrabold transition-all"
-                    @click="store.addToCart(item)"
+                    @click="cartStore.addToCart(item as any)"
                   >
                     Повторити
                   </button>
@@ -324,7 +326,7 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
             class="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-2.5"
           >
             <p
-              class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
+              class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
             >
               Швидкі дії
             </p>
@@ -337,14 +339,14 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
                 Профіль
               </button>
               <button
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
+                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-355 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
                 @click="go('favorites')"
               >
                 <span class="material-symbols-outlined text-[18px]">favorite</span>
                 Обране
               </button>
               <button
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
+                class="flex items-center gap-2 text-xs md:text-sm text-zinc-655 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
                 @click="go('support')"
               >
                 <span class="material-symbols-outlined text-[18px]">help</span>
@@ -352,7 +354,7 @@ const go = (tab) => router.push({ name: "account", query: { tab } });
               </button>
               <a
                 href="/catalog"
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
+                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-855 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
               >
                 <span class="material-symbols-outlined text-[18px]">grid_view</span>
                 Каталог

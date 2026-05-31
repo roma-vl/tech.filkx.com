@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth.js";
-import { store } from "@/store.js";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
 const userName = computed(() => authStore.user?.name || "Клієнт");
 const userEmail = computed(() => authStore.user?.email || "");
@@ -22,23 +23,33 @@ const userInitials = computed(() => {
   );
 });
 
-const navItems = [
+interface NavItem {
+  name: string;
+  icon: string;
+  query?: { tab: string };
+  routeName?: string;
+  action?: () => void;
+  badgeKey?: "cartCount" | "wishlistCount" | "compareCount" | "unreadNotificationsCount";
+  isGreenBadge?: boolean;
+}
+
+const navItems: NavItem[] = [
   { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
   { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } },
-  { name: "Кошик", icon: "shopping_cart", action: () => store.openDrawer('cart'), badgeKey: "cartCount", isGreenBadge: true },
+  { name: "Кошик", icon: "shopping_cart", action: () => cartStore.openDrawer('cart'), badgeKey: "cartCount", isGreenBadge: true },
   { name: "Моє обране", icon: "favorite", query: { tab: "favorites" }, badgeKey: "wishlistCount" },
   { name: "Порівняння товарів", icon: "compare_arrows", query: { tab: "compare" }, badgeKey: "compareCount" },
   { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" }, badgeKey: "unreadNotificationsCount", isGreenBadge: true },
 ];
 
-const footerItems = [
+const footerItems: NavItem[] = [
   { name: "Налаштування", icon: "settings", query: { tab: "settings" } },
   { name: "Підтримка", icon: "help", query: { tab: "support" } },
 ];
 
-const activeTab = computed(() => route.query.tab || "dashboard");
+const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 
-const isActive = (item) => {
+const isActive = (item: NavItem) => {
   if (item.action) return false;
   if (item.routeName && item.routeName !== "account") {
     return route.name === item.routeName;
@@ -46,7 +57,7 @@ const isActive = (item) => {
   return route.name === "account" && activeTab.value === item.query?.tab;
 };
 
-const navigate = (item) => {
+const navigate = (item: NavItem) => {
   if (item.action) {
     item.action();
   } else if (item.routeName && !item.query) {
@@ -147,7 +158,7 @@ const handleLogout = async () => {
 
         <!-- Badges (Rozetka style) -->
         <span
-          v-if="item.badgeKey && store[item.badgeKey] > 0"
+          v-if="item.badgeKey && cartStore[item.badgeKey] > 0"
           class="ml-auto text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none shrink-0"
           :class="[
             item.isGreenBadge
@@ -155,7 +166,7 @@ const handleLogout = async () => {
               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
           ]"
         >
-          {{ store[item.badgeKey] }}
+          {{ cartStore[item.badgeKey] }}
         </span>
         <span
           v-else-if="isActive(item)"

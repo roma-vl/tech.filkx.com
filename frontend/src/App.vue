@@ -1,5 +1,5 @@
-<script setup>
-import CartDrawer from "./components/ui/CartDrawer.vue";
+<script setup lang="ts">
+import CartDrawer from "@/widgets/CartDrawer/CartDrawer.vue";
 import ToastNotification from "./components/ui/ToastNotification.vue";
 </script>
 

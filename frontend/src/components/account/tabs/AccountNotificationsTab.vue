@@ -1,11 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import api from "@/services/api";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const notifications = ref([]);
+interface NotificationItem {
+  id: string | number;
+  read_at: string | null;
+  type: string;
+  title: string;
+  content: string;
+  created_at: string;
+  link?: string;
+}
+
+const cartStore = useCartStore();
+
+const notifications = ref<NotificationItem[]>([]);
 const isLoading = ref(true);
-const error = ref(null);
+const error = ref<string | null>(null);
 
 const fetchNotifications = async () => {
   isLoading.value = true;
@@ -22,7 +34,7 @@ const fetchNotifications = async () => {
   }
 };
 
-const markAsRead = async (notification) => {
+const markAsRead = async (notification: NotificationItem) => {
   if (notification.read_at) return;
   try {
     const { data } = await api.post(`/notifications/${notification.id}/read`);
@@ -32,8 +44,8 @@ const markAsRead = async (notification) => {
       notifications.value[index] = data.data?.data || data.data;
     }
     // Update store counter if needed
-    store.fetchUnreadNotificationsCount();
-    store.addToast("Сповіщення прочитано", "success");
+    (cartStore as any).fetchUnreadNotificationsCount();
+    cartStore.addToast("Сповіщення прочитано", "success");
   } catch (err) {
     console.error("Failed to mark notification as read:", err);
   }
@@ -47,15 +59,15 @@ const markAllRead = async () => {
       ...n,
       read_at: new Date().toISOString()
     }));
-    store.fetchUnreadNotificationsCount();
-    store.addToast("Всі сповіщення позначено як прочитані", "success");
+    (cartStore as any).fetchUnreadNotificationsCount();
+    cartStore.addToast("Всі сповіщення позначено як прочитані", "success");
   } catch (err) {
     console.error("Failed to mark all notifications as read:", err);
   }
 };
 
-const getNotificationStyles = (type) => {
-  const styles = {
+const getNotificationStyles = (type: string) => {
+  const styles: Record<string, { bg: string; text: string; icon: string; iconColor: string }> = {
     success: {
       bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20",
       text: "text-emerald-800 dark:text-emerald-400",
@@ -103,7 +115,7 @@ const getNotificationStyles = (type) => {
   return styles[type] || styles.info;
 };
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr?: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   return d.toLocaleString("uk-UA", {
@@ -170,7 +182,7 @@ onMounted(fetchNotifications);
         :key="item.id"
         class="bg-white dark:bg-zinc-900 border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
         :class="[
-          item.read_at ? 'border-zinc-100 dark:border-zinc-850/80 opacity-75' : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5'
+          item.read_at ? 'border-zinc-100 dark:border-zinc-855/80 opacity-75' : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5'
         ]"
       >
         <div class="flex gap-4 items-start">
@@ -192,7 +204,7 @@ onMounted(fetchNotifications);
             <div class="flex flex-wrap items-center gap-2">
               <h3
                 class="text-sm md:text-base leading-snug"
-                :class="item.read_at ? 'font-medium text-zinc-500 dark:text-zinc-400' : 'font-black text-zinc-900 dark:text-white'"
+                :class="item.read_at ? 'font-medium text-zinc-550 dark:text-zinc-400' : 'font-black text-zinc-900 dark:text-white'"
               >
                 {{ item.title }}
               </h3>
@@ -206,7 +218,7 @@ onMounted(fetchNotifications);
             <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
               {{ item.content }}
             </p>
-            <div class="flex items-center gap-3 pt-1 text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">
+            <div class="flex items-center gap-3 pt-1 text-[10px] font-extrabold text-zinc-450 uppercase tracking-wider">
               <span>{{ formatDate(item.created_at) }}</span>
               <span
                 v-if="item.read_at"

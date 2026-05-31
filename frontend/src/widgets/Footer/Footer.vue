@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
+const cartStore = useCartStore();
 const email = ref("");
 
 const handleSubscribe = () => {
   if (email.value.trim()) {
-    store.addToast(
+    cartStore.addToast(
       `Дякуємо за підписку! На вказану адресу ${email.value} надіслано лист.`,
       "success",
     );
@@ -305,7 +306,7 @@ const handleSubscribe = () => {
           >
             Мобільні додатки FilkxTech
           </h5>
-          <p class="text-[11px] text-zinc-500">
+          <p class="text-[11px] text-zinc-550">
             Завантажуйте наш безкоштовний додаток для швидких та зручних покупок
             на ходу.
           </p>
@@ -443,5 +444,3 @@ const handleSubscribe = () => {
     </div>
   </footer>
 </template>
-
-<style scoped></style>

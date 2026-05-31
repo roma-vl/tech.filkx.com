@@ -1,70 +1,53 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import PriceRangeSlider from "./PriceRangeSlider.vue";
-import { store } from "@/store.js";
 
-const props = defineProps({
-  priceMin: {
-    type: Number,
-    required: true,
-  },
-  priceMax: {
-    type: Number,
-    required: true,
-  },
-  selectedBrands: {
-    type: Array,
-    required: true,
-  },
-  selectedAttrs: {
-    type: Object,
-    required: true,
-  },
-  selectedRating: {
-    type: String,
-    required: true,
-  },
-  onlyDiscounts: {
-    type: Boolean,
-    required: true,
-  },
-  onlyInStock: {
-    type: Boolean,
-    required: true,
-  },
-  products: {
-    type: Array,
-    required: true,
-  },
-  brands: {
-    type: Array,
-    required: true,
-  },
-  dynamicAttributes: {
-    type: Array,
-    default: () => [],
-  },
-  categoriesList: {
-    type: Array,
-    default: () => [],
-  },
-  selectedCategory: {
-    type: String,
-    default: "",
-  },
-});
+interface BrandItem {
+  slug: string;
+  name: string;
+  count: number;
+}
 
-const emit = defineEmits([
-  "update:priceMin",
-  "update:priceMax",
-  "update:selectedBrands",
-  "update:selectedAttrs",
-  "update:selectedRating",
-  "update:onlyDiscounts",
-  "update:onlyInStock",
-  "clear-filters",
-  "select-category",
-]);
+interface AttributeItem {
+  id: string | number;
+  name: any;
+  code: string;
+  type?: string;
+  values: Array<{ id: string | number; value: any }>;
+}
+
+interface CategoryItem {
+  id: string | number;
+  slug: string;
+  name: any;
+}
+
+const props = defineProps<{
+  priceMin: number;
+  priceMax: number;
+  selectedBrands: string[];
+  selectedAttrs: Record<string, string>;
+  selectedRating: string;
+  onlyDiscounts: boolean;
+  onlyInStock: boolean;
+  products: any[];
+  brands: BrandItem[];
+  dynamicAttributes?: AttributeItem[];
+  categoriesList?: CategoryItem[];
+  selectedCategory?: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:priceMin", val: number): void;
+  (e: "update:priceMax", val: number): void;
+  (e: "update:selectedBrands", val: string[]): void;
+  (e: "update:selectedAttrs", val: Record<string, string>): void;
+  (e: "update:selectedRating", val: string): void;
+  (e: "update:onlyDiscounts", val: boolean): void;
+  (e: "update:onlyInStock", val: boolean): void;
+  (e: "clear-filters"): void;
+  (e: "select-category", val: string): void;
+}>();
 
 const localPriceMin = computed({
   get: () => props.priceMin,
@@ -96,7 +79,7 @@ const localStock = computed({
   set: (val) => emit("update:onlyInStock", val),
 });
 
-const toggleAttr = (code, value) => {
+const toggleAttr = (code: string, value: string) => {
   const current = { ...props.selectedAttrs };
   if (!value || current[code] === value) {
     delete current[code];

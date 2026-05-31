@@ -1,36 +1,38 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 const router = useRouter();
+const cartStore = useCartStore();
 const shippingThreshold = 500;
+
 const shippingProgress = computed(() => {
-  const total = store.cartTotal;
+  const total = cartStore.cartTotal;
   return Math.min(100, (total / shippingThreshold) * 100);
 });
 
 const remainingForFreeShipping = computed(() => {
-  const total = store.cartTotal;
+  const total = cartStore.cartTotal;
   return Math.max(0, shippingThreshold - total);
 });
 
 const checkout = () => {
-  if (store.cart.length === 0) return;
-  store.closeDrawer();
+  if (cartStore.cart.length === 0) return;
+  cartStore.closeDrawer();
   router.push({ name: "cart" });
 };
 </script>
 
 <template>
   <div
-    v-if="store.activeDrawer === 'cart'"
+    v-if="cartStore.activeDrawer === 'cart'"
     class="fixed inset-0 z-[90] flex justify-end"
   >
     <!-- Backdrop Overlay -->
     <div
       class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-      @click="store.closeDrawer()"
+      @click="cartStore.closeDrawer()"
     />
 
     <!-- Drawer Panel -->
@@ -49,7 +51,7 @@ const checkout = () => {
         </div>
         <button
           class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors"
-          @click="store.closeDrawer()"
+          @click="cartStore.closeDrawer()"
         >
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -57,7 +59,7 @@ const checkout = () => {
 
       <!-- Shipping Goal Tracker -->
       <div
-        v-if="store.cart.length > 0"
+        v-if="cartStore.cart.length > 0"
         class="px-6 py-4 bg-surface-container-low border-b border-surface-variant flex flex-col gap-2"
       >
         <div
@@ -91,7 +93,7 @@ const checkout = () => {
       <div class="flex-grow overflow-y-auto p-6 flex flex-col gap-4">
         <!-- Empty State -->
         <div
-          v-if="store.cart.length === 0"
+          v-if="cartStore.cart.length === 0"
           class="flex-grow flex flex-col items-center justify-center text-center gap-4 py-12"
         >
           <div
@@ -108,7 +110,7 @@ const checkout = () => {
           </p>
           <button
             class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/10 mt-2"
-            @click="store.closeDrawer()"
+            @click="cartStore.closeDrawer()"
           >
             Start Shopping
           </button>
@@ -116,7 +118,7 @@ const checkout = () => {
 
         <!-- Cart Items -->
         <div
-          v-for="item in store.cart"
+          v-for="item in cartStore.cart"
           v-else
           :key="item.id"
           class="flex gap-4 p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-xl relative group hover:shadow-md transition-shadow"
@@ -137,7 +139,7 @@ const checkout = () => {
             <div>
               <span
                 class="text-[10px] font-bold text-primary uppercase tracking-wider"
-              >{{ item.category }}</span>
+              >{{ (item as any).category || 'Товар' }}</span>
               <h4
                 class="font-title-md text-sm text-on-surface line-clamp-1 leading-tight"
               >
@@ -154,7 +156,7 @@ const checkout = () => {
               >
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
-                  @click="store.updateCartQuantity(item.id, item.quantity - 1)"
+                  @click="cartStore.updateCartQuantity(item.id, item.quantity - 1)"
                 >
                   <span class="material-symbols-outlined text-[16px]">remove</span>
                 </button>
@@ -163,7 +165,7 @@ const checkout = () => {
                 }}</span>
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
-                  @click="store.updateCartQuantity(item.id, item.quantity + 1)"
+                  @click="cartStore.updateCartQuantity(item.id, item.quantity + 1)"
                 >
                   <span class="material-symbols-outlined text-[16px]">add</span>
                 </button>
@@ -174,7 +176,7 @@ const checkout = () => {
           <!-- Delete button -->
           <button
             class="absolute top-2 right-2 text-on-surface-variant hover:text-error transition-colors"
-            @click="store.removeFromCart(item.id)"
+            @click="cartStore.removeFromCart(item.id)"
           >
             <span class="material-symbols-outlined text-[18px]">delete</span>
           </button>
@@ -183,7 +185,7 @@ const checkout = () => {
 
       <!-- Footer (Summary + Checkout button) -->
       <div
-        v-if="store.cart.length > 0"
+        v-if="cartStore.cart.length > 0"
         class="p-6 border-t border-surface-variant bg-surface-container-lowest"
       >
         <div class="flex flex-col gap-3 mb-6">
@@ -191,13 +193,13 @@ const checkout = () => {
             class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
           >
             <span>Subtotal</span>
-            <span class="text-on-surface font-bold">${{ store.cartTotal.toFixed(2) }}</span>
+            <span class="text-on-surface font-bold">${{ cartStore.cartTotal.toFixed(2) }}</span>
           </div>
           <div
             class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
           >
             <span>Estimated Taxes</span>
-            <span class="text-on-surface font-bold">${{ (store.cartTotal * 0.1).toFixed(2) }}</span>
+            <span class="text-on-surface font-bold">${{ (cartStore.cartTotal * 0.1).toFixed(2) }}</span>
           </div>
           <div
             class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
@@ -222,8 +224,8 @@ const checkout = () => {
             <span class="font-bold text-primary">
               ${{
                 (
-                  store.cartTotal +
-                  store.cartTotal * 0.1 +
+                  cartStore.cartTotal +
+                  cartStore.cartTotal * 0.1 +
                   (remainingForFreeShipping === 0 ? 0 : 25)
                 ).toFixed(2)
               }}

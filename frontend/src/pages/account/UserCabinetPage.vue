@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
-import { store } from "@/store.js";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 import AccountSidebar from "@/components/account/AccountSidebar.vue";
 import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.vue";
@@ -16,11 +16,12 @@ import AccountNotificationsTab from "@/components/account/tabs/AccountNotificati
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
-const activeTab = computed(() => route.query.tab || "dashboard");
+const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 const userName = computed(() => authStore.user?.name || "Клієнт");
 
-const tabTitles = {
+const tabTitles: Record<string, string> = {
   dashboard: "Панель керування",
   orders: "Історія замовлень",
   favorites: "Моє обране",
@@ -40,9 +41,9 @@ const navTabs = [
   { label: "Підтримка", icon: "help", tab: "support" },
 ];
 
-const selectTab = (tab) => router.push({ name: "account", query: { tab } });
+const selectTab = (tab: string) => router.push({ name: "account", query: { tab } });
 
-const tabComponents = {
+const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
   orders: AccountOrdersTab,
   favorites: AccountFavoritesTab,
@@ -58,7 +59,7 @@ const currentTab = computed(
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
-    store.fetchUnreadNotificationsCount();
+    cartStore.fetchUnreadNotificationsCount();
   }
 });
 </script>

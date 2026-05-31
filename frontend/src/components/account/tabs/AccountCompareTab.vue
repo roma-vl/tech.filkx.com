@@ -1,18 +1,35 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const selectedCategory = ref(null);
+interface ProductItem {
+  id: string | number;
+  name: string;
+  brand: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  price: number;
+  oldPrice?: number;
+  inStock: boolean;
+  description: string;
+  category?: string;
+  specs?: Array<[string, string]>;
+}
+
+const cartStore = useCartStore();
+
+const selectedCategory = ref<string | null>(null);
 
 // Group compared items by category
 const comparedByCategory = computed(() => {
-  const groups = {};
-  store.compare.forEach((item) => {
+  const groups: Record<string, ProductItem[]> = {};
+  (cartStore.compare as any[]).forEach((item) => {
     const cat = item.category || "Різне";
     if (!groups[cat]) {
       groups[cat] = [];
     }
-    groups[cat].push(item);
+    groups[cat].push(item as ProductItem);
   });
   return groups;
 });
@@ -21,7 +38,7 @@ const comparedByCategory = computed(() => {
 const dynamicSpecLabels = computed(() => {
   if (!selectedCategory.value) return [];
   const items = comparedByCategory.value[selectedCategory.value] || [];
-  const labels = new Set();
+  const labels = new Set<string>();
   items.forEach((item) => {
     if (item.specs && Array.isArray(item.specs)) {
       item.specs.forEach(([label]) => labels.add(label));
@@ -30,23 +47,23 @@ const dynamicSpecLabels = computed(() => {
   return Array.from(labels);
 });
 
-const getSpecValue = (product, label) => {
+const getSpecValue = (product: ProductItem, label: string) => {
   if (!product.specs || !Array.isArray(product.specs)) return "—";
   const found = product.specs.find(([l]) => l === label);
   return found ? found[1] : "—";
 };
 
-const removeCategoryComparison = (categoryName) => {
+const removeCategoryComparison = (categoryName: string) => {
   const itemsToRemove = comparedByCategory.value[categoryName] || [];
   itemsToRemove.forEach((item) => {
-    store.removeFromCompare(item.id);
+    cartStore.removeFromCompare(item.id as any);
   });
   if (selectedCategory.value === categoryName) {
     selectedCategory.value = null;
   }
 };
 
-const formatPrice = (price) => {
+const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
     style: "currency",
     currency: "UAH",
@@ -60,7 +77,7 @@ const formatPrice = (price) => {
     <!-- CATEGORY LIST VIEW (Default State) -->
     <div v-if="!selectedCategory">
       <div
-        v-if="store.compare.length > 0"
+        v-if="cartStore.compare.length > 0"
         class="space-y-4"
       >
         <h2
@@ -96,7 +113,7 @@ const formatPrice = (price) => {
                   v-for="prod in products"
                   :key="prod.id"
                   class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform cursor-pointer"
-                  @click="store.viewProduct(prod)"
+                  @click="cartStore.viewProduct(prod as any)"
                 >
                   <img
                     :src="prod.image"
@@ -117,7 +134,7 @@ const formatPrice = (price) => {
                 title="Поділитися списком"
                 type="button"
                 @click="
-                  store.addToast(
+                  cartStore.addToast(
                     'Посилання скопійовано в буфер обміну',
                     'success',
                   )
@@ -205,7 +222,7 @@ const formatPrice = (price) => {
                   class="absolute top-3 right-3 text-zinc-400 hover:text-rose-500 transition-colors"
                   type="button"
                   @click="
-                    store.removeFromCompare(product.id);
+                    cartStore.removeFromCompare(product.id as any);
                     if (
                       (comparedByCategory[selectedCategory] || []).length <= 1
                     )
@@ -238,11 +255,11 @@ const formatPrice = (price) => {
                     :src="product.image"
                     :alt="product.name"
                     class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 cursor-pointer hover:border-[#00a046]/40 transition-all"
-                    @click="store.viewProduct(product)"
+                    @click="cartStore.viewProduct(product as any)"
                   >
                   <h4
                     class="font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-800 dark:text-zinc-200 max-w-[180px] cursor-pointer hover:text-[#00a046] transition-colors"
-                    @click="store.viewProduct(product)"
+                    @click="cartStore.viewProduct(product as any)"
                   >
                     {{ product.name }}
                   </h4>
@@ -334,7 +351,7 @@ const formatPrice = (price) => {
               >
                 <button
                   class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2.5 rounded-lg font-extrabold text-xs transition-all uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm"
-                  @click="store.addToCart(product)"
+                  @click="cartStore.addToCart(product as any)"
                 >
                   <span
                     class="material-symbols-outlined text-[16px] md:text-[18px]"

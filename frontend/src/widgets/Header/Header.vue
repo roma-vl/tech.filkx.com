@@ -1,14 +1,38 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
-import { store } from "@/store.js";
-import { useAuthStore } from "@/stores/auth.js";
-import Dropdown from "@/components/ui/Dropdown.vue";
-import axios from "@/services/api";
+import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import { AppDropdown } from "@/shared/ui";
+import { productApi } from "@/shared/services/api/productApi";
+
+interface CategorySub {
+  name: string;
+  slug: string;
+  badge: string;
+}
+
+interface Category {
+  id: string;
+  label: string;
+  icon: string;
+  sub: CategorySub[];
+}
+
+interface SearchProduct {
+  id: string | number;
+  slug: string;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+}
 
 const router = useRouter();
+const cartStore = useCartStore();
 const authStore = useAuthStore();
-const searchInput = ref(null);
+
+const searchInput = ref<HTMLInputElement | null>(null);
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const isMegaMenuOpen = ref(false);
@@ -28,17 +52,17 @@ const popularQueries = [
   "Наушники",
 ];
 
-const searchResults = ref([]);
+const searchResults = ref<SearchProduct[]>([]);
 const isSearching = ref(false);
 
-const mapApiProduct = (prod) => {
+const mapApiProduct = (prod: any): SearchProduct => {
   const mainVariant = prod.variants?.[0] || null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
 
   let image = "";
   if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
     const primary =
-      mainVariant.dimensions.images.find((img) => img.isPrimary) ||
+      mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
       mainVariant.dimensions.images[0];
     if (primary && primary.url) {
       image = primary.url;
@@ -70,7 +94,7 @@ const mapApiProduct = (prod) => {
   };
 };
 
-let debounceTimeout = null;
+let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 watch(searchQuery, (newQuery) => {
   if (debounceTimeout) clearTimeout(debounceTimeout);
@@ -84,11 +108,10 @@ watch(searchQuery, (newQuery) => {
   debounceTimeout = setTimeout(async () => {
     isSearching.value = true;
     try {
-      const { data } = await axios.get("/v1/catalog/products", {
-        params: { search: query },
-      });
-      if (data && (data.success || data.status === "success")) {
-        const productsList = data.data?.data || data.data || [];
+      const response = await productApi.catalogGetProducts({ search: query });
+      const responseData = response.data;
+      if (responseData && (responseData.success || responseData.status === "success")) {
+        const productsList = responseData.data?.data || responseData.data || [];
         searchResults.value = productsList.map(mapApiProduct);
       }
     } catch (error) {
@@ -98,8 +121,9 @@ watch(searchQuery, (newQuery) => {
     }
   }, 300);
 });
-const getCategoryIcon = (slug) => {
-  const mapping = {
+
+const getCategoryIcon = (slug: string) => {
+  const mapping: Record<string, string> = {
     phones: "smartphone",
     smartphones: "smartphone",
     laptops: "laptop",
@@ -117,19 +141,19 @@ const getCategoryIcon = (slug) => {
   return mapping[slug] || "grid_view";
 };
 
-const categories = ref([]);
-const activeCat = ref(null);
+const categories = ref<Category[]>([]);
+const activeCat = ref<Category | null>(null);
 
-const selectCategory = (cat) => {
+const selectCategory = (cat: Category) => {
   activeCat.value = cat;
 };
 
-const clickCategorySub = (sub) => {
+const clickCategorySub = (sub: CategorySub) => {
   isMegaMenuOpen.value = false;
   router.push({ name: "catalog", query: { category: sub.slug } });
 };
 
-const selectPopularQuery = (query) => {
+const selectPopularQuery = (query: string) => {
   searchQuery.value = query;
   triggerSearch();
 };
@@ -144,13 +168,13 @@ const triggerSearch = () => {
   }
 };
 
-const selectSearchResult = (product) => {
+const selectSearchResult = (product: SearchProduct) => {
   searchQuery.value = "";
   showDropdown.value = false;
   router.push({ name: "product-detail", params: { id: product.slug } });
 };
 
-const formatPrice = (price) => {
+const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
     style: "currency",
     currency: "UAH",
@@ -158,7 +182,7 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const highlightMatch = (name, query) => {
+const highlightMatch = (name: string, query: string) => {
   if (!query.trim()) return name;
   const regex = new RegExp(`(${query.trim()})`, "gi");
   return name.replace(
@@ -171,7 +195,7 @@ const filteredProducts = computed(() => {
   return searchResults.value;
 });
 
-const handleKeydown = (e) => {
+const handleKeydown = (e: KeyboardEvent) => {
   if ((e.metaKey || e.ctrlKey) && e.key === "k") {
     e.preventDefault();
     searchInput.value?.focus();
@@ -182,17 +206,17 @@ const handleKeydown = (e) => {
   }
 };
 
-const handleClickOutside = (e) => {
+const handleClickOutside = (e: MouseEvent) => {
   const container = searchInput.value?.closest(".search-container");
-  if (container && !container.contains(e.target)) {
+  if (container && !container.contains(e.target as Node)) {
     showDropdown.value = false;
   }
   const megaWrap = document.querySelector(".mega-menu-wrapper");
   if (
     megaWrap &&
-    !megaWrap.contains(e.target) &&
-    !e.target.closest(".catalog-btn") &&
-    !e.target.closest(".burger-btn")
+    !megaWrap.contains(e.target as Node) &&
+    !(e.target as HTMLElement).closest(".catalog-btn") &&
+    !(e.target as HTMLElement).closest(".burger-btn")
   ) {
     isMegaMenuOpen.value = false;
   }
@@ -203,24 +227,24 @@ const toggleCatalog = () => {
 };
 
 const triggerVoiceSearch = () => {
-  store.addToast("Voice search activated. Start speaking...", "info");
+  cartStore.addToast("Voice search activated. Start speaking...", "info");
 };
 
-const unreadCount = computed(() => store.unreadNotificationsCount);
+const unreadCount = computed(() => cartStore.unreadNotificationsCount);
 
 const fetchUnreadCount = async () => {
   if (!authStore.isAuthenticated) {
-    store.unreadNotificationsCount = 0;
+    cartStore.unreadNotificationsCount = 0;
     return;
   }
-  await store.fetchUnreadNotificationsCount();
+  await cartStore.fetchUnreadNotificationsCount();
 };
 
 watch(() => authStore.isAuthenticated, (newVal) => {
   if (newVal) {
     fetchUnreadCount();
   } else {
-    store.unreadNotificationsCount = 0;
+    cartStore.unreadNotificationsCount = 0;
   }
 });
 
@@ -230,13 +254,14 @@ onMounted(async () => {
   fetchUnreadCount();
 
   try {
-    const { data } = await axios.get("/v1/catalog/categories");
-    if (data && (data.success || data.status === "success")) {
-      categories.value = data.data.map((cat) => ({
+    const response = await productApi.catalogGetCategories();
+    const responseData = response.data;
+    if (responseData && (responseData.success || responseData.status === "success")) {
+      categories.value = responseData.data.map((cat: any) => ({
         id: cat.slug,
         label: cat.name?.uk || cat.name?.en || cat.name || "",
         icon: getCategoryIcon(cat.slug),
-        sub: (cat.children || []).map((child) => ({
+        sub: (cat.children || []).map((child: any) => ({
           name: child.name?.uk || child.name?.en || child.name || "",
           slug: child.slug,
           badge: "",
@@ -449,7 +474,7 @@ onUnmounted(() => {
       <!-- Right: Compact Icon Actions -->
       <div class="flex items-center gap-4 md:gap-6 text-white">
         <!-- Account -->
-        <Dropdown
+        <AppDropdown
           align="right"
           width="60"
         >
@@ -465,7 +490,7 @@ onUnmounted(() => {
           <template #content>
             <template v-if="authStore.isAuthenticated">
               <div
-                class="p-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3 text-zinc-800"
+                class="p-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3 text-zinc-800 animate-in fade-in duration-200"
               >
                 <div
                   class="w-10 h-10 rounded-full bg-[#00a046] flex items-center justify-center text-white font-bold"
@@ -474,7 +499,7 @@ onUnmounted(() => {
                     authStore.user?.name
                       ? authStore.user.name
                         .split(" ")
-                        .map((n) => n[0])
+                        .map((n: string) => n[0])
                         .join("")
                         .substring(0, 2)
                         .toUpperCase()
@@ -540,7 +565,7 @@ onUnmounted(() => {
               </div>
             </template>
           </template>
-        </Dropdown>
+        </AppDropdown>
 
         <!-- Notifications -->
         <button
@@ -565,10 +590,10 @@ onUnmounted(() => {
         >
           <span class="material-symbols-outlined text-[24px]">compare_arrows</span>
           <span
-            v-if="store.compareCount > 0"
+            v-if="cartStore.compareCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
-            {{ store.compareCount }}
+            {{ cartStore.compareCount }}
           </span>
         </button>
 
@@ -580,10 +605,10 @@ onUnmounted(() => {
         >
           <span class="material-symbols-outlined text-[24px]">favorite</span>
           <span
-            v-if="store.wishlistCount > 0"
+            v-if="cartStore.wishlistCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
-            {{ store.wishlistCount }}
+            {{ cartStore.wishlistCount }}
           </span>
         </button>
 
@@ -591,14 +616,14 @@ onUnmounted(() => {
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
           title="Cart"
-          @click="store.openDrawer('cart')"
+          @click="cartStore.openDrawer('cart')"
         >
           <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
           <span
-            v-if="store.cartCount > 0"
+            v-if="cartStore.cartCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
           >
-            {{ store.cartCount }}
+            {{ cartStore.cartCount }}
           </span>
         </button>
       </div>
@@ -704,7 +729,7 @@ onUnmounted(() => {
               </div>
               <div
                 v-else
-                class="text-center py-12 text-zinc-400 dark:text-zinc-500"
+                class="text-center py-12 text-zinc-400 dark:text-zinc-550"
               >
                 <span class="material-symbols-outlined text-4xl mb-2">category</span>
                 <p class="text-xs font-bold">
@@ -717,7 +742,7 @@ onUnmounted(() => {
               class="mt-8 pt-4 border-t border-zinc-150 dark:border-zinc-800 flex justify-between items-center"
             >
               <p
-                class="text-[10px] text-zinc-400 dark:text-zinc-550 font-bold uppercase tracking-wider"
+                class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider"
               >
                 Швидка доставка та офіційна гарантія на всі товари
               </p>
@@ -727,7 +752,7 @@ onUnmounted(() => {
                   isMegaMenuOpen = false;
                   router.push({
                     name: 'catalog',
-                    query: { category: activeCat.id },
+                    query: { category: activeCat?.id },
                   });
                 "
               >
@@ -757,7 +782,7 @@ onUnmounted(() => {
               >
                 Оновлюйте гаджети на весну зі знижкою до 40%
               </h4>
-              <p class="text-[11px] text-zinc-450 leading-relaxed">
+              <p class="text-[11px] text-zinc-400 leading-relaxed">
                 Спеціальні ціни на преміальні смартфони, навушники та ноутбуки.
               </p>
             </div>
