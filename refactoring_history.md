@@ -44,3 +44,22 @@ This document tracks the steps taken during the Vue 3 + TypeScript SPA frontend 
 - Updated shared components (such as `DataGrid.vue`, `OptimizeVideoModal.vue`, `FeatureLockOverlay.vue`, and `AppTable.vue`) to refer to local relative paths within the `src/shared/ui/` library instead of accessing legacy `/components/` paths, enforcing robust boundary separation.
 - Silenced TypeScript compilation warnings and ensured the entire frontend is completely typecheck-clean (`vue-tsc --noEmit` returns exit code 0).
 
+### Phase 6: Public Shopping Cart & Catalog Page Migration
+- **Shopping Cart**:
+  - Decoupled cart, checkout, and coupon validation logic from `src/pages/cart/ShoppingCart.vue` into a new FSD-compliant composable `src/features/cart/composables/useShoppingCart.ts`.
+  - Structured the cart UI into reusable FSD widgets under `src/widgets/ShoppingCart/`:
+    - `SuccessMessage.vue` (renders placed order details and success metrics).
+    - `CheckoutForm.vue` (manages customer contacts, delivery inputs, and payment methods).
+    - `CartItemsList.vue` (renders product items, quantity modifiers, and saved-for-later products).
+    - `CartSummary.vue` (displays order subtotals, tax/shipping estimations, promo code apply triggers, and checkout action buttons).
+  - Refactored `ShoppingCart.vue` page component to act purely as a coordinator.
+- **Catalog Page**:
+  - Created FSD composable `src/features/catalog/composables/useCatalog.ts` managing filter states, categories list, brand aggregations, dynamic EAV attributes, pagination, search queries, and quick view modal actions.
+  - Added new public catalog endpoints `/v1/catalog/...` to `src/shared/services/api/productApi.ts` for standardized data fetching.
+  - Created FSD widgets under `src/widgets/Catalog/`:
+    - `CatalogFiltersWidget.vue` (contains category navigation, price sliders, brand selection, and dynamic attributes filters).
+    - `PriceRangeSlider.vue` (reusable range selector widget component).
+    - `ProductCard.vue` (renders product items in list or grid modes, binding to Pinia stores).
+    - `QuickViewModal.vue` (renders detailed specs and add-to-cart controls in a dialog overlay).
+  - Updated `src/pages/catalog/CatalogPage.vue` to compose these widgets, ensuring strict type safety and a fully clean build (`vue-tsc --noEmit` passes with exit code 0).
+

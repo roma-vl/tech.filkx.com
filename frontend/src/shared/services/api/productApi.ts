@@ -22,6 +22,23 @@ export const productApi = {
     return apiClient.get("/v1/attributes");
   },
 
+  // Catalog routes
+  catalogGetProducts(params?: Record<string, any>) {
+    return apiClient.get("/v1/catalog/products", { params });
+  },
+
+  catalogGetCategories() {
+    return apiClient.get("/v1/catalog/categories");
+  },
+
+  catalogGetBrands() {
+    return apiClient.get("/v1/catalog/brands");
+  },
+
+  catalogGetFiltersSchema() {
+    return apiClient.get("/v1/catalog/filters");
+  },
+
   // Admin Catalog Management APIs
   adminGetProducts(params?: Record<string, any>) {
     return apiClient.get("/admin/products", { params });
