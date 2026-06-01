@@ -11,7 +11,7 @@ class MergeCartDto
     public static function fromRequest($request): self
     {
         return new self(
-            sessionId: $request->input('session_id')
+            sessionId: $request->input('sessionId')
         );
     }
 }

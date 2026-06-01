@@ -20,16 +20,16 @@ class PlaceOrderDto
     public static function fromRequest($request): self
     {
         return new self(
-            customerName: $request->input('customer_name'),
-            customerPhone: $request->input('customer_phone'),
-            customerEmail: $request->input('customer_email'),
-            shippingCountry: $request->input('shipping_country'),
-            shippingCity: $request->input('shipping_city'),
-            shippingAddress: $request->input('shipping_address'),
-            deliveryMethod: $request->input('delivery_method'),
-            paymentMethod: $request->input('payment_method'),
-            sessionId: $request->header('X-Cart-Session-ID') ?: $request->input('session_id'),
-            couponCode: $request->input('coupon_code')
+            customerName: $request->input('customerName'),
+            customerPhone: $request->input('customerPhone'),
+            customerEmail: $request->input('customerEmail'),
+            shippingCountry: $request->input('shippingCountry'),
+            shippingCity: $request->input('shippingCity'),
+            shippingAddress: $request->input('shippingAddress'),
+            deliveryMethod: $request->input('deliveryMethod'),
+            paymentMethod: $request->input('paymentMethod'),
+            sessionId: $request->header('X-Cart-Session-ID') ?: $request->input('sessionId'),
+            couponCode: $request->input('couponCode')
         );
     }
 

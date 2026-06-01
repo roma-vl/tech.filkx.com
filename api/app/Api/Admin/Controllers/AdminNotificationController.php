@@ -20,10 +20,10 @@ class AdminNotificationController extends BaseApiController
         return self::successfulResponseWithData([
             'data' => NotificationResource::collection($notifications->items()),
             'meta' => [
-                'current_page' => $notifications->currentPage(),
-                'last_page' => $notifications->lastPage(),
-                'per_page' => $notifications->perPage(),
-                'total' => $notifications->total(),
+                'currentPage' => $notifications->currentPage(),
+                'lastPage'    => $notifications->lastPage(),
+                'perPage'     => $notifications->perPage(),
+                'total'       => $notifications->total(),
             ]
         ]);
     }

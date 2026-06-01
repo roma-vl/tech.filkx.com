@@ -63,9 +63,9 @@ class UserResource extends JsonResource
             'language' => $this->language,
             'timezone' => $this->timezone,
             'hasPassword' => ! empty($this->password),
-            'oauth_accounts' => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($acc) => [
-                'provider' => $acc->provider,
-                'created_at' => $acc->created_at,
+            'oauthAccounts'  => $this->whenLoaded('oauthAccounts', fn () => $this->oauthAccounts->map(fn ($acc) => [
+                'provider'  => $acc->provider,
+                'createdAt' => $acc->created_at,
             ])),
             'emailVerifiedAt' => $this->email_verified_at,
             'deletedAt' => $this->deleted_at,

@@ -46,7 +46,7 @@ class CreateAdminProductAction
                     'product_id' => $product->id,
                     'sku'        => $vData['sku'],
                     'price'      => $vData['price'],
-                    'old_price'  => $vData['old_price'] ?? null,
+                    'old_price'  => $vData['oldPrice'] ?? null,
                     'weight'     => $vData['weight'] ?? null,
                     'dimensions' => ['images' => $vData['images'] ?? []],
                 ]);
@@ -63,8 +63,8 @@ class CreateAdminProductAction
                         ProductAttributeValue::create([
                             'product_id'         => $product->id,
                             'variant_id'         => $variant->id,
-                            'attribute_id'       => $attr['attribute_id'],
-                            'attribute_value_id' => $attr['value_id'] ?? null,
+                            'attribute_id'       => $attr['attributeId'],
+                            'attribute_value_id' => $attr['valueId'] ?? null,
                             'custom_value'       => $attr['value'] ?? null,
                         ]);
                     }

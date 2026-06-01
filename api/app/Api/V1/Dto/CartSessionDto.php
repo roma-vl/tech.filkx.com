@@ -15,7 +15,7 @@ class CartSessionDto
 
         return new self(
             userId: $user ? $user->id : null,
-            sessionId: $request->header('X-Cart-Session-ID') ?: $request->input('session_id')
+            sessionId: $request->header('X-Cart-Session-ID') ?: $request->input('sessionId')
         );
     }
 }

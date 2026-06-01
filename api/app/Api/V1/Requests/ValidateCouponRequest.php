@@ -14,8 +14,8 @@ class ValidateCouponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string',
-            'cart_total' => 'required|numeric|min:0',
+            'code'      => 'required|string',
+            'cartTotal' => 'required|numeric|min:0',
         ];
     }
 }

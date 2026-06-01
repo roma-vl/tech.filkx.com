@@ -10,15 +10,15 @@ class SupportMessageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'message' => $this->message,
-            'file_path' => $this->file_path,
-            'file_type' => $this->file_type,
-            'file_name' => $this->file_name,
-            'file_size' => $this->file_size,
-            'is_admin' => $this->is_admin,
-            'user' => $this->whenLoaded('user'),
-            'created_at' => $this->created_at->toIso8601String(),
+            'id'        => $this->id,
+            'message'   => $this->message,
+            'filePath'  => $this->file_path,
+            'fileType'  => $this->file_type,
+            'fileName'  => $this->file_name,
+            'fileSize'  => $this->file_size,
+            'isAdmin'   => $this->is_admin,
+            'user'      => $this->whenLoaded('user'),
+            'createdAt' => $this->created_at->toIso8601String(),
         ];
     }
 }
