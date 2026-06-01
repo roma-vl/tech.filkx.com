@@ -82,4 +82,16 @@ This document tracks the steps taken during the Vue 3 + TypeScript SPA frontend 
 - **Verification**:
   - Executed `vue-tsc --noEmit` and confirmed zero compilation errors across the codebase.
 
+### Phase 8: Full store.js Elimination from Account Tabs
 
+Migrated all remaining `src/components/account/tabs/` components off `@/store.js` to direct FSD Pinia `useCartStore`:
+
+- **`AccountSettingsTab.vue`**: Converted to `<script setup lang="ts">`, added `AddressItem` / `CardItem` interfaces, typed all reactive state and handlers, replaced all `store.addToast()` with `cartStore.addToast()`.
+- **`AccountCompareTab.vue`**: Converted to TypeScript, added `ProductItem` interface, replaced all `store.*` calls with `cartStore` equivalents.
+- **`AccountFavoritesTab.vue`**: Full rewrite in TypeScript.
+- **`AccountNotificationsTab.vue`**: Full rewrite in TypeScript, added `NotificationItem` interface.
+- **`AccountDashboardTab.vue`**: Full rewrite in TypeScript, replaced `store.wishlist` / `store.addToCart` / `store.viewProduct`.
+- **`AccountOrdersTab.vue`**: Converted to TypeScript, added `TrackingStep` / `ShippingAddress` / `OrderItem` / `Order` interfaces.
+- **`AccountSupportTab.vue`**: Converted to TypeScript, added `FaqItem` / `TicketItem` / `TicketMessage` interfaces.
+
+**Result**: `from "@/store.js"` — **zero occurrences** in all `.vue`/`.ts` files. `vue-tsc --noEmit` → exit code 0 ✅.

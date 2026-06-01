@@ -1,10 +1,34 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/services/api.js";
 
-const activeFaqIndex = ref(null);
-const faqs = [
+const cartStore = useCartStore();
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+interface TicketItem {
+  id: string | number;
+  subject: string;
+  status: string;
+  created_at: string;
+  [key: string]: any;
+}
+
+interface TicketMessage {
+  id: string | number;
+  message: string;
+  is_admin: boolean;
+  created_at: string;
+  file_path?: string;
+  file_name?: string;
+}
+
+const activeFaqIndex = ref<number | null>(null);
+const faqs: FaqItem[] = [
   {
     q: "Скільки часу займає доставка товарів?",
     a: "Стандартна доставка триває 1-3 робочих дні. Експрес-доставка кур'єром по місту — 1 день. Для наших постійних покупців та преміум-клієнтів діє безкоштовна доставка.",
@@ -23,7 +47,7 @@ const faqs = [
   },
 ];
 
-const toggleFaq = (i) => {
+const toggleFaq = (i: number) => {
   activeFaqIndex.value = activeFaqIndex.value === i ? null : i;
 };
 
@@ -33,16 +57,16 @@ const ticketForm = ref({
   message: "",
 });
 
-const ticketsList = ref([]);
+const ticketsList = ref<TicketItem[]>([]);
 const loadingTickets = ref(false);
 const isSubmitting = ref(false);
 
-const selectedTicket = ref(null);
-const selectedTicketMessages = ref([]);
+const selectedTicket = ref<TicketItem | null>(null);
+const selectedTicketMessages = ref<TicketMessage[]>([]);
 const replyText = ref("");
 const replying = ref(false);
 
-const getStatusLabel = (status) => {
+const getStatusLabel = (status: string) => {
   switch (status) {
     case "new": return "Створено";
     case "accepted": return "В обробці";
@@ -52,7 +76,7 @@ const getStatusLabel = (status) => {
   }
 };
 
-const getStatusClass = (status) => {
+const getStatusClass = (status: string) => {
   switch (status) {
     case "new":
       return "text-blue-500 bg-blue-500/10 border border-blue-500/20";
@@ -65,21 +89,15 @@ const getStatusClass = (status) => {
   }
 };
 
-const parseTicketSubject = (ticket) => {
+const parseTicketSubject = (ticket: TicketItem) => {
   const match = ticket.subject.match(/^\[(.*?)\] (.*)$/);
   if (match) {
-    return {
-      category: match[1],
-      subject: match[2],
-    };
+    return { category: match[1], subject: match[2] };
   }
-  return {
-    category: "Підтримка",
-    subject: ticket.subject,
-  };
+  return { category: "Підтримка", subject: ticket.subject };
 };
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr?: string) => {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("uk-UA", {
     month: "short",
@@ -88,7 +106,7 @@ const formatDate = (dateStr) => {
   });
 };
 
-const formatTime = (dateStr) => {
+const formatTime = (dateStr?: string) => {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleTimeString("uk-UA", {
     hour: "2-digit",
@@ -105,30 +123,28 @@ const fetchTickets = async () => {
     }
   } catch (error) {
     console.error("Failed to load tickets:", error);
-    store.addToast("Не вдалося завантажити звернення.", "error");
+    cartStore.addToast("Не вдалося завантажити звернення.", "error");
   } finally {
     loadingTickets.value = false;
   }
 };
 
-const openTicket = async (ticket) => {
+const openTicket = async (ticket: TicketItem) => {
   selectedTicket.value = ticket;
   try {
     const response = await api.get(`/support/tickets/${ticket.id}`);
     if (response.data && response.data.status === "success") {
       selectedTicketMessages.value = response.data.data.publicMessages || response.data.data.messages || [];
-      // Also mark as read
       api.post(`/support/tickets/${ticket.id}/mark-as-read`).catch(() => {});
     }
   } catch (error) {
     console.error("Failed to load ticket details:", error);
-    store.addToast("Не вдалося завантажити деталі звернення.", "error");
+    cartStore.addToast("Не вдалося завантажити деталі звернення.", "error");
   }
 };
 
 const sendTicketReply = async () => {
   if (!replyText.value.trim() || !selectedTicket.value || replying.value) return;
-
   replying.value = true;
   try {
     const response = await api.post(`/support/tickets/${selectedTicket.value.id}/message`, {
@@ -140,7 +156,7 @@ const sendTicketReply = async () => {
     }
   } catch (error) {
     console.error("Failed to reply to ticket:", error);
-    store.addToast("Не вдалося відправити повідомлення.", "error");
+    cartStore.addToast("Не вдалося відправити повідомлення.", "error");
   } finally {
     replying.value = false;
   }
@@ -148,34 +164,25 @@ const sendTicketReply = async () => {
 
 const submitTicket = async () => {
   if (!ticketForm.value.subject || !ticketForm.value.message) {
-    store.addToast(
-      "Будь ласка, вкажіть тему та опис проблеми.",
-      "warning",
-    );
+    cartStore.addToast("Будь ласка, вкажіть тему та опис проблеми.", "warning");
     return;
   }
-
   isSubmitting.value = true;
   try {
     const fullSubject = `[${ticketForm.value.category}] ${ticketForm.value.subject}`;
-    
     const response = await api.post("/support/tickets", {
       subject: fullSubject,
       message: ticketForm.value.message,
     });
-
     if (response.data && response.data.status === "success") {
-      store.addToast(
-        "Звернення створено! Наша служба підтримки відповість найближчим часом.",
-        "success"
-      );
+      cartStore.addToast("Звернення створено! Наша служба підтримки відповість найближчим часом.", "success");
       ticketForm.value.subject = "";
       ticketForm.value.message = "";
       fetchTickets();
     }
   } catch (error) {
     console.error("Failed to submit ticket:", error);
-    store.addToast("Не вдалося створити звернення.", "error");
+    cartStore.addToast("Не вдалося створити звернення.", "error");
   } finally {
     isSubmitting.value = false;
   }

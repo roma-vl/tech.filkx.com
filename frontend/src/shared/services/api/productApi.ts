@@ -7,7 +7,7 @@ export const productApi = {
   },
 
   getProduct(slugOrId: string | number) {
-    return apiClient.get(`/v1/products/${slugOrId}`);
+    return apiClient.get(`/v1/catalog/products/${slugOrId}`);
   },
 
   getCategories() {

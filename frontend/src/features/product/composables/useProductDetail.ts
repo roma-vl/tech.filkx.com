@@ -486,10 +486,10 @@ export function useProductDetail() {
     });
   };
 
-  const fetchProductDetails = async () => {
+  const fetchProductDetails = async (slugOverride?: string) => {
     isLoading.value = true;
     try {
-      const slug = route.params.id;
+      const slug = slugOverride ?? route.params.id;
       const response = await productApi.getProduct(slug as string);
       if (response.data && response.data.status === "success") {
         rawProduct.value = response.data.data;
@@ -514,6 +514,18 @@ export function useProductDetail() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
   });
+
+  // Re-fetch when navigating between products (Vue Router reuses the component instance)
+  watch(
+    () => route.params.id,
+    (newId, oldId) => {
+      if (newId && newId !== oldId) {
+        window.scrollTo(0, 0);
+        rawProduct.value = null;
+        fetchProductDetails(newId as string);
+      }
+    }
+  );
 
   onUnmounted(() => {
     window.removeEventListener("scroll", handleScroll);

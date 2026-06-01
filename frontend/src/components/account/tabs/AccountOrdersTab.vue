@@ -1,6 +1,48 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
+
+const cartStore = useCartStore();
+
+interface TrackingStep {
+  name: string;
+  date: string;
+  done: boolean;
+}
+
+interface ShippingAddress {
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
+interface OrderItem {
+  id: number;
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  returnWindow?: string;
+  note?: string;
+}
+
+interface Order {
+  id: string;
+  date: string;
+  total: number;
+  shipTo: string;
+  status: string;
+  statusIcon: string;
+  statusClass: string;
+  statusCode: string;
+  trackingSteps: TrackingStep[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: { type: string; number: string };
+  items: OrderItem[];
+}
 
 const defaultOrders = [
   {
@@ -126,15 +168,15 @@ const defaultOrders = [
   },
 ];
 
-const ordersList = ref([...defaultOrders]);
+const ordersList = ref<Order[]>([...defaultOrders]);
 const ordersFilter = ref("all");
 const ordersSearchQuery = ref("");
 
-const selectedOrder = ref(null);
+const selectedOrder = ref<Order | null>(null);
 const isDetailsOpen = ref(false);
-const trackingOrder = ref(null);
+const trackingOrder = ref<Order | null>(null);
 const isTrackingOpen = ref(false);
-const reviewProduct = ref(null);
+const reviewProduct = ref<OrderItem | null>(null);
 const reviewRating = ref(5);
 const reviewComment = ref("");
 const isReviewOpen = ref(false);
@@ -154,23 +196,23 @@ const filteredOrders = computed(() =>
   }),
 );
 
-const openDetails = (o) => {
+const openDetails = (o: Order) => {
   selectedOrder.value = o;
   isDetailsOpen.value = true;
 };
-const openTracking = (o) => {
+const openTracking = (o: Order) => {
   trackingOrder.value = o;
   isTrackingOpen.value = true;
 };
-const openReview = (i) => {
+const openReview = (i: OrderItem) => {
   reviewProduct.value = i;
   reviewRating.value = 5;
   reviewComment.value = "";
   isReviewOpen.value = true;
 };
-const buyItAgain = (i) => store.addToCart(i);
+const buyItAgain = (i: OrderItem) => cartStore.addToCart(i as any);
 const submitReview = () => {
-  store.addToast(
+  cartStore.addToast(
     `Дякуємо! Ваш відгук із оцінкою ${reviewRating.value} зірок успішно опубліковано.`,
     "success",
   );
@@ -318,12 +360,12 @@ const filterBtns = [
               class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 cursor-pointer hover:border-[#00a046]/40 transition-colors"
               :src="item.image"
               :alt="item.name"
-              @click="store.viewProduct(item)"
+              @click="cartStore.viewProduct(item as any)"
             >
             <div class="flex-1">
               <h3
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="store.viewProduct(item)"
+                @click="cartStore.viewProduct(item as any)"
               >
                 {{ item.name }}
               </h3>
@@ -437,12 +479,12 @@ const filterBtns = [
               :src="item.image"
               :alt="item.name"
               class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
-              @click="store.viewProduct(item)"
+              @click="cartStore.viewProduct(item as any)"
             >
             <div class="flex-1">
               <p
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="store.viewProduct(item)"
+                @click="cartStore.viewProduct(item as any)"
               >
                 {{ item.name }}
               </p>
