@@ -48,20 +48,20 @@ class UpdateAdminProductAction
 
                 if ($variant) {
                     $variant->update([
-                        'sku' => $vData['sku'],
-                        'price' => $vData['price'],
-                        'old_price' => $vData['oldPrice'] ?? null,
-                        'weight' => $vData['weight'] ?? null,
-                        'dimensions' => ['images' => $vData['images']],
+                        'sku'        => $vData['sku'],
+                        'price'      => $vData['price'],
+                        'old_price'  => $vData['old_price'] ?? null,
+                        'weight'     => $vData['weight'] ?? null,
+                        'dimensions' => ['images' => $vData['images'] ?? []],
                     ]);
                 } else {
                     $variant = ProductVariant::create([
                         'product_id' => $product->id,
-                        'sku' => $vData['sku'],
-                        'price' => $vData['price'],
-                        'old_price' => $vData['oldPrice'] ?? null,
-                        'weight' => $vData['weight'] ?? null,
-                        'dimensions' => ['images' => $vData['images']],
+                        'sku'        => $vData['sku'],
+                        'price'      => $vData['price'],
+                        'old_price'  => $vData['old_price'] ?? null,
+                        'weight'     => $vData['weight'] ?? null,
+                        'dimensions' => ['images' => $vData['images'] ?? []],
                     ]);
                 }
 
@@ -87,11 +87,11 @@ class UpdateAdminProductAction
                 if (! empty($vData['attributes'])) {
                     foreach ($vData['attributes'] as $attr) {
                         ProductAttributeValue::create([
-                            'product_id' => $product->id,
-                            'variant_id' => $variant->id,
-                            'attribute_id' => $attr['attributeId'],
-                            'attribute_value_id' => $attr['valueId'] ?? null,
-                            'custom_value' => $attr['value'] ?? null,
+                            'product_id'         => $product->id,
+                            'variant_id'         => $variant->id,
+                            'attribute_id'       => $attr['attribute_id'],
+                            'attribute_value_id' => $attr['value_id'] ?? null,
+                            'custom_value'       => $attr['value'] ?? null,
                         ]);
                     }
                 }

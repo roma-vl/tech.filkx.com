@@ -436,7 +436,7 @@
         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span>{{ globalError }}</span>
+        <span style="white-space: pre-line">{{ globalError }}</span>
       </div>
     </form>
 
@@ -687,34 +687,66 @@ const initForm = () => {
   }
 };
 
+const buildPayload = () => {
+  const f = productForm.value;
+  return {
+    nameUk: f.nameUk,
+    nameEn: f.nameEn,
+    descriptionUk: f.descriptionUk || null,
+    descriptionEn: f.descriptionEn || null,
+    status: f.status,
+    isHot: f.isHot,
+    isRecommended: f.isRecommended,
+    brandId: f.brandId || null,
+    categoryId: Number(f.categoryId),
+    variants: f.variants.map((v) => ({
+      id: v.id || null,
+      sku: v.sku,
+      price: Number(v.price),
+      oldPrice: v.oldPrice != null ? Number(v.oldPrice) : null,
+      stock: Number(v.stock),
+      weight: v.weight != null ? Number(v.weight) : null,
+      images: v.images ?? [],
+      attributes: (v.attributes ?? []).filter((a: any) => a.attributeId),
+    })),
+  };
+};
+
 const saveProduct = async () => {
   clearErrors();
   if (!validate()) {
     globalError.value = 'Заповніть усі обов\'язкові поля, позначені червоним.';
     return;
   }
+  const payload = buildPayload();
+  console.log('[ProductForm] Sending payload:', JSON.stringify(payload, null, 2));
   try {
     if (isEditing.value) {
-      await apiClient.put(
-        `/admin/products/${productForm.value.id}`,
-        productForm.value,
-      );
+      await apiClient.put(`/admin/products/${productForm.value.id}`, payload);
     } else {
-      await apiClient.post("/admin/products", productForm.value);
+      await apiClient.post('/admin/products', payload);
     }
     emit('update:modelValue', false);
     emit('refresh');
   } catch (error: any) {
     console.error('Failed to save product:', error);
-    const serverMessage = error.response?.data?.message;
     const serverErrors = error.response?.data?.errors;
+    const serverMessage = error.response?.data?.message;
+    console.error('[ProductForm] Server errors:', serverErrors);
+
     if (serverErrors) {
-      // Map backend validation errors to fields
-      if (serverErrors['name.uk']) errors.value.nameUk = serverErrors['name.uk'][0];
-      if (serverErrors['name.en']) errors.value.nameEn = serverErrors['name.en'][0];
-      if (serverErrors['category_id']) errors.value.categoryId = serverErrors['category_id'][0];
+      // Map top-level field errors
+      if (serverErrors['nameUk']) errors.value.nameUk = serverErrors['nameUk'][0];
+      if (serverErrors['nameEn']) errors.value.nameEn = serverErrors['nameEn'][0];
+      if (serverErrors['categoryId']) errors.value.categoryId = serverErrors['categoryId'][0];
       if (serverErrors['status']) errors.value.status = serverErrors['status'][0];
-      globalError.value = 'Сервер повернув помилки валідації — перевірте поля.';
+
+      // Collect all errors into readable list
+      const allMessages: string[] = [];
+      Object.entries(serverErrors).forEach(([field, msgs]: [string, any]) => {
+        allMessages.push(`${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`);
+      });
+      globalError.value = 'Помилки сервера:\n' + allMessages.join('\n');
     } else {
       globalError.value = serverMessage || 'Помилка при збереженні товару. Спробуйте ще раз.';
     }

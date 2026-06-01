@@ -20,15 +20,15 @@ class ProductDto
     public static function fromRequest($request): self
     {
         return new self(
-            nameUk: $request->input('nameUk'),
-            nameEn: $request->input('nameEn'),
-            descriptionUk: $request->input('descriptionUk'),
-            descriptionEn: $request->input('descriptionEn'),
+            nameUk: $request->input('name_uk'),
+            nameEn: $request->input('name_en'),
+            descriptionUk: $request->input('description_uk'),
+            descriptionEn: $request->input('description_en'),
             status: $request->input('status'),
-            isHot: (bool) $request->input('isHot', false),
-            isRecommended: (bool) $request->input('isRecommended', false),
-            brandId: $request->input('brandId') ? (int) $request->input('brandId') : null,
-            categoryId: (int) $request->input('categoryId'),
+            isHot: (bool) $request->input('is_hot', false),
+            isRecommended: (bool) $request->input('is_recommended', false),
+            brandId: $request->input('brand_id') ? (int) $request->input('brand_id') : null,
+            categoryId: (int) $request->input('category_id'),
             variants: $request->input('variants', [])
         );
     }
