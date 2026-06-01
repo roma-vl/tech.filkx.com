@@ -71,7 +71,7 @@
   </aside>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import {
   ChevronDoubleLeftIcon,
@@ -81,20 +81,18 @@ import AppNavItem from "./AppNavItem.vue";
 import AppNavDropdown from "./AppNavDropdown.vue";
 import { useNavigation } from "@/layouts/appllication/useNavigation.js";
 import Logo from "@/assets/images/logo/logo.png";
-// import TourReminderBanner from "@/components/application/features/onboarding/TourReminderBanner.vue";
-// import TrialActivationBanner from "@/components/application/ui/Banners/TrialActivationBanner.vue";
 import Version from "@/layouts/appllication/components/Version.vue";
 
 const { t } = useI18n();
 
-defineProps({
-  collapsed: {
-    type: Boolean,
-    required: true,
-  },
-});
+defineProps<{
+  collapsed: boolean;
+}>();
 
-defineEmits(["toggle", "start-tour"]);
+defineEmits<{
+  (e: "toggle"): void;
+  (e: "start-tour"): void;
+}>();
 
 const { navigationGroups } = useNavigation();
 </script>

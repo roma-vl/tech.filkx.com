@@ -75,23 +75,35 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 const { t } = useI18n();
 const route = useRoute();
-const emit = defineEmits(["click"]);
+defineEmits<{ (e: "click"): void }>();
 
-const props = defineProps({
-  item: { type: Object, required: true },
-  collapsed: { type: Boolean, default: false },
-});
+interface NavChild {
+  id: string;
+  to: string;
+  labelKey: string;
+}
+
+interface NavItem {
+  icon: any;
+  labelKey: string;
+  items?: NavChild[];
+}
+
+const props = defineProps<{
+  item: NavItem;
+  collapsed?: boolean;
+}>();
 
 const isOpen = ref(false);
 
-const isChildActive = (path) => {
+const isChildActive = (path: string) => {
   return route.path === path;
 };
 
@@ -105,7 +117,6 @@ const toggleDropdown = () => {
   }
 };
 
-// Auto-open if child is active
 if (isAnyChildActive.value) {
   isOpen.value = true;
 }

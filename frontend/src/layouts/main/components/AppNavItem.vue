@@ -41,14 +41,22 @@
   </router-link>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { LockIcon } from "lucide-vue-next";
 
+interface NavItem {
+  to: string;
+  icon: any;
+  labelKey: string;
+  isActive?: boolean;
+  isLocked?: boolean;
+}
+
 const { t } = useI18n();
-defineEmits(["click"]);
-defineProps({
-  item: { type: Object, required: true },
-  collapsed: { type: Boolean, default: false },
-});
+defineEmits<{ (e: "click"): void }>();
+defineProps<{
+  item: NavItem;
+  collapsed?: boolean;
+}>();
 </script>

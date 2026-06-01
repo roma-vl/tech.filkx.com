@@ -106,7 +106,7 @@
   </TransitionRoot>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   Dialog,
   DialogPanel,
@@ -120,8 +120,8 @@ import UsageSummary from "./UsageSummary.vue";
 import Logo from "@/assets/images/logo/logo.png";
 import { useNavigation } from "@/layouts/appllication/useNavigation.js";
 
-defineEmits(["close"]);
-defineProps({ open: Boolean });
+defineEmits<{ (e: "close"): void }>();
+defineProps<{ open?: boolean }>();
 
 const { navigationGroups } = useNavigation();
 </script>

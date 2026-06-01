@@ -154,7 +154,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
     </section>
 
     <!-- Overview grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Recent Orders -->
       <section class="lg:col-span-2 space-y-6">
         <div class="flex items-center justify-between">
@@ -275,94 +275,6 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         </div>
       </section>
 
-      <!-- My Information -->
-      <section class="space-y-6">
-        <h2
-          class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white"
-        >
-          Особисті дані
-        </h2>
-        <div
-          class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-6"
-        >
-          <div class="flex items-center gap-4">
-            <div
-              class="w-14 h-14 rounded-full bg-emerald-500/10 text-[#00a046] flex items-center justify-center font-black text-xl border border-emerald-500/20"
-            >
-              {{ userName.charAt(0) }}
-            </div>
-            <div>
-              <h3
-                class="font-extrabold text-zinc-855 dark:text-zinc-150 text-base leading-snug"
-              >
-                {{ userName }}
-              </h3>
-              <p
-                class="text-xs md:text-sm text-zinc-400 dark:text-zinc-500 line-clamp-1 mt-0.5"
-              >
-                {{ userEmail }}
-              </p>
-            </div>
-          </div>
-          <div
-            class="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-2"
-          >
-            <p
-              class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
-            >
-              Адреса доставки за замовчуванням
-            </p>
-            <p class="font-extrabold text-sm text-zinc-800 dark:text-zinc-200">
-              {{ defaultAddress.recipient }}
-            </p>
-            <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              {{ defaultAddress.street }}
-            </p>
-            <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-              м. {{ defaultAddress.city }}, {{ defaultAddress.zip }}
-            </p>
-          </div>
-          <div
-            class="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-2.5"
-          >
-            <p
-              class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >
-              Швидкі дії
-            </p>
-            <div class="grid grid-cols-2 gap-2">
-              <button
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
-                @click="go('settings')"
-              >
-                <span class="material-symbols-outlined text-[18px]">edit</span>
-                Профіль
-              </button>
-              <button
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-355 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
-                @click="go('favorites')"
-              >
-                <span class="material-symbols-outlined text-[18px]">favorite</span>
-                Обране
-              </button>
-              <button
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-655 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
-                @click="go('support')"
-              >
-                <span class="material-symbols-outlined text-[18px]">help</span>
-                Підтримка
-              </button>
-              <a
-                href="/catalog"
-                class="flex items-center gap-2 text-xs md:text-sm text-zinc-650 dark:text-zinc-350 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors bg-zinc-50 dark:bg-zinc-855 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg p-2.5 text-left font-extrabold"
-              >
-                <span class="material-symbols-outlined text-[18px]">grid_view</span>
-                Каталог
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   </div>
 </template>

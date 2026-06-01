@@ -95,3 +95,23 @@ Migrated all remaining `src/components/account/tabs/` components off `@/store.js
 - **`AccountSupportTab.vue`**: Converted to TypeScript, added `FaqItem` / `TicketItem` / `TicketMessage` interfaces.
 
 **Result**: `from "@/store.js"` — **zero occurrences** in all `.vue`/`.ts` files. `vue-tsc --noEmit` → exit code 0 ✅.
+
+### Phase 9: Public Layout & Error Pages TypeScript Migration
+
+Converted all remaining `<script setup>` → `<script setup lang="ts">` across layout, error page, and navigation components:
+
+- **`layouts/auth/AuthLayout.vue`**: `withDefaults(defineProps<{size?: "md" | "lg"}>())` — typed union prop.
+- **`layouts/admin/AdminLayout.vue`**: Added `lang="ts"`.
+- **`layouts/main/components/Version.vue`**: Replaced legacy `@/services/api.js` with `apiClient` from FSD `@/shared/services/api/apiClient`. Added `VersionInfo` interface.
+- **`layouts/main/components/AppSidebar.vue`**: Typed `defineProps<{collapsed: boolean}>()` and `defineEmits<{toggle, start-tour}>()`. Removed dead commented imports.
+- **`layouts/main/components/AppNavItem.vue`**: Added `NavItem` interface with `to`, `icon`, `labelKey`, `isActive`, `isLocked`.
+- **`layouts/main/components/AppNavDropdown.vue`**: Added `NavChild` / `NavItem` interfaces. Typed `isChildActive(path: string)`.
+- **`layouts/main/components/MobileNavDrawer.vue`**: Typed props and emits with generic syntax.
+- **`layouts/main/components/UsageBadge.vue`**: Typed props with literal union `color` type, `Record<string, string>` bgColorMap, fixed `t(label ?? "")`.
+- **`layouts/main/components/UpgradeCta.vue`**: Added `lang="ts"`.
+- **`pages/errors/NotFoundPage.vue`**: `ref<HTMLDivElement | null>(null)` + null guard in `onMounted`.
+- **`pages/errors/MaintenancePage.vue`**: Added `lang="ts"`.
+- **Bug fix**: `productApi.ts` `getProduct()` — corrected endpoint from `/v1/products/{slug}` → `/v1/catalog/products/{slug}`.
+- **Bug fix**: `useProductDetail.ts` — added `watch(() => route.params.id, ...)` to re-fetch on navigation between products; `fetchProductDetails(slugOverride?)` accepts explicit slug to avoid stale route reads.
+
+**Result**: `vue-tsc --noEmit` → exit code 0 ✅. All public layout components are now fully typed.

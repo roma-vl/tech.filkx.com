@@ -1,9 +1,8 @@
-<script setup>
-defineProps({
-  size: {
-    type: String,
-    default: "md", // 'md' | 'lg'
-  },
+<script setup lang="ts">
+withDefaults(defineProps<{
+  size?: "md" | "lg";
+}>(), {
+  size: "md",
 });
 </script>
 
