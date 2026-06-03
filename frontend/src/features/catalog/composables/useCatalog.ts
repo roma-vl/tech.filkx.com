@@ -222,10 +222,10 @@ export function useCatalog() {
     try {
       const params: Record<string, any> = {
         page: pagination.value.page,
-        sortBy: sortBy.value,
-        priceFrom:
+        sort_by: sortBy.value,
+        price_from:
           priceMin.value > initialPriceMin.value ? priceMin.value : undefined,
-        priceTo:
+        price_to:
           priceMax.value < initialPriceMax.value ? priceMax.value : undefined,
       };
 
@@ -246,7 +246,7 @@ export function useCatalog() {
       }
 
       if (onlyInStock.value) {
-        params.inStock = 1;
+        params.in_stock = 1;
       }
 
       // Add EAV attributes to query parameters in camelCase format

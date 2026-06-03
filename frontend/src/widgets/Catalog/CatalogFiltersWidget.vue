@@ -3,7 +3,7 @@
     class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm divide-y divide-zinc-100 dark:divide-zinc-800"
   >
     <!-- Categories Filter Header/Item -->
-    <div class="p-5">
+    <div v-if="showCategories" class="p-5">
       <h3
         class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3.5"
       >
@@ -265,20 +265,26 @@ interface BrandInfo {
   count: number;
 }
 
-const props = defineProps<{
-  priceMin: number;
-  priceMax: number;
-  selectedBrands: string[];
-  selectedAttrs: Record<string, string>;
-  selectedRating: string;
-  onlyDiscounts: boolean;
-  onlyInStock: boolean;
-  products: any[];
-  brands: BrandInfo[];
-  dynamicAttributes: any[];
-  categoriesList: any[];
-  selectedCategory: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    priceMin: number;
+    priceMax: number;
+    selectedBrands: string[];
+    selectedAttrs: Record<string, string>;
+    selectedRating: string;
+    onlyDiscounts: boolean;
+    onlyInStock: boolean;
+    products: any[];
+    brands: BrandInfo[];
+    dynamicAttributes: any[];
+    categoriesList: any[];
+    selectedCategory: string;
+    showCategories?: boolean;
+  }>(),
+  {
+    showCategories: false,
+  }
+);
 
 const emit = defineEmits([
   "update:priceMin",

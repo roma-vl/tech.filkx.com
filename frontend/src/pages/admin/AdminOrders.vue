@@ -2,12 +2,12 @@
   <div class="space-y-6">
     <!-- Filters Panel Widget -->
     <OrderFiltersWidget
-      v-model:searchQuery="searchQuery"
-      v-model:showFilters="showFilters"
-      v-model:statusFilter="statusFilter"
-      v-model:paymentFilter="paymentFilter"
-      v-model:deliveryFilter="deliveryFilter"
-      v-model:sortFilter="sortFilter"
+      v-model:search-query="searchQuery"
+      v-model:show-filters="showFilters"
+      v-model:status-filter="statusFilter"
+      v-model:payment-filter="paymentFilter"
+      v-model:delivery-filter="deliveryFilter"
+      v-model:sort-filter="sortFilter"
       :active-filters-count="activeFiltersCount"
       @reset="resetFilters"
       @export="exportCsv"

@@ -96,7 +96,7 @@
         <!-- Right Column (Summary Card) -->
         <aside>
           <CartSummary
-            v-model:promoCode="promoCode"
+            v-model:promo-code="promoCode"
             :cart-total="cartStore.cartTotal"
             :discount="discount"
             :shipping="shipping"
