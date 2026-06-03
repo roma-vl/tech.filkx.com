@@ -4,7 +4,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade"
   >
     <div
-      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
     >
       <div
         class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4.5 flex justify-between items-center"
@@ -91,11 +91,11 @@
             </div>
             <span
               v-if="product.inStock"
-              class="text-xs text-[#00a046] font-extrabold bg-[#00a046]/10 border border-[#00a046]/20 px-3 py-1 rounded-lg"
+              class="text-xs text-[#00a046] font-extrabold bg-[#00a046]/10 border border-[#00a046]/20 px-3 py-1 rounded-md"
             >В наявності</span>
             <span
               v-else
-              class="text-xs text-zinc-550 font-extrabold bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-lg"
+              class="text-xs text-zinc-550 font-extrabold bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-md"
             >Немає в наявності</span>
           </div>
 
@@ -152,7 +152,7 @@
         class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex flex-col sm:flex-row justify-end gap-3"
       >
         <button
-          class="border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-colors flex items-center justify-center gap-1.5"
+          class="border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-md font-extrabold text-xs md:text-sm transition-colors flex items-center justify-center gap-1.5"
           @click="cartStore.toggleCompare(product)"
         >
           <span class="material-symbols-outlined text-[16px] md:text-[18px]">compare_arrows</span>
@@ -165,7 +165,7 @@
               ? 'bg-[#00a046] hover:bg-[#00b050] text-white'
               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
           "
-          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
+          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-md font-extrabold text-xs md:text-sm transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
           @click="
             cartStore.addToCart(product);
             emit('close');

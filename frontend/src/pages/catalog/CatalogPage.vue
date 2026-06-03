@@ -1,36 +1,47 @@
 <template>
+  <!-- Breadcrumbs -->
+  <nav
+    class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-2 text-[11px] md:text-xs font-sans text-zinc-400 dark:text-zinc-500"
+  >
+    <a
+      class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-bold"
+      href="#"
+      @click.prevent="router.push('/')"
+    >
+      <span class="material-symbols-outlined text-[16px] leading-none">home</span>
+      <span>Головна</span>
+    </a>
+    <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+    <a
+      class="hover:text-[#00a046] transition-colors font-bold"
+      href="#"
+      @click.prevent="selectCategory('')"
+    >Каталог</a>
+    <template v-if="route.query.category">
+      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ currentCategoryName }}</span>
+    </template>
+  </nav>
+
+  <!-- Category Title Header (Full Width) -->
+  <header class="max-w-container-max mx-auto px-4 md:px-8 pt-4 pb-2 font-sans">
+    <h1
+      class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight text-left font-bold"
+    >
+      {{ currentCategoryName }}
+    </h1>
+    <p class="text-xs text-zinc-400 dark:text-zinc-500 font-bold mt-1 text-left">
+      Знайдено {{ pagination.total }} товарів
+    </p>
+  </header>
+
   <!-- Main Catalog Area -->
   <main
-    class="max-w-container-max mx-auto px-4 md:px-8 py-8 flex gap-8 font-sans text-zinc-800 dark:text-zinc-200"
+    class="max-w-container-max mx-auto px-4 md:px-8 py-6 flex gap-8 font-sans text-zinc-800 dark:text-zinc-200"
   >
     <!-- Sidebar Filters (Desktop) -->
     <aside class="hidden lg:block w-72 flex-shrink-0">
       <div class="sticky top-24 space-y-6">
-        <!-- Breadcrumbs -->
-        <nav
-          class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 mb-4 font-bold"
-        >
-          <a
-            class="hover:text-[#00a046] transition-colors"
-            href="#"
-            @click.prevent="router.push('/')"
-          >Головна</a>
-          <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-          <a
-            class="hover:text-[#00a046] transition-colors"
-            href="#"
-            @click.prevent="selectCategory('')"
-          >Каталог</a>
-          <span
-            v-if="route.query.category"
-            class="material-symbols-outlined text-[12px]"
-          >chevron_right</span>
-          <span
-            v-if="route.query.category"
-            class="text-zinc-800 dark:text-zinc-100 font-extrabold"
-          >{{ currentCategoryName }}</span>
-        </nav>
-
         <!-- Catalog Filters Component -->
         <CatalogFiltersWidget
           v-model:price-min="priceMin"
@@ -55,51 +66,43 @@
     <section class="flex-1 min-w-0">
       <!-- Top Action bar -->
       <div
-        class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-4 mb-6 shadow-sm"
+        class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 p-4 mb-6 shadow-sm"
       >
         <div
-          class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="flex items-center justify-between gap-4"
         >
-          <div>
-            <h1
-              class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight text-left font-bold"
-            >
-              {{ currentCategoryName }}
-            </h1>
-            <p class="text-xs text-zinc-400 dark:text-zinc-500 font-bold mt-1 text-left">
-              Знайдено {{ pagination.total }} товарів
-            </p>
-          </div>
-          <div class="flex items-center gap-3">
+          <span class="text-sm font-bold text-zinc-550 dark:text-zinc-400 hidden md:inline">Налаштування вигляду</span>
+          
+          <div class="flex items-center gap-3 ml-auto">
             <!-- View Mode toggle switcher -->
             <div
-              class="flex items-center bg-zinc-50 dark:bg-zinc-800 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700 mr-1.5"
+              class="flex items-center bg-zinc-100/80 dark:bg-zinc-800/80 rounded-lg p-1 border border-zinc-200/40 dark:border-zinc-700/40 mr-1"
             >
               <button
                 :class="
                   viewMode === 'grid'
-                    ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]'
-                    : 'text-zinc-400 dark:text-zinc-550 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    ? 'bg-white dark:bg-zinc-900 shadow-md text-[#00a046] scale-105'
+                    : 'text-zinc-450 dark:text-zinc-400 hover:text-zinc-750 dark:hover:text-zinc-200 hover:bg-white/40 dark:hover:bg-zinc-850/40'
                 "
-                class="p-2 rounded-md transition-colors"
+                class="p-2 rounded-md transition-all duration-200 flex items-center justify-center"
                 title="Сітка"
                 type="button"
                 @click="viewMode = 'grid'"
               >
-                <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                <span class="material-symbols-outlined text-[20px]">grid_view</span>
               </button>
               <button
                 :class="
                   viewMode === 'list'
-                    ? 'bg-white dark:bg-zinc-900 shadow-sm text-[#00a046]'
-                    : 'text-zinc-400 dark:text-zinc-550 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    ? 'bg-white dark:bg-zinc-900 shadow-md text-[#00a046] scale-105'
+                    : 'text-zinc-450 dark:text-zinc-400 hover:text-zinc-750 dark:hover:text-zinc-200 hover:bg-white/40 dark:hover:bg-zinc-850/40'
                 "
-                class="p-2 rounded-md transition-colors"
+                class="p-2 rounded-md transition-all duration-200 flex items-center justify-center"
                 title="Список"
                 type="button"
                 @click="viewMode = 'list'"
               >
-                <span class="material-symbols-outlined text-[18px]">view_list</span>
+                <span class="material-symbols-outlined text-[20px]">view_list</span>
               </button>
             </div>
 
@@ -107,7 +110,7 @@
             <div class="relative">
               <select
                 v-model="sortBy"
-                class="appearance-none bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg pl-3 pr-9 py-2.5 text-xs font-extrabold text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] w-48 cursor-pointer outline-none"
+                class="appearance-none bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md pl-3 pr-9 py-2.5 text-xs font-extrabold text-zinc-850 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] w-48 cursor-pointer outline-none"
               >
                 <option value="popularity">
                   За популярністю
@@ -129,7 +132,7 @@
 
             <!-- Mobile filter toggle button -->
             <button
-              class="lg:hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700"
+              class="lg:hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-750 dark:text-zinc-300 p-2.5 rounded-md border border-zinc-200 dark:border-zinc-700"
               @click="isMobileFilterOpen = true"
             >
               <span class="material-symbols-outlined text-[18px]">filter_alt</span>
@@ -142,13 +145,13 @@
           class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-wrap gap-2 items-center"
         >
           <span
-            class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mr-1"
+            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mr-1"
           >Застосовано:</span>
           <template v-if="activeFilters.length">
             <button
               v-for="filter in activeFilters"
               :key="`${filter.type}-${filter.label}`"
-              class="flex items-center gap-1 bg-[#00a046]/10 text-[#00a046] px-2.5 py-1 rounded-full text-[10px] hover:bg-[#00a046]/20 transition-all font-black border border-[#00a046]/20"
+              class="flex items-center gap-1 bg-[#00a046]/10 text-[#00a046] px-3 py-1 rounded-full text-xs hover:bg-[#00a046]/20 transition-all font-black border border-[#00a046]/20"
               type="button"
               @click="removeFilter(filter)"
             >
@@ -156,7 +159,7 @@
               <span class="material-symbols-outlined text-[12px]">close</span>
             </button>
             <button
-              class="text-[#00a046] hover:text-[#00b050] font-black text-[10px] ml-auto hover:underline flex items-center gap-1 uppercase tracking-wider"
+              class="text-[#00a046] hover:text-[#00b050] font-black text-xs ml-auto hover:underline flex items-center gap-1 uppercase tracking-wider"
               type="button"
               @click="clearFilters"
             >
@@ -166,7 +169,7 @@
           </template>
           <span
             v-else
-            class="text-[10px] text-zinc-400 dark:text-zinc-500 font-extrabold italic"
+            class="text-xs text-zinc-400 dark:text-zinc-555 font-extrabold italic"
           >Фільтри не вибрано</span>
         </div>
       </div>
@@ -192,7 +195,7 @@
       <!-- No products found placeholder -->
       <div
         v-else
-        class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-150 dark:border-zinc-800 p-12 text-center shadow-sm"
+        class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-150 dark:border-zinc-800 p-12 text-center shadow-sm"
       >
         <div
           class="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
@@ -203,13 +206,13 @@
           Товари за вашим запитом не знайдені
         </h2>
         <p
-          class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 mb-6 max-w-md mx-auto"
+          class="text-sm text-zinc-450 dark:text-zinc-500 mb-6 max-w-md mx-auto"
         >
           Спробуйте змінити значення цінового діапазону або приберіть зайві
           бренди чи параметри ОЗУ.
         </p>
         <button
-          class="bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs py-2.5 px-6 rounded-lg transition-all font-bold"
+          class="bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-sm py-2.5 px-6 rounded-md transition-all font-bold"
           type="button"
           @click="clearFilters"
         >
@@ -229,7 +232,7 @@
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800'
           "
-          class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-500 rounded-lg transition-all font-bold"
+          class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-extrabold text-zinc-500 rounded-md transition-all font-bold"
           @click="changePage(pagination.page - 1)"
         >
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
@@ -244,7 +247,7 @@
                 ? 'bg-[#00a046] text-white shadow-sm'
                 : 'text-zinc-550 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200'
             "
-            class="w-8 h-8 flex items-center justify-center rounded-lg transition-all font-extrabold text-xs"
+            class="w-8 h-8 flex items-center justify-center rounded-md transition-all font-extrabold text-sm"
             @click="changePage(p)"
           >
             {{ p }}
@@ -257,7 +260,7 @@
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:text-[#00a046] hover:bg-zinc-50 dark:hover:bg-zinc-800'
           "
-          class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-zinc-500 rounded-lg transition-all font-bold"
+          class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-extrabold text-zinc-500 rounded-md transition-all font-bold"
           @click="changePage(pagination.page + 1)"
         >
           ВПЕРЕД
@@ -311,13 +314,13 @@
         class="border-t border-zinc-150 dark:border-zinc-800 pt-4 mt-6 flex gap-3"
       >
         <button
-          class="flex-1 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-extrabold py-2.5 rounded-lg text-xs font-bold"
+          class="flex-1 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-extrabold py-2.5 rounded-md text-xs font-bold"
           @click="clearFilters"
         >
           Скинути
         </button>
         <button
-          class="flex-1 bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold py-2.5 rounded-lg text-xs font-bold"
+          class="flex-1 bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold py-2.5 rounded-md text-xs font-bold"
           @click="isMobileFilterOpen = false"
         >
           Показати
