@@ -8,7 +8,7 @@
         <div class="flex gap-2">
           <!-- Wishlist action -->
           <button
-            class="p-2.5 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-rose-550 transition-all flex items-center justify-center text-zinc-400 dark:text-zinc-500"
+            class="p-2.5 border border-zinc-200 dark:border-zinc-800 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-rose-555 transition-all flex items-center justify-center text-zinc-400 dark:text-zinc-500"
             type="button"
             @click="cartStore.toggleWishlist(product)"
           >
@@ -27,7 +27,7 @@
 
           <!-- Compare Action -->
           <button
-            class="p-2.5 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046] transition-all flex items-center justify-center text-zinc-400 dark:text-zinc-500"
+            class="p-2.5 border border-zinc-200 dark:border-zinc-800 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046] transition-all flex items-center justify-center text-zinc-400 dark:text-zinc-500"
             type="button"
             :class="{
               'text-[#00a046] border-[#00a046]/40': cartStore.isInCompare(
@@ -73,7 +73,7 @@
 
     <!-- Price box -->
     <div
-      class="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-6"
+      class="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg space-y-6"
     >
       <div class="space-y-2">
         <div class="flex flex-wrap items-baseline gap-3">
@@ -149,7 +149,7 @@
                 ? 'border-2 border-[#00a046] font-black text-[#00a046] bg-emerald-500/5 shadow-sm'
                 : 'border border-zinc-200 dark:border-zinc-800 font-bold text-zinc-500 dark:text-zinc-400 hover:border-[#00a046] hover:text-[#00a046]'
             "
-            class="py-2 px-3 rounded-lg transition-all text-xs min-w-[70px] font-semibold"
+            class="py-2 px-3 rounded-md transition-all text-xs min-w-[70px] font-semibold"
             type="button"
             @click="$emit('select-variant', 'memory', storage)"
           >
@@ -161,7 +161,7 @@
       <!-- Add to cart -->
       <div class="pt-2 space-y-3">
         <button
-          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-lg font-extrabold text-sm shadow-md hover:shadow-lg hover:shadow-emerald-500/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 uppercase tracking-wider font-bold"
+          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-md font-extrabold text-sm shadow-md hover:shadow-lg hover:shadow-emerald-500/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 uppercase tracking-wider font-bold"
           type="button"
           @click="cartStore.addToCart(product)"
         >
@@ -169,7 +169,7 @@
           Додати в кошик
         </button>
         <button
-          class="w-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-3.5 rounded-lg font-extrabold text-sm active:scale-[0.98] transition-all uppercase tracking-wider font-bold"
+          class="w-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-3.5 rounded-md font-extrabold text-sm active:scale-[0.98] transition-all uppercase tracking-wider font-bold"
           type="button"
           @click="cartStore.addToCart(product)"
         >
@@ -179,7 +179,7 @@
 
       <!-- Delivery info -->
       <div
-        class="grid grid-cols-2 gap-px bg-zinc-200 dark:bg-zinc-800 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800"
+        class="grid grid-cols-2 gap-px bg-zinc-200 dark:bg-zinc-800 rounded-md overflow-hidden border border-zinc-200 dark:border-zinc-800"
       >
         <div
           class="bg-white dark:bg-zinc-900 p-4.5 flex flex-col gap-1 items-center text-center p-3"

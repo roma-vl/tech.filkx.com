@@ -12,7 +12,7 @@
             ? 'border-[#00a046] ring-2 ring-[#00a046]/20'
             : 'border-zinc-200 dark:border-zinc-800 hover:border-[#00a046]'
         "
-        class="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 border rounded-xl overflow-hidden cursor-pointer shadow-sm bg-white p-1 transition-all"
+        class="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 border rounded-md overflow-hidden cursor-pointer shadow-sm bg-white p-1 transition-all"
         type="button"
         @click="$emit('select-image', index)"
       >
@@ -26,7 +26,7 @@
 
     <!-- Main Photo Box with hover Zoom Magnifier -->
     <div
-      class="flex-1 bg-white dark:bg-white/95 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm relative group overflow-hidden flex justify-center items-center aspect-[1.12/1] cursor-zoom-in order-1 md:order-2 select-none"
+      class="flex-1 bg-white dark:bg-white/95 rounded-lg border border-zinc-200/80 dark:border-zinc-800 shadow-sm relative group overflow-hidden flex justify-center items-center aspect-[1.12/1] cursor-zoom-in order-1 md:order-2 select-none"
       @mousemove="$emit('mouse-move', $event)"
       @mouseleave="$emit('mouse-leave')"
     >
@@ -39,7 +39,7 @@
 
       <!-- Zoom details guide text -->
       <div
-        class="absolute bottom-4 left-4 bg-zinc-955/80 backdrop-blur-sm border border-white/10 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-white"
+        class="absolute bottom-4 left-4 bg-zinc-955/80 backdrop-blur-sm border border-white/10 rounded px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-white"
       >
         {{ isZoomed ? "Збільшено" : "Наведіть для наближення" }}
       </div>

@@ -27,6 +27,10 @@ export const productApi = {
     return apiClient.get("/v1/catalog/products", { params });
   },
 
+  catalogGetRandomProducts() {
+    return apiClient.get("/v1/catalog/products/random");
+  },
+
   catalogGetCategories() {
     return apiClient.get("/v1/catalog/categories");
   },

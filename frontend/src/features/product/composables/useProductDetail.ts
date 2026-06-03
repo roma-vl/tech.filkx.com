@@ -320,7 +320,24 @@ export function useProductDetail() {
 
   const activeTab = ref("experience");
   const showStickyBar = ref(false);
-  const selectedBundleIds = ref<string[]>(["pods", "charger"]);
+  const selectedBundleIds = ref<any[]>([]);
+  const randomProducts = ref<any[]>([]);
+
+  const fetchRandomProducts = async () => {
+    try {
+      const response = await productApi.catalogGetRandomProducts();
+      if (response.data && response.data.status === "success") {
+        const currentProductId = rawProduct.value?.id;
+        const items = (response.data.data || []).filter(
+          (p: any) => p.id !== currentProductId
+        );
+        randomProducts.value = items.slice(0, 2);
+        selectedBundleIds.value = randomProducts.value.map((p) => p.id);
+      }
+    } catch (e) {
+      console.error("Failed to fetch random products:", e);
+    }
+  };
 
   // Magnifying hover zoom state variables
   const isZoomed = ref(false);
@@ -362,7 +379,7 @@ export function useProductDetail() {
 
   const bundleItems = computed(() => {
     if (!product.value) return [];
-    return [
+    const list = [
       {
         id: "device",
         name: product.value.name,
@@ -371,23 +388,40 @@ export function useProductDetail() {
         locked: true,
         image: galleryImages.value[0]?.src || "",
       },
-      {
-        id: "pods",
-        name: "Elite Sound Pods",
-        category: "Бездротові навушники",
-        price: 6990,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ",
-      },
-      {
-        id: "charger",
-        name: "Pro Charge 100W GaN",
-        category: "Швидкий зарядний пристрій",
-        price: 2990,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDHpw39gwGprYkW4qIbZzy2rLTbcLvDxWukT6TsUoCUIIA_MP68QWCuopoQuE9aG5HGs8xzGWJvtts8ShB73VX0DQ3EYiBd5Muljqm64CLPv2t0Sih0HEiaGcZ9xQ2yqdEPy-u7wBaEYQHeCCQqfWYxSM_XjbxKllnWehPZ9qyUDYglqNb73NhCqinyVtGSEOFch5lKqYYp6TABRJkKScR9scZP6lbXxLVOft7ZvFplc69p0s6hEhsBh7bPRgQPf3E-KLZlLIvte_g",
-      },
     ];
+
+    randomProducts.value.forEach((rp: any) => {
+      const name = typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
+      const category = rp.categories && rp.categories[0]
+        ? rp.categories[0].name.uk || rp.categories[0].name.en
+        : "Аксесуар";
+
+      let image = "";
+      if (rp.variants && rp.variants[0]) {
+        const v = rp.variants[0];
+        if (v.dimensions && v.dimensions.images && v.dimensions.images.length > 0) {
+          const primary = v.dimensions.images.find((img: any) => img.isPrimary) || v.dimensions.images[0];
+          image = primary.url || "";
+        }
+      }
+      if (!image) {
+        image =
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
+      }
+
+      const price = rp.variants && rp.variants[0] ? parseFloat(rp.variants[0].price) : 0;
+
+      list.push({
+        id: rp.id,
+        name: name,
+        category: category,
+        price: price,
+        locked: false,
+        image: image,
+      });
+    });
+
+    return list;
   });
 
   const qualityGuarantees = [
@@ -473,14 +507,31 @@ export function useProductDetail() {
     if (!product.value) return;
     cartStore.addToCart(product.value);
     selectedBundleIds.value.forEach((id) => {
-      const item = bundleItems.value.find((bundleItem) => bundleItem.id === id);
-      if (item && !item.locked) {
+      const rp = randomProducts.value.find(
+        (randomP) => randomP.id === id || String(randomP.id) === String(id)
+      );
+      if (rp) {
+        const mainVariant = rp.variants && rp.variants[0] ? rp.variants[0] : null;
+        const price = mainVariant ? parseFloat(mainVariant.price) : 0;
+        let image = "";
+        if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images && mainVariant.dimensions.images.length > 0) {
+          const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+          image = primary.url || "";
+        }
+        if (!image) {
+          image =
+            "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
+        }
+        const name = typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
+
         cartStore.addToCart({
-          id: item.id as any,
-          name: item.name,
-          price: item.price,
-          image: item.image,
+          id: mainVariant ? mainVariant.id : rp.id,
+          productId: rp.id,
+          name: name,
+          price: price,
+          image: image,
           category: "Accessories",
+          inStock: true,
         } as any);
       }
     });
@@ -496,6 +547,7 @@ export function useProductDetail() {
         if (rawProduct.value && rawProduct.value.id) {
           cartStore.trackProductView(rawProduct.value.id);
         }
+        fetchRandomProducts();
       }
     } catch (error) {
       console.error("Failed to fetch product details:", error);

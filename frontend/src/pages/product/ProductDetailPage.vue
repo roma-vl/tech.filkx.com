@@ -15,40 +15,41 @@
     <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">
       Товар не знайдено
     </h1>
-    <p class="text-zinc-550 dark:text-zinc-500 mb-6">
+    <p class="text-zinc-555 dark:text-zinc-500 mb-6">
       Будь ласка, перевірте правильність посилання або скористайтесь каталогом.
     </p>
     <button
-      class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-extrabold transition-all"
+      class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-md text-sm font-extrabold transition-all"
       @click="router.push('/catalog')"
     >
       Перейти до каталогу
     </button>
   </div>
   <div v-else>
-    <main
-      class="max-w-container-max mx-auto px-4 md:px-8 py-8 text-zinc-800 dark:text-zinc-200 font-sans"
+    <!-- Breadcrumbs -->
+    <nav
+      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-2 text-[11px] md:text-xs font-sans text-zinc-400 dark:text-zinc-500 text-left"
     >
-      <!-- Breadcrumbs -->
-      <nav
-        class="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-550 mb-8 font-bold text-left"
+      <a
+        class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-bold"
+        href="#"
+        @click.prevent="router.push('/')"
       >
-        <a
-          class="hover:text-[#00a046] transition-colors"
-          href="#"
-          @click.prevent="router.push('/')"
-        >Головна</a>
-        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-        <a
-          class="hover:text-[#00a046] transition-colors"
-          href="#"
-          @click.prevent="router.push('/catalog')"
-        >{{ product.category }}</a>
-        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-        <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{
-          product.name
-        }}</span>
-      </nav>
+        <span class="material-symbols-outlined text-[16px] leading-none">home</span>
+        <span>Головна</span>
+      </a>
+      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+      <a
+        class="hover:text-[#00a046] transition-colors font-bold"
+        href="#"
+        @click.prevent="router.push('/catalog')"
+      >Каталог</a>
+      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ product.name }}</span>
+    </nav>
+    <main
+      class="max-w-container-max mx-auto px-4 md:px-8 py-6 text-zinc-800 dark:text-zinc-200 font-sans"
+    >
 
       <!-- Hero block -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -118,7 +119,7 @@
         <div class="flex items-center gap-4 overflow-hidden min-w-0">
           <img
             alt="Компактне прев'ю товару"
-            class="w-12 h-12 object-contain rounded-lg border border-zinc-200 dark:border-zinc-800 hidden sm:block p-1 bg-white"
+            class="w-12 h-12 object-contain rounded-md border border-zinc-200 dark:border-zinc-800 hidden sm:block p-1 bg-white"
             :src="selectedImage"
           >
           <div class="truncate text-left">
@@ -138,7 +139,7 @@
           </div>
         </div>
         <button
-          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-3 rounded-lg font-extrabold text-xs shadow-md transition-all active:scale-[0.98] shrink-0 uppercase tracking-wider font-bold"
+          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-3 rounded-md font-extrabold text-xs shadow-md transition-all active:scale-[0.98] shrink-0 uppercase tracking-wider font-bold"
           type="button"
           @click="cartStore.addToCart(product)"
         >

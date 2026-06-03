@@ -36,4 +36,14 @@ class CatalogController extends BaseApiController
     {
         return self::successfulResponseWithData($action->execute($slug));
     }
+
+    public function randomProducts(\App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    {
+        $products = $productRepository->queryActive()
+            ->inRandomOrder()
+            ->take(5)
+            ->get();
+
+        return self::successfulResponseWithData($products);
+    }
 }

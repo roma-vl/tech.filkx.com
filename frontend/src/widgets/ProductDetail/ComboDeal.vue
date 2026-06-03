@@ -16,7 +16,7 @@
     </div>
 
     <div
-      class="bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-8"
+      class="bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-8"
     >
       <!-- Bundle items list -->
       <div
@@ -27,7 +27,7 @@
           :key="item.id"
         >
           <div
-            class="relative w-36 text-center transition-all bg-white dark:bg-zinc-850 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800"
+            class="relative w-36 text-center transition-all bg-white dark:bg-zinc-850 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800"
             :class="{
               'opacity-100 ring-1 ring-emerald-500/20':
                 item.locked || selectedBundleIds.includes(item.id),
@@ -46,7 +46,7 @@
               }}</span>
             </button>
             <div
-              class="aspect-square bg-white rounded-lg p-2 flex items-center justify-center mb-3"
+              class="aspect-square bg-white rounded-md p-2 flex items-center justify-center mb-3"
             >
               <img
                 :alt="item.name"
@@ -101,7 +101,7 @@
           </p>
         </div>
         <button
-          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-3 rounded-lg font-extrabold text-xs transition-all uppercase tracking-wider shadow-sm font-bold"
+          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-3 rounded-md font-extrabold text-xs transition-all uppercase tracking-wider shadow-sm font-bold"
           type="button"
           @click="$emit('add-bundle')"
         >
