@@ -77,10 +77,10 @@
           >
             <router-link
               v-if="!item.children"
-              :to="item.path"
+              :to="item.path || ''"
               class="group flex items-center transition-all duration-200 rounded-lg"
               :class="[
-                isActive(item.path)
+                isActive(item.path || '')
                   ? 'bg-gradient-to-r from-primary-500 to-purple-600 text-gray-100 shadow-lg'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-700',
                 sidebarCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5',
@@ -94,7 +94,7 @@
                 <span
                   v-if="!sidebarCollapsed"
                   class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-100"
-                  :class="[isActive(item.path) ? ' !text-gray-100' : '']"
+                  :class="[isActive(item.path || '') ? ' !text-gray-100' : '']"
                 >
                   {{ item.name }}
                 </span>
@@ -330,20 +330,20 @@ const { t } = useI18n();
 const route = useRoute();
 
 const sidebarCollapsed = ref(false);
-const openSubmenus = ref([]);
+const openSubmenus = ref<string[]>([]);
 
 const toggleSidebar = () => {
   sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-const toggleSubmenu = (name) => {
+const toggleSubmenu = (name: string) => {
   const index = openSubmenus.value.indexOf(name);
   index > -1
     ? openSubmenus.value.splice(index, 1)
     : openSubmenus.value.push(name);
 };
 
-const isActive = (path) =>
+const isActive = (path: string) =>
   route.path === path || route.path.startsWith(path + "/");
 
 const syncSubmenus = () => {
@@ -360,16 +360,25 @@ watch(() => route.path, syncSubmenus);
 onMounted(syncSubmenus);
 
 const currentPageTitle = computed(() => {
-  if (route.meta?.titleKey) return t(route.meta.titleKey);
+  if (route.meta?.titleKey) return t(route.meta.titleKey as string);
   return t("admin.dashboard.title");
 });
 
 const currentPageDescription = computed(() => {
-  if (route.meta?.descriptionKey) return t(route.meta.descriptionKey);
+  if (route.meta?.descriptionKey) return t(route.meta.descriptionKey as string);
   return t("admin.dashboard.description");
 });
 
-const navItems = shallowRef([
+interface NavItem {
+  key: string;
+  name: string;
+  path?: string;
+  icon?: any;
+  badge?: string | number;
+  children?: { name: string; path: string }[];
+}
+
+const navItems = shallowRef<NavItem[]>([
   {
     key: "dashboard",
     name: t("admin.nav.dashboard"),

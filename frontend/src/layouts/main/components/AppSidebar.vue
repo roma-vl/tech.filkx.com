@@ -79,9 +79,9 @@ import {
 } from "@heroicons/vue/24/outline";
 import AppNavItem from "./AppNavItem.vue";
 import AppNavDropdown from "./AppNavDropdown.vue";
-import { useNavigation } from "@/layouts/appllication/useNavigation.js";
+import { useNavigation } from "@/layouts/main/useNavigation.js";
 import Logo from "@/assets/images/logo/logo.png";
-import Version from "@/layouts/appllication/components/Version.vue";
+import Version from "@/layouts/main/components/Version.vue";
 
 const { t } = useI18n();
 

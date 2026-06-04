@@ -601,8 +601,8 @@ const initForm = () => {
   if (props.product) {
     isEditing.value = true;
     const product = props.product;
-    const variantsCloned = (product.variants || []).map((v) => {
-      const imagesMapped = (v.images || []).map((img) => ({
+    const variantsCloned = (product.variants || []).map((v: any) => {
+      const imagesMapped = (v.images || []).map((img: any) => ({
         url: img.url,
         isPrimary: !!img.isPrimary,
       }));
@@ -613,7 +613,7 @@ const initForm = () => {
         });
       }
 
-      const attributesMapped = (v.attributes || []).map((a) => ({
+      const attributesMapped = (v.attributes || []).map((a: any) => ({
         attributeId: a.attributeId,
         valueId: a.valueId,
         value: a.value,

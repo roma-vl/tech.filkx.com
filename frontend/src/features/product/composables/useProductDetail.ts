@@ -322,6 +322,15 @@ export function useProductDetail() {
   const showStickyBar = ref(false);
   const selectedBundleIds = ref<any[]>([]);
   const randomProducts = ref<any[]>([]);
+  const isQuickOrderOpen = ref(false);
+
+  const openQuickOrder = () => {
+    isQuickOrderOpen.value = true;
+  };
+
+  const closeQuickOrder = () => {
+    isQuickOrderOpen.value = false;
+  };
 
   const fetchRandomProducts = async () => {
     try {
@@ -619,5 +628,8 @@ export function useProductDetail() {
     toggleBundleItem,
     addBundleToCart,
     fetchProductDetails,
+    isQuickOrderOpen,
+    openQuickOrder,
+    closeQuickOrder,
   };
 }

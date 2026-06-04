@@ -171,7 +171,7 @@
         <button
           class="w-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-3.5 rounded-md font-extrabold text-sm active:scale-[0.98] transition-all uppercase tracking-wider font-bold"
           type="button"
-          @click="cartStore.addToCart(product)"
+          @click="$emit('quick-order')"
         >
           Швидке замовлення
         </button>
@@ -222,6 +222,7 @@ defineProps<{
 
 defineEmits<{
   (e: "select-variant", attributeCode: string, value: string): void;
+  (e: "quick-order"): void;
 }>();
 
 const cartStore = useCartStore();

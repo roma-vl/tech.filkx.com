@@ -27,19 +27,21 @@
           :key="item.id"
         >
           <div
-            class="relative w-36 text-center transition-all bg-white dark:bg-zinc-850 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800"
+            class="relative w-36 text-center transition-all bg-white dark:bg-zinc-855 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800"
             :class="{
               'opacity-100 ring-1 ring-emerald-500/20':
                 item.locked || selectedBundleIds.includes(item.id),
               'opacity-60':
                 !item.locked && !selectedBundleIds.includes(item.id),
+              'cursor-pointer hover:border-emerald-500/40 select-none': !item.locked,
             }"
+            @click="!item.locked && $emit('toggle-item', item)"
           >
             <button
               v-if="!item.locked"
               class="absolute -right-2 -top-2 z-10 flex w-7 h-7 items-center justify-center rounded-full bg-zinc-900 text-white shadow-sm"
               type="button"
-              @click="$emit('toggle-item', item)"
+              @click.stop="$emit('toggle-item', item)"
             >
               <span class="material-symbols-outlined text-[16px]">{{
                 selectedBundleIds.includes(item.id) ? "check" : "add"

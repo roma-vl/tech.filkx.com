@@ -80,6 +80,7 @@
             :selected-storage="selectedStorage"
             :format-price="formatPrice"
             @select-variant="selectVariantByAttributes"
+            @quick-order="openQuickOrder"
           />
         </div>
       </div>
@@ -138,15 +139,31 @@
             </div>
           </div>
         </div>
-        <button
-          class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-3 rounded-md font-extrabold text-xs shadow-md transition-all active:scale-[0.98] shrink-0 uppercase tracking-wider font-bold"
-          type="button"
-          @click="cartStore.addToCart(product)"
-        >
-          Додати в кошик
-        </button>
+        <div class="flex gap-2 shrink-0">
+          <button
+            class="border border-zinc-350 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-850 dark:text-zinc-200 px-3 sm:px-5 py-3 rounded-md font-extrabold text-[10px] sm:text-xs active:scale-[0.98] transition-all uppercase tracking-wider font-bold"
+            type="button"
+            @click="openQuickOrder"
+          >
+            Швидке замовлення
+          </button>
+          <button
+            class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 sm:px-5 py-3 rounded-md font-extrabold text-[10px] sm:text-xs shadow-md transition-all active:scale-[0.98] uppercase tracking-wider font-bold"
+            type="button"
+            @click="cartStore.addToCart(product)"
+          >
+            Додати в кошик
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Quick Order Modal -->
+    <QuickOrderModal
+      :is-open="isQuickOrderOpen"
+      :product="product"
+      @close="closeQuickOrder"
+    />
   </div>
 </template>
 
@@ -156,6 +173,7 @@ import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
 import ComboDeal from "@/widgets/ProductDetail/ComboDeal.vue";
 import ProductTabs from "@/widgets/ProductDetail/ProductTabs.vue";
+import QuickOrderModal from "@/widgets/Catalog/QuickOrderModal.vue";
 
 const {
   router,
@@ -190,6 +208,10 @@ const {
   selectPreviousImage,
   toggleBundleItem,
   addBundleToCart,
+  fetchProductDetails,
+  isQuickOrderOpen,
+  openQuickOrder,
+  closeQuickOrder,
 } = useProductDetail();
 </script>
 

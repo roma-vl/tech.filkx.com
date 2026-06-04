@@ -118,7 +118,7 @@ import AppNavItem from "./AppNavItem.vue";
 import AppNavDropdown from "./AppNavDropdown.vue";
 import UsageSummary from "./UsageSummary.vue";
 import Logo from "@/assets/images/logo/logo.png";
-import { useNavigation } from "@/layouts/appllication/useNavigation.js";
+import { useNavigation } from "@/layouts/main/useNavigation.js";
 
 defineEmits<{ (e: "close"): void }>();
 defineProps<{ open?: boolean }>();

@@ -74,6 +74,7 @@ Route::prefix('v1')->group(function () {
 
     // Checkout route
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
+    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder']);
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
 });
 
