@@ -14,6 +14,7 @@ class CartItemResource extends JsonResource
             'variantId' => $this['variant_id'],
             'productId' => $this['product_id'],
             'name'      => $this['name'],
+            'slug'      => $this['slug'],
             'sku'       => $this['sku'],
             'price'     => (float) $this['price'],
             'oldPrice'  => $this['oldPrice'] ? (float) $this['oldPrice'] : null,

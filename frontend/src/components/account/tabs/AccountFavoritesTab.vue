@@ -25,10 +25,10 @@ const cartStore = useCartStore();
             @click="cartStore.viewProduct(product as any)"
           >
           <button
-            class="absolute top-3 right-3 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-555 rounded-full transition-colors"
+            class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-500 rounded-full transition-all"
             @click="cartStore.toggleWishlist(product as any)"
           >
-            <span class="material-symbols-outlined text-[18px]">close</span>
+            <span class="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
         <div class="p-5 flex-1 flex flex-col justify-between gap-4">

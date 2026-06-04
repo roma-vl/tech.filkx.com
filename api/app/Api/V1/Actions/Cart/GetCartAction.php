@@ -68,6 +68,7 @@ class GetCartAction
                 'variant_id' => $variant->id,
                 'product_id' => $variant->product_id,
                 'name' => $variant->product->name['uk'] ?? $variant->product->name['en'] ?? '',
+                'slug' => $variant->product->slug,
                 'sku' => $variant->sku,
                 'price' => $price,
                 'oldPrice' => $variant->old_price ? (float) $variant->old_price : null,

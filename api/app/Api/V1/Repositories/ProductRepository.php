@@ -61,9 +61,16 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findBySlug(string $slug): ?Product
     {
-        return $this->queryActive()
-            ->where('slug', $slug)
-            ->first();
+        $query = $this->queryActive();
+
+        if (is_numeric($slug)) {
+            $product = (clone $query)->where('id', (int) $slug)->first();
+            if ($product) {
+                return $product;
+            }
+        }
+
+        return $query->where('slug', $slug)->first();
     }
 
     public function getHotDeals(int $limit = 8): Collection

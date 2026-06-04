@@ -3,6 +3,7 @@ import { useCartStore } from "@/entities/order/model/cartStore";
 
 interface ProductItem {
   id: string | number;
+  slug: string;
   name: string;
   brand: string;
   image: string;
