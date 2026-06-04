@@ -8,7 +8,7 @@ withDefaults(defineProps<{
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex"
+    class="dark min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex"
   >
     <!-- Left decorative panel (only for 'lg') -->
     <div

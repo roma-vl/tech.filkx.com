@@ -16,6 +16,7 @@ export interface CartState {
   cart: CartItem[];
   wishlist: any[];
   compare: any[];
+  viewedDetailed: any[];
   toasts: ToastMessage[];
   unreadNotificationsCount: number;
   activeDrawer: "cart" | "wishlist" | "compare" | "account" | null;
@@ -34,6 +35,10 @@ export const useCartStore = defineStore("cart", {
     compare:
       typeof window !== "undefined" && localStorage.getItem("electro_compare")
         ? JSON.parse(localStorage.getItem("electro_compare")!)
+        : [],
+    viewedDetailed:
+      typeof window !== "undefined" && localStorage.getItem("electro_viewed_detailed")
+        ? JSON.parse(localStorage.getItem("electro_viewed_detailed")!)
         : [],
     toasts: [],
     unreadNotificationsCount: 0,
@@ -146,7 +151,7 @@ export const useCartStore = defineStore("cart", {
       }
     },
 
-    toggleWishlist(product: Product | any) {
+    async toggleWishlist(product: Product | any) {
       const index = this.wishlist.findIndex((item) => item.id === product.id);
       if (index !== -1) {
         const name = this.wishlist[index].name;
@@ -166,13 +171,42 @@ export const useCartStore = defineStore("cart", {
       if (typeof window !== "undefined") {
         localStorage.setItem("electro_wishlist", JSON.stringify(this.wishlist));
       }
+
+      // Sync to database if logged in
+      if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        try {
+          const response = await authApi.toggleFavorite(product.id);
+          if (response.data && response.data.status === "success") {
+            this.wishlist = response.data.data.map((p: any) => {
+              const mainVariant = p.variants?.[0];
+              const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+              let image = p.image || "";
+              if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+                const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+                if (primary && primary.url) image = primary.url;
+              }
+              return {
+                id: p.id,
+                name: p.name?.uk || p.name?.en || p.name,
+                slug: p.slug,
+                price: price,
+                image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+                category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+              };
+            });
+            localStorage.setItem("electro_wishlist", JSON.stringify(this.wishlist));
+          }
+        } catch (e) {
+          console.error("Failed to toggle favorite in database", e);
+        }
+      }
     },
 
     isInWishlist(productId: number): boolean {
       return this.wishlist.some((item) => item.id === productId);
     },
 
-    toggleCompare(product: Product | any) {
+    async toggleCompare(product: Product | any) {
       const index = this.compare.findIndex((item) => item.id === product.id);
       if (index !== -1) {
         const name = this.compare[index].name;
@@ -200,13 +234,49 @@ export const useCartStore = defineStore("cart", {
       if (typeof window !== "undefined") {
         localStorage.setItem("electro_compare", JSON.stringify(this.compare));
       }
+
+      // Sync to database if logged in
+      if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        try {
+          const response = await authApi.toggleCompare(product.id);
+          if (response.data && response.data.status === "success") {
+            this.compare = response.data.data.map((p: any) => {
+              const mainVariant = p.variants?.[0];
+              const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+              let image = p.image || "";
+              if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+                const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+                if (primary && primary.url) image = primary.url;
+              }
+              return {
+                id: p.id,
+                name: p.name?.uk || p.name?.en || p.name,
+                slug: p.slug,
+                price: price,
+                image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+                category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+                rating: p.rating || 4.5,
+                reviews: p.reviews || 0,
+                description: p.description?.uk || p.description?.en || p.description || "",
+                specs: p.attributeValues?.map((av: any) => [
+                  av.attribute?.name?.uk || av.attribute?.name?.en || "",
+                  av.customValue || av.attributeValue?.value?.uk || av.attributeValue?.value || ""
+                ]) || []
+              };
+            });
+            localStorage.setItem("electro_compare", JSON.stringify(this.compare));
+          }
+        } catch (e) {
+          console.error("Failed to toggle compare in database", e);
+        }
+      }
     },
 
     isInCompare(productId: number): boolean {
       return this.compare.some((item) => item.id === productId);
     },
 
-    removeFromCompare(productId: number) {
+    async removeFromCompare(productId: number) {
       const index = this.compare.findIndex((item) => item.id === productId);
       if (index !== -1) {
         const name = this.compare[index].name;
@@ -214,6 +284,15 @@ export const useCartStore = defineStore("cart", {
         this.addToast(`Removed ${name} from compare.`, "info");
         if (typeof window !== "undefined") {
           localStorage.setItem("electro_compare", JSON.stringify(this.compare));
+        }
+
+        // Sync to database if logged in
+        if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+          try {
+            await authApi.toggleCompare(productId);
+          } catch (e) {
+            console.error("Failed to remove compare in database", e);
+          }
         }
       }
     },
@@ -226,7 +305,7 @@ export const useCartStore = defineStore("cart", {
       this.activeDrawer = null;
     },
 
-    trackProductView(productOrId: number | any) {
+    async trackProductView(productOrId: number | any) {
       if (typeof window === "undefined" || !productOrId) return;
 
       const productId = typeof productOrId === "object" ? productOrId.id : productOrId;
@@ -313,6 +392,7 @@ export const useCartStore = defineStore("cart", {
 
       // Limit to 50 items
       viewed = viewed.slice(0, 50);
+      this.viewedDetailed = viewed;
       localStorage.setItem("electro_viewed_detailed", JSON.stringify(viewed));
 
       // 2. Legacy tracking (for backwards compatibility)
@@ -326,6 +406,158 @@ export const useCartStore = defineStore("cart", {
         }
       } catch (e) {
         console.warn("Failed to update legacy views storage", e);
+      }
+
+      // 3. Database tracking if logged in
+      if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        try {
+          await authApi.trackViewedProduct(productId);
+        } catch (e) {
+          console.error("Failed to track view in database", e);
+        }
+      }
+    },
+
+    async removeViewedItem(productId: number | string) {
+      this.viewedDetailed = this.viewedDetailed.filter(p => p.id !== productId);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("electro_viewed_detailed", JSON.stringify(this.viewedDetailed));
+        const legacyIds = this.viewedDetailed.slice(0, 10).map(p => p.id);
+        localStorage.setItem("electro_viewed", JSON.stringify(legacyIds));
+      }
+      
+      if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        try {
+          await authApi.clearViewedProducts();
+          if (this.viewedDetailed.length > 0) {
+            await authApi.syncViewedProducts(this.viewedDetailed);
+          }
+        } catch (e) {
+          console.error("Failed to remove viewed item from database", e);
+        }
+      }
+    },
+
+    async clearViewedHistory() {
+      this.viewedDetailed = [];
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("electro_viewed_detailed");
+        localStorage.removeItem("electro_viewed");
+      }
+      
+      if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        try {
+          await authApi.clearViewedProducts();
+        } catch (e) {
+          console.error("Failed to clear viewed history in database", e);
+        }
+      }
+    },
+
+    async syncUserLists() {
+      if (typeof window === "undefined" || !localStorage.getItem("filkx_auth")) return;
+
+      try {
+        const localWishlistIds = this.wishlist.map(p => p.id);
+        const favResponse = await authApi.syncFavorites(localWishlistIds);
+        if (favResponse.data && favResponse.data.status === "success") {
+          this.wishlist = favResponse.data.data.map((p: any) => {
+            const mainVariant = p.variants?.[0];
+            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            let image = p.image || "";
+            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+              if (primary && primary.url) image = primary.url;
+            }
+            return {
+              id: p.id,
+              name: p.name?.uk || p.name?.en || p.name,
+              slug: p.slug,
+              price: price,
+              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+            };
+          });
+          localStorage.setItem("electro_wishlist", JSON.stringify(this.wishlist));
+        }
+      } catch (e) {
+        console.error("Failed to sync favorites with database", e);
+      }
+
+      try {
+        const localCompareIds = this.compare.map(p => p.id);
+        const compResponse = await authApi.syncCompares(localCompareIds);
+        if (compResponse.data && compResponse.data.status === "success") {
+          this.compare = compResponse.data.data.map((p: any) => {
+            const mainVariant = p.variants?.[0];
+            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            let image = p.image || "";
+            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+              if (primary && primary.url) image = primary.url;
+            }
+            return {
+              id: p.id,
+              name: p.name?.uk || p.name?.en || p.name,
+              slug: p.slug,
+              price: price,
+              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+              rating: p.rating || 4.5,
+              reviews: p.reviews || 0,
+              description: p.description?.uk || p.description?.en || p.description || "",
+              specs: p.attributeValues?.map((av: any) => [
+                av.attribute?.name?.uk || av.attribute?.name?.en || "",
+                av.customValue || av.attributeValue?.value?.uk || av.attributeValue?.value || ""
+              ]) || []
+            };
+          });
+          localStorage.setItem("electro_compare", JSON.stringify(this.compare));
+        }
+      } catch (e) {
+        console.error("Failed to sync compares with database", e);
+      }
+
+      try {
+        let localViewedDetailed: any[] = [];
+        try {
+          localViewedDetailed = JSON.parse(localStorage.getItem("electro_viewed_detailed") || "[]");
+        } catch (e) {
+          localViewedDetailed = [];
+        }
+        if (!Array.isArray(localViewedDetailed)) localViewedDetailed = [];
+        
+        const viewedResponse = await authApi.syncViewedProducts(localViewedDetailed);
+        if (viewedResponse.data && viewedResponse.data.status === "success") {
+          const mappedViewed = viewedResponse.data.data.map((p: any) => {
+            const mainVariant = p.variants?.[0];
+            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            let image = p.image || "";
+            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+              if (primary && primary.url) image = primary.url;
+            }
+            return {
+              id: p.id,
+              name: p.name?.uk || p.name?.en || p.name,
+              brand: p.brand?.name || "Unknown",
+              slug: p.slug,
+              price: price,
+              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Різне",
+              inStock: p.stock > 0 || true,
+              viewCount: p.view_count || 1,
+              lastViewedAt: p.last_viewed_at || new Date().toISOString()
+            };
+          });
+          this.viewedDetailed = mappedViewed;
+          localStorage.setItem("electro_viewed_detailed", JSON.stringify(mappedViewed));
+          
+          const legacyIds = mappedViewed.slice(0, 10).map((p: any) => p.id);
+          localStorage.setItem("electro_viewed", JSON.stringify(legacyIds));
+        }
+      } catch (e) {
+        console.error("Failed to sync viewed products with database", e);
       }
     },
 

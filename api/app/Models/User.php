@@ -187,4 +187,23 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(OAuthAccount::class);
     }
+
+    public function favorites(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'favorites')
+            ->withTimestamps();
+    }
+
+    public function compares(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'compares')
+            ->withTimestamps();
+    }
+
+    public function viewedProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_views')
+            ->withPivot('view_count')
+            ->withTimestamps();
+    }
 }

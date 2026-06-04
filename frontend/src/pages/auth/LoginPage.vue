@@ -42,7 +42,7 @@
             </label>
             <router-link
               to="/forgot-password"
-              class="text-sm font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+              class="text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
             >
               {{ $t("auth.login.forgotPassword") }}
             </router-link>
@@ -76,7 +76,7 @@
         </div>
         <div class="relative flex justify-center text-sm">
           <span
-            class="px-2 bg-white dark:bg-gray-900 text-gray-500 font-medium"
+            class="px-2 bg-[#1e293b] text-gray-400 font-medium"
           >
             {{ $t("auth.or_continue_with") }}
           </span>
@@ -89,7 +89,7 @@
         {{ $t("auth.login.noAccount") }}
         <router-link
           to="/register"
-          class="text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           {{ $t("auth.login.createAccount") }}
         </router-link>

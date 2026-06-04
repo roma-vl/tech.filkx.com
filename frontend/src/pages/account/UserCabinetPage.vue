@@ -64,6 +64,7 @@ const currentTab = computed(
 onMounted(() => {
   if (authStore.isAuthenticated) {
     cartStore.fetchUnreadNotificationsCount();
+    cartStore.syncUserLists();
   }
 });
 </script>

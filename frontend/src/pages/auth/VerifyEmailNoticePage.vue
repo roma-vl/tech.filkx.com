@@ -19,9 +19,9 @@
       </p>
 
       <div
-        class="inline-block px-4 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-xl mb-8"
+        class="inline-block px-4 py-2 bg-[#00a046]/10 rounded-xl mb-8"
       >
-        <p class="font-bold text-primary-600">
+        <p class="font-bold text-[#00a046]">
           {{ store.user?.email }}
         </p>
       </div>

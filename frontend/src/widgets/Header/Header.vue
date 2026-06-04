@@ -294,8 +294,8 @@ onUnmounted(() => {
         <!-- Burger Button -->
         <button
           class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center"
-          title="Toggle Categories"
-          @click="toggleCatalog"
+          title="Menu"
+          @click="cartStore.openDrawer('account')"
         >
           <span class="material-symbols-outlined text-2xl text-white">menu</span>
         </button>
@@ -473,99 +473,7 @@ onUnmounted(() => {
 
       <!-- Right: Compact Icon Actions -->
       <div class="flex items-center gap-4 md:gap-6 text-white">
-        <!-- Account -->
-        <AppDropdown
-          align="right"
-          width="60"
-        >
-          <template #trigger>
-            <button
-              class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-              title="Account"
-            >
-              <span class="material-symbols-outlined text-[24px]">person</span>
-            </button>
-          </template>
 
-          <template #content>
-            <template v-if="authStore.isAuthenticated">
-              <div
-                class="p-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3 text-zinc-800 animate-in fade-in duration-200"
-              >
-                <div
-                  class="w-10 h-10 rounded-full bg-[#00a046] flex items-center justify-center text-white font-bold"
-                >
-                  {{
-                    authStore.user?.name
-                      ? authStore.user.name
-                        .split(" ")
-                        .map((n: string) => n[0])
-                        .join("")
-                        .substring(0, 2)
-                        .toUpperCase()
-                      : "U"
-                  }}
-                </div>
-                <div>
-                  <p class="text-sm font-bold leading-none">
-                    {{ authStore.user?.name }}
-                  </p>
-                  <p class="text-[10px] text-zinc-500 mt-1">
-                    {{ authStore.user?.email }}
-                  </p>
-                </div>
-              </div>
-              <div class="p-2 flex flex-col gap-1">
-                <button
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
-                  @click="
-                    router.push({
-                      name: 'account',
-                      query: { tab: 'dashboard' },
-                    })
-                  "
-                >
-                  <span class="material-symbols-outlined text-lg">person</span>
-                  <span class="text-xs font-semibold">Кабінет</span>
-                </button>
-                <button
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
-                  @click="
-                    router.push({ name: 'account', query: { tab: 'orders' } })
-                  "
-                >
-                  <span class="material-symbols-outlined text-lg">shopping_bag</span>
-                  <span class="text-xs font-semibold">Мої замовлення</span>
-                </button>
-                <button
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-error"
-                  @click="authStore.logout().then(() => router.push('/login'))"
-                >
-                  <span class="material-symbols-outlined text-lg text-red-500">logout</span>
-                  <span class="text-xs font-semibold text-red-600">Вихід</span>
-                </button>
-              </div>
-            </template>
-            <template v-else>
-              <div class="p-2 flex flex-col gap-1">
-                <button
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
-                  @click="router.push('/login')"
-                >
-                  <span class="material-symbols-outlined text-lg">login</span>
-                  <span class="text-xs font-semibold">Увійти</span>
-                </button>
-                <button
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors text-left w-full text-zinc-800"
-                  @click="router.push('/register')"
-                >
-                  <span class="material-symbols-outlined text-lg">person_add</span>
-                  <span class="text-xs font-semibold">Реєстрація</span>
-                </button>
-              </div>
-            </template>
-          </template>
-        </AppDropdown>
 
         <!-- Notifications -->
         <button

@@ -16,20 +16,9 @@ interface ViewedItem {
 }
 
 const cartStore = useCartStore();
-const viewedProducts = ref<ViewedItem[]>([]);
 const sortBy = ref<"recent" | "count">("recent");
 
-const loadHistory = () => {
-  if (typeof window !== "undefined") {
-    try {
-      const data = localStorage.getItem("electro_viewed_detailed");
-      viewedProducts.value = data ? JSON.parse(data) : [];
-    } catch (e) {
-      console.error("Failed to load detailed view history", e);
-      viewedProducts.value = [];
-    }
-  }
-};
+const viewedProducts = computed<ViewedItem[]>(() => cartStore.viewedDetailed || []);
 
 const sortedProducts = computed(() => {
   const items = [...viewedProducts.value];
@@ -43,33 +32,12 @@ const sortedProducts = computed(() => {
 });
 
 const removeItem = (productId: string | number) => {
-  viewedProducts.value = viewedProducts.value.filter((item) => item.id !== productId);
-  if (typeof window !== "undefined") {
-    localStorage.setItem("electro_viewed_detailed", JSON.stringify(viewedProducts.value));
-    
-    // Also sync to legacy viewed list
-    try {
-      const legacyData = localStorage.getItem("electro_viewed");
-      if (legacyData) {
-        let parsed = JSON.parse(legacyData);
-        if (Array.isArray(parsed)) {
-          parsed = parsed.filter((id) => id !== productId && String(id) !== String(productId));
-          localStorage.setItem("electro_viewed", JSON.stringify(parsed));
-        }
-      }
-    } catch (e) {
-      console.warn("Failed to sync legacy viewed items", e);
-    }
-  }
+  cartStore.removeViewedItem(productId);
   cartStore.addToast("Товар видалено з історії переглядів", "info");
 };
 
 const clearAll = () => {
-  viewedProducts.value = [];
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("electro_viewed_detailed");
-    localStorage.removeItem("electro_viewed");
-  }
+  cartStore.clearViewedHistory();
   cartStore.addToast("Історію переглядів повністю очищено", "success");
 };
 
@@ -95,10 +63,6 @@ const formatDate = (isoString: string) => {
     return "";
   }
 };
-
-onMounted(() => {
-  loadHistory();
-});
 </script>
 
 <template>

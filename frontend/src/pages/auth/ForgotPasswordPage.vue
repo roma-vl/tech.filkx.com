@@ -43,7 +43,7 @@
 
         <router-link
           to="/login"
-          class="block text-center text-sm font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+          class="block text-center text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
         >
           {{ $t("auth.forgotPassword.backToLogin") }}
         </router-link>
@@ -63,7 +63,7 @@
 
         <router-link
           to="/login"
-          class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="inline-flex items-center gap-2 text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           <span>{{ $t("auth.forgotPassword.returnToLogin") }}</span>
           <ArrowRightIcon class="w-5 h-5" />

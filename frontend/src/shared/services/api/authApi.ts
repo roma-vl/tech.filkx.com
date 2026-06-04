@@ -112,6 +112,47 @@ export const authApi = {
   deleteAccount() {
     return apiClient.delete("/user/account");
   },
+
+  // Favorites endpoints
+  getFavorites() {
+    return apiClient.get("/user/favorites");
+  },
+  toggleFavorite(productId: number | string) {
+    return apiClient.post("/user/favorites/toggle", { product_id: productId });
+  },
+  syncFavorites(productIds: (number | string)[]) {
+    return apiClient.post("/user/favorites/sync", { product_ids: productIds });
+  },
+
+  // Compare endpoints
+  getCompares() {
+    return apiClient.get("/user/compares");
+  },
+  toggleCompare(productId: number | string) {
+    return apiClient.post("/user/compares/toggle", { product_id: productId });
+  },
+  syncCompares(productIds: (number | string)[]) {
+    return apiClient.post("/user/compares/sync", { product_ids: productIds });
+  },
+
+  // Viewed products history endpoints
+  getViewedProducts() {
+    return apiClient.get("/user/viewed-products");
+  },
+  trackViewedProduct(productId: number | string) {
+    return apiClient.post("/user/viewed-products/track", { product_id: productId });
+  },
+  syncViewedProducts(items: { id: number | string; viewCount?: number; lastViewedAt?: string }[]) {
+    const mappedItems = items.map(item => ({
+      id: item.id,
+      view_count: (item as any).viewCount ?? 1,
+      last_viewed_at: (item as any).lastViewedAt ?? new Date().toISOString()
+    }));
+    return apiClient.post("/user/viewed-products/sync", { items: mappedItems });
+  },
+  clearViewedProducts() {
+    return apiClient.delete("/user/viewed-products");
+  },
 };
 
 export default authApi;

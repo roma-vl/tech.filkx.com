@@ -81,7 +81,7 @@
         {{ $t("auth.register.hasAccount") }}
         <router-link
           to="/login"
-          class="text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           {{ $t("auth.register.signIn") }}
         </router-link>

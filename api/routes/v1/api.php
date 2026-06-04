@@ -114,6 +114,22 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::get('/user/settings/preferences', [UserController::class, 'getPreferences']);
     Route::put('/user/settings/preferences', [UserController::class, 'updatePreferences']);
 
+    // Favorites (wishlist) database-backed endpoints
+    Route::get('/user/favorites', [UserController::class, 'getFavorites']);
+    Route::post('/user/favorites/toggle', [UserController::class, 'toggleFavorite']);
+    Route::post('/user/favorites/sync', [UserController::class, 'syncFavorites']);
+    
+    // Compare database-backed endpoints
+    Route::get('/user/compares', [UserController::class, 'getCompares']);
+    Route::post('/user/compares/toggle', [UserController::class, 'toggleCompare']);
+    Route::post('/user/compares/sync', [UserController::class, 'syncCompares']);
+    
+    // Viewed products history database-backed endpoints
+    Route::get('/user/viewed-products', [UserController::class, 'getViewedProducts']);
+    Route::post('/user/viewed-products/track', [UserController::class, 'trackViewedProduct']);
+    Route::post('/user/viewed-products/sync', [UserController::class, 'syncViewedProducts']);
+    Route::delete('/user/viewed-products/clear', [UserController::class, 'clearViewedProducts']);
+
     // Session management
     Route::get('/user/sessions', [UserController::class, 'sessions']);
     Route::post('/user/sessions/logout-all', [UserController::class, 'logoutAll']);

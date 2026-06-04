@@ -117,7 +117,8 @@ export const useAuthStore = defineStore("auth", {
         this._syncLocale(user.locale);
 
         const cartStore = useCartStore();
-        cartStore.fetchCart();
+        await cartStore.fetchCart();
+        await cartStore.syncUserLists();
 
         return { ok: true };
       } catch (error) {
@@ -138,7 +139,8 @@ export const useAuthStore = defineStore("auth", {
         localStorage.removeItem("failed_login_attempts");
 
         const cartStore = useCartStore();
-        cartStore.fetchCart();
+        await cartStore.fetchCart();
+        await cartStore.syncUserLists();
 
         return { ok: true };
       } catch (error) {
