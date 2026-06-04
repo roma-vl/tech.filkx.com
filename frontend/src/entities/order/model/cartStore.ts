@@ -226,13 +226,106 @@ export const useCartStore = defineStore("cart", {
       this.activeDrawer = null;
     },
 
-    trackProductView(productId: number) {
-      if (typeof window !== "undefined" && productId) {
-        let viewed = JSON.parse(localStorage.getItem("electro_viewed") || "[]");
-        viewed = viewed.filter((id: number) => id !== productId);
-        viewed.unshift(productId);
-        viewed = viewed.slice(0, 10);
-        localStorage.setItem("electro_viewed", JSON.stringify(viewed));
+    trackProductView(productOrId: number | any) {
+      if (typeof window === "undefined" || !productOrId) return;
+
+      const productId = typeof productOrId === "object" ? productOrId.id : productOrId;
+      
+      // 1. Detailed tracking (new feature)
+      let viewed: any[] = [];
+      try {
+        viewed = JSON.parse(localStorage.getItem("electro_viewed_detailed") || "[]");
+      } catch (e) {
+        viewed = [];
+      }
+      if (!Array.isArray(viewed)) viewed = [];
+
+      const existingIndex = viewed.findIndex((item) => item.id === productId);
+      if (existingIndex !== -1) {
+        const existing = viewed[existingIndex];
+        existing.viewCount = (existing.viewCount || 0) + 1;
+        existing.lastViewedAt = new Date().toISOString();
+        
+        // Move to the beginning of the list
+        viewed.splice(existingIndex, 1);
+        viewed.unshift(existing);
+      } else {
+        let productDetails: any = {};
+        if (typeof productOrId === "object") {
+          const mainVariant = productOrId.variants?.[0];
+          const price = mainVariant ? parseFloat(mainVariant.price) : (productOrId.price || 0);
+          let image = productOrId.image || "";
+          if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+            const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+            if (primary && primary.url) {
+              image = primary.url;
+            }
+          }
+          if (!image) {
+            image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+          }
+          const productCategory = productOrId.categories?.[0]?.name?.uk || productOrId.categories?.[0]?.name?.en || productOrId.category || "Різне";
+          
+          productDetails = {
+            id: productOrId.id,
+            slug: productOrId.slug,
+            name: productOrId.name?.uk || productOrId.name?.en || productOrId.name,
+            brand: productOrId.brand?.name || productOrId.brand || "Unknown",
+            image: image,
+            price: price,
+            category: productCategory,
+            inStock: productOrId.stock > 0 || productOrId.inStock || true
+          };
+        } else {
+          // If only ID is supplied, try to find product in other store collections
+          const foundInStore = this.compare.find((p) => p.id === productId) || 
+                               this.wishlist.find((p) => p.id === productId) ||
+                               this.cart.find((p) => p.productId === productId);
+          if (foundInStore) {
+            productDetails = {
+              id: foundInStore.id,
+              slug: foundInStore.slug,
+              name: foundInStore.name,
+              brand: foundInStore.brand || "Unknown",
+              image: foundInStore.image,
+              price: foundInStore.price,
+              category: foundInStore.category || "Різне",
+              inStock: foundInStore.inStock ?? true
+            };
+          } else {
+            productDetails = {
+              id: productId,
+              name: "Товар #" + productId,
+              price: 0,
+              image: "",
+              category: "Різне",
+              inStock: true
+            };
+          }
+        }
+
+        viewed.unshift({
+          ...productDetails,
+          viewCount: 1,
+          lastViewedAt: new Date().toISOString()
+        });
+      }
+
+      // Limit to 50 items
+      viewed = viewed.slice(0, 50);
+      localStorage.setItem("electro_viewed_detailed", JSON.stringify(viewed));
+
+      // 2. Legacy tracking (for backwards compatibility)
+      try {
+        let viewedLegacy = JSON.parse(localStorage.getItem("electro_viewed") || "[]");
+        if (Array.isArray(viewedLegacy)) {
+          viewedLegacy = viewedLegacy.filter((id: number) => id !== productId);
+          viewedLegacy.unshift(productId);
+          viewedLegacy = viewedLegacy.slice(0, 10);
+          localStorage.setItem("electro_viewed", JSON.stringify(viewedLegacy));
+        }
+      } catch (e) {
+        console.warn("Failed to update legacy views storage", e);
       }
     },
 
@@ -240,7 +333,7 @@ export const useCartStore = defineStore("cart", {
       this.selectedProduct = product;
       this.currentPage = "product";
       if (product && typeof window !== "undefined") {
-        this.trackProductView(product.id);
+        this.trackProductView(product);
         const { default: router } = await import("@/router");
         router.push({ name: "product-detail", params: { id: product.slug || product.id } });
       }

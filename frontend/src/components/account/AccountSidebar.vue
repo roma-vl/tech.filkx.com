@@ -36,9 +36,9 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
   { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } },
-  { name: "Кошик", icon: "shopping_cart", action: () => cartStore.openDrawer('cart'), badgeKey: "cartCount", isGreenBadge: true },
   { name: "Моє обране", icon: "favorite", query: { tab: "favorites" }, badgeKey: "wishlistCount" },
   { name: "Порівняння товарів", icon: "compare_arrows", query: { tab: "compare" }, badgeKey: "compareCount" },
+  { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
   { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" }, badgeKey: "unreadNotificationsCount", isGreenBadge: true },
 ];
 

@@ -9,6 +9,7 @@ import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.v
 import AccountOrdersTab from "@/components/account/tabs/AccountOrdersTab.vue";
 import AccountFavoritesTab from "@/components/account/tabs/AccountFavoritesTab.vue";
 import AccountCompareTab from "@/components/account/tabs/AccountCompareTab.vue";
+import AccountViewedTab from "@/components/account/tabs/AccountViewedTab.vue";
 import AccountSettingsTab from "@/components/account/tabs/AccountSettingsTab.vue";
 import AccountSupportTab from "@/components/account/tabs/AccountSupportTab.vue";
 import AccountNotificationsTab from "@/components/account/tabs/AccountNotificationsTab.vue";
@@ -26,6 +27,7 @@ const tabTitles: Record<string, string> = {
   orders: "Історія замовлень",
   favorites: "Моє обране",
   compare: "Порівняння товарів",
+  viewed: "Історія переглядів",
   settings: "Налаштування профілю",
   support: "Служба підтримки",
   notifications: "Сповіщення та новини",
@@ -36,6 +38,7 @@ const navTabs = [
   { label: "Замовлення", icon: "shopping_bag", tab: "orders" },
   { label: "Обране", icon: "favorite", tab: "favorites" },
   { label: "Порівняння", icon: "compare_arrows", tab: "compare" },
+  { label: "Перегляди", icon: "history", tab: "viewed" },
   { label: "Сповіщення", icon: "notifications", tab: "notifications" },
   { label: "Налаштування", icon: "settings", tab: "settings" },
   { label: "Підтримка", icon: "help", tab: "support" },
@@ -48,6 +51,7 @@ const tabComponents: Record<string, any> = {
   orders: AccountOrdersTab,
   favorites: AccountFavoritesTab,
   compare: AccountCompareTab,
+  viewed: AccountViewedTab,
   settings: AccountSettingsTab,
   support: AccountSupportTab,
   notifications: AccountNotificationsTab,

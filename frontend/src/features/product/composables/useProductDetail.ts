@@ -554,7 +554,7 @@ export function useProductDetail() {
       if (response.data && response.data.status === "success") {
         rawProduct.value = response.data.data;
         if (rawProduct.value && rawProduct.value.id) {
-          cartStore.trackProductView(rawProduct.value.id);
+          cartStore.trackProductView(rawProduct.value);
         }
         fetchRandomProducts();
       }
