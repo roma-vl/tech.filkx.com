@@ -35,7 +35,7 @@
           v-if="!sent"
           variant="primary"
           size="lg"
-          class="w-full !rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+          class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
           :loading="loading"
           @click="resendEmail"
         >

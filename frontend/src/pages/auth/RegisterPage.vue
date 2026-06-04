@@ -69,7 +69,7 @@
             type="submit"
             variant="primary"
             size="lg"
-            class="w-full !rounded-xl !py-4 text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
             :loading="loading"
           >
             {{ $t("auth.register.submit") }}
