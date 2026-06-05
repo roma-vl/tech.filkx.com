@@ -45,6 +45,11 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
+                Характеристики
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Батьківська категорія
               </th>
               <th
@@ -77,6 +82,17 @@
                 class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono"
               >
                 {{ cat.slug }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350">
+                <span
+                  v-if="getAttributeCount(cat.id) > 0"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
+                >
+                  {{ getAttributeCount(cat.id) }} шт
+                </span>
+                <span v-else class="text-gray-400 dark:text-gray-500 text-xs italic">
+                  —
+                </span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                 {{ cat.parentName || "—" }}
@@ -254,6 +270,10 @@ const selectedCategoryForAttributes = ref(null);
 const openCategoryAttributesModal = (cat) => {
   selectedCategoryForAttributes.value = cat;
   showCategoryAttributesModal.value = true;
+};
+
+const getAttributeCount = (catId) => {
+  return props.attributes.filter(a => a.categoryIds?.includes(catId)).length;
 };
 
 const showCategoryModal = ref(false);

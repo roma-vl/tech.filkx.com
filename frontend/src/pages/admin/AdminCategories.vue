@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-6">
-    <!-- LOADING OVERLAY -->
+  <div class="space-y-6 relative">
+    <!-- LOADING OVERLAY (initial load only) -->
     <div
-      v-if="isLoading"
+      v-if="isLoading && dbCategories.length === 0"
       class="relative min-h-[400px] flex items-center justify-center bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"
     >
       <div class="flex flex-col items-center gap-3">
@@ -15,7 +15,8 @@
       </div>
     </div>
 
-    <div v-else>
+    <!-- Content overlay when refreshing -->
+    <div v-else :class="{ 'opacity-60 pointer-events-none': isLoading }" class="transition-opacity duration-200">
       <CategoriesTab
         :categories="dbCategories"
         :attributes="dbAttributes"
