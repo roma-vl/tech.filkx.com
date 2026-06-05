@@ -18,13 +18,16 @@ interface ViewedItem {
 const cartStore = useCartStore();
 const sortBy = ref<"recent" | "count">("recent");
 
-const viewedProducts = computed<ViewedItem[]>(() => cartStore.viewedDetailed || []);
+const viewedProducts = computed<ViewedItem[]>(
+  () => cartStore.viewedDetailed || [],
+);
 
 const sortedProducts = computed(() => {
   const items = [...viewedProducts.value];
   if (sortBy.value === "recent") {
     return items.sort(
-      (a, b) => new Date(b.lastViewedAt).getTime() - new Date(a.lastViewedAt).getTime()
+      (a, b) =>
+        new Date(b.lastViewedAt).getTime() - new Date(a.lastViewedAt).getTime(),
     );
   } else {
     return items.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
@@ -73,10 +76,14 @@ const formatDate = (isoString: string) => {
       class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800"
     >
       <div class="flex items-center gap-3">
-        <span class="text-xs font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+        <span
+          class="text-xs font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
+        >
           Сортування:
         </span>
-        <div class="flex bg-zinc-100 dark:bg-zinc-850 p-1 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50">
+        <div
+          class="flex bg-zinc-100 dark:bg-zinc-850 p-1 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50"
+        >
           <button
             class="px-3 py-1.5 rounded-md text-xs font-extrabold transition-all"
             :class="
@@ -133,8 +140,8 @@ const formatDate = (isoString: string) => {
             :alt="product.name"
             class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
             @click="cartStore.viewProduct(product as any)"
-          >
-          
+          />
+
           <!-- Delete button (cross) -->
           <button
             class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-500 rounded-full transition-all"
@@ -151,7 +158,9 @@ const formatDate = (isoString: string) => {
               class="bg-zinc-900/80 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest flex items-center gap-1 select-none shadow-sm"
               title="Кількість переглядів"
             >
-              <span class="material-symbols-outlined text-[10px]">visibility</span>
+              <span class="material-symbols-outlined text-[10px]"
+                >visibility</span
+              >
               <span>{{ product.viewCount }}</span>
             </span>
           </div>
@@ -161,7 +170,9 @@ const formatDate = (isoString: string) => {
               class="bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest flex items-center gap-1 select-none shadow-sm"
               title="Останній перегляд"
             >
-              <span class="material-symbols-outlined text-[10px]">schedule</span>
+              <span class="material-symbols-outlined text-[10px]"
+                >schedule</span
+              >
               <span>{{ formatDate(product.lastViewedAt) }}</span>
             </span>
           </div>
@@ -171,10 +182,14 @@ const formatDate = (isoString: string) => {
         <div class="p-5 flex-1 flex flex-col justify-between gap-4">
           <div>
             <div class="flex items-center justify-between gap-2 mb-1.5">
-              <span class="text-[10px] text-[#00a046] font-extrabold uppercase tracking-wider">
+              <span
+                class="text-[10px] text-[#00a046] font-extrabold uppercase tracking-wider"
+              >
                 {{ product.category }}
               </span>
-              <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold">
+              <span
+                class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold"
+              >
                 {{ product.brand }}
               </span>
             </div>
@@ -195,7 +210,9 @@ const formatDate = (isoString: string) => {
               class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-all uppercase tracking-wider flex items-center gap-1.5 active:scale-95 shadow-sm"
               @click="cartStore.addToCart(product as any)"
             >
-              <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
+              <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+                >shopping_cart</span
+              >
               Додати
             </button>
           </div>
@@ -219,7 +236,8 @@ const formatDate = (isoString: string) => {
       <p
         class="text-xs md:text-sm text-zinc-455 dark:text-zinc-500 max-w-sm mx-auto mt-2"
       >
-        Ви ще не переглянули жодного товару. Ваша історія переглядів відображатиметься тут.
+        Ви ще не переглянули жодного товару. Ваша історія переглядів
+        відображатиметься тут.
       </p>
       <a
         href="/catalog"

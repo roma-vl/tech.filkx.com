@@ -1,10 +1,7 @@
 <template>
   <AuthLayout size="md">
     <div class="text-center w-full py-4">
-      <div
-        v-if="loading"
-        class="flex flex-col items-center"
-      >
+      <div v-if="loading" class="flex flex-col items-center">
         <div class="relative w-20 h-20 mb-6">
           <div
             class="absolute inset-0 border-4 border-primary-200 rounded-full"
@@ -20,10 +17,7 @@
           {{ $t("auth.verifyEmail.verifyingSubtitle") }}
         </p>
       </div>
-      <div
-        v-else-if="verified"
-        class="flex flex-col items-center"
-      >
+      <div v-else-if="verified" class="flex flex-col items-center">
         <div
           class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 text-green-600"
         >
@@ -60,10 +54,7 @@
           {{ $t("auth.verifyEmail.cta") }}
         </AppButton>
       </div>
-      <div
-        v-else
-        class="flex flex-col items-center"
-      >
+      <div v-else class="flex flex-col items-center">
         <div
           class="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6 text-red-600"
         >

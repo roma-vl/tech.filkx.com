@@ -22,10 +22,7 @@
       <div
         class="flex flex-wrap items-center justify-center lg:justify-start gap-6 flex-1"
       >
-        <template
-          v-for="(item, index) in bundleItems"
-          :key="item.id"
-        >
+        <template v-for="(item, index) in bundleItems" :key="item.id">
           <div
             class="relative w-36 text-center transition-all bg-white dark:bg-zinc-855 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800"
             :class="{
@@ -33,7 +30,8 @@
                 item.locked || selectedBundleIds.includes(item.id),
               'opacity-60':
                 !item.locked && !selectedBundleIds.includes(item.id),
-              'cursor-pointer hover:border-emerald-500/40 select-none': !item.locked,
+              'cursor-pointer hover:border-emerald-500/40 select-none':
+                !item.locked,
             }"
             @click="!item.locked && $emit('toggle-item', item)"
           >
@@ -54,7 +52,7 @@
                 :alt="item.name"
                 class="max-h-[80px] object-contain"
                 :src="item.image"
-              >
+              />
             </div>
             <div class="space-y-1">
               <p
@@ -62,9 +60,7 @@
               >
                 {{ item.name }}
               </p>
-              <p
-                class="text-[9px] text-zinc-450 dark:text-zinc-500 font-bold"
-              >
+              <p class="text-[9px] text-zinc-450 dark:text-zinc-500 font-bold">
                 {{ item.category }}
               </p>
               <p class="text-xs font-black text-[#00a046] font-bold">
@@ -76,7 +72,8 @@
           <span
             v-if="index < bundleItems.length - 1"
             class="material-symbols-outlined text-zinc-300 dark:text-zinc-700 text-2xl font-light"
-          >add</span>
+            >add</span
+          >
         </template>
       </div>
 
@@ -90,7 +87,9 @@
           >
             Загальна вартість:
           </p>
-          <p class="text-2xl font-black text-[#00a046] tracking-tight font-bold">
+          <p
+            class="text-2xl font-black text-[#00a046] tracking-tight font-bold"
+          >
             {{ formatPrice(bundleTotal) }}
           </p>
           <p class="text-[10px] text-zinc-400 dark:text-zinc-550 font-bold">

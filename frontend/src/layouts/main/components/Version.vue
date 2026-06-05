@@ -1,8 +1,5 @@
 <template>
-  <footer
-    v-if="buildDate"
-    class="text-xs text-gray-400"
-  >
+  <footer v-if="buildDate" class="text-xs text-gray-400">
     Build: {{ version.version }} ({{ version.commit }}) —
     {{ buildDate }}
   </footer>

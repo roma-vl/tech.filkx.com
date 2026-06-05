@@ -23,7 +23,7 @@
             @click="sidebarCollapsed && toggleSidebar()"
           >
             <div
-              class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shrink-0"
+              class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00a046] to-[#00b050] flex items-center justify-center shadow-lg shrink-0"
             >
               <svg
                 class="w-6 h-6 text-white"
@@ -45,7 +45,7 @@
                 :src="AdminLogo"
                 alt="Logo"
                 class="w-36"
-              >
+              />
             </transition>
           </div>
 
@@ -71,31 +71,21 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-          <div
-            v-for="item in navItems"
-            :key="item.name"
-          >
+          <div v-for="item in navItems" :key="item.name">
             <router-link
               v-if="!item.children"
               :to="item.path || ''"
-              class="group flex items-center transition-all duration-200 rounded-lg"
+              class="group flex items-center transition-all duration-200 rounded-lg font-medium"
               :class="[
                 isActive(item.path || '')
-                  ? 'bg-gradient-to-r from-primary-500 to-purple-600 text-gray-100 shadow-lg'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-700',
+                  ? 'bg-gradient-to-r from-[#00a046] to-[#00b050] text-white shadow-lg shadow-emerald-500/10'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white',
                 sidebarCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5',
               ]"
             >
-              <component
-                :is="item.icon"
-                class="w-5 h-5 shrink-0"
-              />
+              <component :is="item.icon" class="w-5 h-5 shrink-0" />
               <transition name="fade">
-                <span
-                  v-if="!sidebarCollapsed"
-                  class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-100"
-                  :class="[isActive(item.path || '') ? ' !text-gray-100' : '']"
-                >
+                <span v-if="!sidebarCollapsed" class="whitespace-nowrap">
                   {{ item.name }}
                 </span>
               </transition>
@@ -109,23 +99,19 @@
 
             <div v-else>
               <button
-                class="w-full group flex items-center transition-all duration-200 rounded-lg"
+                class="w-full group flex items-center transition-all duration-200 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                 :class="[
                   sidebarCollapsed
                     ? 'justify-center p-2.5'
                     : 'gap-3 px-3 py-2.5',
-                  'hover:bg-gray-100 dark:hover:bg-gray-700',
                 ]"
                 @click="toggleSubmenu(item.name)"
               >
-                <component
-                  :is="item.icon"
-                  class="w-5 h-5 shrink-0"
-                />
+                <component :is="item.icon" class="w-5 h-5 shrink-0" />
                 <transition name="fade">
                   <span
                     v-if="!sidebarCollapsed"
-                    class="font-medium flex-1 text-left whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                    class="flex-1 text-left whitespace-nowrap text-sm"
                   >
                     {{ item.name }}
                   </span>
@@ -157,11 +143,11 @@
                       v-for="child in item.children"
                       :key="child.name"
                       :to="child.path"
-                      class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      class="block px-3 py-2 rounded-lg text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40"
                       :class="[
                         isActive(child.path)
-                          ? 'text-primary-600 dark:text-primary-400 font-medium'
-                          : 'text-gray-700 dark:text-gray-300',
+                          ? 'text-[#00a046] dark:text-[#00b050] font-semibold bg-gray-50 dark:bg-gray-800/60'
+                          : 'text-gray-650 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white',
                       ]"
                     >
                       {{ child.name }}
@@ -223,7 +209,7 @@
             <div class="relative">
               <div class="flex items-center gap-3">
                 <div
-                  class="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary-500 to-purple-600 shadow-sm"
+                  class="h-8 w-1.5 rounded-full bg-gradient-to-b from-[#00a046] to-[#00b050] shadow-sm"
                 />
                 <div class="flex items-center gap-4">
                   <h1
@@ -233,15 +219,12 @@
                   </h1>
 
                   <!-- Description Popover -->
-                  <Popover
-                    v-slot="{ open }"
-                    class="relative"
-                  >
+                  <Popover v-slot="{ open }" class="relative">
                     <PopoverButton
                       class="flex items-center justify-center p-2 rounded-xl transition-all outline-none"
                       :class="[
                         open
-                          ? 'bg-primary-50 text-cyan-600 dark:bg-primary-500/10 dark:text-primary-400'
+                          ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-[#00b050]'
                           : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-700/50',
                       ]"
                     >
@@ -267,13 +250,13 @@
                           >
                             <div class="flex items-start gap-4">
                               <div
-                                class="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 shrink-0"
+                                class="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-[#00b050] shrink-0"
                               >
                                 <InformationCircleIcon class="w-5 h-5" />
                               </div>
                               <div class="space-y-1">
                                 <p
-                                  class="text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400"
+                                  class="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-[#00b050]"
                                 >
                                   {{ t("admin.common.aboutPage") }}
                                 </p>
@@ -393,7 +376,6 @@ const navItems = shallowRef<NavItem[]>([
       { name: t("admin.nav.products"), path: "/admin/products" },
       { name: t("admin.nav.categories"), path: "/admin/categories" },
       { name: t("admin.nav.brands"), path: "/admin/brands" },
-      { name: t("admin.nav.attributes"), path: "/admin/attributes" },
     ],
   },
   {

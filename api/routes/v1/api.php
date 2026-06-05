@@ -5,6 +5,7 @@ use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
 use App\Api\Admin\Controllers\AdminMarketingController;
+use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
 use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
@@ -14,7 +15,6 @@ use App\Api\Admin\Controllers\AdminStatsController;
 use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
-use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
@@ -118,12 +118,12 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);
     Route::post('/user/favorites/toggle', [UserController::class, 'toggleFavorite']);
     Route::post('/user/favorites/sync', [UserController::class, 'syncFavorites']);
-    
+
     // Compare database-backed endpoints
     Route::get('/user/compares', [UserController::class, 'getCompares']);
     Route::post('/user/compares/toggle', [UserController::class, 'toggleCompare']);
     Route::post('/user/compares/sync', [UserController::class, 'syncCompares']);
-    
+
     // Viewed products history database-backed endpoints
     Route::get('/user/viewed-products', [UserController::class, 'getViewedProducts']);
     Route::post('/user/viewed-products/track', [UserController::class, 'trackViewedProduct']);

@@ -8,7 +8,13 @@ use App\Api\V1\Exceptions\CheckoutValidationException;
 use App\Api\V1\Exceptions\EmptyCartException;
 use App\Api\V1\Requests\PlaceOrderRequest;
 use App\Api\V1\Resources\CheckoutOrderResource;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutController extends BaseApiController
@@ -28,17 +34,17 @@ class CheckoutController extends BaseApiController
         }
     }
 
-    public function quickOrder(\Illuminate\Http\Request $request): JsonResponse
+    public function quickOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'customerName'  => 'required|string|max:255',
+            'customerName' => 'required|string|max:255',
             'customerPhone' => 'required|string|max:50',
-            'variantId'     => 'required|integer|exists:product_variants,id',
+            'variantId' => 'required|integer|exists:product_variants,id',
         ]);
 
         try {
-            $order = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
-                $variant = \App\Models\ProductVariant::with(['product', 'stocks'])
+            $order = DB::transaction(function () use ($validated) {
+                $variant = ProductVariant::with(['product', 'stocks'])
                     ->lockForUpdate()
                     ->find($validated['variantId']);
 
@@ -62,13 +68,13 @@ class CheckoutController extends BaseApiController
                 $price = (float) $variant->price;
 
                 // Generate unique order number: FKX-YYYYMMDD-XXXXXX
-                $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(\Illuminate\Support\Str::random(6));
-                while (\App\Models\Order::where('order_number', $orderNumber)->exists()) {
-                    $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(\Illuminate\Support\Str::random(6));
+                $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
+                while (Order::where('order_number', $orderNumber)->exists()) {
+                    $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
                 }
 
                 // Create Order
-                $order = \App\Models\Order::create([
+                $order = Order::create([
                     'order_number' => $orderNumber,
                     'user_id' => auth('api')->id(),
                     'customer_name' => $validated['customerName'],
@@ -86,7 +92,7 @@ class CheckoutController extends BaseApiController
                 ]);
 
                 // Save order item snapshot
-                \App\Models\OrderItem::create([
+                OrderItem::create([
                     'order_id' => $order->id,
                     'variant_id' => $variant->id,
                     'product_name' => $productName,

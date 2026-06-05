@@ -1,10 +1,7 @@
 <template>
   <AuthLayout size="lg">
     <template #left>
-      <div
-        ref="container"
-        class="w-full"
-      />
+      <div ref="container" class="w-full" />
     </template>
 
     <div class="max-w-md mx-auto md:mx-0 w-full">
@@ -17,10 +14,7 @@
         {{ $t("auth.register.subtitle") }}
       </p>
 
-      <form
-        class="space-y-5"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-5" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.name"
           :label="$t('auth.register.nameLabel')"

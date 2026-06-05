@@ -25,7 +25,7 @@ class CreateAdminProductAction
             $originalSlug = $slug;
             $count = 1;
             while ($this->productRepository->slugExists($slug)) {
-                $slug = $originalSlug . '-' . $count;
+                $slug = $originalSlug.'-'.$count;
                 $count++;
             }
 
@@ -44,10 +44,10 @@ class CreateAdminProductAction
             foreach ($dto->variants as $vData) {
                 $variant = ProductVariant::create([
                     'product_id' => $product->id,
-                    'sku'        => $vData['sku'],
-                    'price'      => $vData['price'],
-                    'old_price'  => $vData['oldPrice'] ?? null,
-                    'weight'     => $vData['weight'] ?? null,
+                    'sku' => $vData['sku'],
+                    'price' => $vData['price'],
+                    'old_price' => $vData['oldPrice'] ?? null,
+                    'weight' => $vData['weight'] ?? null,
                     'dimensions' => ['images' => $vData['images'] ?? []],
                 ]);
 
@@ -61,11 +61,11 @@ class CreateAdminProductAction
                 if (! empty($vData['attributes'])) {
                     foreach ($vData['attributes'] as $attr) {
                         ProductAttributeValue::create([
-                            'product_id'         => $product->id,
-                            'variant_id'         => $variant->id,
-                            'attribute_id'       => $attr['attributeId'],
+                            'product_id' => $product->id,
+                            'variant_id' => $variant->id,
+                            'attribute_id' => $attr['attributeId'],
                             'attribute_value_id' => $attr['valueId'] ?? null,
-                            'custom_value'       => $attr['value'] ?? null,
+                            'custom_value' => $attr['value'] ?? null,
                         ]);
                     }
                 }

@@ -25,7 +25,7 @@ class PlaceOrderAction
         }
 
         if (! $cart || $cart->items()->count() === 0) {
-            throw new EmptyCartException();
+            throw new EmptyCartException;
         }
 
         return DB::transaction(function () use ($cart, $dto, $user) {

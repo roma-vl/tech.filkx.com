@@ -31,8 +31,16 @@ export const orderApi = {
     return apiClient.post("/v1/checkout", checkoutForm);
   },
 
-  placeQuickOrder(customerName: string, customerPhone: string, variantId: number | string) {
-    return apiClient.post("/v1/checkout/quick", { customerName, customerPhone, variantId });
+  placeQuickOrder(
+    customerName: string,
+    customerPhone: string,
+    variantId: number | string,
+  ) {
+    return apiClient.post("/v1/checkout/quick", {
+      customerName,
+      customerPhone,
+      variantId,
+    });
   },
 
   // Admin Orders Management APIs

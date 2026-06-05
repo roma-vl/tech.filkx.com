@@ -70,14 +70,14 @@ export function useOrders() {
     // Payment method filter
     if (paymentFilter.value) {
       result = result.filter(
-        (order) => order.paymentMethod === paymentFilter.value
+        (order) => order.paymentMethod === paymentFilter.value,
       );
     }
 
     // Delivery method filter
     if (deliveryFilter.value) {
       result = result.filter(
-        (order) => order.deliveryMethod === deliveryFilter.value
+        (order) => order.deliveryMethod === deliveryFilter.value,
       );
     }
 
@@ -86,14 +86,12 @@ export function useOrders() {
       result.sort((a, b) => {
         if (sortFilter.value === "created-desc") {
           return (
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         }
         if (sortFilter.value === "created-asc") {
           return (
-            new Date(a.createdAt).getTime() -
-            new Date(b.createdAt).getTime()
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
         }
         if (sortFilter.value === "price-desc") {
@@ -137,12 +135,14 @@ export function useOrders() {
       paid: "bg-emerald-100 text-emerald-850 dark:bg-emerald-950/30 dark:text-emerald-450",
       processing:
         "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-      packed: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
+      packed:
+        "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
       shipped:
         "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
       delivered:
         "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400",
-      completed: "bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white",
+      completed:
+        "bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white",
       cancelled: "bg-red-105 text-red-800 dark:bg-red-900/30 dark:text-red-400",
       refunded: "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
     };
@@ -162,11 +162,13 @@ export function useOrders() {
     try {
       const response = await orderApi.adminUpdateOrderStatus(
         selectedOrder.value.id,
-        status
+        status,
       );
       if (response.data && response.data.status === "success") {
         await fetchOrders();
-        const updated = orders.value.find((o) => o.id === selectedOrder.value?.id);
+        const updated = orders.value.find(
+          (o) => o.id === selectedOrder.value?.id,
+        );
         if (updated) {
           selectedOrder.value = { ...updated };
         }
@@ -226,7 +228,7 @@ export function useOrders() {
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `orders_export_${new Date().toISOString().slice(0, 10)}.csv`
+      `orders_export_${new Date().toISOString().slice(0, 10)}.csv`,
     );
     document.body.appendChild(link);
     link.click();

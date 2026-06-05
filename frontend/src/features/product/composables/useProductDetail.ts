@@ -22,7 +22,7 @@ export function useProductDetail() {
     }
     if (activeVariantId.value) {
       const found = rawProduct.value.variants.find(
-        (v: any) => v.id === activeVariantId.value
+        (v: any) => v.id === activeVariantId.value,
       );
       if (found) return found;
     }
@@ -37,12 +37,13 @@ export function useProductDetail() {
         mainVariant && mainVariant.oldPrice
           ? parseFloat(mainVariant.oldPrice)
           : mainVariant && mainVariant.old_price
-          ? parseFloat(mainVariant.old_price)
-          : null;
+            ? parseFloat(mainVariant.old_price)
+            : null;
       const totalStock = mainVariant
         ? (mainVariant.stocks || []).reduce(
-            (acc: number, s: any) => acc + (parseInt(s.quantity) - parseInt(s.reserved)),
-            0
+            (acc: number, s: any) =>
+              acc + (parseInt(s.quantity) - parseInt(s.reserved)),
+            0,
           )
         : 0;
 
@@ -100,8 +101,8 @@ export function useProductDetail() {
         ramVal && storageVal
           ? `${ramVal} ОЗУ / ${storageVal}`
           : rawProduct.value.brand?.name
-          ? `${rawProduct.value.brand.name} Edition`
-          : "Premium Tech Edition";
+            ? `${rawProduct.value.brand.name} Edition`
+            : "Premium Tech Edition";
 
       const specsList: any[] = [];
       const list: any[] = [];
@@ -203,7 +204,7 @@ export function useProductDetail() {
       images.push(
         { label: "Основний вигляд", src: mainImg },
         { label: "Вигляд збоку", src: mainImg },
-        { label: "Детальний макро-вигляд", src: mainImg }
+        { label: "Детальний макро-вигляд", src: mainImg },
       );
     }
 
@@ -215,9 +216,7 @@ export function useProductDetail() {
     const colors = new Set<string>();
     rawProduct.value.variants.forEach((v: any) => {
       const list = v.attributeValues || v.attribute_values || [];
-      const colorAttr = list.find(
-        (av: any) => av.attribute?.code === "color"
-      );
+      const colorAttr = list.find((av: any) => av.attribute?.code === "color");
       if (colorAttr) {
         const valObj = colorAttr.attributeValue || colorAttr.attribute_value;
         const val =
@@ -240,10 +239,11 @@ export function useProductDetail() {
         (av: any) =>
           av.attribute?.code === "storage" ||
           av.attribute?.code === "memory" ||
-          av.attribute?.code === "ram"
+          av.attribute?.code === "ram",
       );
       if (storageAttr) {
-        const valObj = storageAttr.attributeValue || storageAttr.attribute_value;
+        const valObj =
+          storageAttr.attributeValue || storageAttr.attribute_value;
         const val =
           storageAttr.customValue ||
           storageAttr.custom_value ||
@@ -293,10 +293,9 @@ export function useProductDetail() {
       selectedImageIndex.value = 0;
 
       const getAttrValue = (code: string) => {
-        const list = newVariant.attributeValues || newVariant.attribute_values || [];
-        const match = list.find(
-          (av: any) => av.attribute?.code === code
-        );
+        const list =
+          newVariant.attributeValues || newVariant.attribute_values || [];
+        const match = list.find((av: any) => av.attribute?.code === code);
         if (!match) return null;
         const valObj = match.attributeValue || match.attribute_value;
         return (
@@ -312,10 +311,12 @@ export function useProductDetail() {
       if (colorVal) selectedColor.value = colorVal;
 
       const storageVal =
-        getAttrValue("storage") || getAttrValue("memory") || getAttrValue("ram");
+        getAttrValue("storage") ||
+        getAttrValue("memory") ||
+        getAttrValue("ram");
       if (storageVal) selectedStorage.value = storageVal;
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   const activeTab = ref("experience");
@@ -338,7 +339,7 @@ export function useProductDetail() {
       if (response.data && response.data.status === "success") {
         const currentProductId = rawProduct.value?.id;
         const items = (response.data.data || []).filter(
-          (p: any) => p.id !== currentProductId
+          (p: any) => p.id !== currentProductId,
         );
         randomProducts.value = items.slice(0, 2);
         selectedBundleIds.value = randomProducts.value.map((p) => p.id);
@@ -376,7 +377,7 @@ export function useProductDetail() {
   };
 
   const selectedImage = computed(
-    () => galleryImages.value[selectedImageIndex.value]?.src || ""
+    () => galleryImages.value[selectedImageIndex.value]?.src || "",
   );
 
   const tabs = [
@@ -400,16 +401,24 @@ export function useProductDetail() {
     ];
 
     randomProducts.value.forEach((rp: any) => {
-      const name = typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
-      const category = rp.categories && rp.categories[0]
-        ? rp.categories[0].name.uk || rp.categories[0].name.en
-        : "Аксесуар";
+      const name =
+        typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
+      const category =
+        rp.categories && rp.categories[0]
+          ? rp.categories[0].name.uk || rp.categories[0].name.en
+          : "Аксесуар";
 
       let image = "";
       if (rp.variants && rp.variants[0]) {
         const v = rp.variants[0];
-        if (v.dimensions && v.dimensions.images && v.dimensions.images.length > 0) {
-          const primary = v.dimensions.images.find((img: any) => img.isPrimary) || v.dimensions.images[0];
+        if (
+          v.dimensions &&
+          v.dimensions.images &&
+          v.dimensions.images.length > 0
+        ) {
+          const primary =
+            v.dimensions.images.find((img: any) => img.isPrimary) ||
+            v.dimensions.images[0];
           image = primary.url || "";
         }
       }
@@ -418,7 +427,8 @@ export function useProductDetail() {
           "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
       }
 
-      const price = rp.variants && rp.variants[0] ? parseFloat(rp.variants[0].price) : 0;
+      const price =
+        rp.variants && rp.variants[0] ? parseFloat(rp.variants[0].price) : 0;
 
       list.push({
         id: rp.id,
@@ -474,15 +484,17 @@ export function useProductDetail() {
 
   const bundleSubtotal = computed(() => {
     return bundleItems.value
-      .filter((item) => item.locked || selectedBundleIds.value.includes(item.id))
+      .filter(
+        (item) => item.locked || selectedBundleIds.value.includes(item.id),
+      )
       .reduce((sum, item) => sum + item.price, 0);
   });
 
   const bundleSavings = computed(() =>
-    selectedBundleIds.value.length ? 3000 : 0
+    selectedBundleIds.value.length ? 3000 : 0,
   );
   const bundleTotal = computed(() =>
-    Math.max(0, bundleSubtotal.value - bundleSavings.value)
+    Math.max(0, bundleSubtotal.value - bundleSavings.value),
   );
 
   const setSelectedImage = (index: number) => {
@@ -505,7 +517,7 @@ export function useProductDetail() {
 
     if (selectedBundleIds.value.includes(item.id)) {
       selectedBundleIds.value = selectedBundleIds.value.filter(
-        (id) => id !== item.id
+        (id) => id !== item.id,
       );
     } else {
       selectedBundleIds.value = [...selectedBundleIds.value, item.id];
@@ -517,21 +529,30 @@ export function useProductDetail() {
     cartStore.addToCart(product.value);
     selectedBundleIds.value.forEach((id) => {
       const rp = randomProducts.value.find(
-        (randomP) => randomP.id === id || String(randomP.id) === String(id)
+        (randomP) => randomP.id === id || String(randomP.id) === String(id),
       );
       if (rp) {
-        const mainVariant = rp.variants && rp.variants[0] ? rp.variants[0] : null;
+        const mainVariant =
+          rp.variants && rp.variants[0] ? rp.variants[0] : null;
         const price = mainVariant ? parseFloat(mainVariant.price) : 0;
         let image = "";
-        if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images && mainVariant.dimensions.images.length > 0) {
-          const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+        if (
+          mainVariant &&
+          mainVariant.dimensions &&
+          mainVariant.dimensions.images &&
+          mainVariant.dimensions.images.length > 0
+        ) {
+          const primary =
+            mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
+            mainVariant.dimensions.images[0];
           image = primary.url || "";
         }
         if (!image) {
           image =
             "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
         }
-        const name = typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
+        const name =
+          typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
 
         cartStore.addToCart({
           id: mainVariant ? mainVariant.id : rp.id,
@@ -585,7 +606,7 @@ export function useProductDetail() {
         rawProduct.value = null;
         fetchProductDetails(newId as string);
       }
-    }
+    },
   );
 
   onUnmounted(() => {

@@ -104,7 +104,6 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->attributes['settings'] = json_encode($settings);
     }
 
-
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyEmailNotification);

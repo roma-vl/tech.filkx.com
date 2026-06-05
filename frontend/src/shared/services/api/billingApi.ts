@@ -13,7 +13,10 @@ export const billingApi = {
     return apiClient.get(`/admin/billing/payments/${id}/proof`);
   },
 
-  confirmPayment(id: number | string, data: { approve: boolean; reason?: string }) {
+  confirmPayment(
+    id: number | string,
+    data: { approve: boolean; reason?: string },
+  ) {
     return apiClient.post(`/admin/billing/payments/${id}/confirm`, data);
   },
 };

@@ -17,7 +17,7 @@ class ConfirmAccountingPaymentAction
         $order = $this->orderRepository->find($id);
 
         if (! $order) {
-            throw new OrderNotFoundException();
+            throw new OrderNotFoundException;
         }
 
         if ($approve) {

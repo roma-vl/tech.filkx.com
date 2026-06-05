@@ -18,7 +18,6 @@ use App\Api\Admin\Resources\InvoiceResource;
 use App\Api\Admin\Resources\LedgerResource;
 use App\Api\Admin\Resources\PendingPaymentResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminAccountingController extends BaseApiController
@@ -34,7 +33,7 @@ class AdminAccountingController extends BaseApiController
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
                 'total' => $paginator->total(),
-            ]
+            ],
         ]);
     }
 
@@ -49,7 +48,7 @@ class AdminAccountingController extends BaseApiController
                 'last_page' => $paginator->lastPage(),
                 'per_page' => $paginator->perPage(),
                 'total' => $paginator->total(),
-            ]
+            ],
         ]);
     }
 
@@ -80,7 +79,7 @@ class AdminAccountingController extends BaseApiController
                     $isCompleted ? $order->total_price : -$order->total_price,
                     'UAH',
                     'order',
-                    $order->created_at->toIso8601String()
+                    $order->created_at->toIso8601String(),
                 ]);
             }
 
@@ -106,7 +105,7 @@ class AdminAccountingController extends BaseApiController
                 'last_page' => $paginator->lastPage(),
                 'per_page' => self::PER_PAGE,
                 'total' => $paginator->total(),
-            ]
+            ],
         ]);
     }
 
@@ -128,7 +127,7 @@ class AdminAccountingController extends BaseApiController
         return self::successfulResponseWithData([
             'id' => $id,
             'proofUrl' => null,
-            'note' => 'No payment proof uploaded for this order.'
+            'note' => 'No payment proof uploaded for this order.',
         ]);
     }
 
@@ -141,7 +140,7 @@ class AdminAccountingController extends BaseApiController
                 'last_page' => 1,
                 'per_page' => self::PER_PAGE,
                 'total' => 0,
-            ]
+            ],
         ]);
     }
 }

@@ -37,7 +37,8 @@ export const useCartStore = defineStore("cart", {
         ? JSON.parse(localStorage.getItem("electro_compare")!)
         : [],
     viewedDetailed:
-      typeof window !== "undefined" && localStorage.getItem("electro_viewed_detailed")
+      typeof window !== "undefined" &&
+      localStorage.getItem("electro_viewed_detailed")
         ? JSON.parse(localStorage.getItem("electro_viewed_detailed")!)
         : [],
     toasts: [],
@@ -51,7 +52,10 @@ export const useCartStore = defineStore("cart", {
       return state.cart.reduce((acc, item) => acc + item.quantity, 0);
     },
     cartTotal: (state): number => {
-      return state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      return state.cart.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0,
+      );
     },
     wishlistCount: (state): number => {
       return state.wishlist.length;
@@ -62,7 +66,10 @@ export const useCartStore = defineStore("cart", {
   },
 
   actions: {
-    addToast(message: string, type: "success" | "info" | "warning" | "error" = "success") {
+    addToast(
+      message: string,
+      type: "success" | "info" | "warning" | "error" = "success",
+    ) {
       const id = this.toastId++;
       this.toasts.push({ id, message, type });
       setTimeout(() => {
@@ -179,10 +186,20 @@ export const useCartStore = defineStore("cart", {
           if (response.data && response.data.status === "success") {
             this.wishlist = response.data.data.map((p: any) => {
               const mainVariant = p.variants?.[0];
-              const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+              const price = mainVariant
+                ? parseFloat(mainVariant.price)
+                : p.price || 0;
               let image = p.image || "";
-              if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-                const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+              if (
+                !image &&
+                mainVariant &&
+                mainVariant.dimensions &&
+                mainVariant.dimensions.images
+              ) {
+                const primary =
+                  mainVariant.dimensions.images.find(
+                    (img: any) => img.isPrimary,
+                  ) || mainVariant.dimensions.images[0];
                 if (primary && primary.url) image = primary.url;
               }
               return {
@@ -190,11 +207,19 @@ export const useCartStore = defineStore("cart", {
                 name: p.name?.uk || p.name?.en || p.name,
                 slug: p.slug,
                 price: price,
-                image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
-                category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+                image:
+                  image ||
+                  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+                category:
+                  p.categories?.[0]?.name?.uk ||
+                  p.categories?.[0]?.name?.en ||
+                  "Electronics",
               };
             });
-            localStorage.setItem("electro_wishlist", JSON.stringify(this.wishlist));
+            localStorage.setItem(
+              "electro_wishlist",
+              JSON.stringify(this.wishlist),
+            );
           }
         } catch (e) {
           console.error("Failed to toggle favorite in database", e);
@@ -214,7 +239,10 @@ export const useCartStore = defineStore("cart", {
         this.addToast(`Removed ${name} from compare.`, "info");
       } else {
         if (this.compare.length >= 12) {
-          this.addToast("Ви можете порівнювати не більше 12 товарів одночасно.", "warning");
+          this.addToast(
+            "Ви можете порівнювати не більше 12 товарів одночасно.",
+            "warning",
+          );
           return;
         }
         this.compare.push({
@@ -226,7 +254,9 @@ export const useCartStore = defineStore("cart", {
           category: product.category || "Electronics",
           rating: product.rating || 4.5,
           reviews: product.reviews || 0,
-          description: product.description || "Premium build quality, ultra-durable, leading technology.",
+          description:
+            product.description ||
+            "Premium build quality, ultra-durable, leading technology.",
           specs: product.specs || [],
         });
         this.addToast(`Added ${product.name} to compare.`);
@@ -242,10 +272,20 @@ export const useCartStore = defineStore("cart", {
           if (response.data && response.data.status === "success") {
             this.compare = response.data.data.map((p: any) => {
               const mainVariant = p.variants?.[0];
-              const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+              const price = mainVariant
+                ? parseFloat(mainVariant.price)
+                : p.price || 0;
               let image = p.image || "";
-              if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-                const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+              if (
+                !image &&
+                mainVariant &&
+                mainVariant.dimensions &&
+                mainVariant.dimensions.images
+              ) {
+                const primary =
+                  mainVariant.dimensions.images.find(
+                    (img: any) => img.isPrimary,
+                  ) || mainVariant.dimensions.images[0];
                 if (primary && primary.url) image = primary.url;
               }
               return {
@@ -253,18 +293,31 @@ export const useCartStore = defineStore("cart", {
                 name: p.name?.uk || p.name?.en || p.name,
                 slug: p.slug,
                 price: price,
-                image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
-                category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+                image:
+                  image ||
+                  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+                category:
+                  p.categories?.[0]?.name?.uk ||
+                  p.categories?.[0]?.name?.en ||
+                  "Electronics",
                 rating: p.rating || 4.5,
                 reviews: p.reviews || 0,
-                description: p.description?.uk || p.description?.en || p.description || "",
-                specs: p.attributeValues?.map((av: any) => [
-                  av.attribute?.name?.uk || av.attribute?.name?.en || "",
-                  av.customValue || av.attributeValue?.value?.uk || av.attributeValue?.value || ""
-                ]) || []
+                description:
+                  p.description?.uk || p.description?.en || p.description || "",
+                specs:
+                  p.attributeValues?.map((av: any) => [
+                    av.attribute?.name?.uk || av.attribute?.name?.en || "",
+                    av.customValue ||
+                      av.attributeValue?.value?.uk ||
+                      av.attributeValue?.value ||
+                      "",
+                  ]) || [],
               };
             });
-            localStorage.setItem("electro_compare", JSON.stringify(this.compare));
+            localStorage.setItem(
+              "electro_compare",
+              JSON.stringify(this.compare),
+            );
           }
         } catch (e) {
           console.error("Failed to toggle compare in database", e);
@@ -287,7 +340,10 @@ export const useCartStore = defineStore("cart", {
         }
 
         // Sync to database if logged in
-        if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
+        if (
+          typeof window !== "undefined" &&
+          localStorage.getItem("filkx_auth")
+        ) {
           try {
             await authApi.toggleCompare(productId);
           } catch (e) {
@@ -308,12 +364,15 @@ export const useCartStore = defineStore("cart", {
     async trackProductView(productOrId: number | any) {
       if (typeof window === "undefined" || !productOrId) return;
 
-      const productId = typeof productOrId === "object" ? productOrId.id : productOrId;
-      
+      const productId =
+        typeof productOrId === "object" ? productOrId.id : productOrId;
+
       // 1. Detailed tracking (new feature)
       let viewed: any[] = [];
       try {
-        viewed = JSON.parse(localStorage.getItem("electro_viewed_detailed") || "[]");
+        viewed = JSON.parse(
+          localStorage.getItem("electro_viewed_detailed") || "[]",
+        );
       } catch (e) {
         viewed = [];
       }
@@ -324,7 +383,7 @@ export const useCartStore = defineStore("cart", {
         const existing = viewed[existingIndex];
         existing.viewCount = (existing.viewCount || 0) + 1;
         existing.lastViewedAt = new Date().toISOString();
-        
+
         // Move to the beginning of the list
         viewed.splice(existingIndex, 1);
         viewed.unshift(existing);
@@ -332,34 +391,50 @@ export const useCartStore = defineStore("cart", {
         let productDetails: any = {};
         if (typeof productOrId === "object") {
           const mainVariant = productOrId.variants?.[0];
-          const price = mainVariant ? parseFloat(mainVariant.price) : (productOrId.price || 0);
+          const price = mainVariant
+            ? parseFloat(mainVariant.price)
+            : productOrId.price || 0;
           let image = productOrId.image || "";
-          if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-            const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+          if (
+            !image &&
+            mainVariant &&
+            mainVariant.dimensions &&
+            mainVariant.dimensions.images
+          ) {
+            const primary =
+              mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
+              mainVariant.dimensions.images[0];
             if (primary && primary.url) {
               image = primary.url;
             }
           }
           if (!image) {
-            image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+            image =
+              "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
           }
-          const productCategory = productOrId.categories?.[0]?.name?.uk || productOrId.categories?.[0]?.name?.en || productOrId.category || "Різне";
-          
+          const productCategory =
+            productOrId.categories?.[0]?.name?.uk ||
+            productOrId.categories?.[0]?.name?.en ||
+            productOrId.category ||
+            "Різне";
+
           productDetails = {
             id: productOrId.id,
             slug: productOrId.slug,
-            name: productOrId.name?.uk || productOrId.name?.en || productOrId.name,
+            name:
+              productOrId.name?.uk || productOrId.name?.en || productOrId.name,
             brand: productOrId.brand?.name || productOrId.brand || "Unknown",
             image: image,
             price: price,
             category: productCategory,
-            inStock: productOrId.stock > 0 || productOrId.inStock || true
+            inStock: productOrId.stock > 0 || productOrId.inStock || true,
           };
         } else {
           // If only ID is supplied, try to find product in other store collections
-          const foundInStore = this.compare.find((p) => p.id === productId) || 
-                               this.wishlist.find((p) => p.id === productId) ||
-                               this.cart.find((p) => p.productId === productId);
+          const foundInStore =
+            this.compare.find((p) => p.id === productId) ||
+            this.wishlist.find((p) => p.id === productId) ||
+            this.cart.find((p) => p.productId === productId);
           if (foundInStore) {
             productDetails = {
               id: foundInStore.id,
@@ -369,7 +444,7 @@ export const useCartStore = defineStore("cart", {
               image: foundInStore.image,
               price: foundInStore.price,
               category: foundInStore.category || "Різне",
-              inStock: foundInStore.inStock ?? true
+              inStock: foundInStore.inStock ?? true,
             };
           } else {
             productDetails = {
@@ -378,7 +453,7 @@ export const useCartStore = defineStore("cart", {
               price: 0,
               image: "",
               category: "Різне",
-              inStock: true
+              inStock: true,
             };
           }
         }
@@ -386,7 +461,7 @@ export const useCartStore = defineStore("cart", {
         viewed.unshift({
           ...productDetails,
           viewCount: 1,
-          lastViewedAt: new Date().toISOString()
+          lastViewedAt: new Date().toISOString(),
         });
       }
 
@@ -397,7 +472,9 @@ export const useCartStore = defineStore("cart", {
 
       // 2. Legacy tracking (for backwards compatibility)
       try {
-        let viewedLegacy = JSON.parse(localStorage.getItem("electro_viewed") || "[]");
+        let viewedLegacy = JSON.parse(
+          localStorage.getItem("electro_viewed") || "[]",
+        );
         if (Array.isArray(viewedLegacy)) {
           viewedLegacy = viewedLegacy.filter((id: number) => id !== productId);
           viewedLegacy.unshift(productId);
@@ -419,13 +496,18 @@ export const useCartStore = defineStore("cart", {
     },
 
     async removeViewedItem(productId: number | string) {
-      this.viewedDetailed = this.viewedDetailed.filter(p => p.id !== productId);
+      this.viewedDetailed = this.viewedDetailed.filter(
+        (p) => p.id !== productId,
+      );
       if (typeof window !== "undefined") {
-        localStorage.setItem("electro_viewed_detailed", JSON.stringify(this.viewedDetailed));
-        const legacyIds = this.viewedDetailed.slice(0, 10).map(p => p.id);
+        localStorage.setItem(
+          "electro_viewed_detailed",
+          JSON.stringify(this.viewedDetailed),
+        );
+        const legacyIds = this.viewedDetailed.slice(0, 10).map((p) => p.id);
         localStorage.setItem("electro_viewed", JSON.stringify(legacyIds));
       }
-      
+
       if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
         try {
           await authApi.clearViewedProducts();
@@ -444,7 +526,7 @@ export const useCartStore = defineStore("cart", {
         localStorage.removeItem("electro_viewed_detailed");
         localStorage.removeItem("electro_viewed");
       }
-      
+
       if (typeof window !== "undefined" && localStorage.getItem("filkx_auth")) {
         try {
           await authApi.clearViewedProducts();
@@ -455,18 +537,29 @@ export const useCartStore = defineStore("cart", {
     },
 
     async syncUserLists() {
-      if (typeof window === "undefined" || !localStorage.getItem("filkx_auth")) return;
+      if (typeof window === "undefined" || !localStorage.getItem("filkx_auth"))
+        return;
 
       try {
-        const localWishlistIds = this.wishlist.map(p => p.id);
+        const localWishlistIds = this.wishlist.map((p) => p.id);
         const favResponse = await authApi.syncFavorites(localWishlistIds);
         if (favResponse.data && favResponse.data.status === "success") {
           this.wishlist = favResponse.data.data.map((p: any) => {
             const mainVariant = p.variants?.[0];
-            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            const price = mainVariant
+              ? parseFloat(mainVariant.price)
+              : p.price || 0;
             let image = p.image || "";
-            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+            if (
+              !image &&
+              mainVariant &&
+              mainVariant.dimensions &&
+              mainVariant.dimensions.images
+            ) {
+              const primary =
+                mainVariant.dimensions.images.find(
+                  (img: any) => img.isPrimary,
+                ) || mainVariant.dimensions.images[0];
               if (primary && primary.url) image = primary.url;
             }
             return {
@@ -474,26 +567,44 @@ export const useCartStore = defineStore("cart", {
               name: p.name?.uk || p.name?.en || p.name,
               slug: p.slug,
               price: price,
-              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
-              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+              image:
+                image ||
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category:
+                p.categories?.[0]?.name?.uk ||
+                p.categories?.[0]?.name?.en ||
+                "Electronics",
             };
           });
-          localStorage.setItem("electro_wishlist", JSON.stringify(this.wishlist));
+          localStorage.setItem(
+            "electro_wishlist",
+            JSON.stringify(this.wishlist),
+          );
         }
       } catch (e) {
         console.error("Failed to sync favorites with database", e);
       }
 
       try {
-        const localCompareIds = this.compare.map(p => p.id);
+        const localCompareIds = this.compare.map((p) => p.id);
         const compResponse = await authApi.syncCompares(localCompareIds);
         if (compResponse.data && compResponse.data.status === "success") {
           this.compare = compResponse.data.data.map((p: any) => {
             const mainVariant = p.variants?.[0];
-            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            const price = mainVariant
+              ? parseFloat(mainVariant.price)
+              : p.price || 0;
             let image = p.image || "";
-            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+            if (
+              !image &&
+              mainVariant &&
+              mainVariant.dimensions &&
+              mainVariant.dimensions.images
+            ) {
+              const primary =
+                mainVariant.dimensions.images.find(
+                  (img: any) => img.isPrimary,
+                ) || mainVariant.dimensions.images[0];
               if (primary && primary.url) image = primary.url;
             }
             return {
@@ -501,15 +612,25 @@ export const useCartStore = defineStore("cart", {
               name: p.name?.uk || p.name?.en || p.name,
               slug: p.slug,
               price: price,
-              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
-              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Electronics",
+              image:
+                image ||
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category:
+                p.categories?.[0]?.name?.uk ||
+                p.categories?.[0]?.name?.en ||
+                "Electronics",
               rating: p.rating || 4.5,
               reviews: p.reviews || 0,
-              description: p.description?.uk || p.description?.en || p.description || "",
-              specs: p.attributeValues?.map((av: any) => [
-                av.attribute?.name?.uk || av.attribute?.name?.en || "",
-                av.customValue || av.attributeValue?.value?.uk || av.attributeValue?.value || ""
-              ]) || []
+              description:
+                p.description?.uk || p.description?.en || p.description || "",
+              specs:
+                p.attributeValues?.map((av: any) => [
+                  av.attribute?.name?.uk || av.attribute?.name?.en || "",
+                  av.customValue ||
+                    av.attributeValue?.value?.uk ||
+                    av.attributeValue?.value ||
+                    "",
+                ]) || [],
             };
           });
           localStorage.setItem("electro_compare", JSON.stringify(this.compare));
@@ -521,20 +642,33 @@ export const useCartStore = defineStore("cart", {
       try {
         let localViewedDetailed: any[] = [];
         try {
-          localViewedDetailed = JSON.parse(localStorage.getItem("electro_viewed_detailed") || "[]");
+          localViewedDetailed = JSON.parse(
+            localStorage.getItem("electro_viewed_detailed") || "[]",
+          );
         } catch (e) {
           localViewedDetailed = [];
         }
         if (!Array.isArray(localViewedDetailed)) localViewedDetailed = [];
-        
-        const viewedResponse = await authApi.syncViewedProducts(localViewedDetailed);
+
+        const viewedResponse =
+          await authApi.syncViewedProducts(localViewedDetailed);
         if (viewedResponse.data && viewedResponse.data.status === "success") {
           const mappedViewed = viewedResponse.data.data.map((p: any) => {
             const mainVariant = p.variants?.[0];
-            const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+            const price = mainVariant
+              ? parseFloat(mainVariant.price)
+              : p.price || 0;
             let image = p.image || "";
-            if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+            if (
+              !image &&
+              mainVariant &&
+              mainVariant.dimensions &&
+              mainVariant.dimensions.images
+            ) {
+              const primary =
+                mainVariant.dimensions.images.find(
+                  (img: any) => img.isPrimary,
+                ) || mainVariant.dimensions.images[0];
               if (primary && primary.url) image = primary.url;
             }
             return {
@@ -543,16 +677,24 @@ export const useCartStore = defineStore("cart", {
               brand: p.brand?.name || "Unknown",
               slug: p.slug,
               price: price,
-              image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
-              category: p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || "Різне",
+              image:
+                image ||
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop",
+              category:
+                p.categories?.[0]?.name?.uk ||
+                p.categories?.[0]?.name?.en ||
+                "Різне",
               inStock: p.stock > 0 || true,
               viewCount: p.view_count || 1,
-              lastViewedAt: p.last_viewed_at || new Date().toISOString()
+              lastViewedAt: p.last_viewed_at || new Date().toISOString(),
             };
           });
           this.viewedDetailed = mappedViewed;
-          localStorage.setItem("electro_viewed_detailed", JSON.stringify(mappedViewed));
-          
+          localStorage.setItem(
+            "electro_viewed_detailed",
+            JSON.stringify(mappedViewed),
+          );
+
           const legacyIds = mappedViewed.slice(0, 10).map((p: any) => p.id);
           localStorage.setItem("electro_viewed", JSON.stringify(legacyIds));
         }
@@ -567,7 +709,10 @@ export const useCartStore = defineStore("cart", {
       if (product && typeof window !== "undefined") {
         this.trackProductView(product);
         const { default: router } = await import("@/router");
-        router.push({ name: "product-detail", params: { id: product.slug || product.id } });
+        router.push({
+          name: "product-detail",
+          params: { id: product.slug || product.id },
+        });
       }
     },
 
@@ -575,7 +720,9 @@ export const useCartStore = defineStore("cart", {
       try {
         const response = await authApi.getNotifications();
         const list = response.data?.data?.data || response.data?.data || [];
-        this.unreadNotificationsCount = list.filter((n: any) => !n.readAt && !n.read_at).length;
+        this.unreadNotificationsCount = list.filter(
+          (n: any) => !n.readAt && !n.read_at,
+        ).length;
       } catch (e) {
         console.warn("Failed to fetch unread notifications count", e);
       }

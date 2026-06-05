@@ -13,8 +13,11 @@
         <div class="text-left">
           <span
             class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2.5 py-0.5 rounded tracking-wider"
-          >Швидке замовлення</span>
-          <h3 class="font-extrabold text-base text-zinc-900 dark:text-white mt-1">
+            >Швидке замовлення</span
+          >
+          <h3
+            class="font-extrabold text-base text-zinc-900 dark:text-white mt-1"
+          >
             Замовлення в один клік
           </h3>
         </div>
@@ -33,7 +36,9 @@
           <div
             class="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center text-[#00a046]"
           >
-            <span class="material-symbols-outlined text-[36px]">check_circle</span>
+            <span class="material-symbols-outlined text-[36px]"
+              >check_circle</span
+            >
           </div>
           <div class="space-y-1">
             <h4 class="font-extrabold text-lg text-zinc-900 dark:text-white">
@@ -43,8 +48,12 @@
               Номер замовлення: {{ orderNumber }}
             </p>
           </div>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm mx-auto">
-            Дякуємо за покупку! Наш менеджер зв'яжеться з вами найближчим часом за телефоном <span class="font-extrabold">{{ phone }}</span> для підтвердження деталей відправки.
+          <p
+            class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm mx-auto"
+          >
+            Дякуємо за покупку! Наш менеджер зв'яжеться з вами найближчим часом
+            за телефоном <span class="font-extrabold">{{ phone }}</span> для
+            підтвердження деталей відправки.
           </p>
           <button
             class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-md font-extrabold text-xs transition-all uppercase tracking-wider shadow-sm font-bold"
@@ -57,17 +66,23 @@
         <!-- Form State -->
         <form v-else @submit.prevent="handleSubmit" class="space-y-5 text-left">
           <!-- Product Preview -->
-          <div class="flex gap-4 p-3 bg-zinc-50 dark:bg-zinc-850 rounded-lg border border-zinc-150 dark:border-zinc-800">
+          <div
+            class="flex gap-4 p-3 bg-zinc-50 dark:bg-zinc-850 rounded-lg border border-zinc-150 dark:border-zinc-800"
+          >
             <img
               :src="product.image"
               :alt="product.name"
               class="w-16 h-16 object-contain rounded bg-white p-1 border border-zinc-100"
-            >
+            />
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <h5 class="text-xs font-extrabold text-zinc-900 dark:text-white truncate">
+              <h5
+                class="text-xs font-extrabold text-zinc-900 dark:text-white truncate"
+              >
                 {{ product.name }}
               </h5>
-              <p class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold mt-0.5 truncate">
+              <p
+                class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold mt-0.5 truncate"
+              >
                 {{ product.subtitle || product.category }}
               </p>
               <p class="text-sm font-black text-[#00a046] mt-1 font-bold">
@@ -87,7 +102,9 @@
           <!-- Fields -->
           <div class="space-y-4">
             <div class="space-y-1.5">
-              <label class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+              <label
+                class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+              >
                 Ваше ім'я <span class="text-rose-500">*</span>
               </label>
               <input
@@ -96,11 +113,13 @@
                 required
                 placeholder="Введіть ваше ім'я"
                 class="w-full h-10 px-3.5 border border-zinc-200 dark:border-zinc-700 rounded-md bg-zinc-50 dark:bg-zinc-800 text-xs font-bold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
-              >
+              />
             </div>
 
             <div class="space-y-1.5">
-              <label class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+              <label
+                class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+              >
                 Номер телефону <span class="text-rose-500">*</span>
               </label>
               <input
@@ -109,7 +128,7 @@
                 required
                 placeholder="+380"
                 class="w-full h-10 px-3.5 border border-zinc-200 dark:border-zinc-700 rounded-md bg-zinc-50 dark:bg-zinc-800 text-xs font-bold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
-              >
+              />
             </div>
           </div>
 
@@ -119,8 +138,13 @@
             type="submit"
             class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3 rounded-md font-extrabold text-xs transition-all uppercase tracking-wider shadow-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="isSubmitting" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-            <span>{{ isSubmitting ? "Надсилання..." : "Оформити замовлення" }}</span>
+            <span
+              v-if="isSubmitting"
+              class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
+            />
+            <span>{{
+              isSubmitting ? "Надсилання..." : "Оформити замовлення"
+            }}</span>
           </button>
         </form>
       </div>
@@ -161,7 +185,7 @@ watch(
       orderNumber.value = "";
       errorMsg.value = "";
     }
-  }
+  },
 );
 
 const closeModal = () => {
@@ -189,17 +213,22 @@ const handleSubmit = async () => {
     const response = await orderApi.placeQuickOrder(
       name.value.trim(),
       phone.value.trim(),
-      props.product.id
+      props.product.id,
     );
 
     if (response.data && response.data.status === "success") {
       isSuccess.value = true;
-      orderNumber.value = response.data.data?.orderNumber || response.data.data?.order_number || "";
+      orderNumber.value =
+        response.data.data?.orderNumber ||
+        response.data.data?.order_number ||
+        "";
       emit("success", response.data.data);
     }
   } catch (error: any) {
     console.error("Quick order failed:", error);
-    errorMsg.value = error.response?.data?.message || "Не вдалося оформити замовлення. Спробуйте пізніше.";
+    errorMsg.value =
+      error.response?.data?.message ||
+      "Не вдалося оформити замовлення. Спробуйте пізніше.";
   } finally {
     isSubmitting.value = false;
   }

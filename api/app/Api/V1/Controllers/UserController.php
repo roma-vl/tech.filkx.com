@@ -13,6 +13,7 @@ use App\Api\V1\Actions\User\UpdateUserLocaleAction;
 use App\Api\V1\Actions\User\UpdateUserPasswordAction;
 use App\Api\V1\Actions\User\UpdateUserProfileAction;
 use App\Api\V1\Actions\User\UploadUserAvatarAction;
+use App\Api\V1\Repositories\ProductRepository;
 use App\Api\V1\Requests\User\SetUserPasswordRequest;
 use App\Api\V1\Requests\User\UpdateNotificationPreferencesRequest;
 use App\Api\V1\Requests\User\UpdateUserLocaleRequest;
@@ -554,90 +555,97 @@ class UserController extends BaseApiController
         return redirect()->to($frontendUrl.'/login?status=email-changed');
     }
 
-    public function getFavorites(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function getFavorites(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productIds = $request->user()->favorites()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function toggleFavorite(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function toggleFavorite(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
-        
+
         $user = $request->user();
         $user->favorites()->toggle($productId);
-        
+
         $productIds = $user->favorites()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function syncFavorites(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function syncFavorites(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productIds = $request->input('product_ids', []);
         $user = $request->user();
         if (! empty($productIds)) {
             $user->favorites()->syncWithoutDetaching($productIds);
         }
-        
+
         $allIds = $user->favorites()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $allIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function getCompares(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function getCompares(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productIds = $request->user()->compares()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function toggleCompare(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function toggleCompare(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
-        
+
         $user = $request->user();
         $user->compares()->toggle($productId);
-        
+
         $productIds = $user->compares()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function syncCompares(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function syncCompares(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productIds = $request->input('product_ids', []);
         $user = $request->user();
         if (! empty($productIds)) {
             $user->compares()->syncWithoutDetaching($productIds);
         }
-        
+
         $allIds = $user->compares()->pluck('product_id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $allIds)->get();
+
         return self::successfulResponseWithData($products);
     }
 
-    public function getViewedProducts(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function getViewedProducts(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $viewedItems = $request->user()->viewedProducts()
             ->withPivot('view_count')
             ->orderByPivot('updated_at', 'desc')
             ->get();
-            
+
         $productIds = $viewedItems->pluck('id')->toArray();
         $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-        
+
         $productsMapped = $products->map(function ($product) use ($viewedItems) {
             $viewed = $viewedItems->firstWhere('id', $product->id);
             $product->view_count = $viewed ? $viewed->pivot->view_count : 1;
             $product->last_viewed_at = $viewed ? $viewed->pivot->updated_at->toISOString() : now()->toISOString();
+
             return $product;
         });
 
@@ -646,16 +654,16 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData($productsMappedSorted);
     }
 
-    public function trackViewedProduct(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function trackViewedProduct(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
-        
+
         $user = $request->user();
         $existing = $user->viewedProducts()->where('product_id', $productId)->first();
-        
+
         if ($existing) {
             $user->viewedProducts()->updateExistingPivot($productId, [
                 'view_count' => $existing->pivot->view_count + 1,
@@ -668,26 +676,28 @@ class UserController extends BaseApiController
                 'updated_at' => now(),
             ]);
         }
-        
+
         return self::successfulResponse('Product tracked successfully.');
     }
 
-    public function syncViewedProducts(Request $request, \App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function syncViewedProducts(Request $request, ProductRepository $productRepository): JsonResponse
     {
         $items = $request->input('items', []);
         $user = $request->user();
-        
+
         foreach ($items as $item) {
             $pId = $item['id'] ?? null;
-            if (! $pId) continue;
-            
+            if (! $pId) {
+                continue;
+            }
+
             $existing = $user->viewedProducts()->where('product_id', $pId)->first();
             if ($existing) {
                 $newCount = max($existing->pivot->view_count, $item['view_count'] ?? 1);
                 $newTime = ! empty($item['last_viewed_at']) && strtotime($item['last_viewed_at']) > $existing->pivot->updated_at->timestamp
                     ? date('Y-m-d H:i:s', strtotime($item['last_viewed_at']))
                     : $existing->pivot->updated_at;
-                
+
                 $user->viewedProducts()->updateExistingPivot($pId, [
                     'view_count' => $newCount,
                     'updated_at' => $newTime,
@@ -700,13 +710,14 @@ class UserController extends BaseApiController
                 ]);
             }
         }
-        
+
         return $this->getViewedProducts($request, $productRepository);
     }
 
     public function clearViewedProducts(Request $request): JsonResponse
     {
         $request->user()->viewedProducts()->detach();
+
         return self::successfulResponse('Viewed products history cleared.');
     }
 }

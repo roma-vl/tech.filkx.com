@@ -17,7 +17,7 @@ class GetAdminOrderDetailsAction
         $order = $this->orderRepository->find($id);
 
         if (! $order) {
-            throw new OrderNotFoundException();
+            throw new OrderNotFoundException;
         }
 
         return $order->load('items');

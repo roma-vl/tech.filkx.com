@@ -139,7 +139,7 @@ const checkout = () => {
             <div>
               <span
                 class="text-[10px] font-bold text-primary uppercase tracking-wider"
-              >{{ (item as any).category || 'Товар' }}</span>
+              >{{ (item as any).category || "Товар" }}</span>
               <h4
                 class="font-title-md text-sm text-on-surface line-clamp-1 leading-tight"
               >
@@ -156,7 +156,9 @@ const checkout = () => {
               >
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
-                  @click="cartStore.updateCartQuantity(item.id, item.quantity - 1)"
+                  @click="
+                    cartStore.updateCartQuantity(item.id, item.quantity - 1)
+                  "
                 >
                   <span class="material-symbols-outlined text-[16px]">remove</span>
                 </button>
@@ -165,7 +167,9 @@ const checkout = () => {
                 }}</span>
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
-                  @click="cartStore.updateCartQuantity(item.id, item.quantity + 1)"
+                  @click="
+                    cartStore.updateCartQuantity(item.id, item.quantity + 1)
+                  "
                 >
                   <span class="material-symbols-outlined text-[16px]">add</span>
                 </button>

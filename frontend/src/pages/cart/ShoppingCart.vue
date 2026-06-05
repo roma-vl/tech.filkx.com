@@ -53,7 +53,9 @@
         >
           <span class="material-symbols-outlined text-[44px]">remove_shopping_cart</span>
         </div>
-        <h2 class="font-headline-md text-zinc-900 dark:text-white text-xl font-bold mb-2">
+        <h2
+          class="font-headline-md text-zinc-900 dark:text-white text-xl font-bold mb-2"
+        >
           Your cart is empty
         </h2>
         <p class="text-on-surface-variant mb-6 text-gray-500">
@@ -148,7 +150,9 @@
               >
                 <span
                   class="material-symbols-outlined"
-                  :class="{ 'text-red-500': cartStore.isInWishlist(product.id) }"
+                  :class="{
+                    'text-red-500': cartStore.isInWishlist(product.id),
+                  }"
                 >favorite</span>
               </button>
             </div>
@@ -163,7 +167,9 @@
                     : 'text-outline-variant'
                 "
               >star</span>
-              <span class="text-label-md text-on-surface-variant ml-1 text-xs text-gray-500">({{ product.reviews }})</span>
+              <span
+                class="text-label-md text-on-surface-variant ml-1 text-xs text-gray-500"
+              >({{ product.reviews }})</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="font-title-lg text-lg font-bold text-[#00a046]">{{

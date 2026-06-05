@@ -29,17 +29,37 @@ interface NavItem {
   query?: { tab: string };
   routeName?: string;
   action?: () => void;
-  badgeKey?: "cartCount" | "wishlistCount" | "compareCount" | "unreadNotificationsCount";
+  badgeKey?:
+    | "cartCount"
+    | "wishlistCount"
+    | "compareCount"
+    | "unreadNotificationsCount";
   isGreenBadge?: boolean;
 }
 
 const navItems: NavItem[] = [
   { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
   { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } },
-  { name: "Моє обране", icon: "favorite", query: { tab: "favorites" }, badgeKey: "wishlistCount" },
-  { name: "Порівняння товарів", icon: "compare_arrows", query: { tab: "compare" }, badgeKey: "compareCount" },
+  {
+    name: "Моє обране",
+    icon: "favorite",
+    query: { tab: "favorites" },
+    badgeKey: "wishlistCount",
+  },
+  {
+    name: "Порівняння товарів",
+    icon: "compare_arrows",
+    query: { tab: "compare" },
+    badgeKey: "compareCount",
+  },
   { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
-  { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" }, badgeKey: "unreadNotificationsCount", isGreenBadge: true },
+  {
+    name: "Сповіщення",
+    icon: "notifications",
+    query: { tab: "notifications" },
+    badgeKey: "unreadNotificationsCount",
+    isGreenBadge: true,
+  },
 ];
 
 const footerItems: NavItem[] = [
@@ -122,11 +142,15 @@ const handleLogout = async () => {
           >
             {{ userName }}
           </p>
-          <p class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5">
+          <p
+            class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5"
+          >
             {{ userEmail }}
           </p>
           <div class="flex items-center gap-1.5 mt-1">
-            <span class="material-symbols-outlined text-[13px] text-[#00a046]">verified</span>
+            <span class="material-symbols-outlined text-[13px] text-[#00a046]"
+              >verified</span
+            >
             <p
               class="font-black text-[#00a046] uppercase tracking-widest text-[9px]"
             >
@@ -153,7 +177,8 @@ const handleLogout = async () => {
         <span
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-        >{{ item.icon }}</span>
+          >{{ item.icon }}</span
+        >
         <span class="text-[15px] tracking-wide">{{ item.name }}</span>
 
         <!-- Badges (Rozetka style) -->
@@ -163,7 +188,7 @@ const handleLogout = async () => {
           :class="[
             item.isGreenBadge
               ? 'bg-[#00a046] text-white'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400',
           ]"
         >
           {{ cartStore[item.badgeKey] }}
@@ -171,7 +196,8 @@ const handleLogout = async () => {
         <span
           v-else-if="isActive(item)"
           class="ml-auto material-symbols-outlined text-[16px]"
-        >chevron_right</span>
+          >chevron_right</span
+        >
       </button>
     </nav>
 
@@ -193,12 +219,14 @@ const handleLogout = async () => {
         <span
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-        >{{ item.icon }}</span>
+          >{{ item.icon }}</span
+        >
         <span class="text-[15px] tracking-wide">{{ item.name }}</span>
         <span
           v-if="isActive(item)"
           class="ml-auto material-symbols-outlined text-[16px]"
-        >chevron_right</span>
+          >chevron_right</span
+        >
       </button>
 
       <button

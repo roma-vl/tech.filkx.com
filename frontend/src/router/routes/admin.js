@@ -19,7 +19,6 @@ import AdminProducts from "@/pages/admin/AdminProducts.vue";
 import AdminOrders from "@/pages/admin/AdminOrders.vue";
 import AdminCategories from "@/pages/admin/AdminCategories.vue";
 import AdminBrands from "@/pages/admin/AdminBrands.vue";
-import AdminAttributes from "@/pages/admin/AdminAttributes.vue";
 
 export default {
   path: "/admin",
@@ -66,15 +65,7 @@ export default {
         descriptionKey: "admin.brands.description",
       },
     },
-    {
-      path: "attributes",
-      name: "admin-attributes",
-      component: AdminAttributes,
-      meta: {
-        titleKey: "admin.attributes.title",
-        descriptionKey: "admin.attributes.description",
-      },
-    },
+
     {
       path: "orders",
       name: "admin-orders",

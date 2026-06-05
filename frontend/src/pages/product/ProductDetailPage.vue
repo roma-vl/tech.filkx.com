@@ -38,19 +38,24 @@
         <span class="material-symbols-outlined text-[16px] leading-none">home</span>
         <span>Головна</span>
       </a>
-      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+      <span
+        class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
+      >chevron_right</span>
       <a
         class="hover:text-[#00a046] transition-colors font-bold"
         href="#"
         @click.prevent="router.push('/catalog')"
       >Каталог</a>
-      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
-      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ product.name }}</span>
+      <span
+        class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
+      >chevron_right</span>
+      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{
+        product.name
+      }}</span>
     </nav>
     <main
       class="max-w-container-max mx-auto px-4 md:px-8 py-6 text-zinc-800 dark:text-zinc-200 font-sans"
     >
-
       <!-- Hero block -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <!-- Gallery Column -->
@@ -215,5 +220,4 @@ const {
 } = useProductDetail();
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -22,10 +22,7 @@
               : '',
           ]"
         />
-        <span
-          v-if="!collapsed"
-          class="ml-3 truncate text-[15px]"
-        >{{
+        <span v-if="!collapsed" class="ml-3 truncate text-[15px]">{{
           t(item.labelKey)
         }}</span>
       </div>
@@ -48,10 +45,7 @@
       </svg>
     </button>
 
-    <div
-      v-if="isOpen && !collapsed"
-      class="mt-1 ml-9 space-y-1 relative"
-    >
+    <div v-if="isOpen && !collapsed" class="mt-1 ml-9 space-y-1 relative">
       <!-- Sub-item indicator line -->
       <div
         class="absolute left-[-1.25rem] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-800 rounded-full"

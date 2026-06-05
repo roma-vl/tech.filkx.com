@@ -21,7 +21,7 @@ class LedgerResource extends JsonResource
                 'email' => $this->customer_email,
             ],
             'type' => $isCompleted ? 'charge' : 'refund',
-            'amountMinor' => $isCompleted ? (int)($this->total_price * 100) : -(int)($this->total_price * 100),
+            'amountMinor' => $isCompleted ? (int) ($this->total_price * 100) : -(int) ($this->total_price * 100),
             'currency' => 'UAH',
             'referenceType' => 'order',
             'createdAt' => $this->created_at->toIso8601String(),

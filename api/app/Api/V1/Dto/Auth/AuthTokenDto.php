@@ -29,9 +29,9 @@ readonly class AuthTokenDto
     {
         return [
             'accessToken' => $this->accessToken,
-            'tokenType'   => $this->tokenType,
-            'expiresIn'   => $this->expiresIn,
-            'expiresAt'   => $this->expiresAt,
+            'tokenType' => $this->tokenType,
+            'expiresIn' => $this->expiresIn,
+            'expiresAt' => $this->expiresAt,
         ];
     }
 }

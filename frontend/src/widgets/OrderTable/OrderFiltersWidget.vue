@@ -165,10 +165,7 @@
         <div
           class="flex items-center justify-between pt-6 border-t border-gray-150 dark:border-gray-700"
         >
-          <AppButton
-            variant="secondary"
-            @click="$emit('reset')"
-          >
+          <AppButton variant="secondary" @click="$emit('reset')">
             Скинути фільтри
           </AppButton>
           <AppButton

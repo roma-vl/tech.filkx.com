@@ -78,15 +78,19 @@ const formatPrice = (price: number) => {
 
 const shareCompareList = (categoryName: string) => {
   const products = comparedByCategory.value[categoryName] || [];
-  const slugs = products.map((p) => p.slug || p.id).filter(Boolean).join(",");
+  const slugs = products
+    .map((p) => p.slug || p.id)
+    .filter(Boolean)
+    .join(",");
   if (!slugs) {
     cartStore.addToast("Немає товарів для обміну", "error");
     return;
   }
-  
+
   const url = `${window.location.origin}${window.location.pathname}?tab=compare&items=${slugs}`;
-  
-  navigator.clipboard.writeText(url)
+
+  navigator.clipboard
+    .writeText(url)
     .then(() => {
       cartStore.addToast("Посилання на порівняння скопійовано!", "success");
       sharedStates.value[categoryName] = true;
@@ -103,14 +107,19 @@ const shareCompareList = (categoryName: string) => {
 const loadSharedItems = async () => {
   const itemsQuery = route.query.items as string;
   if (!itemsQuery) return;
-  
-  const slugs = itemsQuery.split(",").map((s) => s.trim()).filter(Boolean);
+
+  const slugs = itemsQuery
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
   let loadedCategory: string | null = null;
   let newAdded = false;
-  
+
   for (const slug of slugs) {
     // Check if already in comparison list
-    const exists = cartStore.compare.some((p: any) => p.slug === slug || String(p.id) === slug);
+    const exists = cartStore.compare.some(
+      (p: any) => p.slug === slug || String(p.id) === slug,
+    );
     if (!exists) {
       try {
         const response = await productApi.getProduct(slug);
@@ -120,57 +129,90 @@ const loadSharedItems = async () => {
             const mainVariant = apiProduct.variants?.[0];
             const price = mainVariant ? parseFloat(mainVariant.price) : 0;
             let image = "";
-            if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-              const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+            if (
+              mainVariant &&
+              mainVariant.dimensions &&
+              mainVariant.dimensions.images
+            ) {
+              const primary =
+                mainVariant.dimensions.images.find(
+                  (img: any) => img.isPrimary,
+                ) || mainVariant.dimensions.images[0];
               if (primary && primary.url) {
                 image = primary.url;
               }
             }
             if (!image) {
-              image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+              image =
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
             }
-            
-            const productCategory = apiProduct.categories?.[0]?.name?.uk || apiProduct.categories?.[0]?.name?.en || "Різне";
-            
+
+            const productCategory =
+              apiProduct.categories?.[0]?.name?.uk ||
+              apiProduct.categories?.[0]?.name?.en ||
+              "Різне";
+
             const mappedProduct = {
               id: apiProduct.id,
               slug: apiProduct.slug,
-              name: apiProduct.name?.uk || apiProduct.name?.en || apiProduct.name,
+              name:
+                apiProduct.name?.uk || apiProduct.name?.en || apiProduct.name,
               brand: apiProduct.brand?.name || "Unknown",
               image: image,
               rating: apiProduct.rating || 4.8,
               reviews: apiProduct.reviews || 0,
               price: price,
               inStock: true,
-              description: apiProduct.description?.uk || apiProduct.description?.en || apiProduct.description || "",
+              description:
+                apiProduct.description?.uk ||
+                apiProduct.description?.en ||
+                apiProduct.description ||
+                "",
               category: productCategory,
-              specs: apiProduct.attributeValues?.map((av: any) => {
-                const label = av.attribute?.name?.uk || av.attribute?.name?.en || av.attribute?.code || "";
-                const val = av.customValue || av.attributeValue?.value?.uk || av.attributeValue?.value || "";
-                return [label, val];
-              }) || []
+              specs:
+                apiProduct.attributeValues?.map((av: any) => {
+                  const label =
+                    av.attribute?.name?.uk ||
+                    av.attribute?.name?.en ||
+                    av.attribute?.code ||
+                    "";
+                  const val =
+                    av.customValue ||
+                    av.attributeValue?.value?.uk ||
+                    av.attributeValue?.value ||
+                    "";
+                  return [label, val];
+                }) || [],
             };
-            
+
             cartStore.compare.push(mappedProduct);
             loadedCategory = productCategory;
             newAdded = true;
           }
         }
       } catch (e) {
-        console.error(`Failed to load compared product with slug/id: ${slug}`, e);
+        console.error(
+          `Failed to load compared product with slug/id: ${slug}`,
+          e,
+        );
       }
     } else {
-      const found = cartStore.compare.find((p: any) => p.slug === slug || String(p.id) === slug);
+      const found = cartStore.compare.find(
+        (p: any) => p.slug === slug || String(p.id) === slug,
+      );
       if (found) {
         loadedCategory = found.category || "Різне";
       }
     }
   }
-  
+
   if (loadedCategory) {
     selectedCategory.value = loadedCategory;
     if (newAdded || typeof window !== "undefined") {
-      localStorage.setItem("electro_compare", JSON.stringify(cartStore.compare));
+      localStorage.setItem(
+        "electro_compare",
+        JSON.stringify(cartStore.compare),
+      );
     }
   }
 };
@@ -183,10 +225,7 @@ watch(() => route.query.items, loadSharedItems);
   <div class="space-y-6 animate-fade font-sans select-none">
     <!-- CATEGORY LIST VIEW (Default State) -->
     <div v-if="!selectedCategory">
-      <div
-        v-if="cartStore.compare.length > 0"
-        class="space-y-4"
-      >
+      <div v-if="cartStore.compare.length > 0" class="space-y-4">
         <h2
           class="text-xl font-black text-zinc-955 dark:text-white tracking-tight mb-6"
         >
@@ -227,7 +266,7 @@ watch(() => route.query.items, loadSharedItems);
                     :src="prod.image"
                     :alt="prod.name"
                     class="w-full h-full object-contain"
-                  >
+                  />
                 </div>
               </div>
             </div>
@@ -248,8 +287,11 @@ watch(() => route.query.items, loadSharedItems);
                 type="button"
                 @click="shareCompareList(catName as string)"
               >
-                <span class="material-symbols-outlined text-[20px] transition-transform" :class="sharedStates[catName as string] ? 'scale-110' : ''">
-                  {{ sharedStates[catName as string] ? 'check' : 'share' }}
+                <span
+                  class="material-symbols-outlined text-[20px] transition-transform"
+                  :class="sharedStates[catName as string] ? 'scale-110' : ''"
+                >
+                  {{ sharedStates[catName as string] ? "check" : "share" }}
                 </span>
               </button>
 
@@ -259,7 +301,9 @@ watch(() => route.query.items, loadSharedItems);
                 type="button"
                 @click="removeCategoryComparison(catName as string)"
               >
-                <span class="material-symbols-outlined text-[20px]">delete</span>
+                <span class="material-symbols-outlined text-[20px]"
+                  >delete</span
+                >
               </button>
             </div>
           </div>
@@ -273,7 +317,8 @@ watch(() => route.query.items, loadSharedItems);
       >
         <span
           class="material-symbols-outlined text-[48px] text-zinc-350 dark:text-zinc-600 mb-4"
-        >compare_arrows</span>
+          >compare_arrows</span
+        >
         <h3 class="font-extrabold text-lg text-zinc-855 dark:text-zinc-150">
           Немає товарів для порівняння
         </h3>
@@ -286,16 +331,16 @@ watch(() => route.query.items, loadSharedItems);
         <a
           href="/catalog"
           class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-        >Перейти до каталогу</a>
+          >Перейти до каталогу</a
+        >
       </div>
     </div>
 
     <!-- CATEGORY COMPARISON TABLE VIEW -->
-    <div
-      v-else
-      class="space-y-6"
-    >
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+    <div v-else class="space-y-6">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800"
+      >
         <button
           class="flex items-center gap-1.5 text-zinc-555 dark:text-zinc-400 hover:text-[#00a046] transition-colors font-extrabold text-xs md:text-sm"
           type="button"
@@ -322,10 +367,15 @@ watch(() => route.query.items, loadSharedItems);
             type="button"
             @click="shareCompareList(selectedCategory as string)"
           >
-            <span class="material-symbols-outlined text-[16px] transition-transform" :class="sharedStates[selectedCategory] ? 'scale-110' : ''">
-              {{ sharedStates[selectedCategory] ? 'check' : 'share' }}
+            <span
+              class="material-symbols-outlined text-[16px] transition-transform"
+              :class="sharedStates[selectedCategory] ? 'scale-110' : ''"
+            >
+              {{ sharedStates[selectedCategory] ? "check" : "share" }}
             </span>
-            <span>{{ sharedStates[selectedCategory] ? 'Скопійовано!' : 'Поділитися' }}</span>
+            <span>{{
+              sharedStates[selectedCategory] ? "Скопійовано!" : "Поділитися"
+            }}</span>
           </button>
         </div>
       </div>
@@ -338,7 +388,9 @@ watch(() => route.query.items, loadSharedItems);
             <tr
               class="bg-zinc-50 dark:bg-zinc-850/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-extrabold uppercase text-[10px] tracking-wider"
             >
-              <th class="p-5 w-1/4 sticky left-0 bg-zinc-50 dark:bg-zinc-850 z-20 border-r border-zinc-200 dark:border-zinc-800">
+              <th
+                class="p-5 w-1/4 sticky left-0 bg-zinc-50 dark:bg-zinc-850 z-20 border-r border-zinc-200 dark:border-zinc-800"
+              >
                 Параметри
               </th>
               <th
@@ -352,14 +404,20 @@ watch(() => route.query.items, loadSharedItems);
                   @click="
                     cartStore.removeFromCompare(product.id as any);
                     if (
-                      (comparedByCategory[selectedCategory as string] || []).length <= 1
+                      (comparedByCategory[selectedCategory as string] || [])
+                        .length <= 1
                     )
                       selectedCategory = null;
                   "
                 >
-                  <span class="material-symbols-outlined text-[15px]">close</span>
+                  <span class="material-symbols-outlined text-[15px]"
+                    >close</span
+                  >
                 </button>
-                <span class="inline-block py-1 font-bold text-zinc-555 dark:text-zinc-400">Товар</span>
+                <span
+                  class="inline-block py-1 font-bold text-zinc-555 dark:text-zinc-400"
+                  >Товар</span
+                >
               </th>
             </tr>
           </thead>
@@ -367,7 +425,9 @@ watch(() => route.query.items, loadSharedItems);
             class="divide-y divide-zinc-250/60 dark:divide-zinc-800/60 text-zinc-700 dark:text-zinc-355"
           >
             <!-- Image Row -->
-            <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors">
+            <tr
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+            >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
@@ -384,7 +444,7 @@ watch(() => route.query.items, loadSharedItems);
                     :alt="product.name"
                     class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 cursor-pointer hover:border-[#00a046]/40 transition-all hover:scale-105 duration-300"
                     @click="cartStore.viewProduct(product as any)"
-                  >
+                  />
                   <h4
                     class="font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-855 dark:text-zinc-200 max-w-[180px] cursor-pointer hover:text-[#00a046] transition-colors"
                     @click="cartStore.viewProduct(product as any)"
@@ -395,7 +455,9 @@ watch(() => route.query.items, loadSharedItems);
               </td>
             </tr>
             <!-- Price Row -->
-            <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors">
+            <tr
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+            >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
@@ -410,7 +472,9 @@ watch(() => route.query.items, loadSharedItems);
               </td>
             </tr>
             <!-- Rating Row -->
-            <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors">
+            <tr
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+            >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
@@ -427,7 +491,8 @@ watch(() => route.query.items, loadSharedItems);
                   <span
                     class="material-symbols-outlined text-[16px]"
                     style="font-variation-settings: &quot;FILL&quot; 1"
-                  >star</span>
+                    >star</span
+                  >
                   <span
                     class="font-extrabold text-zinc-650 dark:text-zinc-350 text-xs md:text-sm"
                   >
@@ -456,7 +521,9 @@ watch(() => route.query.items, loadSharedItems);
               </td>
             </tr>
             <!-- Description Row -->
-            <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors">
+            <tr
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+            >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
@@ -471,8 +538,12 @@ watch(() => route.query.items, loadSharedItems);
               </td>
             </tr>
             <!-- Actions Row -->
-            <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors">
-              <td class="p-5 bg-zinc-50 dark:bg-zinc-900 sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800" />
+            <tr
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+            >
+              <td
+                class="p-5 bg-zinc-50 dark:bg-zinc-900 sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
+              />
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
                 :key="product.id"
@@ -484,7 +555,8 @@ watch(() => route.query.items, loadSharedItems);
                 >
                   <span
                     class="material-symbols-outlined text-[16px] md:text-[18px]"
-                  >shopping_cart</span>
+                    >shopping_cart</span
+                  >
                   У кошик
                 </button>
               </td>

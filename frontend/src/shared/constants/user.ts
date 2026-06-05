@@ -4,7 +4,7 @@ export const UserRoles = {
   USER: "user",
 } as const;
 
-export type UserRole = typeof UserRoles[keyof typeof UserRoles];
+export type UserRole = (typeof UserRoles)[keyof typeof UserRoles];
 
 export const Permissions = {
   VIEW_ANALYTICS: "view_analytics",

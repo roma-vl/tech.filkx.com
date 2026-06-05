@@ -16,7 +16,7 @@ class DeleteAdminBrandAction
         $brand = $this->brandRepository->find($id);
 
         if (! $brand) {
-            throw new BrandNotFoundException();
+            throw new BrandNotFoundException;
         }
 
         $this->brandRepository->delete($brand);

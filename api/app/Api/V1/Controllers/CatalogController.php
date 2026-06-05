@@ -7,6 +7,7 @@ use App\Api\V1\Actions\GetProductDetailsAction;
 use App\Api\V1\Actions\ListBrandsAction;
 use App\Api\V1\Actions\ListCategoriesAction;
 use App\Api\V1\Actions\ListProductsAction;
+use App\Api\V1\Repositories\ProductRepository;
 use App\Api\V1\Requests\ListProductsRequest;
 use Illuminate\Http\JsonResponse;
 
@@ -37,7 +38,7 @@ class CatalogController extends BaseApiController
         return self::successfulResponseWithData($action->execute($slug));
     }
 
-    public function randomProducts(\App\Api\V1\Repositories\ProductRepository $productRepository): JsonResponse
+    public function randomProducts(ProductRepository $productRepository): JsonResponse
     {
         $products = $productRepository->queryActive()
             ->inRandomOrder()

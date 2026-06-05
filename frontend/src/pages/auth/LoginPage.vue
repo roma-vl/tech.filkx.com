@@ -1,10 +1,7 @@
 <template>
   <AuthLayout size="lg">
     <template #left>
-      <div
-        ref="container"
-        class="w-full"
-      />
+      <div ref="container" class="w-full" />
     </template>
 
     <div class="max-w-md mx-auto md:mx-0 w-full">
@@ -17,10 +14,7 @@
         {{ $t("auth.login.subtitle") }}
       </p>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.email"
           :label="$t('auth.login.emailLabel')"
@@ -75,9 +69,7 @@
           <div class="w-full border-t border-gray-300 dark:border-gray-700" />
         </div>
         <div class="relative flex justify-center text-sm">
-          <span
-            class="px-2 bg-[#1e293b] text-gray-400 font-medium"
-          >
+          <span class="px-2 bg-[#1e293b] text-gray-400 font-medium">
             {{ $t("auth.or_continue_with") }}
           </span>
         </div>

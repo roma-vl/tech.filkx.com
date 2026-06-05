@@ -9,7 +9,7 @@ class AttributeRepository implements AttributeRepositoryInterface
 {
     public function allWithValues(): Collection
     {
-        return Attribute::with('values')->get();
+        return Attribute::with(['values', 'categories'])->get();
     }
 
     public function find(int $id): ?Attribute
@@ -25,6 +25,7 @@ class AttributeRepository implements AttributeRepositoryInterface
     public function update(Attribute $attribute, array $data): Attribute
     {
         $attribute->update($data);
+
         return $attribute;
     }
 

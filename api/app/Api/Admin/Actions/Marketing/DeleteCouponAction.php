@@ -16,7 +16,7 @@ class DeleteCouponAction
         $coupon = $this->couponRepository->find($id);
 
         if (! $coupon) {
-            throw new CouponNotFoundException();
+            throw new CouponNotFoundException;
         }
 
         $this->couponRepository->delete($coupon);

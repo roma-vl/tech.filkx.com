@@ -18,7 +18,7 @@ class UpdatePromotionAction
         $promotion = $this->promotionRepository->find($id);
 
         if (! $promotion) {
-            throw new PromotionNotFoundException();
+            throw new PromotionNotFoundException;
         }
 
         return $this->promotionRepository->update($promotion, $dto->toArray());

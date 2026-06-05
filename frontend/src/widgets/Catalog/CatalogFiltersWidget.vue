@@ -67,24 +67,26 @@
       >
         <span
           class="text-[15px] font-bold text-zinc-700 dark:text-zinc-250 group-hover:text-[#00a046] transition-colors"
-        >Тільки в наявності</span>
+          >Тільки в наявності</span
+        >
         <input
           v-model="localStock"
           type="checkbox"
           class="w-4 h-4 rounded border-zinc-350 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
-        >
+        />
       </label>
       <label
         class="flex items-center justify-between group cursor-pointer px-3 py-2 rounded-md bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-150/40 dark:border-zinc-800/40 hover:border-emerald-500/25 hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 transition-all duration-200"
       >
         <span
           class="text-[15px] font-bold text-zinc-700 dark:text-zinc-250 group-hover:text-[#00a046] transition-colors"
-        >Акційні пропозиції</span>
+          >Акційні пропозиції</span
+        >
         <input
           v-model="localDiscounts"
           type="checkbox"
           class="w-4 h-4 rounded border-zinc-355 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
-        >
+        />
       </label>
     </div>
 
@@ -136,24 +138,22 @@
               :value="brand.slug"
               class="w-4 h-4 rounded border-zinc-350 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-colors"
               type="checkbox"
-            >
+            />
             <span
               class="text-[15px] font-bold text-zinc-700 dark:text-zinc-250 group-hover:text-[#00a046] transition-colors"
-            >{{ brand.name }}</span>
+              >{{ brand.name }}</span
+            >
           </div>
           <span
             class="text-[9px] font-black text-zinc-450 dark:text-zinc-500 bg-zinc-150/40 dark:bg-zinc-800/40 group-hover:bg-[#00a046]/10 group-hover:text-[#00a046] px-1.5 py-0.5 rounded font-mono transition-colors"
-          >{{ brand.count }}</span>
+            >{{ brand.count }}</span
+          >
         </label>
       </div>
     </div>
 
     <!-- Dynamic Attributes Filter -->
-    <div
-      v-for="attr in dynamicAttributes"
-      :key="attr.id"
-      class="p-5"
-    >
+    <div v-for="attr in dynamicAttributes" :key="attr.id" class="p-5">
       <div class="flex items-center justify-between mb-4">
         <h3
           class="font-black text-xs uppercase tracking-wider text-zinc-650 dark:text-zinc-350 flex items-center gap-1.5"
@@ -175,10 +175,7 @@
       </div>
 
       <!-- Color swatches -->
-      <div
-        v-if="attr.type === 'color'"
-        class="flex flex-wrap gap-2.5"
-      >
+      <div v-if="attr.type === 'color'" class="flex flex-wrap gap-2.5">
         <button
           v-for="val in attr.values"
           :key="val.id"
@@ -196,16 +193,13 @@
       </div>
 
       <!-- Text/Select Options -->
-      <div
-        v-else
-        class="grid grid-cols-2 gap-2"
-      >
+      <div v-else class="grid grid-cols-2 gap-2">
         <button
           v-for="val in attr.values"
           :key="val.id"
           :class="
             selectedAttrs[attr.code] ===
-              (val.value.uk || val.value.en || val.value)
+            (val.value.uk || val.value.en || val.value)
               ? 'bg-emerald-500/10 border border-emerald-500/60 text-[#00a046] shadow-sm'
               : 'border border-zinc-200 dark:border-zinc-855 text-zinc-650 dark:text-zinc-300 hover:border-emerald-500/30 hover:text-[#00a046] hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10 bg-zinc-50/30 dark:bg-zinc-900/30'
           "
@@ -250,7 +244,7 @@
             type="radio"
             :value="rate"
             class="w-3.5 h-3.5 border-zinc-350 text-[#00a046] focus:ring-0 cursor-pointer transition-colors"
-          >
+          />
           <span
             class="text-[15px] font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1"
           >
@@ -258,7 +252,8 @@
             <span
               class="material-symbols-outlined text-[14px] text-amber-400"
               style="font-variation-settings: &quot;FILL&quot; 1"
-            >star</span>
+              >star</span
+            >
           </span>
         </label>
       </div>
@@ -294,7 +289,7 @@ const props = withDefaults(
   }>(),
   {
     showCategories: false,
-  }
+  },
 );
 
 const emit = defineEmits([

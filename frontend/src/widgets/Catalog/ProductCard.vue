@@ -24,12 +24,13 @@
           :alt="product.name"
           class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           :src="product.image"
-        >
+        />
         <span
           v-if="product.badge"
           :class="product.badgeClass"
           class="absolute top-2 left-2 text-white text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-widest shadow-sm"
-        >{{ product.badge }}</span>
+          >{{ product.badge }}</span
+        >
       </a>
 
       <!-- Quick View Floating Button on Hover (Grid) -->
@@ -78,7 +79,8 @@
         <div class="flex items-center justify-between gap-2">
           <span
             class="text-xs font-black text-[#00a046] uppercase bg-emerald-500/10 px-2.5 py-1 rounded"
-          >{{ product.brand }}</span>
+            >{{ product.brand }}</span
+          >
           <div class="flex items-center gap-1">
             <div class="flex text-amber-400">
               <span
@@ -94,9 +96,9 @@
                 {{ star <= Math.floor(product.rating) ? "star" : "star_half" }}
               </span>
             </div>
-            <span
-              class="text-xs font-bold text-zinc-450 dark:text-zinc-500"
-            >({{ product.reviews }})</span>
+            <span class="text-xs font-bold text-zinc-450 dark:text-zinc-500"
+              >({{ product.reviews }})</span
+            >
           </div>
         </div>
 
@@ -174,10 +176,12 @@
             <span
               v-if="product.oldPrice"
               class="text-xs text-zinc-450 line-through font-bold"
-            >{{ formatPrice(product.oldPrice) }}</span>
+              >{{ formatPrice(product.oldPrice) }}</span
+            >
             <span
               class="text-xl md:text-2xl font-black text-[#00a046] tracking-tight"
-            >{{ formatPrice(product.price) }}</span>
+              >{{ formatPrice(product.price) }}</span
+            >
           </div>
 
           <!-- Compare Button with Tooltip -->
@@ -192,12 +196,16 @@
               class="w-9 h-9 flex items-center justify-center rounded-md border transition-all"
               @click="cartStore.toggleCompare(product)"
             >
-              <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+              <span class="material-symbols-outlined text-[18px]"
+                >compare_arrows</span
+              >
             </button>
             <span
               class="absolute bottom-full right-0 mb-2 px-2.5 py-1 bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[11px] rounded opacity-0 pointer-events-none group-hover/compare:opacity-100 transition-opacity whitespace-nowrap shadow-md z-10 font-bold"
             >
-              {{ cartStore.isInCompare(product.id) ? "У порівнянні" : "Порівняти" }}
+              {{
+                cartStore.isInCompare(product.id) ? "У порівнянні" : "Порівняти"
+              }}
             </span>
           </div>
         </div>
@@ -214,7 +222,9 @@
             type="button"
             @click="cartStore.addToCart(product)"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >shopping_cart</span
+            >
             {{ product.inStock ? "Купити" : "Немає в наявності" }}
           </button>
         </div>

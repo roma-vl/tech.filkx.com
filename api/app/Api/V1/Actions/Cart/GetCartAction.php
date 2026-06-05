@@ -17,7 +17,7 @@ class GetCartAction
     public function execute(CartSessionDto $sessionDto): CartDetailsDto
     {
         $cart = $this->resolveCart($sessionDto);
-        
+
         $items = $cart->items()->with(['variant.product', 'variant.stocks'])->get();
 
         $validatedItems = [];
@@ -27,6 +27,7 @@ class GetCartAction
             $variant = $item->variant;
             if (! $variant || $variant->product->status !== 'active') {
                 $this->cartRepository->removeItem($item);
+
                 continue;
             }
 
@@ -34,6 +35,7 @@ class GetCartAction
             $availableStock = $variant->stocks->sum('quantity') - $variant->stocks->sum('reserved');
             if ($availableStock <= 0) {
                 $this->cartRepository->removeItem($item);
+
                 continue;
             }
 

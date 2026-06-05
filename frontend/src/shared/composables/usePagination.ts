@@ -5,7 +5,9 @@ export function usePagination(initialPerPage = 10) {
   const perPage = ref(initialPerPage);
   const total = ref(0);
 
-  const totalPages = computed(() => Math.ceil(total.value / perPage.value) || 1);
+  const totalPages = computed(
+    () => Math.ceil(total.value / perPage.value) || 1,
+  );
 
   function next() {
     if (page.value < totalPages.value) {

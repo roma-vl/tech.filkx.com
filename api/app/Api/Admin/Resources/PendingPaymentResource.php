@@ -18,7 +18,7 @@ class PendingPaymentResource extends JsonResource
                 'name' => $this->customer_name,
                 'email' => $this->customer_email,
             ],
-            'amountMinor' => (int)($this->total_price * 100),
+            'amountMinor' => (int) ($this->total_price * 100),
             'currency' => 'UAH',
             'createdAt' => $this->created_at->toIso8601String(),
         ];

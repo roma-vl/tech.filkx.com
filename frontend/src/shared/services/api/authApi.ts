@@ -140,13 +140,17 @@ export const authApi = {
     return apiClient.get("/user/viewed-products");
   },
   trackViewedProduct(productId: number | string) {
-    return apiClient.post("/user/viewed-products/track", { product_id: productId });
+    return apiClient.post("/user/viewed-products/track", {
+      product_id: productId,
+    });
   },
-  syncViewedProducts(items: { id: number | string; viewCount?: number; lastViewedAt?: string }[]) {
-    const mappedItems = items.map(item => ({
+  syncViewedProducts(
+    items: { id: number | string; viewCount?: number; lastViewedAt?: string }[],
+  ) {
+    const mappedItems = items.map((item) => ({
       id: item.id,
       view_count: (item as any).viewCount ?? 1,
-      last_viewed_at: (item as any).lastViewedAt ?? new Date().toISOString()
+      last_viewed_at: (item as any).lastViewedAt ?? new Date().toISOString(),
     }));
     return apiClient.post("/user/viewed-products/sync", { items: mappedItems });
   },

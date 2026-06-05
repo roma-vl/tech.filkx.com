@@ -37,14 +37,14 @@ export function useShoppingCart() {
   }
 
   const shipping = computed(() =>
-    cartStore.cartTotal >= 5000 || cartStore.cart.length === 0 ? 0 : 250
+    cartStore.cartTotal >= 5000 || cartStore.cart.length === 0 ? 0 : 250,
   );
   const discount = computed(() => promoDiscountAmount.value);
   const tax = computed(() =>
-    Math.max(0, (cartStore.cartTotal - discount.value) * 0.075)
+    Math.max(0, (cartStore.cartTotal - discount.value) * 0.075),
   );
   const total = computed(
-    () => cartStore.cartTotal - discount.value + shipping.value + tax.value
+    () => cartStore.cartTotal - discount.value + shipping.value + tax.value,
   );
 
   const recommended = [
@@ -113,7 +113,10 @@ export function useShoppingCart() {
       if (response.data && response.data.status === "success") {
         appliedPromo.value = code;
         promoDiscountAmount.value = response.data.data.discount;
-        cartStore.addToast(`Promo code ${code} applied successfully!`, "success");
+        cartStore.addToast(
+          `Promo code ${code} applied successfully!`,
+          "success",
+        );
       }
     } catch (error: any) {
       const errMsg = error.response?.data?.message || "Invalid coupon code";
@@ -130,7 +133,7 @@ export function useShoppingCart() {
         applyPromo();
       }
     },
-    { deep: true }
+    { deep: true },
   );
 
   const addRecommended = (product: any) => {

@@ -21,7 +21,7 @@ class UpdateCartItemAction
         $cartItem = $this->cartRepository->findItem($cart, $itemId);
 
         if (! $cartItem) {
-            throw new CartItemNotFoundException();
+            throw new CartItemNotFoundException;
         }
 
         $variant = ProductVariant::with('stocks')->findOrFail($cartItem->variant_id);

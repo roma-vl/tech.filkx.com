@@ -1,9 +1,12 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-  size?: "md" | "lg";
-}>(), {
-  size: "md",
-});
+withDefaults(
+  defineProps<{
+    size?: "md" | "lg";
+  }>(),
+  {
+    size: "md",
+  },
+);
 </script>
 
 <template>
@@ -28,10 +31,7 @@ withDefaults(defineProps<{
 
       <div class="relative z-10 w-full max-w-sm">
         <!-- Brand -->
-        <a
-          href="/"
-          class="inline-flex items-center gap-3 mb-12 group"
-        >
+        <a href="/" class="inline-flex items-center gap-3 mb-12 group">
           <div
             class="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform"
           >
@@ -49,7 +49,9 @@ withDefaults(defineProps<{
               />
             </svg>
           </div>
-          <span class="text-2xl font-bold text-white tracking-tight">Tech Filkx</span>
+          <span class="text-2xl font-bold text-white tracking-tight"
+            >Tech Filkx</span
+          >
         </a>
 
         <!-- Slot for left panel content (lottie, illustration) -->
@@ -74,7 +76,9 @@ withDefaults(defineProps<{
                 />
               </svg>
             </div>
-            <span class="text-sm">Premium electronics at competitive prices</span>
+            <span class="text-sm"
+              >Premium electronics at competitive prices</span
+            >
           </div>
           <div class="flex items-center gap-3 text-slate-300">
             <div
@@ -123,10 +127,7 @@ withDefaults(defineProps<{
     <!-- Right panel — form area -->
     <div class="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
       <!-- Brand for small screens -->
-      <a
-        href="/"
-        class="flex items-center gap-2 mb-8 lg:hidden group"
-      >
+      <a href="/" class="flex items-center gap-2 mb-8 lg:hidden group">
         <div
           class="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center"
         >

@@ -68,11 +68,16 @@ const replying = ref(false);
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case "new": return "Створено";
-    case "accepted": return "В обробці";
-    case "done": return "Вирішено";
-    case "archived": return "Архів";
-    default: return status;
+    case "new":
+      return "Створено";
+    case "accepted":
+      return "В обробці";
+    case "done":
+      return "Вирішено";
+    case "archived":
+      return "Архів";
+    default:
+      return status;
   }
 };
 
@@ -134,7 +139,8 @@ const openTicket = async (ticket: TicketItem) => {
   try {
     const response = await api.get(`/support/tickets/${ticket.id}`);
     if (response.data && response.data.status === "success") {
-      selectedTicketMessages.value = response.data.data.publicMessages || response.data.data.messages || [];
+      selectedTicketMessages.value =
+        response.data.data.publicMessages || response.data.data.messages || [];
       api.post(`/support/tickets/${ticket.id}/mark-as-read`).catch(() => {});
     }
   } catch (error) {
@@ -144,12 +150,16 @@ const openTicket = async (ticket: TicketItem) => {
 };
 
 const sendTicketReply = async () => {
-  if (!replyText.value.trim() || !selectedTicket.value || replying.value) return;
+  if (!replyText.value.trim() || !selectedTicket.value || replying.value)
+    return;
   replying.value = true;
   try {
-    const response = await api.post(`/support/tickets/${selectedTicket.value.id}/message`, {
-      message: replyText.value,
-    });
+    const response = await api.post(
+      `/support/tickets/${selectedTicket.value.id}/message`,
+      {
+        message: replyText.value,
+      },
+    );
     if (response.data && response.data.status === "success") {
       selectedTicketMessages.value.push(response.data.data);
       replyText.value = "";
@@ -175,7 +185,10 @@ const submitTicket = async () => {
       message: ticketForm.value.message,
     });
     if (response.data && response.data.status === "success") {
-      cartStore.addToast("Звернення створено! Наша служба підтримки відповість найближчим часом.", "success");
+      cartStore.addToast(
+        "Звернення створено! Наша служба підтримки відповість найближчим часом.",
+        "success",
+      );
       ticketForm.value.subject = "";
       ticketForm.value.message = "";
       fetchTickets();
@@ -224,7 +237,8 @@ onMounted(() => {
                       ? 'rotate-180 text-[#00a046]'
                       : 'text-zinc-400'
                   "
-                >expand_more</span>
+                  >expand_more</span
+                >
               </button>
               <div
                 v-show="activeFaqIndex === idx"
@@ -264,12 +278,16 @@ onMounted(() => {
                 <div class="flex items-center gap-2.5 flex-wrap">
                   <span
                     class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base hover:text-[#00a046]"
-                  >{{ parseTicketSubject(ticket).subject }}</span>
+                    >{{ parseTicketSubject(ticket).subject }}</span
+                  >
                   <span
                     class="text-[9px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-100 dark:border-zinc-700"
-                  >{{ parseTicketSubject(ticket).category }}</span>
+                    >{{ parseTicketSubject(ticket).category }}</span
+                  >
                 </div>
-                <p class="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 flex items-center gap-2">
+                <p
+                  class="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 flex items-center gap-2"
+                >
                   <span>ID: #{{ ticket.id }}</span>
                   <span>•</span>
                   <span>Створено: {{ formatDate(ticket.created_at) }}</span>
@@ -278,7 +296,8 @@ onMounted(() => {
               <span
                 class="inline-block px-3.5 py-1.5 rounded-lg font-extrabold uppercase text-[10px] tracking-wider"
                 :class="getStatusClass(ticket.status)"
-              >{{ getStatusLabel(ticket.status) }}</span>
+                >{{ getStatusLabel(ticket.status) }}</span
+              >
             </div>
           </div>
           <p
@@ -299,14 +318,12 @@ onMounted(() => {
         >
           Створити звернення
         </h3>
-        <form
-          class="space-y-4"
-          @submit.prevent="submitTicket"
-        >
+        <form class="space-y-4" @submit.prevent="submitTicket">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-455 dark:text-zinc-500 uppercase tracking-wider"
-            >Категорія</label>
+              >Категорія</label
+            >
             <select
               v-model="ticketForm.category"
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
@@ -320,19 +337,21 @@ onMounted(() => {
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Тема звернення</label>
+              >Тема звернення</label
+            >
             <input
               v-model="ticketForm.subject"
               type="text"
               placeholder="Коротко опишіть тему..."
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Опис проблеми</label>
+              >Опис проблеми</label
+            >
             <textarea
               v-model="ticketForm.message"
               rows="4"
@@ -349,11 +368,13 @@ onMounted(() => {
             <span
               v-if="isSubmitting"
               class="animate-spin material-symbols-outlined text-[16px] md:text-[18px]"
-            >progress_activity</span>
+              >progress_activity</span
+            >
             <span
               v-else
               class="material-symbols-outlined text-[16px] md:text-[18px]"
-            >send</span>
+              >send</span
+            >
             Надіслати
           </button>
         </form>
@@ -370,10 +391,14 @@ onMounted(() => {
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-fade"
       >
         <!-- Modal Header -->
-        <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div
+          class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/50"
+        >
           <div>
             <div class="flex items-center gap-3 flex-wrap">
-              <h3 class="font-extrabold text-sm md:text-base text-zinc-900 dark:text-white">
+              <h3
+                class="font-extrabold text-sm md:text-base text-zinc-900 dark:text-white"
+              >
                 {{ parseTicketSubject(selectedTicket).subject }}
               </h3>
               <span
@@ -384,7 +409,8 @@ onMounted(() => {
               </span>
             </div>
             <p class="text-[11px] text-zinc-400 mt-1">
-              ID звернення: #{{ selectedTicket.id }} • Створено: {{ formatDate(selectedTicket.created_at) }}
+              ID звернення: #{{ selectedTicket.id }} • Створено:
+              {{ formatDate(selectedTicket.created_at) }}
             </p>
           </div>
           <button
@@ -396,7 +422,9 @@ onMounted(() => {
         </div>
 
         <!-- Chat Messages -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-zinc-50/30 dark:bg-zinc-950/20 min-h-[300px]">
+        <div
+          class="flex-1 overflow-y-auto p-6 space-y-4 bg-zinc-50/30 dark:bg-zinc-950/20 min-h-[300px]"
+        >
           <div
             v-for="msg in selectedTicketMessages"
             :key="msg.id"
@@ -405,7 +433,7 @@ onMounted(() => {
           >
             <div class="flex items-center gap-2 mb-1">
               <span class="text-[10px] font-extrabold uppercase text-zinc-400">
-                {{ msg.is_admin ? 'Підтримка' : 'Ви' }}
+                {{ msg.is_admin ? "Підтримка" : "Ви" }}
               </span>
               <span class="text-[9px] text-zinc-400">
                 {{ formatTime(msg.created_at) }}
@@ -413,26 +441,30 @@ onMounted(() => {
             </div>
             <div
               class="max-w-[85%] px-4 py-3 rounded-2xl text-xs md:text-sm shadow-sm"
-              :class="msg.is_admin 
-                ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-tl-none' 
-                : 'bg-[#00a046] text-white rounded-tr-none'"
+              :class="
+                msg.is_admin
+                  ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-tl-none'
+                  : 'bg-[#00a046] text-white rounded-tr-none'
+              "
             >
               <p class="whitespace-pre-line leading-relaxed">
                 {{ msg.message }}
               </p>
-              
+
               <!-- Attachment if any -->
               <div
                 v-if="msg.file_path"
                 class="mt-2 pt-2 border-t border-white/10 dark:border-zinc-700/50 flex items-center gap-2 text-xs"
               >
-                <span class="material-symbols-outlined text-[16px]">attachment</span>
+                <span class="material-symbols-outlined text-[16px]"
+                  >attachment</span
+                >
                 <a
                   :href="msg.file_path"
                   target="_blank"
                   class="underline hover:opacity-80 truncate max-w-[150px]"
                 >
-                  {{ msg.file_name || 'Файл' }}
+                  {{ msg.file_name || "Файл" }}
                 </a>
               </div>
             </div>
@@ -446,11 +478,10 @@ onMounted(() => {
         </div>
 
         <!-- Chat Input Footer -->
-        <div class="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-          <form
-            class="flex gap-3 items-end"
-            @submit.prevent="sendTicketReply"
-          >
+        <div
+          class="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+        >
+          <form class="flex gap-3 items-end" @submit.prevent="sendTicketReply">
             <div class="flex-1 relative">
               <textarea
                 v-model="replyText"
@@ -469,11 +500,11 @@ onMounted(() => {
               <span
                 v-if="replying"
                 class="animate-spin material-symbols-outlined text-[18px]"
-              >progress_activity</span>
-              <span
-                v-else
-                class="material-symbols-outlined text-[18px]"
-              >send</span>
+                >progress_activity</span
+              >
+              <span v-else class="material-symbols-outlined text-[18px]"
+                >send</span
+              >
               <span>Надіслати</span>
             </button>
           </form>

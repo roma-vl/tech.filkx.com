@@ -11,15 +11,21 @@
       <span class="material-symbols-outlined text-[16px] leading-none">home</span>
       <span>Головна</span>
     </a>
-    <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
+    <span
+      class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
+    >chevron_right</span>
     <a
       class="hover:text-[#00a046] transition-colors font-bold"
       href="#"
       @click.prevent="selectCategory('')"
     >Каталог</a>
     <template v-if="route.query.category">
-      <span class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none">chevron_right</span>
-      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{ currentCategoryName }}</span>
+      <span
+        class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
+      >chevron_right</span>
+      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{
+        currentCategoryName
+      }}</span>
     </template>
   </nav>
 
@@ -30,7 +36,9 @@
     >
       {{ currentCategoryName }}
     </h1>
-    <p class="text-xs text-zinc-400 dark:text-zinc-500 font-bold mt-1 text-left">
+    <p
+      class="text-xs text-zinc-400 dark:text-zinc-500 font-bold mt-1 text-left"
+    >
       Знайдено {{ pagination.total }} товарів
     </p>
   </header>
@@ -68,11 +76,11 @@
       <div
         class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 p-4 mb-6 shadow-sm"
       >
-        <div
-          class="flex items-center justify-between gap-4"
-        >
-          <span class="text-sm font-bold text-zinc-550 dark:text-zinc-400 hidden md:inline">Налаштування вигляду</span>
-          
+        <div class="flex items-center justify-between gap-4">
+          <span
+            class="text-sm font-bold text-zinc-550 dark:text-zinc-400 hidden md:inline"
+          >Налаштування вигляду</span>
+
           <div class="flex items-center gap-3 ml-auto">
             <!-- View Mode toggle switcher -->
             <div
@@ -282,7 +290,9 @@
         <div
           class="flex items-center justify-between border-b border-zinc-150 dark:border-zinc-800 pb-3"
         >
-          <h2 class="font-extrabold text-base text-zinc-900 dark:text-white font-bold text-left">
+          <h2
+            class="font-extrabold text-base text-zinc-900 dark:text-white font-bold text-left"
+          >
             Фільтри товарів
           </h2>
           <button

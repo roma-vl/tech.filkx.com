@@ -44,7 +44,9 @@
           class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-2xl border border-gray-150 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"
         >
           <div>
-            <span class="block text-xs font-bold text-gray-400 uppercase">Поточний статус</span>
+            <span class="block text-xs font-bold text-gray-400 uppercase"
+              >Поточний статус</span
+            >
             <span
               :class="[
                 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mt-1',
@@ -58,35 +60,22 @@
             <select
               :value="order.status"
               class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs px-3 py-2 w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500 transition-colors font-bold"
-              @change="$emit('updateStatus', ($event.target as HTMLSelectElement).value)"
+              @change="
+                $emit(
+                  'updateStatus',
+                  ($event.target as HTMLSelectElement).value,
+                )
+              "
             >
-              <option value="pending_payment">
-                Очікує оплати
-              </option>
-              <option value="paid">
-                Оплачено
-              </option>
-              <option value="processing">
-                Обробляється
-              </option>
-              <option value="packed">
-                Запаковано
-              </option>
-              <option value="shipped">
-                Відправлено
-              </option>
-              <option value="delivered">
-                Доставлено
-              </option>
-              <option value="completed">
-                Виконано
-              </option>
-              <option value="cancelled">
-                Скасовано
-              </option>
-              <option value="refunded">
-                Повернуто кошти
-              </option>
+              <option value="pending_payment">Очікує оплати</option>
+              <option value="paid">Оплачено</option>
+              <option value="processing">Обробляється</option>
+              <option value="packed">Запаковано</option>
+              <option value="shipped">Відправлено</option>
+              <option value="delivered">Доставлено</option>
+              <option value="completed">Виконано</option>
+              <option value="cancelled">Скасовано</option>
+              <option value="refunded">Повернуто кошти</option>
             </select>
           </div>
         </div>
@@ -102,25 +91,19 @@
             class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-gray-900/30 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50"
           >
             <div>
-              <p class="text-xs text-gray-400">
-                Ім'я
-              </p>
+              <p class="text-xs text-gray-400">Ім'я</p>
               <p class="font-bold text-gray-800 dark:text-gray-200">
                 {{ order.customerName }}
               </p>
             </div>
             <div>
-              <p class="text-xs text-gray-400">
-                Email
-              </p>
+              <p class="text-xs text-gray-400">Email</p>
               <p class="font-bold text-gray-800 dark:text-gray-200">
                 {{ order.customerEmail }}
               </p>
             </div>
             <div class="sm:col-span-2">
-              <p class="text-xs text-gray-400">
-                Адреса доставки
-              </p>
+              <p class="text-xs text-gray-400">Адреса доставки</p>
               <p class="font-medium text-gray-800 dark:text-gray-200 mt-0.5">
                 {{ order.shippingAddress }}
               </p>
@@ -153,13 +136,13 @@
                   <p class="text-sm font-bold text-gray-900 dark:text-white">
                     {{ item.name }}
                   </p>
-                  <p class="text-xs text-gray-400">
-                    SKU: {{ item.sku }}
-                  </p>
+                  <p class="text-xs text-gray-400">SKU: {{ item.sku }}</p>
                 </div>
               </div>
               <div class="text-sm font-bold text-gray-900 dark:text-white">
-                {{ formatPrice(item.price * (item.quantity || (item as any).qty)) }}
+                {{
+                  formatPrice(item.price * (item.quantity || (item as any).qty))
+                }}
               </div>
             </div>
             <div
@@ -167,10 +150,11 @@
             >
               <span
                 class="text-sm font-black uppercase text-gray-500 dark:text-gray-400"
-              >Разом</span>
-              <span
-                class="text-lg font-black text-gray-900 dark:text-white"
-              >{{ formatPrice(order.totalPrice) }}</span>
+                >Разом</span
+              >
+              <span class="text-lg font-black text-gray-900 dark:text-white">{{
+                formatPrice(order.totalPrice)
+              }}</span>
             </div>
           </div>
         </div>

@@ -44,7 +44,8 @@ const navTabs = [
   { label: "Підтримка", icon: "help", tab: "support" },
 ];
 
-const selectTab = (tab: string) => router.push({ name: "account", query: { tab } });
+const selectTab = (tab: string) =>
+  router.push({ name: "account", query: { tab } });
 
 const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
@@ -99,10 +100,13 @@ onMounted(() => {
           <div
             class="lg:hidden self-start flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
           >
-            <span class="material-symbols-outlined text-[16px] text-[#00a046]">verified</span>
+            <span class="material-symbols-outlined text-[16px] text-[#00a046]"
+              >verified</span
+            >
             <span
               class="text-[11px] font-black text-[#00a046] uppercase tracking-widest"
-            >Клієнт</span>
+              >Клієнт</span
+            >
           </div>
         </div>
       </header>

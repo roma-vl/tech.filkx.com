@@ -2,10 +2,7 @@
   <AuthLayout size="md">
     <div class="text-center w-full">
       <div class="mb-8">
-        <div
-          ref="container"
-          class="w-full max-w-[200px] mx-auto"
-        />
+        <div ref="container" class="w-full max-w-[200px] mx-auto" />
       </div>
 
       <h1
@@ -18,9 +15,7 @@
         {{ $t("auth.verifyEmailNotice.subtitle") }}
       </p>
 
-      <div
-        class="inline-block px-4 py-2 bg-[#00a046]/10 rounded-xl mb-8"
-      >
+      <div class="inline-block px-4 py-2 bg-[#00a046]/10 rounded-xl mb-8">
         <p class="font-bold text-[#00a046]">
           {{ store.user?.email }}
         </p>

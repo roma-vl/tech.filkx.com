@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import { authApi, RegisterDto, LoginDto, ResetPasswordDto } from "@/shared/services/api/authApi";
+import {
+  authApi,
+  RegisterDto,
+  LoginDto,
+  ResetPasswordDto,
+} from "@/shared/services/api/authApi";
 import { User } from "../types";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -145,7 +150,10 @@ export const useAuthStore = defineStore("auth", {
         return { ok: true };
       } catch (error) {
         this.failedAttempts = (this.failedAttempts || 0) + 1;
-        localStorage.setItem("failed_login_attempts", this.failedAttempts.toString());
+        localStorage.setItem(
+          "failed_login_attempts",
+          this.failedAttempts.toString(),
+        );
 
         return this._handleError(error);
       }
@@ -162,7 +170,10 @@ export const useAuthStore = defineStore("auth", {
           localStorage.setItem(ADMIN_TOKEN_KEY, this.token);
         }
         if (this.tokenExpiresAt) {
-          localStorage.setItem(ADMIN_TOKEN_EXPIRES_KEY, this.tokenExpiresAt.toString());
+          localStorage.setItem(
+            ADMIN_TOKEN_EXPIRES_KEY,
+            this.tokenExpiresAt.toString(),
+          );
         }
 
         this.setToken(token.accessToken, token.expiresIn);
@@ -291,7 +302,8 @@ export const useAuthStore = defineStore("auth", {
         };
       }
 
-      const message = response?.data?.message || error?.message || "An error occurred";
+      const message =
+        response?.data?.message || error?.message || "An error occurred";
       return { ok: false, error: message };
     },
 

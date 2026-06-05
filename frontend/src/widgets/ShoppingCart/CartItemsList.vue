@@ -12,7 +12,7 @@
           class="w-full h-full object-contain"
           :src="item.image"
           :alt="item.name"
-        >
+        />
       </div>
       <div class="flex-grow flex flex-col justify-between gap-5">
         <div
@@ -24,13 +24,16 @@
             >
               {{ item.name }}
             </h3>
-            <p class="font-body-md text-on-surface-variant text-sm text-gray-400 mt-1">
+            <p
+              class="font-body-md text-on-surface-variant text-sm text-gray-400 mt-1"
+            >
               {{ item.sku }} | Premium Product
             </p>
           </div>
-          <span class="font-price-lg text-price-lg text-xl font-bold text-[#00a046]">{{
-            formatPrice(item.price * item.quantity)
-          }}</span>
+          <span
+            class="font-price-lg text-price-lg text-xl font-bold text-[#00a046]"
+            >{{ formatPrice(item.price * item.quantity) }}</span
+          >
         </div>
         <div
           class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
@@ -44,11 +47,14 @@
                 type="button"
                 @click="updateCartQuantity(item.id, item.quantity - 1)"
               >
-                <span class="material-symbols-outlined text-body-md">remove</span>
+                <span class="material-symbols-outlined text-body-md"
+                  >remove</span
+                >
               </button>
               <span
                 class="px-4 font-title-md text-zinc-900 dark:text-white font-bold"
-              >{{ item.quantity }}</span>
+                >{{ item.quantity }}</span
+              >
               <button
                 class="px-3 py-1 hover:bg-surface-variant transition-colors text-zinc-700 dark:text-zinc-300"
                 type="button"
@@ -69,9 +75,9 @@
           <div
             class="text-on-surface-variant font-label-md flex items-center gap-1 text-sm text-gray-500"
           >
-            <span
-              class="material-symbols-outlined text-[#00a046] text-[18px]"
-            >check_circle</span>
+            <span class="material-symbols-outlined text-[#00a046] text-[18px]"
+              >check_circle</span
+            >
             Available
           </div>
         </div>
@@ -95,7 +101,7 @@
           class="w-full h-full object-cover"
           :src="savedItem.image"
           :alt="savedItem.name"
-        >
+        />
       </div>
       <div class="flex-grow">
         <h4

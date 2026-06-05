@@ -4,7 +4,8 @@
       <div class="flex justify-between items-center">
         <span
           class="bg-emerald-500/10 text-[#00a046] font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-500/20"
-        >Преміум якість FilkxTech</span>
+          >Преміум якість FilkxTech</span
+        >
         <div class="flex gap-2">
           <!-- Wishlist action -->
           <button
@@ -31,12 +32,14 @@
             type="button"
             :class="{
               'text-[#00a046] border-[#00a046]/40': cartStore.isInCompare(
-                product.id
+                product.id,
               ),
             }"
             @click="cartStore.toggleCompare(product)"
           >
-            <span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+            <span class="material-symbols-outlined text-[20px]"
+              >compare_arrows</span
+            >
           </button>
         </div>
       </div>
@@ -58,16 +61,18 @@
               :key="star"
               class="material-symbols-outlined text-[16px]"
               style="font-variation-settings: &quot;FILL&quot; 1"
-            >star</span>
+              >star</span
+            >
           </div>
           <span
             class="font-extrabold text-zinc-800 dark:text-zinc-200 underline hover:text-[#00a046] transition-colors cursor-pointer"
-          >{{ product.reviews }} відгуків</span>
+            >{{ product.reviews }} відгуків</span
+          >
         </div>
         <div class="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
-        <span
-          class="font-bold text-zinc-500 uppercase tracking-wider"
-        >КОД: FLX-{{ product.productId || product.id }}</span>
+        <span class="font-bold text-zinc-500 uppercase tracking-wider"
+          >КОД: FLX-{{ product.productId || product.id }}</span
+        >
       </div>
     </div>
 
@@ -79,15 +84,18 @@
         <div class="flex flex-wrap items-baseline gap-3">
           <span
             class="text-3xl font-black tracking-tight text-[#00a046] font-bold"
-          >{{ formatPrice(product.price) }}</span>
+            >{{ formatPrice(product.price) }}</span
+          >
           <span
             v-if="product.oldPrice"
             class="text-base text-zinc-400 line-through font-extrabold"
-          >{{ formatPrice(product.oldPrice) }}</span>
+            >{{ formatPrice(product.oldPrice) }}</span
+          >
           <span
             v-if="product.oldPrice"
             class="bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider ml-auto font-bold"
-          >Акція</span>
+            >Акція</span
+          >
         </div>
         <p class="text-[11px] text-zinc-550 dark:text-zinc-500 font-bold">
           Можлива безвідсоткова оплата частинами від банків-партнерів
@@ -95,13 +103,11 @@
       </div>
 
       <!-- Color options selector -->
-      <div
-        v-if="availableColors.length > 0"
-        class="space-y-3"
-      >
+      <div v-if="availableColors.length > 0" class="space-y-3">
         <span
           class="block font-black text-xs uppercase tracking-wider text-zinc-450 dark:text-zinc-500 font-bold"
-        >Колір: {{ selectedColor }}</span>
+          >Колір: {{ selectedColor }}</span
+        >
         <div class="flex gap-3">
           <button
             v-for="color in availableColors"
@@ -117,14 +123,14 @@
               color.toLowerCase().includes('чорн')
                 ? 'bg-[#1c1c1c] border-white'
                 : color === 'Lunar Silver' ||
-                  color.toLowerCase().includes('silver') ||
-                  color.toLowerCase().includes('срібл')
-                ? 'bg-[#d1d1d1] border-zinc-300'
-                : color === 'Deep Emerald' ||
-                  color.toLowerCase().includes('emerald') ||
-                  color.toLowerCase().includes('зелен')
-                ? 'bg-[#004d40] border-white'
-                : 'bg-zinc-400 border-zinc-300',
+                    color.toLowerCase().includes('silver') ||
+                    color.toLowerCase().includes('срібл')
+                  ? 'bg-[#d1d1d1] border-zinc-300'
+                  : color === 'Deep Emerald' ||
+                      color.toLowerCase().includes('emerald') ||
+                      color.toLowerCase().includes('зелен')
+                    ? 'bg-[#004d40] border-white'
+                    : 'bg-zinc-400 border-zinc-300',
             ]"
             type="button"
             @click="$emit('select-variant', 'color', color)"
@@ -133,13 +139,11 @@
       </div>
 
       <!-- Configuration selector -->
-      <div
-        v-if="availableStorage.length > 0"
-        class="space-y-3"
-      >
+      <div v-if="availableStorage.length > 0" class="space-y-3">
         <span
           class="block font-black text-xs uppercase tracking-wider text-zinc-450 dark:text-zinc-500 font-bold"
-        >Конфігурація</span>
+          >Конфігурація</span
+        >
         <div class="flex flex-wrap gap-2">
           <button
             v-for="storage in availableStorage"
@@ -165,7 +169,9 @@
           type="button"
           @click="cartStore.addToCart(product)"
         >
-          <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+          <span class="material-symbols-outlined text-[20px]"
+            >shopping_cart</span
+          >
           Додати в кошик
         </button>
         <button
@@ -184,24 +190,30 @@
         <div
           class="bg-white dark:bg-zinc-900 p-4.5 flex flex-col gap-1 items-center text-center p-3"
         >
-          <span
-            class="material-symbols-outlined text-[#00a046] text-[22px]"
-          >inventory_2</span>
+          <span class="material-symbols-outlined text-[#00a046] text-[22px]"
+            >inventory_2</span
+          >
           <span
             class="text-[10px] font-black text-[#00a046] tracking-wider uppercase mt-1 font-bold"
-          >В наявності</span>
-          <span class="text-[10px] text-zinc-500 dark:text-zinc-500">Відправка сьогодні</span>
+            >В наявності</span
+          >
+          <span class="text-[10px] text-zinc-500 dark:text-zinc-500"
+            >Відправка сьогодні</span
+          >
         </div>
         <div
           class="bg-white dark:bg-zinc-900 p-4.5 flex flex-col gap-1 items-center text-center p-3"
         >
-          <span
-            class="material-symbols-outlined text-[#00a046] text-[22px]"
-          >local_shipping</span>
+          <span class="material-symbols-outlined text-[#00a046] text-[22px]"
+            >local_shipping</span
+          >
           <span
             class="text-[10px] font-black text-zinc-700 dark:text-zinc-300 tracking-wider uppercase mt-1 font-bold"
-          >Доставка</span>
-          <span class="text-[10px] text-zinc-550 dark:text-zinc-500">Безкоштовно від 2000 ₴</span>
+            >Доставка</span
+          >
+          <span class="text-[10px] text-zinc-550 dark:text-zinc-500"
+            >Безкоштовно від 2000 ₴</span
+          >
         </div>
       </div>
     </div>

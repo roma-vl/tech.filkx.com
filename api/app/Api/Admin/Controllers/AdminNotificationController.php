@@ -2,12 +2,12 @@
 
 namespace App\Api\Admin\Controllers;
 
+use App\Api\Admin\Actions\Notification\BroadcastNotificationAction;
 use App\Api\Admin\Actions\Notification\CreateNotificationAction;
 use App\Api\Admin\Actions\Notification\DeleteNotificationAction;
 use App\Api\Admin\Actions\Notification\ListNotificationsAction;
-use App\Api\Admin\Actions\Notification\BroadcastNotificationAction;
-use App\Api\Admin\Requests\CreateNotificationRequest;
 use App\Api\Admin\Requests\BroadcastNotificationRequest;
+use App\Api\Admin\Requests\CreateNotificationRequest;
 use App\Api\V1\Resources\NotificationResource;
 use Illuminate\Http\JsonResponse;
 
@@ -21,10 +21,10 @@ class AdminNotificationController extends BaseApiController
             'data' => NotificationResource::collection($notifications->items()),
             'meta' => [
                 'currentPage' => $notifications->currentPage(),
-                'lastPage'    => $notifications->lastPage(),
-                'perPage'     => $notifications->perPage(),
-                'total'       => $notifications->total(),
-            ]
+                'lastPage' => $notifications->lastPage(),
+                'perPage' => $notifications->perPage(),
+                'total' => $notifications->total(),
+            ],
         ]);
     }
 

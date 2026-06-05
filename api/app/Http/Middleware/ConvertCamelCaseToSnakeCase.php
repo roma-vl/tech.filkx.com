@@ -16,6 +16,7 @@ class ConvertCamelCaseToSnakeCase
     {
         $input = $request->all();
         $request->replace($this->snakeCaseKeys($input));
+
         return $next($request);
     }
 
@@ -24,7 +25,7 @@ class ConvertCamelCaseToSnakeCase
      */
     private function snakeCaseKeys(mixed $data): mixed
     {
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
 
@@ -33,6 +34,7 @@ class ConvertCamelCaseToSnakeCase
             $newKey = Str::snake($key);
             $snake[$newKey] = $this->snakeCaseKeys($value);
         }
+
         return $snake;
     }
 }

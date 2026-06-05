@@ -39,7 +39,7 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /**
@@ -64,7 +64,7 @@ apiClient.interceptors.response.use(
           "401 Unauthorized encountered:",
           errorMsg,
           "Url:",
-          originalRequest.url
+          originalRequest.url,
         );
 
         const store = useAuthStore();
@@ -107,7 +107,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

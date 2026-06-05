@@ -10,10 +10,7 @@
         {{ $t("auth.resetPassword.subtitle") }}
       </p>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.email"
           :label="$t('auth.resetPassword.emailLabel')"

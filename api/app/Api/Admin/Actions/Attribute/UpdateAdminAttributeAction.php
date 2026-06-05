@@ -20,7 +20,7 @@ class UpdateAdminAttributeAction
         $attribute = $this->attributeRepository->find($id);
 
         if (! $attribute) {
-            throw new AttributeNotFoundException();
+            throw new AttributeNotFoundException;
         }
 
         return DB::transaction(function () use ($attribute, $dto) {
@@ -28,7 +28,9 @@ class UpdateAdminAttributeAction
 
             $this->syncValues($attribute, $dto->values);
 
-            return $attribute->load('values');
+            $attribute->categories()->sync($dto->categoryIds);
+
+            return $attribute->load(['values', 'categories']);
         });
     }
 

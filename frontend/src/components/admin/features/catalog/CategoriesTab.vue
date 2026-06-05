@@ -88,6 +88,27 @@
                   <AppButton
                     variant="ghost"
                     size="sm"
+                    class="!p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                    title="Характеристики"
+                    @click="openCategoryAttributesModal(cat)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                      />
+                    </svg>
+                  </AppButton>
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
                     class="!p-2 text-blue-600 dark:text-blue-400"
                     @click="openEditCategoryModal(cat)"
                   >
@@ -200,6 +221,14 @@
         </AppButton>
       </template>
     </AppModal>
+
+    <!-- Category Attributes Modal -->
+    <CategoryAttributesModal
+      v-model="showCategoryAttributesModal"
+      :category="selectedCategoryForAttributes"
+      :attributes="attributes"
+      @refresh="emit('refresh')"
+    />
   </div>
 </template>
 
@@ -210,12 +239,22 @@ import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import CategoryAttributesModal from "./CategoryAttributesModal.vue";
 
 const props = defineProps({
   categories: { type: Array, required: true },
+  attributes: { type: Array, required: true },
 });
 
 const emit = defineEmits(["refresh"]);
+
+const showCategoryAttributesModal = ref(false);
+const selectedCategoryForAttributes = ref(null);
+
+const openCategoryAttributesModal = (cat) => {
+  selectedCategoryForAttributes.value = cat;
+  showCategoryAttributesModal.value = true;
+};
 
 const showCategoryModal = ref(false);
 const isEditing = ref(false);

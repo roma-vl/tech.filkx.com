@@ -1,13 +1,6 @@
 <template>
-  <TransitionRoot
-    as="template"
-    :show="open"
-  >
-    <Dialog
-      as="div"
-      class="relative z-50"
-      @close="$emit('close')"
-    >
+  <TransitionRoot as="template" :show="open">
+    <Dialog as="div" class="relative z-50" @close="$emit('close')">
       <TransitionChild
         as="template"
         enter="ease-in-out duration-300"
@@ -44,11 +37,7 @@
                       class="flex items-center"
                       @click="$emit('close')"
                     >
-                      <img
-                        :src="Logo"
-                        alt="Filkx"
-                        class="w-28"
-                      >
+                      <img :src="Logo" alt="Filkx" class="w-28" />
                     </router-link>
                     <button
                       class="p-2.5 rounded-xl bg-white/50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-white/60 dark:border-white/10 shadow-sm transition-all"
@@ -72,10 +61,7 @@
                       :key="group.id"
                       class="space-y-1"
                     >
-                      <div
-                        v-for="item in group.items"
-                        :key="item.id"
-                      >
+                      <div v-for="item in group.items" :key="item.id">
                         <AppNavDropdown
                           v-if="item.items"
                           :item="item"

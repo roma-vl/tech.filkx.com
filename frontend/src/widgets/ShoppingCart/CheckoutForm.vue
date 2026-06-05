@@ -14,7 +14,8 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="customer_name"
-        >Full Name *</label>
+          >Full Name *</label
+        >
         <input
           id="customer_name"
           :value="modelValue.customerName"
@@ -22,14 +23,20 @@
           placeholder="John Doe"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
-          @input="updateField('customerName', ($event.target as HTMLInputElement).value)"
-        >
+          @input="
+            updateField(
+              'customerName',
+              ($event.target as HTMLInputElement).value,
+            )
+          "
+        />
       </div>
       <div class="flex flex-col gap-1.5">
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="customer_phone"
-        >Phone *</label>
+          >Phone *</label
+        >
         <input
           id="customer_phone"
           :value="modelValue.customerPhone"
@@ -37,8 +44,13 @@
           placeholder="+380991234567"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
-          @input="updateField('customerPhone', ($event.target as HTMLInputElement).value)"
-        >
+          @input="
+            updateField(
+              'customerPhone',
+              ($event.target as HTMLInputElement).value,
+            )
+          "
+        />
       </div>
     </div>
 
@@ -46,7 +58,8 @@
       <label
         class="font-label-md text-on-surface-variant text-sm font-semibold"
         for="customer_email"
-      >Email Address *</label>
+        >Email Address *</label
+      >
       <input
         id="customer_email"
         :value="modelValue.customerEmail"
@@ -54,8 +67,13 @@
         placeholder="john@example.com"
         class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
         required
-        @input="updateField('customerEmail', ($event.target as HTMLInputElement).value)"
-      >
+        @input="
+          updateField(
+            'customerEmail',
+            ($event.target as HTMLInputElement).value,
+          )
+        "
+      />
     </div>
 
     <h2
@@ -70,47 +88,45 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="delivery_method"
-        >Delivery Method *</label>
+          >Delivery Method *</label
+        >
         <select
           id="delivery_method"
           :value="modelValue.deliveryMethod"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary dark:text-white"
-          @change="updateField('deliveryMethod', ($event.target as HTMLSelectElement).value)"
+          @change="
+            updateField(
+              'deliveryMethod',
+              ($event.target as HTMLSelectElement).value,
+            )
+          "
         >
-          <option value="nova_poshta">
-            Nova Poshta Branch
-          </option>
-          <option value="ukr_poshta">
-            Ukrposhta
-          </option>
-          <option value="courier">
-            Address Courier
-          </option>
-          <option value="pickup">
-            Self-pickup from Shop
-          </option>
+          <option value="nova_poshta">Nova Poshta Branch</option>
+          <option value="ukr_poshta">Ukrposhta</option>
+          <option value="courier">Address Courier</option>
+          <option value="pickup">Self-pickup from Shop</option>
         </select>
       </div>
       <div class="flex flex-col gap-1.5">
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="payment_method"
-        >Payment Method *</label>
+          >Payment Method *</label
+        >
         <select
           id="payment_method"
           :value="modelValue.paymentMethod"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary dark:text-white"
-          @change="updateField('paymentMethod', ($event.target as HTMLSelectElement).value)"
+          @change="
+            updateField(
+              'paymentMethod',
+              ($event.target as HTMLSelectElement).value,
+            )
+          "
         >
-          <option value="cod">
-            Cash on Delivery
-          </option>
-          <option value="card">
-            Online Payment by Card
-          </option>
-          <option value="bank">
-            Bank Wire Transfer
-          </option>
+          <option value="cod">Cash on Delivery</option>
+          <option value="card">Online Payment by Card</option>
+          <option value="bank">Bank Wire Transfer</option>
         </select>
       </div>
     </div>
@@ -120,7 +136,8 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="shipping_city"
-        >City *</label>
+          >City *</label
+        >
         <input
           id="shipping_city"
           :value="modelValue.shippingCity"
@@ -128,14 +145,20 @@
           placeholder="Kyiv"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
-          @input="updateField('shippingCity', ($event.target as HTMLInputElement).value)"
-        >
+          @input="
+            updateField(
+              'shippingCity',
+              ($event.target as HTMLInputElement).value,
+            )
+          "
+        />
       </div>
       <div class="flex flex-col gap-1.5">
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="shipping_address"
-        >Address / Branch Number *</label>
+          >Address / Branch Number *</label
+        >
         <input
           id="shipping_address"
           :value="modelValue.shippingAddress"
@@ -143,8 +166,13 @@
           placeholder="Nova Poshta Branch №14"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
-          @input="updateField('shippingAddress', ($event.target as HTMLInputElement).value)"
-        >
+          @input="
+            updateField(
+              'shippingAddress',
+              ($event.target as HTMLInputElement).value,
+            )
+          "
+        />
       </div>
     </div>
   </div>

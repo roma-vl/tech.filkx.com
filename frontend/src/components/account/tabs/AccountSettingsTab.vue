@@ -209,7 +209,10 @@ const saveAddress = async () => {
     !addressForm.city ||
     !addressForm.zip
   ) {
-    cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "warning");
+    cartStore.addToast(
+      "Будь ласка, заповніть усі обов'язкові поля.",
+      "warning",
+    );
     return;
   }
   if (addressForm.id) {
@@ -364,7 +367,8 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.profile }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
@@ -378,44 +382,45 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Повне ім'я</label>
+              >Повне ім'я</label
+            >
             <input
               v-model="profileForm.name"
               type="text"
               required
               :class="inputClass"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Електронна пошта</label>
+              >Електронна пошта</label
+            >
             <input
               v-model="profileForm.email"
               type="email"
               required
               :class="inputClass"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Номер телефону</label>
+              >Номер телефону</label
+            >
             <input
               v-model="profileForm.phone"
               type="text"
               placeholder="+380..."
               :class="inputClass"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Мова інтерфейсу</label>
-            <select
-              v-model="profileForm.language"
-              :class="inputClass"
+              >Мова інтерфейсу</label
             >
+            <select v-model="profileForm.language" :class="inputClass">
               <option>Українська</option>
               <option>Англійська</option>
             </select>
@@ -468,50 +473,51 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.password }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
         v-show="expandedSections.password"
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
-        <form
-          class="space-y-4"
-          @submit.prevent="updatePassword"
-        >
+        <form class="space-y-4" @submit.prevent="updatePassword">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Поточний пароль</label>
+              >Поточний пароль</label
+            >
             <input
               v-model="passwordForm.current"
               type="password"
               required
               :class="inputClass"
-            >
+            />
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Новий пароль</label>
+                >Новий пароль</label
+              >
               <input
                 v-model="passwordForm.new"
                 type="password"
                 required
                 :class="inputClass"
-              >
+              />
             </div>
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Підтвердження пароля</label>
+                >Підтвердження пароля</label
+              >
               <input
                 v-model="passwordForm.confirm"
                 type="password"
                 required
                 :class="inputClass"
-              >
+              />
             </div>
           </div>
           <div class="pt-2 text-right">
@@ -562,7 +568,8 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.addresses }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
@@ -570,14 +577,18 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+          <span
+            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
+          >
             Збережені адреси доставки
           </span>
           <button
             class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
             @click="openAddressModal()"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >add</span
+            >
             Додати
           </button>
         </div>
@@ -599,7 +610,8 @@ const inputClass =
                 <span
                   v-if="address.isDefault"
                   class="bg-[#00a046]/10 text-[#00a046] text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-[#00a046]/20"
-                >Основна</span>
+                  >Основна</span
+                >
               </div>
               <p class="text-zinc-800 dark:text-zinc-200 font-extrabold">
                 {{ address.recipient }}
@@ -638,11 +650,9 @@ const inputClass =
           </div>
         </div>
 
-        <div
-          v-else
-          class="text-center py-6 text-zinc-400 dark:text-zinc-555"
-        >
-          У вас немає збережених адрес. Додайте першу адресу для швидкого оформлення замовлення.
+        <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
+          У вас немає збережених адрес. Додайте першу адресу для швидкого
+          оформлення замовлення.
         </div>
       </div>
     </div>
@@ -659,7 +669,9 @@ const inputClass =
           <div
             class="w-10 h-10 rounded-lg bg-[#00a046]/10 text-[#00a046] flex items-center justify-center shrink-0"
           >
-            <span class="material-symbols-outlined text-[22px]">credit_card</span>
+            <span class="material-symbols-outlined text-[22px]"
+              >credit_card</span
+            >
           </div>
           <div>
             <h3
@@ -678,7 +690,8 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.cards }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
@@ -686,14 +699,18 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+          <span
+            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
+          >
             Ваші платіжні методи
           </span>
           <button
             class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
             @click="openCardModal()"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >add</span
+            >
             Додати
           </button>
         </div>
@@ -771,10 +788,7 @@ const inputClass =
           </div>
         </div>
 
-        <div
-          v-else
-          class="text-center py-6 text-zinc-400 dark:text-zinc-555"
-        >
+        <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
           У вас немає збережених платіжних карток.
         </div>
       </div>
@@ -812,7 +826,8 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Тип адреси</label>
+              >Тип адреси</label
+            >
             <select
               v-model="addressForm.type"
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
@@ -825,82 +840,89 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Отримувач *</label>
+              >Отримувач *</label
+            >
             <input
               v-model="addressForm.recipient"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Вулиця, будинок, квартира *</label>
+            >Вулиця, будинок, квартира *</label
+          >
           <input
             v-model="addressForm.street"
             type="text"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div class="space-y-1.5 col-span-2">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Місто *</label>
+              >Місто *</label
+            >
             <input
               v-model="addressForm.city"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Область</label>
+              >Область</label
+            >
             <input
               v-model="addressForm.state"
               type="text"
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Поштовий індекс *</label>
+              >Поштовий індекс *</label
+            >
             <input
               v-model="addressForm.zip"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Країна *</label>
+              >Країна *</label
+            >
             <input
               v-model="addressForm.country"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Номер телефону</label>
+            >Номер телефону</label
+          >
           <input
             v-model="addressForm.phone"
             type="text"
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div
           class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
@@ -946,70 +968,76 @@ const inputClass =
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <form
-        class="p-6 space-y-4 text-xs md:text-sm"
-        @submit.prevent="saveCard"
-      >
+      <form class="p-6 space-y-4 text-xs md:text-sm" @submit.prevent="saveCard">
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Платіжна система</label>
+            >Платіжна система</label
+          >
           <div class="flex gap-4">
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"><input
-              v-model="cardForm.type"
-              type="radio"
-              value="Visa"
-              class="accent-[#00a046]"
-            ><span>Visa</span></label>
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"><input
-              v-model="cardForm.type"
-              type="radio"
-              value="Mastercard"
-              class="accent-[#00a046]"
-            ><span>Mastercard</span></label>
+            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
+              ><input
+                v-model="cardForm.type"
+                type="radio"
+                value="Visa"
+                class="accent-[#00a046]"
+              /><span>Visa</span></label
+            >
+            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
+              ><input
+                v-model="cardForm.type"
+                type="radio"
+                value="Mastercard"
+                class="accent-[#00a046]"
+              /><span>Mastercard</span></label
+            >
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Ім'я власника картки *</label>
+            >Ім'я власника картки *</label
+          >
           <input
             v-model="cardForm.holder"
             type="text"
             placeholder="напр. ROMAN SHEVCHENKO"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Номер картки *</label>
+            >Номер картки *</label
+          >
           <input
             v-model="cardForm.number"
             type="text"
             placeholder="16-значний номер картки"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Термін дії *</label>
+              >Термін дії *</label
+            >
             <input
               v-model="cardForm.expiry"
               type="text"
               placeholder="ММ/РР"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >CVV *</label>
+              >CVV *</label
+            >
             <input
               v-model="cardForm.cvv"
               type="password"
@@ -1017,7 +1045,7 @@ const inputClass =
               placeholder="•••"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div

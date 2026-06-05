@@ -55,18 +55,23 @@ export function useCatalog() {
       mainVariant && mainVariant.old_price
         ? parseFloat(mainVariant.old_price)
         : mainVariant && mainVariant.oldPrice
-        ? parseFloat(mainVariant.oldPrice)
-        : null;
+          ? parseFloat(mainVariant.oldPrice)
+          : null;
     const totalStock = mainVariant
       ? (mainVariant.stocks || []).reduce(
-          (acc: number, s: any) => acc + (parseInt(s.quantity) - parseInt(s.reserved)),
-          0
+          (acc: number, s: any) =>
+            acc + (parseInt(s.quantity) - parseInt(s.reserved)),
+          0,
         )
       : 0;
 
     // Try to get primary image from variant's dimensions.images
     let image = "";
-    if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+    if (
+      mainVariant &&
+      mainVariant.dimensions &&
+      mainVariant.dimensions.images
+    ) {
       const primary =
         mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
         mainVariant.dimensions.images[0];
@@ -122,7 +127,7 @@ export function useCatalog() {
       }
 
       const match = checkList.find(
-        (av) => av.attribute && av.attribute.code === code
+        (av) => av.attribute && av.attribute.code === code,
       );
       if (match) {
         const valObj = match.attribute_value || match.attributeValue;
@@ -260,7 +265,9 @@ export function useCatalog() {
       const response = await productApi.catalogGetProducts(params);
       if (response.data && response.data.status === "success") {
         const apiData = response.data.data;
-        rawProducts.value = (apiData.data || []).map(mapProduct).filter(Boolean);
+        rawProducts.value = (apiData.data || [])
+          .map(mapProduct)
+          .filter(Boolean);
         pagination.value = {
           page: apiData.currentPage || 1,
           lastPage: apiData.lastPage || 1,
@@ -324,7 +331,9 @@ export function useCatalog() {
       const val = selectedAttrs.value[code];
       if (val) {
         const attr = dynamicAttributes.value.find((a) => a.code === code);
-        const attrName = attr ? attr.name.uk || attr.name.en || attr.name : code;
+        const attrName = attr
+          ? attr.name.uk || attr.name.en || attr.name
+          : code;
         filters.push({
           type: "attribute",
           code: code,
@@ -370,7 +379,7 @@ export function useCatalog() {
   const removeFilter = (filter: any) => {
     if (filter.type === "brand") {
       selectedBrands.value = selectedBrands.value.filter(
-        (brand) => brand !== filter.value
+        (brand) => brand !== filter.value,
       );
     }
     if (filter.type === "attribute") {
@@ -415,7 +424,9 @@ export function useCatalog() {
 
   const currentCategoryName = computed(() => {
     if (!route.query.category) return "Всі товари";
-    const cat = categoriesList.value.find((c) => c.slug === route.query.category);
+    const cat = categoriesList.value.find(
+      (c) => c.slug === route.query.category,
+    );
     return cat ? cat.name.uk || cat.name.en || cat.name : "Каталог";
   });
 
@@ -424,7 +435,7 @@ export function useCatalog() {
     () => {
       pagination.value.page = parseInt(route.query.page as string) || 1;
       fetchProducts();
-    }
+    },
   );
 
   watch(
@@ -441,7 +452,7 @@ export function useCatalog() {
       pagination.value.page = 1;
       fetchProducts();
     },
-    { deep: true }
+    { deep: true },
   );
 
   onMounted(() => {

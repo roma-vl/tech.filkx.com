@@ -1,6 +1,9 @@
 import { ref } from "vue";
 
-export function useSorting(initialSortBy = "id", initialSortOrder: "asc" | "desc" = "asc") {
+export function useSorting(
+  initialSortBy = "id",
+  initialSortOrder: "asc" | "desc" = "asc",
+) {
   const sortBy = ref(initialSortBy);
   const sortOrder = ref<"asc" | "desc">(initialSortOrder);
 

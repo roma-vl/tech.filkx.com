@@ -66,7 +66,7 @@ const summaryStats = computed(() => [
     tab: "orders",
     action: "",
     trend: "",
-    trendIcon: ""
+    trendIcon: "",
   },
   {
     icon: "shopping_bag",
@@ -76,7 +76,7 @@ const summaryStats = computed(() => [
     tab: "orders",
     action: "",
     trend: "",
-    trendIcon: ""
+    trendIcon: "",
   },
   {
     icon: "favorite",
@@ -86,7 +86,7 @@ const summaryStats = computed(() => [
     tab: "favorites",
     action: "",
     trend: "",
-    trendIcon: ""
+    trendIcon: "",
   },
 ]);
 
@@ -112,7 +112,8 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         <span
           class="material-symbols-outlined text-[32px] transition-transform group-hover:scale-110 duration-200"
           :class="stat.color"
-        >{{ stat.icon }}</span>
+          >{{ stat.icon }}</span
+        >
         <p
           class="font-extrabold text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-wider mt-1"
         >
@@ -168,7 +169,9 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
             @click="go('orders')"
           >
             Усі замовлення
-            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <span class="material-symbols-outlined text-[16px]"
+              >arrow_forward</span
+            >
           </button>
         </div>
         <div class="space-y-4">
@@ -217,7 +220,8 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                   >
                     <span class="material-symbols-outlined text-[12px]">{{
                       order.statusIcon
-                    }}</span>{{ order.status }}
+                    }}</span
+                    >{{ order.status }}
                   </span>
                 </div>
               </div>
@@ -239,7 +243,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                   :src="item.image"
                   :alt="item.name"
                   @click="cartStore.viewProduct(item as any)"
-                >
+                />
                 <div class="flex-1 text-center sm:text-left">
                   <h3
                     class="font-extrabold text-zinc-850 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 cursor-pointer hover:text-[#00a046] transition-colors"
@@ -274,7 +278,6 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           </div>
         </div>
       </section>
-
     </div>
   </div>
 </template>

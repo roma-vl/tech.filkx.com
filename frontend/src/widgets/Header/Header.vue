@@ -110,7 +110,10 @@ watch(searchQuery, (newQuery) => {
     try {
       const response = await productApi.catalogGetProducts({ search: query });
       const responseData = response.data;
-      if (responseData && (responseData.success || responseData.status === "success")) {
+      if (
+        responseData &&
+        (responseData.success || responseData.status === "success")
+      ) {
         const productsList = responseData.data?.data || responseData.data || [];
         searchResults.value = productsList.map(mapApiProduct);
       }
@@ -240,13 +243,16 @@ const fetchUnreadCount = async () => {
   await cartStore.fetchUnreadNotificationsCount();
 };
 
-watch(() => authStore.isAuthenticated, (newVal) => {
-  if (newVal) {
-    fetchUnreadCount();
-  } else {
-    cartStore.unreadNotificationsCount = 0;
-  }
-});
+watch(
+  () => authStore.isAuthenticated,
+  (newVal) => {
+    if (newVal) {
+      fetchUnreadCount();
+    } else {
+      cartStore.unreadNotificationsCount = 0;
+    }
+  },
+);
 
 onMounted(async () => {
   window.addEventListener("keydown", handleKeydown);
@@ -256,7 +262,10 @@ onMounted(async () => {
   try {
     const response = await productApi.catalogGetCategories();
     const responseData = response.data;
-    if (responseData && (responseData.success || responseData.status === "success")) {
+    if (
+      responseData &&
+      (responseData.success || responseData.status === "success")
+    ) {
       categories.value = responseData.data.map((cat: any) => ({
         id: cat.slug,
         label: cat.name?.uk || cat.name?.en || cat.name || "",
@@ -297,7 +306,9 @@ onUnmounted(() => {
           title="Menu"
           @click="cartStore.openDrawer('account')"
         >
-          <span class="material-symbols-outlined text-2xl text-white">menu</span>
+          <span class="material-symbols-outlined text-2xl text-white"
+            >menu</span
+          >
         </button>
 
         <!-- Brand/Logo (Rozetka Green Smiley Style) -->
@@ -337,7 +348,8 @@ onUnmounted(() => {
           <div class="relative flex-grow flex items-center h-full px-3">
             <span
               class="material-symbols-outlined text-zinc-400 mr-2 text-[20px]"
-            >search</span>
+              >search</span
+            >
             <input
               ref="searchInput"
               v-model="searchQuery"
@@ -345,7 +357,7 @@ onUnmounted(() => {
               placeholder="Я шукаю..."
               type="text"
               @focus="showDropdown = true"
-            >
+            />
             <!-- Clear Search Button -->
             <button
               v-if="searchQuery"
@@ -379,10 +391,7 @@ onUnmounted(() => {
           class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-zinc-200 z-[110] overflow-hidden p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- Suggestions results -->
-          <div
-            v-if="isSearching"
-            class="space-y-2 py-2"
-          >
+          <div v-if="isSearching" class="space-y-2 py-2">
             <div
               class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2"
             >
@@ -401,10 +410,7 @@ onUnmounted(() => {
               <div class="w-12 h-3 bg-zinc-200 rounded shrink-0" />
             </div>
           </div>
-          <div
-            v-else-if="filteredProducts.length > 0"
-            class="space-y-1"
-          >
+          <div v-else-if="filteredProducts.length > 0" class="space-y-1">
             <div
               class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2"
             >
@@ -423,7 +429,7 @@ onUnmounted(() => {
                   class="max-h-full object-contain"
                   :src="prod.image"
                   :alt="prod.name"
-                >
+                />
               </div>
               <div class="flex-grow">
                 <p
@@ -473,15 +479,17 @@ onUnmounted(() => {
 
       <!-- Right: Compact Icon Actions -->
       <div class="flex items-center gap-4 md:gap-6 text-white">
-
-
         <!-- Notifications -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
           title="Notifications"
-          @click="router.push({ name: 'account', query: { tab: 'notifications' } })"
+          @click="
+            router.push({ name: 'account', query: { tab: 'notifications' } })
+          "
         >
-          <span class="material-symbols-outlined text-[24px]">notifications</span>
+          <span class="material-symbols-outlined text-[24px]"
+            >notifications</span
+          >
           <span
             v-if="unreadCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
@@ -496,7 +504,9 @@ onUnmounted(() => {
           title="Compare"
           @click="router.push({ name: 'account', query: { tab: 'compare' } })"
         >
-          <span class="material-symbols-outlined text-[24px]">compare_arrows</span>
+          <span class="material-symbols-outlined text-[24px]"
+            >compare_arrows</span
+          >
           <span
             v-if="cartStore.compareCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
@@ -526,7 +536,9 @@ onUnmounted(() => {
           title="Cart"
           @click="cartStore.openDrawer('cart')"
         >
-          <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+          <span class="material-symbols-outlined text-[24px]"
+            >shopping_cart</span
+          >
           <span
             v-if="cartStore.cartCount > 0"
             class="absolute -top-1.5 -right-2 bg-[#00a046] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none animate-scale-in"
@@ -619,11 +631,13 @@ onUnmounted(() => {
                   <div class="flex justify-between items-start gap-2">
                     <span
                       class="text-xs font-black text-zinc-800 dark:text-zinc-200 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors leading-snug"
-                    >{{ sub.name }}</span>
+                      >{{ sub.name }}</span
+                    >
                     <span
                       v-if="sub.badge"
                       class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 animate-pulse"
-                    >{{ sub.badge }}</span>
+                      >{{ sub.badge }}</span
+                    >
                   </div>
                   <span
                     class="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors flex items-center gap-1 font-bold uppercase tracking-wider"
@@ -631,7 +645,8 @@ onUnmounted(() => {
                     Переглянути товари
                     <span
                       class="material-symbols-outlined text-[13px] group-hover/sub:translate-x-1 transition-transform"
-                    >arrow_forward</span>
+                      >arrow_forward</span
+                    >
                   </span>
                 </div>
               </div>
@@ -639,7 +654,9 @@ onUnmounted(() => {
                 v-else
                 class="text-center py-12 text-zinc-400 dark:text-zinc-550"
               >
-                <span class="material-symbols-outlined text-4xl mb-2">category</span>
+                <span class="material-symbols-outlined text-4xl mb-2"
+                  >category</span
+                >
                 <p class="text-xs font-bold">
                   У цій категорії поки що немає підкатегорій.
                 </p>
@@ -665,7 +682,9 @@ onUnmounted(() => {
                 "
               >
                 Всі товари {{ activeCat.label }}
-                <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
+                <span class="material-symbols-outlined text-sm font-bold"
+                  >arrow_forward</span
+                >
               </button>
             </div>
           </div>
@@ -699,13 +718,17 @@ onUnmounted(() => {
               <div
                 class="flex items-center gap-2 text-xs font-bold text-zinc-300"
               >
-                <span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span>
+                <span class="material-symbols-outlined text-emerald-400 text-sm"
+                  >check_circle</span
+                >
                 <span>Офіційна гарантія</span>
               </div>
               <div
                 class="flex items-center gap-2 text-xs font-bold text-zinc-300"
               >
-                <span class="material-symbols-outlined text-emerald-400 text-sm">local_shipping</span>
+                <span class="material-symbols-outlined text-emerald-400 text-sm"
+                  >local_shipping</span
+                >
                 <span>Безкоштовна доставка</span>
               </div>
 
@@ -719,7 +742,8 @@ onUnmounted(() => {
                 <span>Перейти до акцій</span>
                 <span
                   class="material-symbols-outlined text-sm font-bold group-hover/promo:translate-x-0.5 transition-transform"
-                >arrow_forward</span>
+                  >arrow_forward</span
+                >
               </button>
             </div>
           </div>

@@ -20,7 +20,7 @@ class UpdateAdminOrderStatusAction
         $order = $this->orderRepository->findWithItems($id);
 
         if (! $order) {
-            throw new OrderNotFoundException();
+            throw new OrderNotFoundException;
         }
 
         return DB::transaction(function () use ($order, $dto) {

@@ -16,7 +16,7 @@ class DeleteAdminAttributeAction
         $attribute = $this->attributeRepository->find($id);
 
         if (! $attribute) {
-            throw new AttributeNotFoundException();
+            throw new AttributeNotFoundException;
         }
 
         $this->attributeRepository->delete($attribute);

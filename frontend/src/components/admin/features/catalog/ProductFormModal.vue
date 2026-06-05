@@ -5,10 +5,7 @@
     max-width="3xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <form
-      class="space-y-6"
-      @submit.prevent="saveProduct"
-    >
+    <form class="space-y-6" @submit.prevent="saveProduct">
       <!-- General Details section -->
       <div
         class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 space-y-4"
@@ -27,7 +24,12 @@
               label="Назва товару (UK)"
               placeholder="напр. iPhone 15 Pro Max"
             />
-            <p v-if="errors.nameUk" class="mt-1 text-xs text-red-500 font-semibold">{{ errors.nameUk }}</p>
+            <p
+              v-if="errors.nameUk"
+              class="mt-1 text-xs text-red-500 font-semibold"
+            >
+              {{ errors.nameUk }}
+            </p>
           </div>
           <div>
             <AppInput
@@ -36,7 +38,12 @@
               label="Назва товару (EN)"
               placeholder="e.g. iPhone 15 Pro Max"
             />
-            <p v-if="errors.nameEn" class="mt-1 text-xs text-red-500 font-semibold">{{ errors.nameEn }}</p>
+            <p
+              v-if="errors.nameEn"
+              class="mt-1 text-xs text-red-500 font-semibold"
+            >
+              {{ errors.nameEn }}
+            </p>
           </div>
         </div>
 
@@ -59,14 +66,21 @@
           <div>
             <AppSelect
               v-model="productForm.categoryId"
-              :class="errors.categoryId ? 'ring-2 ring-red-500/60 rounded-lg' : ''"
+              :class="
+                errors.categoryId ? 'ring-2 ring-red-500/60 rounded-lg' : ''
+              "
               label="Категорія"
               placeholder="Оберіть категорію"
               :options="categories"
               option-value="id"
               option-label="nameUk"
             />
-            <p v-if="errors.categoryId" class="mt-1 text-xs text-red-500 font-semibold">{{ errors.categoryId }}</p>
+            <p
+              v-if="errors.categoryId"
+              class="mt-1 text-xs text-red-500 font-semibold"
+            >
+              {{ errors.categoryId }}
+            </p>
           </div>
           <AppSelect
             v-model="productForm.brandId"
@@ -90,7 +104,12 @@
               option-value="id"
               option-label="name"
             />
-            <p v-if="errors.status" class="mt-1 text-xs text-red-500 font-semibold">{{ errors.status }}</p>
+            <p
+              v-if="errors.status"
+              class="mt-1 text-xs text-red-500 font-semibold"
+            >
+              {{ errors.status }}
+            </p>
           </div>
         </div>
 
@@ -106,7 +125,7 @@
                 v-model="productForm.isHot"
                 type="checkbox"
                 class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
-              >
+              />
               🔥 Гаряча пропозиція
             </label>
             <label
@@ -116,7 +135,7 @@
                 v-model="productForm.isRecommended"
                 type="checkbox"
                 class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
-              >
+              />
               👍 Рекомендовано
             </label>
           </div>
@@ -163,7 +182,8 @@
           <div class="absolute top-4 right-4 flex items-center gap-2">
             <span
               class="text-xs font-black uppercase text-gray-400 bg-gray-200/50 dark:bg-gray-800 px-2 py-0.5 rounded-md"
-            >Варіант #{{ vIdx + 1 }}</span>
+              >Варіант #{{ vIdx + 1 }}</span
+            >
             <AppButton
               v-if="productForm.variants.length > 1"
               type="button"
@@ -193,23 +213,39 @@
             <div>
               <AppInput
                 v-model="v.sku"
-                :class="variantErrors[vIdx]?.sku ? 'ring-2 ring-red-500/60' : ''"
+                :class="
+                  variantErrors[vIdx]?.sku ? 'ring-2 ring-red-500/60' : ''
+                "
                 label="SKU (Артикул)"
                 placeholder="напр. iphone-15-black"
               />
-              <p v-if="variantErrors[vIdx]?.sku" class="mt-1 text-xs text-red-500 font-semibold">{{ variantErrors[vIdx].sku }}</p>
+              <p
+                v-if="variantErrors[vIdx]?.sku"
+                class="mt-1 text-xs text-red-500 font-semibold"
+              >
+                {{ variantErrors[vIdx].sku }}
+              </p>
             </div>
             <div>
               <AppInput
                 :model-value="v.price ?? undefined"
-                :class="variantErrors[vIdx]?.price ? 'ring-2 ring-red-500/60' : ''"
+                :class="
+                  variantErrors[vIdx]?.price ? 'ring-2 ring-red-500/60' : ''
+                "
                 type="number"
                 step="0.01"
                 label="Ціна (UAH)"
                 placeholder="0.00"
-                @update:model-value="(val) => (v as any).price = val === '' ? null : Number(val)"
+                @update:model-value="
+                  (val) => ((v as any).price = val === '' ? null : Number(val))
+                "
               />
-              <p v-if="variantErrors[vIdx]?.price" class="mt-1 text-xs text-red-500 font-semibold">{{ variantErrors[vIdx].price }}</p>
+              <p
+                v-if="variantErrors[vIdx]?.price"
+                class="mt-1 text-xs text-red-500 font-semibold"
+              >
+                {{ variantErrors[vIdx].price }}
+              </p>
             </div>
             <AppInput
               :model-value="v.oldPrice ?? undefined"
@@ -217,33 +253,45 @@
               step="0.01"
               label="Стара ціна (UAH)"
               placeholder="0.00"
-              @update:model-value="(val) => (v as any).oldPrice = val === '' ? null : Number(val)"
+              @update:model-value="
+                (val) => ((v as any).oldPrice = val === '' ? null : Number(val))
+              "
             />
             <div>
               <AppInput
                 :model-value="v.stock ?? undefined"
-                :class="variantErrors[vIdx]?.stock ? 'ring-2 ring-red-500/60' : ''"
+                :class="
+                  variantErrors[vIdx]?.stock ? 'ring-2 ring-red-500/60' : ''
+                "
                 type="number"
                 label="Кількість"
                 placeholder="0"
               />
-              <p v-if="variantErrors[vIdx]?.stock" class="mt-1 text-xs text-red-500 font-semibold">{{ variantErrors[vIdx].stock }}</p>
+              <p
+                v-if="variantErrors[vIdx]?.stock"
+                class="mt-1 text-xs text-red-500 font-semibold"
+              >
+                {{ variantErrors[vIdx].stock }}
+              </p>
             </div>
-          <AppInput
-            :model-value="v.weight ?? undefined"
-            type="number"
-            step="0.001"
-            label="Вага (кг)"
-            placeholder="0.000"
-            @update:model-value="(val) => v.weight = val === '' ? null : Number(val)"
-          />
+            <AppInput
+              :model-value="v.weight ?? undefined"
+              type="number"
+              step="0.001"
+              label="Вага (кг)"
+              placeholder="0.000"
+              @update:model-value="
+                (val) => (v.weight = val === '' ? null : Number(val))
+              "
+            />
           </div>
 
           <!-- Image Upload / Management -->
           <div class="space-y-2">
             <label
               class="block text-xs font-bold text-gray-500 uppercase tracking-wider"
-            >Зображення варіанту</label>
+              >Зображення варіанту</label
+            >
             <div class="flex flex-wrap items-center gap-4">
               <!-- Upload Image Button -->
               <label
@@ -265,7 +313,9 @@
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span class="text-[9px] font-bold text-gray-500 uppercase">Додати</span>
+                  <span class="text-[9px] font-bold text-gray-500 uppercase"
+                    >Додати</span
+                  >
                 </div>
                 <input
                   type="file"
@@ -273,7 +323,7 @@
                   accept="image/*"
                   multiple
                   @change="onFileChange($event, v)"
-                >
+                />
               </label>
 
               <!-- Image Grid with Drag and Drop -->
@@ -297,7 +347,7 @@
                     :src="img.url"
                     alt=""
                     class="w-full h-full object-cover"
-                  >
+                  />
 
                   <!-- Badges -->
                   <span
@@ -343,12 +393,14 @@
             <div class="flex justify-between items-center">
               <label
                 class="block text-xs font-bold text-gray-500 uppercase tracking-wider"
-              >Характеристики варіанту</label>
+                >Характеристики варіанту</label
+              >
               <AppButton
                 type="button"
                 variant="ghost"
                 size="sm"
-                class="!text-primary-600 hover:!bg-primary-50 dark:hover:!bg-primary-950/20 !px-2.5 !py-1 !text-xs font-bold"
+                :disabled="!productForm.categoryId"
+                class="!text-primary-600 hover:!bg-primary-50 dark:hover:!bg-primary-950/20 !px-2.5 !py-1 !text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 @click="addVariantAttribute(v)"
               >
                 + Додати характеристику
@@ -356,7 +408,21 @@
             </div>
 
             <div
-              v-if="v.attributes.length > 0"
+              v-if="!productForm.categoryId"
+              class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/50 p-3 rounded-xl"
+            >
+              ⚠️ Оберіть категорію товару в розділі 1, щоб налаштувати характеристики.
+            </div>
+
+            <div
+              v-else-if="availableAttributes.length === 0"
+              class="text-xs text-gray-500 dark:text-gray-400 italic bg-gray-50/50 dark:bg-gray-900/10 p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-800"
+            >
+              Немає доступних характеристик для обраної категорії.
+            </div>
+
+            <div
+              v-if="productForm.categoryId && v.attributes.length > 0"
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
             >
               <div
@@ -370,7 +436,7 @@
                     v-model="attr.attributeId"
                     label="Назва"
                     placeholder="Оберіть..."
-                    :options="attributes"
+                    :options="availableAttributes"
                     option-value="id"
                     option-label="nameUk"
                     @change="onAttributeSelected(attr)"
@@ -382,7 +448,7 @@
                     <AppSelect
                       v-if="
                         getAttributeType(attr.attributeId) === 'select' ||
-                          getAttributeType(attr.attributeId) === 'color'
+                        getAttributeType(attr.attributeId) === 'color'
                       "
                       v-model="attr.valueId"
                       label="Значення"
@@ -433,8 +499,18 @@
         v-if="globalError"
         class="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 text-red-700 dark:text-red-400 rounded-xl px-4 py-3 text-sm font-semibold"
       >
-        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          class="w-5 h-5 flex-shrink-0 mt-0.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         <span style="white-space: pre-line">{{ globalError }}</span>
       </div>
@@ -448,10 +524,7 @@
       >
         Скасувати
       </AppButton>
-      <AppButton
-        variant="primary"
-        @click="saveProduct"
-      >
+      <AppButton variant="primary" @click="saveProduct">
         Зберегти товар
       </AppButton>
     </template>
@@ -459,7 +532,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import apiClient from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
@@ -489,8 +562,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: boolean): void;
-  (e: 'refresh'): void;
+  (e: "update:modelValue", val: boolean): void;
+  (e: "refresh"): void;
 }>();
 
 // Validation state
@@ -498,40 +571,59 @@ const errors = ref<FormErrors>({});
 const variantErrors = ref<VariantErrors[]>([]);
 const globalError = ref<string | null>(null);
 
+const availableAttributes = computed(() => {
+  const catId = Number(productForm.value.categoryId);
+  if (!catId) {
+    return props.attributes.filter(attr => !attr.categoryIds || attr.categoryIds.length === 0);
+  }
+
+  const ancestorIds: number[] = [];
+  let currentId: number | null = catId;
+  while (currentId) {
+    ancestorIds.push(currentId);
+    const cat = props.categories.find(c => c.id === currentId);
+    currentId = cat ? cat.parentId : null;
+  }
+
+  return props.attributes.filter(attr => {
+    return !attr.categoryIds || attr.categoryIds.length === 0 || attr.categoryIds.some((id: number) => ancestorIds.includes(id));
+  });
+});
+
 const validate = (): boolean => {
   const e: FormErrors = {};
   const ve: VariantErrors[] = [];
   let valid = true;
 
   if (!productForm.value.nameUk.trim()) {
-    e.nameUk = 'Назва товару (UK) є обов\'язковою';
+    e.nameUk = "Назва товару (UK) є обов'язковою";
     valid = false;
   }
   if (!productForm.value.nameEn.trim()) {
-    e.nameEn = 'Назва товару (EN) є обов\'язковою';
+    e.nameEn = "Назва товару (EN) є обов'язковою";
     valid = false;
   }
   if (!productForm.value.categoryId) {
-    e.categoryId = 'Категорія є обов\'язковою';
+    e.categoryId = "Категорія є обов'язковою";
     valid = false;
   }
   if (!productForm.value.status) {
-    e.status = 'Статус є обов\'язковим';
+    e.status = "Статус є обов'язковим";
     valid = false;
   }
 
   productForm.value.variants.forEach((v: any, i: number) => {
     const ve_: VariantErrors = {};
     if (!v.sku?.trim()) {
-      ve_.sku = 'SKU є обов\'язковим';
+      ve_.sku = "SKU є обов'язковим";
       valid = false;
     }
-    if (v.price === null || v.price === '' || Number(v.price) < 0) {
-      ve_.price = 'Вкажіть коректну ціну';
+    if (v.price === null || v.price === "" || Number(v.price) < 0) {
+      ve_.price = "Вкажіть коректну ціну";
       valid = false;
     }
-    if (v.stock === null || v.stock === '' || Number(v.stock) < 0) {
-      ve_.stock = 'Кількість не може бути від\'ємною';
+    if (v.stock === null || v.stock === "" || Number(v.stock) < 0) {
+      ve_.stock = "Кількість не може бути від'ємною";
       valid = false;
     }
     ve[i] = ve_;
@@ -715,40 +807,48 @@ const buildPayload = () => {
 const saveProduct = async () => {
   clearErrors();
   if (!validate()) {
-    globalError.value = 'Заповніть усі обов\'язкові поля, позначені червоним.';
+    globalError.value = "Заповніть усі обов'язкові поля, позначені червоним.";
     return;
   }
   const payload = buildPayload();
-  console.log('[ProductForm] Sending payload:', JSON.stringify(payload, null, 2));
+  console.log(
+    "[ProductForm] Sending payload:",
+    JSON.stringify(payload, null, 2),
+  );
   try {
     if (isEditing.value) {
       await apiClient.put(`/admin/products/${productForm.value.id}`, payload);
     } else {
-      await apiClient.post('/admin/products', payload);
+      await apiClient.post("/admin/products", payload);
     }
-    emit('update:modelValue', false);
-    emit('refresh');
+    emit("update:modelValue", false);
+    emit("refresh");
   } catch (error: any) {
-    console.error('Failed to save product:', error);
+    console.error("Failed to save product:", error);
     const serverErrors = error.response?.data?.errors;
     const serverMessage = error.response?.data?.message;
-    console.error('[ProductForm] Server errors:', serverErrors);
+    console.error("[ProductForm] Server errors:", serverErrors);
 
     if (serverErrors) {
       // Map top-level field errors
-      if (serverErrors['nameUk']) errors.value.nameUk = serverErrors['nameUk'][0];
-      if (serverErrors['nameEn']) errors.value.nameEn = serverErrors['nameEn'][0];
-      if (serverErrors['categoryId']) errors.value.categoryId = serverErrors['categoryId'][0];
-      if (serverErrors['status']) errors.value.status = serverErrors['status'][0];
+      if (serverErrors["nameUk"])
+        errors.value.nameUk = serverErrors["nameUk"][0];
+      if (serverErrors["nameEn"])
+        errors.value.nameEn = serverErrors["nameEn"][0];
+      if (serverErrors["categoryId"])
+        errors.value.categoryId = serverErrors["categoryId"][0];
+      if (serverErrors["status"])
+        errors.value.status = serverErrors["status"][0];
 
       // Collect all errors into readable list
       const allMessages: string[] = [];
       Object.entries(serverErrors).forEach(([field, msgs]: [string, any]) => {
         allMessages.push(`${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`);
       });
-      globalError.value = 'Помилки сервера:\n' + allMessages.join('\n');
+      globalError.value = "Помилки сервера:\n" + allMessages.join("\n");
     } else {
-      globalError.value = serverMessage || 'Помилка при збереженні товару. Спробуйте ще раз.';
+      globalError.value =
+        serverMessage || "Помилка при збереженні товару. Спробуйте ще раз.";
     }
   }
 };
@@ -777,7 +877,7 @@ const draggedVariant = ref<any>(null);
 const onDragStart = (event: DragEvent, index: number, variant: any) => {
   draggedIndex.value = index;
   draggedVariant.value = variant;
-  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
 };
 
 const onDrop = (event: DragEvent, index: number, variant: any) => {
@@ -790,7 +890,9 @@ const onDrop = (event: DragEvent, index: number, variant: any) => {
     const draggedItem = images[draggedIndex.value];
     images.splice(draggedIndex.value, 1);
     images.splice(index, 0, draggedItem);
-    images.forEach((img: any, idx: number) => { img.isPrimary = idx === 0; });
+    images.forEach((img: any, idx: number) => {
+      img.isPrimary = idx === 0;
+    });
   }
   draggedIndex.value = null;
   draggedVariant.value = null;
@@ -809,31 +911,42 @@ const onFileChange = async (event: Event, variant: any) => {
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
     try {
-      const response = await apiClient.post('/admin/products/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await apiClient.post(
+        "/admin/products/upload",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
       if (response.data?.data?.url) {
-        variant.images.push({ url: response.data.data.url, isPrimary: variant.images.length === 0 });
+        variant.images.push({
+          url: response.data.data.url,
+          isPrimary: variant.images.length === 0,
+        });
       }
     } catch (error: any) {
-      console.error('Failed to upload image:', error);
-      globalError.value = 'Помилка завантаження зображення: ' + (error.response?.data?.message || error.message);
+      console.error("Failed to upload image:", error);
+      globalError.value =
+        "Помилка завантаження зображення: " +
+        (error.response?.data?.message || error.message);
     }
   }
-  input.value = '';
+  input.value = "";
 };
 
 const removeVariantImage = (variant: any, index: number) => {
   variant.images.splice(index, 1);
   if (variant.images.length > 0) {
-    variant.images.forEach((img: any, idx: number) => { img.isPrimary = idx === 0; });
+    variant.images.forEach((img: any, idx: number) => {
+      img.isPrimary = idx === 0;
+    });
   }
 };
 
 const addVariantAttribute = (variant: any) => {
-  variant.attributes.push({ attributeId: '', valueId: null, value: '' });
+  variant.attributes.push({ attributeId: "", valueId: null, value: "" });
 };
 
 const removeVariantAttribute = (variant: any, index: number) => {
@@ -844,8 +957,11 @@ const onAttributeSelected = (attr: any) => {
   const selected = props.attributes.find((a: any) => a.id === attr.attributeId);
   if (selected) {
     attr.valueId = null;
-    attr.value = '';
-    if ((selected.type === 'select' || selected.type === 'color') && selected.values.length > 0) {
+    attr.value = "";
+    if (
+      (selected.type === "select" || selected.type === "color") &&
+      selected.values.length > 0
+    ) {
       attr.valueId = selected.values[0].id;
     }
   }
@@ -853,7 +969,7 @@ const onAttributeSelected = (attr: any) => {
 
 const getAttributeType = (attrId: any) => {
   const attr = props.attributes.find((a: any) => a.id === attrId);
-  return attr ? attr.type : 'text';
+  return attr ? attr.type : "text";
 };
 
 const getAttributeValues = (attrId: any) => {

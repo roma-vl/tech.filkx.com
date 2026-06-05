@@ -18,7 +18,8 @@
     <div v-else>
       <CategoriesTab
         :categories="dbCategories"
-        @refresh="fetchCategories"
+        :attributes="dbAttributes"
+        @refresh="fetchData"
       />
     </div>
   </div>
@@ -31,20 +32,25 @@ import CategoriesTab from "@/components/admin/features/catalog/CategoriesTab.vue
 
 const isLoading = ref(false);
 const dbCategories = ref([]);
+const dbAttributes = ref([]);
 
-const fetchCategories = async () => {
+const fetchData = async () => {
   isLoading.value = true;
   try {
-    const catsRes = await api.get("/admin/categories");
+    const [catsRes, attrsRes] = await Promise.all([
+      api.get("/admin/categories"),
+      api.get("/admin/attributes")
+    ]);
     dbCategories.value = catsRes.data.data;
+    dbAttributes.value = attrsRes.data.data;
   } catch (error) {
-    console.error("Failed to load categories:", error);
+    console.error("Failed to load admin categories data:", error);
   } finally {
     isLoading.value = false;
   }
 };
 
 onMounted(() => {
-  fetchCategories();
+  fetchData();
 });
 </script>

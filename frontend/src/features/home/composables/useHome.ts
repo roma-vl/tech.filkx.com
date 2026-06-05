@@ -32,7 +32,8 @@ export function useHome() {
       const images = firstVariant.dimensions?.images || [];
       if (images.length > 0) {
         const primary =
-          images.find((img: any) => img.isPrimary || img.is_primary) || images[0];
+          images.find((img: any) => img.isPrimary || img.is_primary) ||
+          images[0];
         if (primary && primary.url) {
           image = primary.url;
         }
@@ -123,10 +124,12 @@ export function useHome() {
       let viewedIds = "";
       if (typeof window !== "undefined") {
         const wishlist = JSON.parse(
-          localStorage.getItem("electro_wishlist") || "[]"
+          localStorage.getItem("electro_wishlist") || "[]",
         );
         wishlistIds = wishlist.map((p: any) => p.id).join(",");
-        const viewed = JSON.parse(localStorage.getItem("electro_viewed") || "[]");
+        const viewed = JSON.parse(
+          localStorage.getItem("electro_viewed") || "[]",
+        );
         viewedIds = viewed.join(",");
       }
 

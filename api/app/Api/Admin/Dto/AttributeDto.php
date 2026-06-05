@@ -9,7 +9,8 @@ class AttributeDto
         public readonly string $nameUk,
         public readonly string $nameEn,
         public readonly string $type,
-        public readonly array $values
+        public readonly array $values,
+        public readonly array $categoryIds = []
     ) {}
 
     public static function fromRequest($request): self
@@ -19,7 +20,8 @@ class AttributeDto
             nameUk: $request->input('nameUk'),
             nameEn: $request->input('nameEn'),
             type: $request->input('type'),
-            values: $request->input('values', [])
+            values: $request->input('values', []),
+            categoryIds: $request->input('categoryIds', [])
         );
     }
 

@@ -12,6 +12,7 @@ class UploadUserAvatarAction
         $path = $avatar->store('avatars', 'public');
         $user->avatar_path = $path;
         $user->save();
+
         return $user;
     }
 }

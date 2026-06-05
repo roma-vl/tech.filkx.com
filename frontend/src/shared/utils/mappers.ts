@@ -7,7 +7,12 @@ import { User } from "@/entities/user/types";
  * Check if value is a plain object
  */
 function isObject(val: any): boolean {
-  return val !== null && typeof val === "object" && !Array.isArray(val) && !(val instanceof Date);
+  return (
+    val !== null &&
+    typeof val === "object" &&
+    !Array.isArray(val) &&
+    !(val instanceof Date)
+  );
 }
 
 /**

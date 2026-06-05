@@ -35,9 +35,7 @@
           >
             Back to Login
           </router-link>
-          <p class="text-xs text-gray-400">
-            Need help? Contact support
-          </p>
+          <p class="text-xs text-gray-400">Need help? Contact support</p>
         </div>
       </div>
       <div
@@ -84,10 +82,7 @@
           </div>
         </div>
       </div>
-      <div
-        v-else
-        class="flex flex-col items-center"
-      >
+      <div v-else class="flex flex-col items-center">
         <svg
           class="animate-spin h-10 w-10 text-primary-600 mb-4"
           xmlns="http://www.w3.org/2000/svg"
@@ -108,9 +103,7 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <p class="text-gray-500 dark:text-gray-400">
-          Completing sign in...
-        </p>
+        <p class="text-gray-500 dark:text-gray-400">Completing sign in...</p>
       </div>
     </div>
   </div>

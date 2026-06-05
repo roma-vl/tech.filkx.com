@@ -20,7 +20,7 @@ class NotificationRepository implements NotificationRepositoryInterface
             // Show notifications meant for this user OR global ones
             $query->where(function ($q) use ($userId) {
                 $q->where('user_id', $userId)
-                  ->orWhereNull('user_id');
+                    ->orWhereNull('user_id');
             });
         } else {
             // Unauthenticated/guest: only global ones
@@ -38,6 +38,7 @@ class NotificationRepository implements NotificationRepositoryInterface
     public function markAsRead(Notification $notification): Notification
     {
         $notification->update(['read_at' => now()]);
+
         return $notification;
     }
 

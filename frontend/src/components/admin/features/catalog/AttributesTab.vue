@@ -45,6 +45,11 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
+                Категорії
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Варіанти значень
               </th>
               <th
@@ -89,6 +94,23 @@
                 >
                   {{ attr.type }}
                 </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                <div class="flex flex-wrap gap-1 max-w-[240px]">
+                  <span
+                    v-for="catId in attr.categoryIds"
+                    :key="catId"
+                    class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold"
+                  >
+                    {{ getCategoryName(catId) }}
+                  </span>
+                  <span
+                    v-if="!attr.categoryIds || attr.categoryIds.length === 0"
+                    class="text-gray-400 dark:text-gray-500 text-xs italic"
+                  >
+                    Усі категорії
+                  </span>
+                </div>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                 <div class="flex flex-wrap gap-1">
@@ -301,7 +323,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import api from "@/services/api";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
@@ -310,12 +332,14 @@ import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 
 const props = defineProps({
   attributes: { type: Array, required: true },
+  categories: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(["refresh"]);
 
 const showAttributeModal = ref(false);
 const isEditing = ref(false);
+const categorySearchQuery = ref("");
 
 const attributeForm = ref({
   id: null,
@@ -324,10 +348,59 @@ const attributeForm = ref({
   nameEn: "",
   type: "text",
   values: [],
+  categoryIds: [],
+});
+
+const getCategoryName = (id) => {
+  const cat = props.categories.find(c => c.id === id);
+  return cat ? cat.nameUk : `ID: ${id}`;
+};
+
+const buildIndentedCategories = (cats, parentId = null, depth = 0) => {
+  let result = [];
+  const children = cats.filter(c => c.parentId === parentId);
+  children.forEach(c => {
+    result.push({
+      ...c,
+      depth
+    });
+    result = result.concat(buildIndentedCategories(cats, c.id, depth + 1));
+  });
+  return result;
+};
+
+const indentedCategories = computed(() => {
+  const rootIds = props.categories.filter(c => !c.parentId || !props.categories.some(parent => parent.id === c.parentId)).map(c => c.id);
+  
+  let result = [];
+  const rootCats = props.categories.filter(c => rootIds.includes(c.id));
+  rootCats.forEach(c => {
+    result.push({ ...c, depth: 0 });
+    result = result.concat(buildIndentedCategories(props.categories, c.id, 1));
+  });
+
+  const seen = new Set();
+  return result.filter(item => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+});
+
+const filteredFormCategories = computed(() => {
+  if (!categorySearchQuery.value.trim()) {
+    return indentedCategories.value;
+  }
+  const query = categorySearchQuery.value.toLowerCase();
+  return props.categories.filter(c => 
+    c.nameUk.toLowerCase().includes(query) || 
+    c.nameEn.toLowerCase().includes(query)
+  ).map(c => ({ ...c, depth: 0 }));
 });
 
 const openAddAttributeModal = () => {
   isEditing.value = false;
+  categorySearchQuery.value = "";
   attributeForm.value = {
     id: null,
     code: "",
@@ -335,12 +408,14 @@ const openAddAttributeModal = () => {
     nameEn: "",
     type: "text",
     values: [],
+    categoryIds: [],
   };
   showAttributeModal.value = true;
 };
 
 const openEditAttributeModal = (attr) => {
   isEditing.value = true;
+  categorySearchQuery.value = "";
 
   const valuesCloned = (attr.values || []).map((v) => ({
     id: v.id,
@@ -356,6 +431,7 @@ const openEditAttributeModal = (attr) => {
     nameEn: attr.nameEn,
     type: attr.type,
     values: valuesCloned,
+    categoryIds: attr.categoryIds || [],
   };
   showAttributeModal.value = true;
 };

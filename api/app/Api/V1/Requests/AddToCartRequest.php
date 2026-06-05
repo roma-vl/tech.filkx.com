@@ -15,7 +15,7 @@ class AddToCartRequest extends FormRequest
     {
         return [
             'variantId' => 'required',
-            'quantity'  => 'nullable|integer|min:1',
+            'quantity' => 'nullable|integer|min:1',
         ];
     }
 }

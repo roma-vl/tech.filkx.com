@@ -18,7 +18,7 @@ class UpdateCouponAction
         $coupon = $this->couponRepository->find($id);
 
         if (! $coupon) {
-            throw new CouponNotFoundException();
+            throw new CouponNotFoundException;
         }
 
         return $this->couponRepository->update($coupon, $dto->toArray());

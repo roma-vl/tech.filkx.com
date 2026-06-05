@@ -253,13 +253,14 @@ const filterBtns = [
       <div class="relative flex-1 max-w-md">
         <span
           class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]"
-        >search</span>
+          >search</span
+        >
         <input
           v-model="ordersSearchQuery"
           type="text"
           placeholder="Пошук замовлень за номером або назвою товару..."
           class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-xs md:text-sm focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] text-zinc-800 dark:text-zinc-200 outline-none"
-        >
+        />
         <button
           v-if="ordersSearchQuery"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650"
@@ -271,10 +272,7 @@ const filterBtns = [
     </div>
 
     <!-- Orders -->
-    <div
-      v-if="filteredOrders.length > 0"
-      class="space-y-6"
-    >
+    <div v-if="filteredOrders.length > 0" class="space-y-6">
       <div
         v-for="order in filteredOrders"
         :key="order.id"
@@ -332,7 +330,8 @@ const filterBtns = [
               >
                 <span class="material-symbols-outlined text-[12px]">{{
                   order.statusIcon
-                }}</span>{{ order.status }}
+                }}</span
+                >{{ order.status }}
               </span>
             </div>
           </div>
@@ -361,7 +360,7 @@ const filterBtns = [
               :src="item.image"
               :alt="item.name"
               @click="cartStore.viewProduct(item as any)"
-            >
+            />
             <div class="flex-1">
               <h3
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight cursor-pointer hover:text-[#00a046] transition-colors"
@@ -402,7 +401,8 @@ const filterBtns = [
                 >
                   <span
                     class="material-symbols-outlined text-[16px] md:text-[18px]"
-                  >track_changes</span>
+                    >track_changes</span
+                  >
                   Відстежити
                 </button>
               </div>
@@ -417,7 +417,8 @@ const filterBtns = [
     >
       <span
         class="material-symbols-outlined text-[48px] text-zinc-350 dark:text-zinc-600 mb-4"
-      >shopping_bag</span>
+        >shopping_bag</span
+      >
       <h3 class="font-extrabold text-lg text-zinc-850 dark:text-zinc-150">
         Замовлень не знайдено
       </h3>
@@ -429,7 +430,8 @@ const filterBtns = [
       <a
         href="/catalog"
         class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-      >Перейти до каталогу</a>
+        >Перейти до каталогу</a
+      >
     </div>
   </div>
 
@@ -480,7 +482,7 @@ const filterBtns = [
               :alt="item.name"
               class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
               @click="cartStore.viewProduct(item as any)"
-            >
+            />
             <div class="flex-1">
               <p
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 cursor-pointer hover:text-[#00a046] transition-colors"
@@ -530,7 +532,9 @@ const filterBtns = [
             <p
               class="flex items-center gap-1.5 font-extrabold text-zinc-850 dark:text-zinc-150 mt-1"
             >
-              <span class="material-symbols-outlined text-[18px]">credit_card</span>{{ selectedOrder.paymentMethod.type }}
+              <span class="material-symbols-outlined text-[18px]"
+                >credit_card</span
+              >{{ selectedOrder.paymentMethod.type }}
               {{ selectedOrder.paymentMethod.number }}
             </p>
           </div>
@@ -542,7 +546,8 @@ const filterBtns = [
             Сума
           </h4>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
-            <span>Вартість товарів</span><span>{{ (selectedOrder.total - 150).toFixed(2) }} ₴</span>
+            <span>Вартість товарів</span
+            ><span>{{ (selectedOrder.total - 150).toFixed(2) }} ₴</span>
           </div>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
             <span>Доставка</span><span>150.00 ₴</span>
@@ -550,7 +555,10 @@ const filterBtns = [
           <div
             class="flex justify-between font-black text-sm md:text-base pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-2"
           >
-            <span>Всього</span><span class="text-[#00a046]">{{ selectedOrder.total.toFixed(2) }} ₴</span>
+            <span>Всього</span
+            ><span class="text-[#00a046]"
+              >{{ selectedOrder.total.toFixed(2) }} ₴</span
+            >
           </div>
         </div>
       </div>
@@ -686,7 +694,7 @@ const filterBtns = [
             :src="reviewProduct.image"
             :alt="reviewProduct.name"
             class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1"
-          >
+          />
           <p class="font-extrabold text-zinc-800 dark:text-zinc-200">
             {{ reviewProduct.name }}
           </p>
@@ -694,7 +702,8 @@ const filterBtns = [
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Оцінка</label>
+            >Оцінка</label
+          >
           <div class="flex gap-1 text-amber-400 cursor-pointer">
             <span
               v-for="star in 5"
@@ -706,13 +715,15 @@ const filterBtns = [
                   : ''
               "
               @click="reviewRating = star"
-            >star</span>
+              >star</span
+            >
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Коментар</label>
+            >Коментар</label
+          >
           <textarea
             v-model="reviewComment"
             rows="4"

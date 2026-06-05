@@ -20,7 +20,7 @@
           :alt="image.label"
           class="w-full h-full object-contain hover:scale-105 transition-transform"
           :src="image.src"
-        >
+        />
       </button>
     </div>
 
@@ -35,7 +35,7 @@
         class="max-h-[380px] md:max-h-[460px] object-contain transition-transform duration-100 p-6 pointer-events-none"
         :style="zoomStyle"
         :src="selectedImage"
-      >
+      />
 
       <!-- Zoom details guide text -->
       <div
@@ -52,14 +52,18 @@
           type="button"
           @click.stop="$emit('prev-image')"
         >
-          <span class="material-symbols-outlined text-[#00a046]">chevron_left</span>
+          <span class="material-symbols-outlined text-[#00a046]"
+            >chevron_left</span
+          >
         </button>
         <button
           class="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow hover:bg-white transition-colors"
           type="button"
           @click.stop="$emit('next-image')"
         >
-          <span class="material-symbols-outlined text-[#00a046]">chevron_right</span>
+          <span class="material-symbols-outlined text-[#00a046]"
+            >chevron_right</span
+          >
         </button>
       </div>
     </div>

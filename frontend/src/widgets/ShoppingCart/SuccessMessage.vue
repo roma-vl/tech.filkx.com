@@ -25,7 +25,9 @@
       <div class="flex justify-between text-sm">
         <span class="text-on-surface-variant">Amount to Pay:</span>
         <span class="font-black text-[#00a046]">{{
-          formatPrice(orderSuccessData?.totalPrice || orderSuccessData?.total_price || 0)
+          formatPrice(
+            orderSuccessData?.totalPrice || orderSuccessData?.total_price || 0,
+          )
         }}</span>
       </div>
       <div class="flex justify-between text-sm">
@@ -36,11 +38,12 @@
       </div>
       <div class="flex justify-between text-sm">
         <span class="text-on-surface-variant">Payment Method:</span>
-        <span
-          class="font-semibold uppercase text-zinc-700 dark:text-zinc-300"
-        >
+        <span class="font-semibold uppercase text-zinc-700 dark:text-zinc-300">
           {{
-            getPaymentMethodLabel(orderSuccessData?.paymentMethod || orderSuccessData?.payment_method)
+            getPaymentMethodLabel(
+              orderSuccessData?.paymentMethod ||
+                orderSuccessData?.payment_method,
+            )
           }}
         </span>
       </div>

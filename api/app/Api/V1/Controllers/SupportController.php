@@ -2,11 +2,10 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\Models\SupportTicket;
-use App\Models\SupportMessage;
 use App\Api\V1\Enum\SupportStatusEnum;
 use App\Api\V1\Resources\Support\SupportMessageResource;
 use App\Api\V1\Resources\Support\SupportTicketResource;
+use App\Models\SupportTicket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -104,7 +103,7 @@ class SupportController extends BaseApiController
             'file' => 'nullable|file|max:10240',
         ]);
 
-        if (!$request->input('message') && !$request->hasFile('file')) {
+        if (! $request->input('message') && ! $request->hasFile('file')) {
             return self::errorResponse('Message or file is required', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -144,6 +143,7 @@ class SupportController extends BaseApiController
             return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
         }
         $ticket->update(['handled_by' => 'human']);
+
         return self::successfulResponseWithData(new SupportTicketResource($ticket->load('messages')));
     }
 
@@ -153,6 +153,7 @@ class SupportController extends BaseApiController
             return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
         }
         $ticket->update(['handled_by' => 'ai']);
+
         return self::successfulResponseWithData(new SupportTicketResource($ticket->load('messages')));
     }
 }

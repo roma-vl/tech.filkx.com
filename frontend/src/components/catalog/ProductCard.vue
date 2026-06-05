@@ -68,12 +68,13 @@ const formatPrice = (price: number) => {
           :alt="product.name"
           class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
           :src="product.image"
-        >
+        />
         <span
           v-if="product.badge"
           :class="product.badgeClass"
           class="absolute top-2 left-2 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm"
-        >{{ product.badge }}</span>
+          >{{ product.badge }}</span
+        >
       </a>
 
       <!-- Quick View Floating Button on Hover (Grid) -->
@@ -92,7 +93,9 @@ const formatPrice = (price: number) => {
         @click="cartStore.toggleWishlist(product as any)"
       >
         <span
-          :class="{ 'text-rose-550': cartStore.isInWishlist(product.id as any) }"
+          :class="{
+            'text-rose-550': cartStore.isInWishlist(product.id as any),
+          }"
           :style="
             cartStore.isInWishlist(product.id as any)
               ? 'font-variation-settings: \'FILL\' 1;'
@@ -122,7 +125,8 @@ const formatPrice = (price: number) => {
         <div class="flex items-center justify-between gap-2">
           <span
             class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2 py-0.5 rounded"
-          >{{ product.brand }}</span>
+            >{{ product.brand }}</span
+          >
           <div class="flex items-center gap-1">
             <div class="flex text-amber-400">
               <span
@@ -140,7 +144,8 @@ const formatPrice = (price: number) => {
             </div>
             <span
               class="text-[10px] font-black text-zinc-450 dark:text-zinc-500"
-            >({{ product.reviews }})</span>
+              >({{ product.reviews }})</span
+            >
           </div>
         </div>
 
@@ -218,10 +223,12 @@ const formatPrice = (price: number) => {
             <span
               v-if="product.oldPrice"
               class="text-[10px] text-zinc-400 line-through font-extrabold"
-            >{{ formatPrice(product.oldPrice) }}</span>
+              >{{ formatPrice(product.oldPrice) }}</span
+            >
             <span
               class="text-lg md:text-xl font-black text-[#00a046] tracking-tight"
-            >{{ formatPrice(product.price) }}</span>
+              >{{ formatPrice(product.price) }}</span
+            >
           </div>
 
           <!-- Compare Button -->
@@ -235,9 +242,13 @@ const formatPrice = (price: number) => {
             class="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all"
             @click="cartStore.toggleCompare(product as any)"
           >
-            <span class="material-symbols-outlined text-[14px]">compare_arrows</span>
+            <span class="material-symbols-outlined text-[14px]"
+              >compare_arrows</span
+            >
             <span>{{
-              cartStore.isInCompare(product.id as any) ? "У порівнянні" : "Порівняти"
+              cartStore.isInCompare(product.id as any)
+                ? "У порівнянні"
+                : "Порівняти"
             }}</span>
           </button>
         </div>
@@ -254,7 +265,9 @@ const formatPrice = (price: number) => {
             type="button"
             @click="cartStore.addToCart(product as any)"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >shopping_cart</span
+            >
             {{ product.inStock ? "Купити" : "Немає в наявності" }}
           </button>
         </div>

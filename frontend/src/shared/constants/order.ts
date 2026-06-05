@@ -6,7 +6,7 @@ export const OrderStatuses = {
   CANCELLED: "cancelled",
 } as const;
 
-export type OrderStatus = typeof OrderStatuses[keyof typeof OrderStatuses];
+export type OrderStatus = (typeof OrderStatuses)[keyof typeof OrderStatuses];
 
 export const DeliveryMethods = {
   NOVA_POSHTA: "nova_poshta",

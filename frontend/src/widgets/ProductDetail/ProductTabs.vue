@@ -23,10 +23,7 @@
       <!-- Tab Content -->
       <div class="lg:col-span-8">
         <!-- Experience Tab -->
-        <section
-          v-if="activeTab === 'experience'"
-          class="space-y-6 text-left"
-        >
+        <section v-if="activeTab === 'experience'" class="space-y-6 text-left">
           <div class="max-w-2xl space-y-4">
             <h3
               class="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug font-bold"
@@ -44,26 +41,23 @@
             :alt="product.name"
             class="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm object-contain max-h-[450px] bg-white p-4"
             :src="galleryImages[1].src"
-          >
+          />
         </section>
 
         <!-- Specifications Tab -->
-        <section
-          v-else-if="activeTab === 'specs'"
-          class="space-y-6 text-left"
-        >
+        <section v-else-if="activeTab === 'specs'" class="space-y-6 text-left">
           <h3
             class="font-extrabold text-lg text-zinc-900 dark:text-white flex items-center gap-2 font-bold"
           >
-            <span class="material-symbols-outlined text-[#00a046]">terminal</span>
+            <span class="material-symbols-outlined text-[#00a046]"
+              >terminal</span
+            >
             Технічні характеристики
           </h3>
           <div
             class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm"
           >
-            <table
-              class="w-full text-left border-collapse text-xs md:text-sm"
-            >
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
               <thead>
                 <tr
                   class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-200 dark:border-zinc-800"
@@ -89,9 +83,7 @@
                   "
                   class="hover:bg-emerald-500/5 transition-colors"
                 >
-                  <td
-                    class="p-4 font-bold text-zinc-800 dark:text-zinc-200"
-                  >
+                  <td class="p-4 font-bold text-zinc-800 dark:text-zinc-200">
                     {{ spec[0] }}
                   </td>
                   <td
@@ -125,7 +117,8 @@
                   :key="star"
                   class="material-symbols-outlined text-[20px]"
                   style="font-variation-settings: &quot;FILL&quot; 1"
-                >star</span>
+                  >star</span
+                >
               </div>
               <p
                 class="text-[10px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 font-bold"
@@ -147,7 +140,8 @@
               >
                 <span
                   class="font-extrabold w-12 text-right text-zinc-600 dark:text-zinc-400 font-semibold"
-                >{{ rating.label }}</span>
+                  >{{ rating.label }}</span
+                >
                 <div
                   class="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"
                 >
@@ -188,7 +182,8 @@
                     :key="star"
                     class="material-symbols-outlined text-[16px]"
                     style="font-variation-settings: &quot;FILL&quot; 1"
-                  >star</span>
+                    >star</span
+                  >
                 </div>
               </div>
               <p
@@ -201,54 +196,50 @@
         </section>
 
         <!-- Support Tab -->
-        <section
-          v-else
-          class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left"
-        >
+        <section v-else class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           <div
             class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
           >
-            <span
-              class="material-symbols-outlined text-[#00a046] text-[28px]"
-            >support_agent</span>
-            <h3 class="font-black text-sm text-zinc-900 dark:text-white font-bold">
+            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
+              >support_agent</span
+            >
+            <h3
+              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
+            >
               Консультація експерта
             </h3>
-            <p
-              class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed"
-            >
-              Наші спеціалісти готові допомогти з налаштуванням та
-              перенесенням даних.
+            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
+              Наші спеціалісти готові допомогти з налаштуванням та перенесенням
+              даних.
             </p>
           </div>
           <div
             class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
           >
-            <span
-              class="material-symbols-outlined text-[#00a046] text-[28px]"
-            >local_shipping</span>
-            <h3 class="font-black text-sm text-zinc-900 dark:text-white font-bold">
+            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
+              >local_shipping</span
+            >
+            <h3
+              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
+            >
               Доставка і заміна
             </h3>
-            <p
-              class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed"
-            >
-              Безкоштовна доставка, можливість примірки та швидкий обмін
-              товару.
+            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
+              Безкоштовна доставка, можливість примірки та швидкий обмін товару.
             </p>
           </div>
           <div
             class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
           >
-            <span
-              class="material-symbols-outlined text-[#00a046] text-[28px]"
-            >workspace_premium</span>
-            <h3 class="font-black text-sm text-zinc-900 dark:text-white font-bold">
+            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
+              >workspace_premium</span
+            >
+            <h3
+              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
+            >
               Програма захисту
             </h3>
-            <p
-              class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed"
-            >
+            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
               Можливість продовження гарантії та страхування від випадкових
               пошкоджень.
             </p>
@@ -264,9 +255,9 @@
           <h4
             class="font-black text-[10px] uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-2 font-bold"
           >
-            <span
-              class="material-symbols-outlined text-[#00a046] text-[18px]"
-            >verified</span>
+            <span class="material-symbols-outlined text-[#00a046] text-[18px]"
+              >verified</span
+            >
             Гарантії якості
           </h4>
           <ul class="space-y-4 text-xs">
@@ -275,11 +266,13 @@
               :key="item.title"
               class="flex gap-4 items-start"
             >
-              <span
-                class="material-symbols-outlined text-[#00a046] mt-0.5"
-              >{{ item.icon }}</span>
+              <span class="material-symbols-outlined text-[#00a046] mt-0.5">{{
+                item.icon
+              }}</span>
               <div class="space-y-0.5">
-                <p class="font-black text-zinc-850 dark:text-zinc-100 font-bold">
+                <p
+                  class="font-black text-zinc-850 dark:text-zinc-100 font-bold"
+                >
                   {{ item.title }}
                 </p>
                 <p class="text-zinc-500 dark:text-zinc-400">
@@ -299,9 +292,7 @@
             >
               Технічний радник
             </h4>
-            <p
-              class="text-xs text-zinc-650 dark:text-zinc-400 leading-relaxed"
-            >
+            <p class="text-xs text-zinc-650 dark:text-zinc-400 leading-relaxed">
               Наші інженери допоможуть обрати ідеальну конфігурацію під ваші
               потреби в режимі реального часу.
             </p>
@@ -309,7 +300,9 @@
               class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-md font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm font-bold"
               type="button"
             >
-              <span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+              <span class="material-symbols-outlined text-[16px]"
+                >chat_bubble</span
+              >
               ПОЧАТИ ЧАТ
             </button>
           </div>

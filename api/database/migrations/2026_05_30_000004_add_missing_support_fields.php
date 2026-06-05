@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('support_tickets', function (Blueprint $table) {
-            if (!Schema::hasColumn('support_tickets', 'handled_by')) {
+            if (! Schema::hasColumn('support_tickets', 'handled_by')) {
                 $table->string('handled_by')->default('human')->after('status');
             }
-            if (!Schema::hasColumn('support_tickets', 'tags')) {
+            if (! Schema::hasColumn('support_tickets', 'tags')) {
                 $table->json('tags')->nullable()->after('handled_by');
             }
         });
 
         Schema::table('support_messages', function (Blueprint $table) {
-            if (!Schema::hasColumn('support_messages', 'is_internal')) {
+            if (! Schema::hasColumn('support_messages', 'is_internal')) {
                 $table->boolean('is_internal')->default(false)->after('is_admin');
             }
         });

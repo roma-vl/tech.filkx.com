@@ -32,10 +32,7 @@
         <LockIcon class="w-2.5 h-2.5 text-gray-500 dark:text-gray-400" />
       </div>
     </div>
-    <span
-      v-if="!collapsed"
-      class="ml-3 truncate text-[15px]"
-    >{{
+    <span v-if="!collapsed" class="ml-3 truncate text-[15px]">{{
       t(item.labelKey)
     }}</span>
   </router-link>

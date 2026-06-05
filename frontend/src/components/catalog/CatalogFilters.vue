@@ -157,24 +157,26 @@ const toggleAttr = (code: string, value: string) => {
       >
         <span
           class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
-        >Тільки в наявності</span>
+          >Тільки в наявності</span
+        >
         <input
           v-model="localStock"
           type="checkbox"
           class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
-        >
+        />
       </label>
       <label
         class="flex items-center justify-between group cursor-pointer py-0.5"
       >
         <span
           class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
-        >Акційні пропозиції</span>
+          >Акційні пропозиції</span
+        >
         <input
           v-model="localDiscounts"
           type="checkbox"
           class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
-        >
+        />
       </label>
     </div>
 
@@ -222,10 +224,11 @@ const toggleAttr = (code: string, value: string) => {
               :value="brand.slug"
               class="w-4 h-4 rounded border-zinc-300 text-[#00a046] focus:ring-0 focus:ring-offset-0 cursor-pointer"
               type="checkbox"
-            >
+            />
             <span
               class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
-            >{{ brand.name }}</span>
+              >{{ brand.name }}</span
+            >
           </div>
           <span class="text-[10px] font-bold text-zinc-400">{{
             brand.count
@@ -235,11 +238,7 @@ const toggleAttr = (code: string, value: string) => {
     </div>
 
     <!-- Dynamic Attributes Filter -->
-    <div
-      v-for="attr in dynamicAttributes"
-      :key="attr.id"
-      class="p-5"
-    >
+    <div v-for="attr in dynamicAttributes" :key="attr.id" class="p-5">
       <div class="flex items-center justify-between mb-3.5">
         <h3
           class="font-extrabold text-[10px] uppercase tracking-widest text-zinc-450 dark:text-zinc-500"
@@ -259,10 +258,7 @@ const toggleAttr = (code: string, value: string) => {
       </div>
 
       <!-- Color swatches -->
-      <div
-        v-if="attr.type === 'color'"
-        class="flex flex-wrap gap-2"
-      >
+      <div v-if="attr.type === 'color'" class="flex flex-wrap gap-2">
         <button
           v-for="val in attr.values"
           :key="val.id"
@@ -280,16 +276,13 @@ const toggleAttr = (code: string, value: string) => {
       </div>
 
       <!-- Text/Select Options -->
-      <div
-        v-else
-        class="grid grid-cols-2 gap-2"
-      >
+      <div v-else class="grid grid-cols-2 gap-2">
         <button
           v-for="val in attr.values"
           :key="val.id"
           :class="
             selectedAttrs[attr.code] ===
-              (val.value.uk || val.value.en || val.value)
+            (val.value.uk || val.value.en || val.value)
               ? 'bg-[#00a046] text-white shadow-sm'
               : 'border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-[#00a046] hover:text-[#00a046] bg-zinc-50/50 dark:bg-zinc-900'
           "
@@ -331,7 +324,7 @@ const toggleAttr = (code: string, value: string) => {
             type="radio"
             :value="rate"
             class="w-3.5 h-3.5 border-zinc-300 text-[#00a046] focus:ring-0 cursor-pointer"
-          >
+          />
           <span
             class="text-xs font-extrabold text-zinc-700 dark:text-zinc-300 flex items-center gap-1"
           >
@@ -339,7 +332,8 @@ const toggleAttr = (code: string, value: string) => {
             <span
               class="material-symbols-outlined text-[14px] text-amber-400"
               style="font-variation-settings: &quot;FILL&quot; 1"
-            >star</span>
+              >star</span
+            >
           </span>
         </label>
       </div>

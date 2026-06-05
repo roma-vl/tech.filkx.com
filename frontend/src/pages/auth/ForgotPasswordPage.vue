@@ -10,11 +10,7 @@
         {{ $t("auth.forgotPassword.subtitle") }}
       </p>
 
-      <form
-        v-if="!sent"
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form v-if="!sent" class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="email"
           :label="$t('auth.forgotPassword.emailLabel')"
@@ -49,10 +45,7 @@
         </router-link>
       </form>
 
-      <div
-        v-else
-        class="text-center py-4"
-      >
+      <div v-else class="text-center py-4">
         <div
           class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 rounded-[2rem] border border-green-100 dark:border-green-800/30"
         >

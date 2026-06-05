@@ -10,18 +10,18 @@ const authStore = useAuthStore();
 const cartStore = useCartStore();
 
 const userName = computed(() => authStore.user?.name || "Гість");
-const userEmail = computed(() => authStore.user?.email || "Авторизуйтесь для доступу");
+const userEmail = computed(
+  () => authStore.user?.email || "Авторизуйтесь для доступу",
+);
 const userInitials = computed(() => {
   const name = authStore.user?.name || "";
   if (!name) return "Г";
-  return (
-    name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .substring(0, 2)
-      .toUpperCase()
-  );
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 });
 
 interface NavItem {
@@ -30,40 +30,70 @@ interface NavItem {
   query?: { tab: string };
   routeName?: string;
   action?: () => void;
-  badgeKey?: "cartCount" | "wishlistCount" | "compareCount" | "unreadNotificationsCount";
+  badgeKey?:
+    | "cartCount"
+    | "wishlistCount"
+    | "compareCount"
+    | "unreadNotificationsCount";
   isGreenBadge?: boolean;
 }
 
 const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
-  
-  if (authStore.isAuthenticated) {
-    items.push(
-      { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
-      { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } }
-    );
-  }
-  
-  // These work for both guests and authenticated users
-  items.push(
-    { name: "Моє обране", icon: "favorite", query: { tab: "favorites" }, badgeKey: "wishlistCount" },
-    { name: "Порівняння товарів", icon: "compare_arrows", query: { tab: "compare" }, badgeKey: "compareCount" },
-    { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } }
-  );
 
   if (authStore.isAuthenticated) {
     items.push(
-      { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" }, badgeKey: "unreadNotificationsCount", isGreenBadge: true }
+      {
+        name: "Панель керування",
+        icon: "dashboard",
+        query: { tab: "dashboard" },
+      },
+      {
+        name: "Історія замовлень",
+        icon: "shopping_bag",
+        query: { tab: "orders" },
+      },
     );
   }
-  
+
+  // These work for both guests and authenticated users
+  items.push(
+    {
+      name: "Моє обране",
+      icon: "favorite",
+      query: { tab: "favorites" },
+      badgeKey: "wishlistCount",
+    },
+    {
+      name: "Порівняння товарів",
+      icon: "compare_arrows",
+      query: { tab: "compare" },
+      badgeKey: "compareCount",
+    },
+    { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
+  );
+
+  if (authStore.isAuthenticated) {
+    items.push({
+      name: "Сповіщення",
+      icon: "notifications",
+      query: { tab: "notifications" },
+      badgeKey: "unreadNotificationsCount",
+      isGreenBadge: true,
+    });
+  }
+
   return items;
 });
 
 const footerItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
   if (authStore.isAuthenticated) {
-    items.push({ name: "Налаштування", icon: "settings", query: { tab: "settings" } });
+    items.push({
+      name: "Налаштування",
+      icon: "settings",
+      query: { tab: "settings" },
+    });
   }
   items.push({ name: "Підтримка", icon: "help", query: { tab: "support" } });
   return items;
@@ -140,14 +170,18 @@ const closeDrawer = () => {
             >
               {{ userName }}
             </p>
-            <p class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5">
+            <p
+              class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5"
+            >
               {{ userEmail }}
             </p>
             <div
               v-if="authStore.isAuthenticated"
               class="flex items-center gap-1 mt-1"
             >
-              <span class="material-symbols-outlined text-[13px] text-[#00a046]">verified</span>
+              <span class="material-symbols-outlined text-[13px] text-[#00a046]"
+                >verified</span
+              >
               <p
                 class="font-black text-[#00a046] uppercase tracking-widest text-[9px]"
               >
@@ -158,29 +192,36 @@ const closeDrawer = () => {
         </div>
 
         <!-- Auth Actions for Guests -->
-        <div
-          v-if="!authStore.isAuthenticated"
-          class="flex gap-2.5 mt-2"
-        >
+        <div v-if="!authStore.isAuthenticated" class="flex gap-2.5 mt-2">
           <button
             class="flex-1 bg-[#00a046] hover:bg-[#00b050] text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-            @click="closeDrawer(); router.push('/login');"
+            @click="
+              closeDrawer();
+              router.push('/login');
+            "
           >
             <span class="material-symbols-outlined text-[16px]">login</span>
             Увійти
           </button>
           <button
             class="flex-1 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-            @click="closeDrawer(); router.push('/register');"
+            @click="
+              closeDrawer();
+              router.push('/register');
+            "
           >
-            <span class="material-symbols-outlined text-[16px]">person_add</span>
+            <span class="material-symbols-outlined text-[16px]"
+              >person_add</span
+            >
             Реєстрація
           </button>
         </div>
       </div>
 
       <!-- Main Navigation Menu -->
-      <nav class="flex-grow overflow-y-auto px-4 py-6 flex flex-col gap-1.5 custom-scrollbar">
+      <nav
+        class="flex-grow overflow-y-auto px-4 py-6 flex flex-col gap-1.5 custom-scrollbar"
+      >
         <button
           v-for="item in navItems"
           :key="item.name"
@@ -194,8 +235,11 @@ const closeDrawer = () => {
         >
           <span
             class="material-symbols-outlined text-[20px]"
-            :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-          >{{ item.icon }}</span>
+            :style="
+              isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''
+            "
+            >{{ item.icon }}</span
+          >
           <span class="text-[14px] tracking-wide">{{ item.name }}</span>
 
           <!-- Badge Counts -->
@@ -205,7 +249,7 @@ const closeDrawer = () => {
             :class="[
               item.isGreenBadge
                 ? 'bg-[#00a046] text-white'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400',
             ]"
           >
             {{ cartStore[item.badgeKey] }}
@@ -213,7 +257,8 @@ const closeDrawer = () => {
           <span
             v-else-if="isActive(item)"
             class="ml-auto material-symbols-outlined text-[16px]"
-          >chevron_right</span>
+            >chevron_right</span
+          >
         </button>
       </nav>
 
@@ -234,13 +279,17 @@ const closeDrawer = () => {
         >
           <span
             class="material-symbols-outlined text-[20px]"
-            :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-          >{{ item.icon }}</span>
+            :style="
+              isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''
+            "
+            >{{ item.icon }}</span
+          >
           <span class="text-[14px] tracking-wide">{{ item.name }}</span>
           <span
             v-if="isActive(item)"
             class="ml-auto material-symbols-outlined text-[16px]"
-          >chevron_right</span>
+            >chevron_right</span
+          >
         </button>
 
         <!-- Logout Action -->
