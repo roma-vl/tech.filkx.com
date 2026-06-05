@@ -16,7 +16,11 @@
     </div>
 
     <!-- Content overlay when refreshing -->
-    <div v-else :class="{ 'opacity-60 pointer-events-none': isLoading }" class="transition-opacity duration-200">
+    <div
+      v-else
+      :class="{ 'opacity-60 pointer-events-none': isLoading }"
+      class="transition-opacity duration-200"
+    >
       <CategoriesTab
         :categories="dbCategories"
         :attributes="dbAttributes"

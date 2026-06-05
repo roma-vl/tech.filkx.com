@@ -7,7 +7,10 @@
   >
     <div class="space-y-6">
       <!-- VIEW 1: ATTRIBUTES LIST & BINDINGS -->
-      <div v-if="currentView === 'list'" class="space-y-6">
+      <div
+        v-if="currentView === 'list'"
+        class="space-y-6"
+      >
         <!-- Top Toolbar: Bind Existing / Create New -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
           <!-- Bind existing attribute -->
@@ -49,12 +52,24 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Код</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва (UK)</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Тип</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Варіанти</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Код
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Назва (UK)
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Тип
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Варіанти
+                  </th>
+                  <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Дії
+                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -63,9 +78,24 @@
                   :key="attr.id"
                   class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
-                  <td class="px-4 py-3 text-sm font-bold text-gray-950 dark:text-white">{{ attr.id }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono font-bold">{{ attr.code }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">{{ attr.nameUk }}</td>
+                  <td class="px-4 py-3 text-sm font-bold text-gray-950 dark:text-white">
+                    {{ attr.id }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono font-bold">
+                    {{ attr.code }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-950 dark:text-white">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                      <span class="font-semibold">{{ attr.nameUk }}</span>
+                      <span
+                        v-if="attr.isInherited"
+                        class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
+                        :title="`Ця характеристика є успадкованою від категорії: ${attr.sourceCategoryName}`"
+                      >
+                        Успадковано від {{ attr.sourceCategoryName }}
+                      </span>
+                    </div>
+                  </td>
                   <td class="px-4 py-3 text-sm">
                     <span
                       :class="{
@@ -90,7 +120,29 @@
                     </div>
                   </td>
                   <td class="px-4 py-3 text-right text-sm font-medium">
-                    <div class="flex justify-end gap-1.5">
+                    <div
+                      v-if="attr.isInherited"
+                      class="flex justify-end items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500 italic pr-2"
+                    >
+                      <svg
+                        class="w-3.5 h-3.5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
+                      Керування в {{ attr.sourceCategoryName }}
+                    </div>
+                    <div
+                      v-else
+                      class="flex justify-end gap-1.5"
+                    >
                       <AppButton
                         variant="ghost"
                         size="sm"
@@ -98,8 +150,18 @@
                         title="Редагувати"
                         @click="goToEdit(attr)"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
                         </svg>
                       </AppButton>
                       <AppButton
@@ -109,8 +171,18 @@
                         title="Відв'язати від категорії"
                         @click="unbindAttribute(attr)"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                          />
                         </svg>
                       </AppButton>
                       <AppButton
@@ -120,15 +192,28 @@
                         title="Видалити повністю"
                         @click="deleteAttribute(attr.id)"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </AppButton>
                     </div>
                   </td>
                 </tr>
                 <tr v-if="categoryAttributes.length === 0">
-                  <td colspan="6" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic">
+                  <td
+                    colspan="6"
+                    class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic"
+                  >
                     Немає характеристик, прив'язаних до цієї категорії.
                   </td>
                 </tr>
@@ -139,7 +224,10 @@
       </div>
 
       <!-- VIEW 2: CREATE / EDIT ATTRIBUTE FORM -->
-      <div v-else class="space-y-6">
+      <div
+        v-else
+        class="space-y-6"
+      >
         <div class="flex items-center justify-between border-b pb-3 border-gray-150 dark:border-gray-800">
           <h4 class="font-bold text-gray-950 dark:text-white">
             {{ isEditing ? 'Редагувати характеристику' : 'Створити характеристику' }}
@@ -155,7 +243,10 @@
           </AppButton>
         </div>
 
-        <form class="grid grid-cols-1 gap-4" @submit.prevent="saveAttribute">
+        <form
+          class="grid grid-cols-1 gap-4"
+          @submit.prevent="saveAttribute"
+        >
           <AppInput
             v-model="attributeForm.code"
             required
@@ -215,7 +306,10 @@
               :key="vIdx"
               class="flex gap-2 items-center bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-200 dark:border-gray-800"
             >
-              <div v-if="attributeForm.type === 'color'" class="flex-1 flex gap-2">
+              <div
+                v-if="attributeForm.type === 'color'"
+                class="flex-1 flex gap-2"
+              >
                 <input
                   v-model="val.value"
                   required
@@ -229,7 +323,10 @@
                   class="w-8 h-8 rounded border cursor-pointer bg-transparent"
                 >
               </div>
-              <div v-else class="flex-1 flex gap-2">
+              <div
+                v-else
+                class="flex-1 flex gap-2"
+              >
                 <input
                   v-model="val.valueUk"
                   required
@@ -263,7 +360,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <AppButton variant="secondary" @click="$emit('update:modelValue', false)">
+        <AppButton
+          variant="secondary"
+          @click="$emit('update:modelValue', false)"
+        >
           Закрити
         </AppButton>
         <AppButton
@@ -289,6 +389,7 @@ import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   category: { type: Object, default: null },
+  categories: { type: Array, default: () => [] },
   attributes: { type: Array, required: true },
 });
 
@@ -308,16 +409,60 @@ const attributeForm = ref({
   categoryIds: [],
 });
 
-// Attributes assigned to the active category
-const categoryAttributes = computed(() => {
+const categoryAncestors = computed(() => {
   if (!props.category) return [];
-  return props.attributes.filter(a => a.categoryIds?.includes(props.category.id));
+  const ancestors = [];
+  let currentParentId = props.category.parentId;
+  while (currentParentId) {
+    const parent = props.categories.find(c => c.id === currentParentId);
+    if (parent) {
+      ancestors.push(parent);
+      currentParentId = parent.parentId;
+    } else {
+      currentParentId = null;
+    }
+  }
+  return ancestors;
 });
 
-// Attributes NOT assigned to the active category
+// Attributes assigned to the active category or inherited from ancestors
+const categoryAttributes = computed(() => {
+  if (!props.category) return [];
+  
+  // Direct attributes
+  const own = props.attributes
+    .filter(a => a.categoryIds?.includes(props.category.id))
+    .map(a => ({
+      ...a,
+      isInherited: false,
+      sourceCategoryName: ""
+    }));
+
+  // Inherited attributes
+  const ancestorIds = categoryAncestors.value.map(a => a.id);
+  const inherited = props.attributes
+    .filter(a => !a.categoryIds?.includes(props.category.id) && a.categoryIds?.some(id => ancestorIds.includes(id)))
+    .map(a => {
+      const sourceCatId = a.categoryIds?.find(id => ancestorIds.includes(id));
+      const sourceCat = categoryAncestors.value.find(c => c.id === sourceCatId);
+      return {
+        ...a,
+        isInherited: true,
+        sourceCategoryName: sourceCat ? sourceCat.nameUk : "Батьківська категорія"
+      };
+    });
+
+  return [...own, ...inherited];
+});
+
+// Attributes NOT assigned to the active category or its ancestors
 const bindableAttributes = computed(() => {
   if (!props.category) return [];
-  return props.attributes.filter(a => !a.categoryIds?.includes(props.category.id));
+  const ancestorIds = categoryAncestors.value.map(a => a.id);
+  return props.attributes.filter(a => 
+    !a.categoryIds?.includes(props.category.id) && 
+    !a.categoryIds?.some(id => ancestorIds.includes(id))
+  );
 });
 
 const goToList = () => {

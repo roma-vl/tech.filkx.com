@@ -84,15 +84,26 @@
                 {{ cat.slug }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350">
-                <span
-                  v-if="getAttributeCount(cat.id) > 0"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
-                >
-                  {{ getAttributeCount(cat.id) }} шт
-                </span>
-                <span v-else class="text-gray-400 dark:text-gray-500 text-xs italic">
-                  —
-                </span>
+                <div class="flex flex-col gap-1">
+                  <span
+                    v-if="getOwnAttributesCount(cat.id) > 0"
+                    class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
+                  >
+                    Власних: {{ getOwnAttributesCount(cat.id) }}
+                  </span>
+                  <span
+                    v-if="getInheritedAttributesCount(cat.id) > 0"
+                    class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
+                  >
+                    Успадкованих: {{ getInheritedAttributesCount(cat.id) }}
+                  </span>
+                  <span
+                    v-if="getOwnAttributesCount(cat.id) === 0 && getInheritedAttributesCount(cat.id) === 0"
+                    class="text-gray-400 dark:text-gray-500 text-xs italic"
+                  >
+                    —
+                  </span>
+                </div>
               </td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                 {{ cat.parentName || "—" }}
@@ -242,6 +253,7 @@
     <CategoryAttributesModal
       v-model="showCategoryAttributesModal"
       :category="selectedCategoryForAttributes"
+      :categories="categories"
       :attributes="attributes"
       @refresh="emit('refresh')"
     />
@@ -272,8 +284,24 @@ const openCategoryAttributesModal = (cat) => {
   showCategoryAttributesModal.value = true;
 };
 
-const getAttributeCount = (catId) => {
+const getOwnAttributesCount = (catId) => {
   return props.attributes.filter(a => a.categoryIds?.includes(catId)).length;
+};
+
+const getInheritedAttributesCount = (catId) => {
+  const cat = props.categories.find(c => c.id === catId);
+  const ancestorIds = [];
+  let currentParentId = cat ? cat.parentId : null;
+  while (currentParentId) {
+    ancestorIds.push(currentParentId);
+    const parent = props.categories.find(c => c.id === currentParentId);
+    currentParentId = parent ? parent.parentId : null;
+  }
+  if (ancestorIds.length === 0) return 0;
+  return props.attributes.filter(a => 
+    !a.categoryIds?.includes(catId) && 
+    a.categoryIds?.some(id => ancestorIds.includes(id))
+  ).length;
 };
 
 const showCategoryModal = ref(false);

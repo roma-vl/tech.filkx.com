@@ -6,6 +6,7 @@ use App\Api\Admin\Dto\AttributeDto;
 use App\Api\V1\Repositories\AttributeRepositoryInterface;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 
 class CreateAdminAttributeAction

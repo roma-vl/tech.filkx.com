@@ -86,6 +86,12 @@ class UpdateAdminProductAction
                 ProductAttributeValue::where('variant_id', $variant->id)->delete();
                 if (! empty($vData['attributes'])) {
                     foreach ($vData['attributes'] as $attr) {
+                        if (empty($attr['attributeId'])) {
+                            continue;
+                        }
+                        if (empty($attr['valueId']) && (is_null($attr['value']) || $attr['value'] === '')) {
+                            continue;
+                        }
                         ProductAttributeValue::create([
                             'product_id' => $product->id,
                             'variant_id' => $variant->id,

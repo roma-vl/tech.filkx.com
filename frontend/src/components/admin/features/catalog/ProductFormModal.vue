@@ -395,16 +395,6 @@
                 class="block text-xs font-bold text-gray-500 uppercase tracking-wider"
                 >Характеристики варіанту</label
               >
-              <AppButton
-                type="button"
-                variant="ghost"
-                size="sm"
-                :disabled="!productForm.categoryId"
-                class="!text-primary-600 hover:!bg-primary-50 dark:hover:!bg-primary-950/20 !px-2.5 !py-1 !text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                @click="addVariantAttribute(v)"
-              >
-                + Додати характеристику
-              </AppButton>
             </div>
 
             <div
@@ -422,74 +412,110 @@
             </div>
 
             <div
-              v-if="productForm.categoryId && v.attributes.length > 0"
+              v-if="productForm.categoryId && v.attributes && v.attributes.length > 0"
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
             >
               <div
                 v-for="(attr, attrIdx) in v.attributes"
-                :key="attrIdx"
-                class="flex items-end gap-2 bg-white dark:bg-gray-900 p-3 rounded-xl border border-gray-150 dark:border-gray-800 shadow-xs relative group/attr"
+                :key="attr.attributeId"
+                class="bg-white dark:bg-gray-850 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-xs relative"
               >
-                <div class="flex-1 space-y-2">
-                  <!-- Attribute Selection -->
+                <!-- Display attribute name as a strong label -->
+                <div class="space-y-2">
+                  <span class="block text-xs font-black uppercase text-gray-400">
+                    {{ getAttributeName(attr.attributeId) }}
+                  </span>
+
+                  <!-- Dynamic Attribute Value input based on its type -->
+                  <!-- select dropdown type or color type -->
                   <AppSelect
-                    v-model="attr.attributeId"
-                    label="Назва"
-                    placeholder="Оберіть..."
-                    :options="availableAttributes"
+                    v-if="
+                      getAttributeType(attr.attributeId) === 'select' ||
+                      getAttributeType(attr.attributeId) === 'color'
+                    "
+                    v-model="attr.valueId"
+                    placeholder="Оберіть значення..."
+                    :options="getAttributeValues(attr.attributeId)"
                     option-value="id"
-                    option-label="nameUk"
-                    @change="onAttributeSelected(attr)"
+                    option-label="valueUk"
                   />
 
-                  <!-- Dynamic Attribute Value input -->
-                  <div v-if="attr.attributeId">
-                    <!-- select dropdown type -->
-                    <AppSelect
-                      v-if="
-                        getAttributeType(attr.attributeId) === 'select' ||
-                        getAttributeType(attr.attributeId) === 'color'
-                      "
-                      v-model="attr.valueId"
-                      label="Значення"
-                      placeholder="Оберіть значення..."
-                      :options="getAttributeValues(attr.attributeId)"
-                      option-value="id"
-                      option-label="valueUk"
-                    />
-
-                    <!-- text input type -->
-                    <AppInput
-                      v-else
-                      v-model="attr.value"
-                      label="Значення"
-                      placeholder="Введіть значення..."
-                    />
-                  </div>
+                  <!-- text/number input type -->
+                  <AppInput
+                    v-else
+                    v-model="attr.value"
+                    placeholder="Введіть значення..."
+                  />
                 </div>
-
-                <AppButton
-                  type="button"
-                  variant="ghost"
-                  class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-900/20 !p-1.5 mb-1 select-none"
-                  @click="removeVariantAttribute(v, attrIdx)"
-                >
-                  <svg
-                    class="w-3.5 h-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </AppButton>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Додаткові налаштування -->
+      <div
+        class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 space-y-4"
+      >
+        <div
+          class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2"
+        >
+          <h4 class="font-bold text-gray-900 dark:text-white">
+            3. Додаткові параметри (SEO, супутні товари)
+          </h4>
+          <span
+            class="bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full select-none"
+          >
+            Незабаром
+          </span>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-60 pointer-events-none select-none"
+        >
+          <!-- SEO Settings Group -->
+          <div
+            class="space-y-3 p-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+          >
+            <h5
+              class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+            >
+              🔍 SEO Налаштування (Soon)
+            </h5>
+            <AppInput
+              disabled
+              label="SEO Заголовок (Title)"
+              placeholder="напр. Придбати iPhone 15 Pro за найкращою ціною"
+            />
+            <AppTextarea
+              disabled
+              rows="2"
+              label="SEO Опис (Meta Description)"
+              placeholder="Короткий опис для пошукових систем..."
+            />
+          </div>
+
+          <!-- Cross selling / Upselling -->
+          <div
+            class="space-y-3 p-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+          >
+            <h5
+              class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+            >
+              🔗 Супутні товари (Soon)
+            </h5>
+            <div
+              class="p-3 bg-gray-50 dark:bg-gray-950/30 rounded-xl text-xs text-gray-400 dark:text-gray-500 italic"
+            >
+              Тут ви зможете зв'язати товари для рекомендацій «Разом дешевше» або
+              «З цим товаром також купують».
+            </div>
+            <AppSelect
+              disabled
+              label="Рекомендовані аксесуари"
+              placeholder="Оберіть товари..."
+              :options="[]"
+            />
           </div>
         </div>
       </div>
@@ -571,24 +597,7 @@ const errors = ref<FormErrors>({});
 const variantErrors = ref<VariantErrors[]>([]);
 const globalError = ref<string | null>(null);
 
-const availableAttributes = computed(() => {
-  const catId = Number(productForm.value.categoryId);
-  if (!catId) {
-    return props.attributes.filter(attr => !attr.categoryIds || attr.categoryIds.length === 0);
-  }
-
-  const ancestorIds: number[] = [];
-  let currentId: number | null = catId;
-  while (currentId) {
-    ancestorIds.push(currentId);
-    const cat = props.categories.find(c => c.id === currentId);
-    currentId = cat ? cat.parentId : null;
-  }
-
-  return props.attributes.filter(attr => {
-    return !attr.categoryIds || attr.categoryIds.length === 0 || attr.categoryIds.some((id: number) => ancestorIds.includes(id));
-  });
-});
+// availableAttributes and attributes watcher are moved down below productForm initialization to prevent ReferenceError
 
 const validate = (): boolean => {
   const e: FormErrors = {};
@@ -678,6 +687,57 @@ const productForm = ref<{
   isRecommended: false,
   variants: [],
 });
+
+const availableAttributes = computed(() => {
+  const catId = Number(productForm.value.categoryId);
+  if (!catId) {
+    return props.attributes.filter(attr => !attr.categoryIds || attr.categoryIds.length === 0);
+  }
+
+  const ancestorIds: number[] = [];
+  let currentId: number | null = catId;
+  while (currentId) {
+    ancestorIds.push(currentId);
+    const cat = props.categories.find(c => c.id === currentId);
+    currentId = cat ? cat.parentId : null;
+  }
+
+  return props.attributes.filter(attr => {
+    return !attr.categoryIds || attr.categoryIds.length === 0 || attr.categoryIds.some((id: number) => ancestorIds.includes(id));
+  });
+});
+
+watch(
+  [() => productForm.value.categoryId, availableAttributes],
+  () => {
+    if (!productForm.value.variants) return;
+    
+    productForm.value.variants.forEach((v: any) => {
+      if (!v.attributes) {
+        v.attributes = [];
+      }
+      
+      const currentAttrs = [...v.attributes];
+      const syncedAttrs: any[] = [];
+      
+      availableAttributes.value.forEach((avail: any) => {
+        const existing = currentAttrs.find(a => Number(a.attributeId) === Number(avail.id));
+        if (existing) {
+          syncedAttrs.push(existing);
+        } else {
+          syncedAttrs.push({
+            attributeId: avail.id,
+            valueId: null,
+            value: ""
+          });
+        }
+      });
+      
+      v.attributes = syncedAttrs;
+    });
+  },
+  { immediate: true, deep: true }
+);
 
 watch(
   () => props.modelValue,
@@ -799,7 +859,21 @@ const buildPayload = () => {
       stock: Number(v.stock),
       weight: v.weight != null ? Number(v.weight) : null,
       images: v.images ?? [],
-      attributes: (v.attributes ?? []).filter((a: any) => a.attributeId),
+      attributes: (v.attributes ?? [])
+        .filter((a: any) => {
+          if (!a.attributeId) return false;
+          const type = getAttributeType(a.attributeId);
+          if (type === "select" || type === "color") {
+            return a.valueId !== null && a.valueId !== undefined && a.valueId !== "";
+          } else {
+            return a.value !== null && a.value !== undefined && String(a.value).trim() !== "";
+          }
+        })
+        .map((a: any) => ({
+          attributeId: Number(a.attributeId),
+          valueId: a.valueId ? Number(a.valueId) : null,
+          value: a.value !== null && a.value !== undefined ? String(a.value).trim() : null,
+        })),
     })),
   };
 };
@@ -967,6 +1041,11 @@ const onAttributeSelected = (attr: any) => {
   }
 };
 
+const getAttributeName = (attrId: any) => {
+  const attr = props.attributes.find((a: any) => a.id === attrId);
+  return attr ? attr.nameUk : "Характеристика";
+};
+
 const getAttributeType = (attrId: any) => {
   const attr = props.attributes.find((a: any) => a.id === attrId);
   return attr ? attr.type : "text";
@@ -974,6 +1053,10 @@ const getAttributeType = (attrId: any) => {
 
 const getAttributeValues = (attrId: any) => {
   const attr = props.attributes.find((a: any) => a.id === attrId);
-  return attr ? attr.values : [];
+  if (!attr) return [];
+  return [
+    { id: null, valueUk: "— Не обрано —", valueEn: "— Not Selected —" },
+    ...(attr.values || []),
+  ];
 };
 </script>

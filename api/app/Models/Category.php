@@ -42,4 +42,14 @@ class Category extends Model
     {
         return $this->belongsToMany(Attribute::class, 'category_attribute');
     }
+
+    public function getDescendantIds(): array
+    {
+        $ids = [];
+        foreach ($this->children as $child) {
+            $ids[] = $child->id;
+            $ids = array_merge($ids, $child->getDescendantIds());
+        }
+        return $ids;
+    }
 }
