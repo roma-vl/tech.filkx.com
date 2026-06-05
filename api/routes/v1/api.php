@@ -114,6 +114,9 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::get('/user/settings/preferences', [UserController::class, 'getPreferences']);
     Route::put('/user/settings/preferences', [UserController::class, 'updatePreferences']);
 
+    // User orders endpoint
+    Route::get('/user/orders', [UserController::class, 'getOrders']);
+
     // Favorites (wishlist) database-backed endpoints
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);
     Route::post('/user/favorites/toggle', [UserController::class, 'toggleFavorite']);

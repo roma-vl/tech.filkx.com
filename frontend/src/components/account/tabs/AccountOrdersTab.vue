@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import api from "@/services/api";
 
 const cartStore = useCartStore();
 
@@ -25,12 +26,14 @@ interface OrderItem {
   name: string;
   price: number;
   image: string;
+  qty?: number;
   returnWindow?: string;
   note?: string;
 }
 
 interface Order {
   id: string;
+  dbId: number;
   date: string;
   total: number;
   shipTo: string;
@@ -44,134 +47,26 @@ interface Order {
   items: OrderItem[];
 }
 
-const defaultOrders = [
-  {
-    id: "120934812",
-    date: "24 Жов, 2025",
-    total: 63149.0,
-    shipTo: "Роман Шевченко",
-    status: "В дорозі - прибуває завтра",
-    statusIcon: "local_shipping",
-    statusClass:
-      "text-[#00a046] bg-emerald-500/10 border border-emerald-500/20",
-    statusCode: "shipped",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "24 Жов, 2025 10:00", done: true },
-      {
-        name: "Обробка та комплектування",
-        date: "24 Жов, 2025 14:00",
-        done: true,
-      },
-      { name: "Передано кур'єру", date: "25 Жов, 2025 09:00", done: true },
-      {
-        name: "Доставка отримувачу",
-        date: "Очікується 28 Жов, 2025",
-        done: false,
-      },
-      { name: "Доставлено", date: "Очікується 29 Жов, 2025", done: false },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Visa", number: "•••• 4242" },
-    items: [
-      {
-        id: 3,
-        slug: "lenovo-legion-5-pro",
-        name: "Lenovo Legion 5 Pro 16ARH7H Storm Grey",
-        price: 62999.0,
-        returnWindow: "24 Лис, 2025",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E",
-      },
-    ],
-  },
-  {
-    id: "992184021",
-    date: "12 Вер, 2025",
-    total: 15149.0,
-    shipTo: "Роман Шевченко",
-    status: "Доставлено 15 Вер, 2025",
-    statusIcon: "check_circle",
-    statusClass:
-      "text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700",
-    statusCode: "delivered",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "12 Вер, 2025 08:30", done: true },
-      {
-        name: "Обробка та комплектування",
-        date: "12 Вер, 2025 11:00",
-        done: true,
-      },
-      { name: "Передано кур'єру", date: "13 Вер, 2025 16:00", done: true },
-      { name: "Доставка отримувачу", date: "15 Вер, 2025 08:00", done: true },
-      { name: "Доставлено", date: "15 Вер, 2025 14:30", done: true },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Mastercard", number: "•••• 9876" },
-    items: [
-      {
-        id: 4,
-        slug: "sony-wh-1000xm5-black",
-        name: "Бездротові навушники Sony WH-1000XM5 Black",
-        price: 14999.0,
-        note: "Залишене біля дверей.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA",
-      },
-    ],
-  },
-  {
-    id: "483920194",
-    date: "02 Тра, 2025",
-    total: 55149.0,
-    shipTo: "Роман Шевченко",
-    status: "Скасовано 02 Тра, 2025",
-    statusIcon: "cancel",
-    statusClass: "text-rose-500 bg-rose-500/10 border border-rose-500/20",
-    statusCode: "cancelled",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "02 Тра, 2025 09:00", done: true },
-      { name: "Скасовано", date: "02 Тра, 2025 09:30", done: true },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Visa", number: "•••• 4242" },
-    items: [
-      {
-        id: 1,
-        slug: "iphone-15-pro-max",
-        name: "Apple iPhone 15 Pro Max 256GB Natural Titanium",
-        price: 54999.0,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM",
-      },
-    ],
-  },
-];
-
-const ordersList = ref<Order[]>([...defaultOrders]);
+const ordersList = ref<Order[]>([]);
+const isLoading = ref(false);
 const ordersFilter = ref("all");
 const ordersSearchQuery = ref("");
 
+const fetchOrders = async () => {
+  isLoading.value = true;
+  try {
+    const response = await api.get("/user/orders");
+    ordersList.value = response.data.data || [];
+  } catch (error) {
+    console.error("Failed to fetch user orders:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchOrders();
+});
 const selectedOrder = ref<Order | null>(null);
 const isDetailsOpen = ref(false);
 const trackingOrder = ref<Order | null>(null);
@@ -271,8 +166,21 @@ const filterBtns = [
       </div>
     </div>
 
+    <!-- Loading state -->
+    <div
+      v-if="isLoading"
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-12 flex flex-col items-center justify-center gap-3 shadow-sm"
+    >
+      <div
+        class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#00a046]"
+      />
+      <p class="text-zinc-500 dark:text-zinc-455 font-medium">
+        Завантаження замовлень...
+      </p>
+    </div>
+
     <!-- Orders -->
-    <div v-if="filteredOrders.length > 0" class="space-y-6">
+    <div v-else-if="filteredOrders.length > 0" class="space-y-6">
       <div
         v-for="order in filteredOrders"
         :key="order.id"

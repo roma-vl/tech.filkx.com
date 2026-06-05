@@ -720,4 +720,156 @@ class UserController extends BaseApiController
 
         return self::successfulResponse('Viewed products history cleared.');
     }
+
+    public function getOrders(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $orders = \App\Models\Order::with(['items.variant.product'])
+            ->where('user_id', $user->id)
+            ->orWhere('customer_email', $user->email)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $formattedOrders = $orders->map(function ($order) {
+            $mappedStatus = $this->mapOrderStatus($order->status, $order->updated_at);
+
+            $itemsMapped = $order->items->map(function ($item) {
+                $variant = $item->variant;
+                $images = $variant ? ($variant->dimensions['images'] ?? []) : [];
+                $imageUrl = !empty($images) ? ($images[0]['url'] ?? null) : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop';
+
+                return [
+                    'id' => $item->id,
+                    'slug' => $variant && $variant->product ? $variant->product->slug : '',
+                    'name' => $item->product_name,
+                    'price' => (float) $item->price,
+                    'image' => $imageUrl,
+                    'qty' => $item->quantity,
+                ];
+            })->toArray();
+
+            return [
+                'id' => $order->order_number ?: (string) $order->id,
+                'dbId' => $order->id,
+                'date' => $this->formatUkrainianDate($order->created_at),
+                'total' => (float) $order->total_price,
+                'shipTo' => $order->customer_name ?: '',
+                'status' => $mappedStatus['status'],
+                'statusIcon' => $mappedStatus['statusIcon'],
+                'statusClass' => $mappedStatus['statusClass'],
+                'statusCode' => $mappedStatus['statusCode'],
+                'trackingSteps' => $this->generateTrackingSteps($mappedStatus['statusCode'], $order->created_at, $order->updated_at),
+                'shippingAddress' => [
+                    'recipient' => $order->customer_name ?: '',
+                    'street' => $order->shipping_address ?: '',
+                    'city' => $order->shipping_city ?: 'Київ',
+                    'state' => 'Київська обл.',
+                    'zip' => '01001',
+                    'country' => $order->shipping_country ?: 'Україна',
+                ],
+                'paymentMethod' => [
+                    'type' => $order->payment_method ?: 'Картка',
+                    'number' => '•••• 4242',
+                ],
+                'items' => $itemsMapped,
+            ];
+        });
+
+        return self::successfulResponseWithData($formattedOrders);
+    }
+
+    protected function formatUkrainianDate($carbonDate): string
+    {
+        $months = [
+            1 => 'Січ', 2 => 'Лют', 3 => 'Бер', 4 => 'Кві', 5 => 'Тра', 6 => 'Чер',
+            7 => 'Лип', 8 => 'Сер', 9 => 'Вер', 10 => 'Жов', 11 => 'Лис', 12 => 'Гру'
+        ];
+
+        $day = $carbonDate->format('d');
+        $monthNum = (int) $carbonDate->format('m');
+        $year = $carbonDate->format('Y');
+
+        return "{$day} {$months[$monthNum]}, {$year}";
+    }
+
+    protected function mapOrderStatus($dbStatus, $updatedAt): array
+    {
+        $formattedUpdateDate = $this->formatUkrainianDate($updatedAt);
+
+        switch ($dbStatus) {
+            case 'completed':
+            case 'delivered':
+                return [
+                    'statusCode' => 'delivered',
+                    'status' => "Доставлено {$formattedUpdateDate}",
+                    'statusIcon' => 'check_circle',
+                    'statusClass' => 'text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700',
+                ];
+            case 'cancelled':
+                return [
+                    'statusCode' => 'cancelled',
+                    'status' => "Скасовано {$formattedUpdateDate}",
+                    'statusIcon' => 'cancel',
+                    'statusClass' => 'text-rose-500 bg-rose-500/10 border border-rose-500/20',
+                ];
+            case 'shipped':
+                return [
+                    'statusCode' => 'shipped',
+                    'status' => 'В дорозі - прибуває незабаром',
+                    'statusIcon' => 'local_shipping',
+                    'statusClass' => 'text-[#00a046] bg-emerald-500/10 border border-emerald-500/20',
+                ];
+            case 'pending':
+            case 'processing':
+            default:
+                return [
+                    'statusCode' => 'pending',
+                    'status' => 'В обробці',
+                    'statusIcon' => 'hourglass_empty',
+                    'statusClass' => 'text-amber-500 bg-amber-500/10 border border-amber-500/20',
+                ];
+        }
+    }
+
+    protected function generateTrackingSteps(string $statusCode, $createdAt, $updatedAt): array
+    {
+        $createdStr = $createdAt->format('d.m.Y H:i');
+        $updatedStr = $updatedAt->format('d.m.Y H:i');
+
+        if ($statusCode === 'cancelled') {
+            return [
+                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
+                ['name' => 'Скасовано', 'date' => $updatedStr, 'done' => true],
+            ];
+        }
+
+        if ($statusCode === 'delivered') {
+            return [
+                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
+                ['name' => 'Обробка та комплектування', 'date' => $createdStr, 'done' => true],
+                ['name' => 'Передано кур\'єру', 'date' => $updatedStr, 'done' => true],
+                ['name' => 'Доставка отримувачу', 'date' => $updatedStr, 'done' => true],
+                ['name' => 'Доставлено', 'date' => $updatedStr, 'done' => true],
+            ];
+        }
+
+        if ($statusCode === 'shipped') {
+            return [
+                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
+                ['name' => 'Обробка та комплектування', 'date' => $createdStr, 'done' => true],
+                ['name' => 'Передано кур\'єру', 'date' => $updatedStr, 'done' => true],
+                ['name' => 'Доставка отримувачу', 'date' => 'Очікується найближчим часом', 'done' => false],
+                ['name' => 'Доставлено', 'date' => 'Очікується', 'done' => false],
+            ];
+        }
+
+        // pending / default
+        return [
+            ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
+            ['name' => 'Обробка та комплектування', 'date' => 'В процесі', 'done' => false],
+            ['name' => 'Передано кур\'єру', 'date' => 'Очікується', 'done' => false],
+            ['name' => 'Доставлено', 'date' => 'Очікується', 'done' => false],
+        ];
+    }
 }
