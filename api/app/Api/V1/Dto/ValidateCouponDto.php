@@ -13,7 +13,7 @@ class ValidateCouponDto
     {
         return new self(
             code: $request->input('code'),
-            cartTotal: (float) $request->input('cart_total')
+            cartTotal: (float) ($request->input('cartTotal') ?? $request->input('cart_total') ?? 0)
         );
     }
 }

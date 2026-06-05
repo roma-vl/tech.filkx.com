@@ -87,11 +87,11 @@
           <CartItemsList
             v-else
             :cart="cartStore.cart"
-            :saved-item="savedItem"
+            :wishlist="cartStore.wishlist"
             :format-price="formatPrice"
             @update-quantity="cartStore.updateCartQuantity"
             @remove="cartStore.removeFromCart"
-            @move-to-cart="cartStore.addToCart"
+            @move-to-cart="moveToCart"
           />
         </section>
 
@@ -106,8 +106,11 @@
             :total="total"
             :is-checkout-mode="isCheckoutMode"
             :is-submitting="isSubmitting"
+            :applied-promo="appliedPromo"
+            :has-out-of-stock-items="hasOutOfStockItems"
             :format-price="formatPrice"
             @apply-promo="applyPromo"
+            @remove-promo="removePromo"
             @submit="
               isCheckoutMode ? handlePlaceOrder() : (isCheckoutMode = true)
             "
@@ -123,69 +126,22 @@
           Recommended for you
         </h2>
         <div class="recommended-grid">
-          <article
+          <ProductCard
             v-for="product in recommended"
             :key="product.id"
-            class="group bg-surface-container-lowest rounded-xl border border-outline-variant p-4 hover:shadow-lg transition-all"
-          >
-            <div
-              class="aspect-square bg-surface-container rounded-lg mb-4 overflow-hidden"
-            >
-              <img
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                :src="product.image"
-                :alt="product.name"
-              >
-            </div>
-            <div class="flex justify-between items-start mb-2">
-              <h4
-                class="font-title-md line-clamp-1 text-zinc-800 dark:text-zinc-200 font-bold"
-              >
-                {{ product.name }}
-              </h4>
-              <button
-                class="text-on-surface-variant hover:text-primary"
-                type="button"
-                @click="cartStore.toggleWishlist(product)"
-              >
-                <span
-                  class="material-symbols-outlined"
-                  :class="{
-                    'text-red-500': cartStore.isInWishlist(product.id),
-                  }"
-                >favorite</span>
-              </button>
-            </div>
-            <div class="flex items-center gap-1 mb-2">
-              <span
-                v-for="star in 5"
-                :key="star"
-                class="material-symbols-outlined text-[16px]"
-                :class="
-                  star <= product.rating
-                    ? 'text-star-rating filled-symbol'
-                    : 'text-outline-variant'
-                "
-              >star</span>
-              <span
-                class="text-label-md text-on-surface-variant ml-1 text-xs text-gray-500"
-              >({{ product.reviews }})</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="font-title-lg text-lg font-bold text-[#00a046]">{{
-                formatPrice(product.price)
-              }}</span>
-              <button
-                class="bg-secondary-container text-on-secondary-container p-2 rounded-full hover:bg-primary hover:text-on-primary transition-colors"
-                type="button"
-                @click="addRecommended(product)"
-              >
-                <span class="material-symbols-outlined">add_shopping_cart</span>
-              </button>
-            </div>
-          </article>
+            :product="product"
+            view-mode="grid"
+            @quick-view="openQuickView"
+          />
         </div>
       </section>
+
+      <!-- Quick View Modal -->
+      <QuickViewModal
+        v-if="isQuickViewOpen && quickViewProduct"
+        :product="quickViewProduct"
+        @close="closeQuickView"
+      />
     </div>
   </main>
 </template>
@@ -196,11 +152,14 @@ import SuccessMessage from "@/widgets/ShoppingCart/SuccessMessage.vue";
 import CheckoutForm from "@/widgets/ShoppingCart/CheckoutForm.vue";
 import CartItemsList from "@/widgets/ShoppingCart/CartItemsList.vue";
 import CartSummary from "@/widgets/ShoppingCart/CartSummary.vue";
+import ProductCard from "@/widgets/Catalog/ProductCard.vue";
+import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 
 const {
   router,
   cartStore,
   promoCode,
+  appliedPromo,
   discount,
   shipping,
   tax,
@@ -211,7 +170,13 @@ const {
   orderSuccessData,
   checkoutForm,
   recommended,
-  savedItem,
+  moveToCart,
+  removePromo,
+  hasOutOfStockItems,
+  isQuickViewOpen,
+  quickViewProduct,
+  openQuickView,
+  closeQuickView,
   formatPrice,
   applyPromo,
   addRecommended,

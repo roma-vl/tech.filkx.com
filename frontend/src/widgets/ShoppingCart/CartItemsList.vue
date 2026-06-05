@@ -3,7 +3,8 @@
     <article
       v-for="item in cart"
       :key="item.id"
-      class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant flex flex-col md:flex-row gap-6"
+      class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant flex flex-col md:flex-row gap-6 transition-all duration-300"
+      :class="{ 'opacity-65 grayscale bg-zinc-50 dark:bg-zinc-900/40 border-dashed': item.stock !== undefined && item.stock <= 0 }"
     >
       <div
         class="w-full md:w-32 h-32 bg-surface-container rounded-lg overflow-hidden flex-shrink-0 p-3"
@@ -40,7 +41,8 @@
         >
           <div class="flex flex-wrap items-center gap-4">
             <div
-              class="flex items-center border border-outline-variant rounded-lg overflow-hidden"
+              class="flex items-center border border-outline-variant rounded-lg overflow-hidden h-9 bg-white dark:bg-zinc-800"
+              :class="{ 'opacity-50 pointer-events-none': item.stock !== undefined && item.stock <= 0 }"
             >
               <button
                 class="px-3 py-1 hover:bg-surface-variant transition-colors text-zinc-700 dark:text-zinc-300"
@@ -52,7 +54,7 @@
                 >
               </button>
               <span
-                class="px-4 font-title-md text-zinc-900 dark:text-white font-bold"
+                class="px-4 font-title-md text-zinc-900 dark:text-white font-bold text-sm"
                 >{{ item.quantity }}</span
               >
               <button
@@ -73,12 +75,13 @@
             </button>
           </div>
           <div
-            class="text-on-surface-variant font-label-md flex items-center gap-1 text-sm text-gray-500"
+            v-if="item.stock !== undefined && item.stock <= 0"
+            class="text-red-500 font-label-md flex items-center gap-1 text-sm font-semibold"
           >
-            <span class="material-symbols-outlined text-[#00a046] text-[18px]"
-              >check_circle</span
+            <span class="material-symbols-outlined text-red-500 text-[18px]"
+              >error</span
             >
-            Available
+            Немає в наявності
           </div>
         </div>
       </div>
@@ -89,37 +92,44 @@
     <h2
       class="font-headline-md text-headline-md mb-6 text-zinc-900 dark:text-white font-bold text-xl"
     >
-      Saved for later (1)
+      Saved for later ({{ wishlist.length }})
     </h2>
-    <div
-      class="bg-surface-container-low p-4 rounded-xl border border-dashed border-outline-variant flex items-center gap-4 opacity-80"
-    >
+    <div v-if="wishlist.length === 0" class="text-zinc-500 dark:text-zinc-400 text-sm p-6 text-center bg-zinc-50 dark:bg-zinc-900/10 rounded-xl border border-dashed border-outline-variant">
+      No items saved for later.
+    </div>
+    <div v-else class="space-y-4">
       <div
-        class="w-16 h-16 bg-surface-variant rounded-lg flex-shrink-0 overflow-hidden"
+        v-for="item in wishlist"
+        :key="item.id"
+        class="bg-surface-container-low p-4 rounded-xl border border-dashed border-outline-variant flex items-center gap-4 opacity-90 hover:opacity-100 transition-opacity"
       >
-        <img
-          class="w-full h-full object-cover"
-          :src="savedItem.image"
-          :alt="savedItem.name"
-        />
-      </div>
-      <div class="flex-grow">
-        <h4
-          class="font-title-md text-title-md text-zinc-800 dark:text-zinc-200 font-bold"
+        <div
+          class="w-16 h-16 bg-white dark:bg-zinc-800 rounded-lg flex-shrink-0 overflow-hidden p-1 border border-outline-variant/30 flex items-center justify-center"
         >
-          {{ savedItem.name }}
-        </h4>
-        <p class="font-label-md text-on-surface-variant text-gray-500">
-          {{ formatPrice(savedItem.price) }}
-        </p>
+          <img
+            class="w-full h-full object-contain"
+            :src="item.image"
+            :alt="item.name"
+          />
+        </div>
+        <div class="flex-grow">
+          <h4
+            class="font-title-md text-title-md text-zinc-800 dark:text-zinc-200 font-bold line-clamp-1"
+          >
+            {{ item.name }}
+          </h4>
+          <p class="font-label-md text-on-surface-variant text-gray-500">
+            {{ formatPrice(item.price) }}
+          </p>
+        </div>
+        <button
+          class="px-4 py-2 bg-[#00a046] text-white rounded-full font-semibold hover:bg-[#00b050] transition-colors text-sm"
+          type="button"
+          @click="$emit('moveToCart', item)"
+        >
+          Move to Cart
+        </button>
       </div>
-      <button
-        class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label-md hover:opacity-90 transition-opacity"
-        type="button"
-        @click="$emit('moveToCart', savedItem)"
-      >
-        Move to Cart
-      </button>
     </div>
   </div>
 </template>
@@ -129,7 +139,7 @@ import { CartItem } from "@/entities/order/types";
 
 defineProps<{
   cart: CartItem[];
-  savedItem: any;
+  wishlist: any[];
   formatPrice: (p: number) => string;
 }>();
 
