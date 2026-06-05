@@ -247,7 +247,7 @@ class UserController extends BaseApiController
     ): JsonResponse {
         $authUser = Auth::guard('api')
             ->user()
-            ->load('roles.permissions', 'subscription');
+            ->load('roles.permissions');
         $user = $action->execute($authUser);
 
         return self::successfulResponseWithData(

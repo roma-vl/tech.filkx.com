@@ -300,13 +300,17 @@ onUnmounted(() => {
     >
       <!-- Left: Burger & Logo -->
       <div class="flex items-center gap-3">
-        <!-- Burger Button -->
         <button
-          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center"
+          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
           title="Menu"
           @click="cartStore.openDrawer('account')"
         >
-          <span class="material-symbols-outlined text-2xl text-white"
+          <img
+            v-if="authStore.user?.avatarUrl"
+            :src="authStore.user.avatarUrl"
+            class="w-7 h-7 object-cover rounded-full border border-white/20 select-none"
+          />
+          <span v-else class="material-symbols-outlined text-2xl text-white"
             >menu</span
           >
         </button>

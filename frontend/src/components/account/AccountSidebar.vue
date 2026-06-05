@@ -131,7 +131,13 @@ const handleLogout = async () => {
       class="flex flex-col gap-1 pb-4 border-b border-zinc-150 dark:border-zinc-800"
     >
       <div class="flex items-center gap-3">
+        <img
+          v-if="authStore.user?.avatarUrl"
+          :src="authStore.user.avatarUrl"
+          class="w-12 h-12 rounded-full object-cover border border-emerald-500/20 shrink-0 select-none"
+        />
         <div
+          v-else
           class="w-12 h-12 rounded-full bg-emerald-500/10 text-[#00a046] flex items-center justify-center text-lg font-black border border-emerald-500/20 select-none shrink-0"
         >
           {{ userInitials }}

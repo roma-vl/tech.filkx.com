@@ -109,6 +109,86 @@ onMounted(async () => {
   initData();
 });
 
+// Avatar Upload Logic
+const userInitials = computed(() => {
+  const name = authStore.user?.name || "";
+  return (
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase() || "К"
+  );
+});
+
+const isUploadingAvatar = ref(false);
+const avatarFileInput = ref<HTMLInputElement | null>(null);
+
+const triggerAvatarUpload = () => {
+  avatarFileInput.value?.click();
+};
+
+const handleAvatarFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    cartStore.addToast("Будь ласка, виберіть файл зображення.", "warning");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    cartStore.addToast("Розмір файлу не повинен перевищувати 2 МБ.", "warning");
+    return;
+  }
+
+  isUploadingAvatar.value = true;
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  try {
+    const response = await api.post("/user/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.data && response.data.status === "success") {
+      authStore.user = response.data.data;
+      cartStore.addToast("Аватар успішно оновлено!", "success");
+    }
+  } catch (error: any) {
+    console.error("Avatar upload failed:", error);
+    const msg = error.response?.data?.message || "Не вдалося завантажити аватар.";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isUploadingAvatar.value = false;
+    if (avatarFileInput.value) {
+      avatarFileInput.value.value = "";
+    }
+  }
+};
+
+const deleteAvatarAction = async () => {
+  if (!confirm("Ви впевнені, що хочете видалити свій аватар?")) return;
+
+  isUploadingAvatar.value = true;
+  try {
+    const response = await api.delete("/user/avatar");
+    if (response.data && response.data.status === "success") {
+      authStore.user = response.data.data;
+      cartStore.addToast("Аватар видалено.", "info");
+    }
+  } catch (error: any) {
+    console.error("Failed to delete avatar:", error);
+    const msg = error.response?.data?.message || "Не вдалося видалити аватар.";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isUploadingAvatar.value = false;
+  }
+};
+
 // Save actions
 const isSavingProfile = ref(false);
 const saveProfile = async () => {
@@ -375,6 +455,63 @@ const inputClass =
         v-show="expandedSections.profile"
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
+        <!-- Avatar Section -->
+        <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80">
+          <div class="relative group">
+            <img
+              v-if="authStore.user?.avatarUrl"
+              :src="authStore.user.avatarUrl"
+              class="w-24 h-24 rounded-full object-cover border-2 border-[#00a046]"
+            />
+            <div
+              v-else
+              class="w-24 h-24 rounded-full bg-emerald-500/10 text-[#00a046] flex items-center justify-center text-3xl font-black border-2 border-emerald-500/20 select-none"
+            >
+              {{ userInitials }}
+            </div>
+            
+            <div
+              v-if="isUploadingAvatar"
+              class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center"
+            >
+              <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 text-center sm:text-left">
+            <h4 class="font-extrabold text-sm text-zinc-800 dark:text-zinc-200">
+              Ваш аватар
+            </h4>
+            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal">
+              Дозволені формати: JPG, PNG, GIF. Максимальний розмір файлу: 2 МБ.
+            </p>
+            <div class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start">
+              <input
+                ref="avatarFileInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarFileChange"
+              />
+              <button
+                type="button"
+                class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-black text-xs transition-colors shadow-sm"
+                @click="triggerAvatarUpload"
+              >
+                Завантажити фото
+              </button>
+              <button
+                v-if="authStore.user?.avatarUrl"
+                type="button"
+                class="border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-rose-500 px-4 py-2 rounded-lg font-black text-xs transition-colors"
+                @click="deleteAvatarAction"
+              >
+                Видалити
+              </button>
+            </div>
+          </div>
+        </div>
+
         <form
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
           @submit.prevent="saveProfile"
@@ -400,7 +537,8 @@ const inputClass =
               v-model="profileForm.email"
               type="email"
               required
-              :class="inputClass"
+              disabled
+              :class="[inputClass, '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed']"
             />
           </div>
           <div class="space-y-1.5">
