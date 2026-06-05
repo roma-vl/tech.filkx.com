@@ -19,13 +19,15 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import lottie from "lottie-web";
 import { onMounted, ref } from "vue";
 import CheckedAnimation from "@/assets/animation/404blue.json";
-const container = ref(null);
+
+const container = ref<HTMLDivElement | null>(null);
 
 onMounted(() => {
+  if (!container.value) return;
   lottie.loadAnimation({
     container: container.value,
     renderer: "svg",

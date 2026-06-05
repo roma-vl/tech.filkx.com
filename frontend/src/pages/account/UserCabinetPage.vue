@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
-import { store } from "@/store.js";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 import AccountSidebar from "@/components/account/AccountSidebar.vue";
 import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.vue";
 import AccountOrdersTab from "@/components/account/tabs/AccountOrdersTab.vue";
 import AccountFavoritesTab from "@/components/account/tabs/AccountFavoritesTab.vue";
 import AccountCompareTab from "@/components/account/tabs/AccountCompareTab.vue";
+import AccountViewedTab from "@/components/account/tabs/AccountViewedTab.vue";
 import AccountSettingsTab from "@/components/account/tabs/AccountSettingsTab.vue";
 import AccountSupportTab from "@/components/account/tabs/AccountSupportTab.vue";
 import AccountNotificationsTab from "@/components/account/tabs/AccountNotificationsTab.vue";
@@ -16,15 +17,17 @@ import AccountNotificationsTab from "@/components/account/tabs/AccountNotificati
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
-const activeTab = computed(() => route.query.tab || "dashboard");
+const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 const userName = computed(() => authStore.user?.name || "Клієнт");
 
-const tabTitles = {
+const tabTitles: Record<string, string> = {
   dashboard: "Панель керування",
   orders: "Історія замовлень",
   favorites: "Моє обране",
   compare: "Порівняння товарів",
+  viewed: "Історія переглядів",
   settings: "Налаштування профілю",
   support: "Служба підтримки",
   notifications: "Сповіщення та новини",
@@ -35,18 +38,21 @@ const navTabs = [
   { label: "Замовлення", icon: "shopping_bag", tab: "orders" },
   { label: "Обране", icon: "favorite", tab: "favorites" },
   { label: "Порівняння", icon: "compare_arrows", tab: "compare" },
+  { label: "Перегляди", icon: "history", tab: "viewed" },
   { label: "Сповіщення", icon: "notifications", tab: "notifications" },
   { label: "Налаштування", icon: "settings", tab: "settings" },
   { label: "Підтримка", icon: "help", tab: "support" },
 ];
 
-const selectTab = (tab) => router.push({ name: "account", query: { tab } });
+const selectTab = (tab: string) =>
+  router.push({ name: "account", query: { tab } });
 
-const tabComponents = {
+const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
   orders: AccountOrdersTab,
   favorites: AccountFavoritesTab,
   compare: AccountCompareTab,
+  viewed: AccountViewedTab,
   settings: AccountSettingsTab,
   support: AccountSupportTab,
   notifications: AccountNotificationsTab,
@@ -58,7 +64,8 @@ const currentTab = computed(
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
-    store.fetchUnreadNotificationsCount();
+    cartStore.fetchUnreadNotificationsCount();
+    cartStore.syncUserLists();
   }
 });
 </script>
@@ -93,10 +100,13 @@ onMounted(() => {
           <div
             class="lg:hidden self-start flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
           >
-            <span class="material-symbols-outlined text-[16px] text-[#00a046]">verified</span>
+            <span class="material-symbols-outlined text-[16px] text-[#00a046]"
+              >verified</span
+            >
             <span
               class="text-[11px] font-black text-[#00a046] uppercase tracking-widest"
-            >Клієнт</span>
+              >Клієнт</span
+            >
           </div>
         </div>
       </header>

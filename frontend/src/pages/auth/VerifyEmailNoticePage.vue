@@ -2,10 +2,7 @@
   <AuthLayout size="md">
     <div class="text-center w-full">
       <div class="mb-8">
-        <div
-          ref="container"
-          class="w-full max-w-[200px] mx-auto"
-        />
+        <div ref="container" class="w-full max-w-[200px] mx-auto" />
       </div>
 
       <h1
@@ -18,10 +15,8 @@
         {{ $t("auth.verifyEmailNotice.subtitle") }}
       </p>
 
-      <div
-        class="inline-block px-4 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-xl mb-8"
-      >
-        <p class="font-bold text-primary-600">
+      <div class="inline-block px-4 py-2 bg-[#00a046]/10 rounded-xl mb-8">
+        <p class="font-bold text-[#00a046]">
           {{ store.user?.email }}
         </p>
       </div>
@@ -35,7 +30,7 @@
           v-if="!sent"
           variant="primary"
           size="lg"
-          class="w-full !rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+          class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
           :loading="loading"
           @click="resendEmail"
         >
@@ -62,14 +57,14 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppButton } from "@/shared/ui";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Checked.json";
 
@@ -78,18 +73,20 @@ const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 const loading = ref(false);
 const sent = ref(false);
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 async function resendEmail() {
@@ -100,7 +97,7 @@ async function resendEmail() {
 
   loading.value = true;
 
-  const result = await store.resendVerification(store.user.email);
+  const result: any = await store.resendVerification(store.user.email);
 
   loading.value = false;
 

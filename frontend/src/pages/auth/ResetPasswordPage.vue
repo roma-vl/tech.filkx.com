@@ -10,10 +10,7 @@
         {{ $t("auth.resetPassword.subtitle") }}
       </p>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.email"
           :label="$t('auth.resetPassword.emailLabel')"
@@ -55,7 +52,7 @@
             type="submit"
             variant="primary"
             size="lg"
-            class="w-full !rounded-xl !py-4 text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
             :loading="loading"
           >
             {{ $t("auth.resetPassword.submit") }}
@@ -66,15 +63,14 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 
 const router = useRouter();
 const route = useRoute();
@@ -82,14 +78,14 @@ const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const form = reactive({
+const form = reactive<Record<string, any>>({
   email: "",
   password: "",
   password_confirmation: "",
   token: "",
 });
 
-const errors = reactive({
+const errors = reactive<Record<string, any>>({
   email: null,
   password: null,
   password_confirmation: null,
@@ -99,8 +95,8 @@ const errors = reactive({
 const loading = ref(false);
 
 onMounted(() => {
-  form.token = route.query.token || "";
-  form.email = route.query.email || "";
+  form.token = (route.query.token as string) || "";
+  form.email = (route.query.email as string) || "";
 
   if (!form.token) {
     toast.error(t("auth.resetPassword.invalidLink"));
@@ -126,7 +122,7 @@ async function handleSubmit() {
 
   loading.value = true;
 
-  const result = await store.resetPassword({
+  const result: any = await store.resetPassword({
     email: form.email,
     password: form.password,
     password_confirmation: form.password_confirmation,
@@ -146,7 +142,8 @@ async function handleSubmit() {
         }
       });
 
-      const firstError = Object.values(result.errors)[0][0];
+      const errValues: any = Object.values(result.errors);
+      const firstError = errValues[0][0];
       toast.error(firstError);
     } else {
       toast.error(result.error || t("auth.resetPassword.toastError"));

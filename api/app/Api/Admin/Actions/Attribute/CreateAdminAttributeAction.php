@@ -21,7 +21,9 @@ class CreateAdminAttributeAction
 
             $this->syncValues($attribute, $dto->values);
 
-            return $attribute->load('values');
+            $attribute->categories()->sync($dto->categoryIds);
+
+            return $attribute->load(['values', 'categories']);
         });
     }
 

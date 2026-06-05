@@ -1,20 +1,39 @@
-<script setup>
-import { store } from "@/store.js";
+<script setup lang="ts">
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true,
-  },
-  viewMode: {
-    type: String,
-    default: "grid",
-  },
-});
+interface ProductItem {
+  id: string | number;
+  slug: string;
+  name: string;
+  brand: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  price: number;
+  oldPrice?: number;
+  inStock: boolean;
+  description: string;
+  ram?: string;
+  badge?: string;
+  badgeClass?: string;
+  specs: {
+    screen: string;
+    storage: string;
+  };
+}
 
-const emit = defineEmits(["quick-view"]);
+const props = defineProps<{
+  product: ProductItem;
+  viewMode?: "grid" | "list";
+}>();
 
-const formatPrice = (price) => {
+const emit = defineEmits<{
+  (e: "quick-view", product: ProductItem): void;
+}>();
+
+const cartStore = useCartStore();
+
+const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
     style: "currency",
     currency: "UAH",
@@ -43,18 +62,19 @@ const formatPrice = (price) => {
     >
       <a
         class="w-full h-full overflow-hidden relative cursor-pointer block"
-        @click.prevent="store.viewProduct(product)"
+        @click.prevent="cartStore.viewProduct(product as any)"
       >
         <img
           :alt="product.name"
           class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
           :src="product.image"
-        >
+        />
         <span
           v-if="product.badge"
           :class="product.badgeClass"
           class="absolute top-2 left-2 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm"
-        >{{ product.badge }}</span>
+          >{{ product.badge }}</span
+        >
       </a>
 
       <!-- Quick View Floating Button on Hover (Grid) -->
@@ -70,12 +90,14 @@ const formatPrice = (price) => {
       <button
         class="absolute top-4 right-4 px-2.5 py-1.5 bg-white/90 dark:bg-zinc-800/90 hover:bg-rose-500/10 hover:text-rose-550 text-zinc-550 dark:text-zinc-300 rounded-lg transition-all shadow-sm flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider backdrop-blur-sm"
         type="button"
-        @click="store.toggleWishlist(product)"
+        @click="cartStore.toggleWishlist(product as any)"
       >
         <span
-          :class="{ 'text-rose-550': store.isInWishlist(product.id) }"
+          :class="{
+            'text-rose-550': cartStore.isInWishlist(product.id as any),
+          }"
           :style="
-            store.isInWishlist(product.id)
+            cartStore.isInWishlist(product.id as any)
               ? 'font-variation-settings: \'FILL\' 1;'
               : ''
           "
@@ -84,7 +106,7 @@ const formatPrice = (price) => {
           favorite
         </span>
         <span>{{
-          store.isInWishlist(product.id) ? "Обрано" : "В обране"
+          cartStore.isInWishlist(product.id as any) ? "Обрано" : "В обране"
         }}</span>
       </button>
     </div>
@@ -103,7 +125,8 @@ const formatPrice = (price) => {
         <div class="flex items-center justify-between gap-2">
           <span
             class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2 py-0.5 rounded"
-          >{{ product.brand }}</span>
+            >{{ product.brand }}</span
+          >
           <div class="flex items-center gap-1">
             <div class="flex text-amber-400">
               <span
@@ -121,14 +144,15 @@ const formatPrice = (price) => {
             </div>
             <span
               class="text-[10px] font-black text-zinc-450 dark:text-zinc-500"
-            >({{ product.reviews }})</span>
+              >({{ product.reviews }})</span
+            >
           </div>
         </div>
 
         <!-- Product Name -->
         <a
           class="block text-left cursor-pointer"
-          @click.prevent="store.viewProduct(product)"
+          @click.prevent="cartStore.viewProduct(product as any)"
         >
           <h2
             :class="
@@ -199,26 +223,32 @@ const formatPrice = (price) => {
             <span
               v-if="product.oldPrice"
               class="text-[10px] text-zinc-400 line-through font-extrabold"
-            >{{ formatPrice(product.oldPrice) }}</span>
+              >{{ formatPrice(product.oldPrice) }}</span
+            >
             <span
               class="text-lg md:text-xl font-black text-[#00a046] tracking-tight"
-            >{{ formatPrice(product.price) }}</span>
+              >{{ formatPrice(product.price) }}</span
+            >
           </div>
 
           <!-- Compare Button -->
           <button
             type="button"
             :class="
-              store.isInCompare(product.id)
+              cartStore.isInCompare(product.id as any)
                 ? 'bg-emerald-500/10 text-[#00a046] border-[#00a046]/30'
                 : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-550 dark:text-zinc-400 border-zinc-250 dark:border-zinc-700 hover:text-[#00a046] hover:border-[#00a046]/40'
             "
             class="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-all"
-            @click="store.toggleCompare(product)"
+            @click="cartStore.toggleCompare(product as any)"
           >
-            <span class="material-symbols-outlined text-[14px]">compare_arrows</span>
+            <span class="material-symbols-outlined text-[14px]"
+              >compare_arrows</span
+            >
             <span>{{
-              store.isInCompare(product.id) ? "У порівнянні" : "Порівняти"
+              cartStore.isInCompare(product.id as any)
+                ? "У порівнянні"
+                : "Порівняти"
             }}</span>
           </button>
         </div>
@@ -233,9 +263,11 @@ const formatPrice = (price) => {
             "
             class="w-full bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
             type="button"
-            @click="store.addToCart(product)"
+            @click="cartStore.addToCart(product as any)"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >shopping_cart</span
+            >
             {{ product.inStock ? "Купити" : "Немає в наявності" }}
           </button>
         </div>

@@ -16,7 +16,7 @@ class DeleteAdminOrderAction
         $order = $this->orderRepository->find($id);
 
         if (! $order) {
-            throw new OrderNotFoundException();
+            throw new OrderNotFoundException;
         }
 
         $this->orderRepository->delete($order);

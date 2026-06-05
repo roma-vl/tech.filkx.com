@@ -14,7 +14,7 @@ class MergeCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'session_id' => 'required|string',
+            'sessionId' => 'required|string',
         ];
     }
 }

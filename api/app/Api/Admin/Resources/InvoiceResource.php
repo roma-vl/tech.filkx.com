@@ -27,7 +27,7 @@ class InvoiceResource extends JsonResource
                 'name' => $this->customer_name,
                 'email' => $this->customer_email,
             ],
-            'totalMinor' => (int)($this->total_price * 100),
+            'totalMinor' => (int) ($this->total_price * 100),
             'status' => $status,
             'currency' => 'UAH',
             'issuedAt' => $this->created_at->toIso8601String(),

@@ -1,5 +1,6 @@
-<script setup>
-import CartDrawer from "./components/ui/CartDrawer.vue";
+<script setup lang="ts">
+import CartDrawer from "@/widgets/CartDrawer/CartDrawer.vue";
+import AccountDrawer from "@/widgets/AccountDrawer/AccountDrawer.vue";
 import ToastNotification from "./components/ui/ToastNotification.vue";
 </script>
 
@@ -11,6 +12,7 @@ import ToastNotification from "./components/ui/ToastNotification.vue";
 
     <!-- Dynamic Overlay & Modal Components -->
     <CartDrawer />
+    <AccountDrawer />
     <ToastNotification />
   </div>
 </template>

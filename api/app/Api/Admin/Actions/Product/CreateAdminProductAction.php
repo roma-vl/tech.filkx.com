@@ -25,7 +25,7 @@ class CreateAdminProductAction
             $originalSlug = $slug;
             $count = 1;
             while ($this->productRepository->slugExists($slug)) {
-                $slug = $originalSlug . '-' . $count;
+                $slug = $originalSlug.'-'.$count;
                 $count++;
             }
 
@@ -48,7 +48,7 @@ class CreateAdminProductAction
                     'price' => $vData['price'],
                     'old_price' => $vData['oldPrice'] ?? null,
                     'weight' => $vData['weight'] ?? null,
-                    'dimensions' => ['images' => $vData['images']],
+                    'dimensions' => ['images' => $vData['images'] ?? []],
                 ]);
 
                 Stock::create([
@@ -60,6 +60,12 @@ class CreateAdminProductAction
 
                 if (! empty($vData['attributes'])) {
                     foreach ($vData['attributes'] as $attr) {
+                        if (empty($attr['attributeId'])) {
+                            continue;
+                        }
+                        if (empty($attr['valueId']) && (is_null($attr['value']) || $attr['value'] === '')) {
+                            continue;
+                        }
                         ProductAttributeValue::create([
                             'product_id' => $product->id,
                             'variant_id' => $variant->id,

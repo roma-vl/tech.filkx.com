@@ -19,10 +19,10 @@ class CouponRepository implements CouponRepositoryInterface
             $status = $filters['status'];
             if ($status === 'active') {
                 $query->where('is_active', true)
-                      ->where(function ($q) {
-                          $q->whereNull('expires_at')
+                    ->where(function ($q) {
+                        $q->whereNull('expires_at')
                             ->orWhere('expires_at', '>=', now());
-                      });
+                    });
             } elseif ($status === 'expired') {
                 $query->where('expires_at', '<', now());
             } elseif ($status === 'inactive') {
@@ -55,6 +55,7 @@ class CouponRepository implements CouponRepositoryInterface
     public function update(Coupon $coupon, array $data): Coupon
     {
         $coupon->update($data);
+
         return $coupon;
     }
 

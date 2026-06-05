@@ -14,7 +14,7 @@ class AddToCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'variant_id' => 'required',
+            'variantId' => 'required',
             'quantity' => 'nullable|integer|min:1',
         ];
     }

@@ -16,7 +16,7 @@ class DeletePromotionAction
         $promotion = $this->promotionRepository->find($id);
 
         if (! $promotion) {
-            throw new PromotionNotFoundException();
+            throw new PromotionNotFoundException;
         }
 
         $this->promotionRepository->delete($promotion);

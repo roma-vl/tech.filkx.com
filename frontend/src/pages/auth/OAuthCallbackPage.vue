@@ -35,9 +35,7 @@
           >
             Back to Login
           </router-link>
-          <p class="text-xs text-gray-400">
-            Need help? Contact support
-          </p>
+          <p class="text-xs text-gray-400">Need help? Contact support</p>
         </div>
       </div>
       <div
@@ -84,10 +82,7 @@
           </div>
         </div>
       </div>
-      <div
-        v-else
-        class="flex flex-col items-center"
-      >
+      <div v-else class="flex flex-col items-center">
         <svg
           class="animate-spin h-10 w-10 text-primary-600 mb-4"
           xmlns="http://www.w3.org/2000/svg"
@@ -108,18 +103,16 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <p class="text-gray-500 dark:text-gray-400">
-          Completing sign in...
-        </p>
+        <p class="text-gray-500 dark:text-gray-400">Completing sign in...</p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useToast } from "vue-toastification";
 
 const route = useRoute();
@@ -127,19 +120,19 @@ const router = useRouter();
 const store = useAuthStore();
 const toast = useToast();
 
-const error = ref(null);
+const error = ref<string | null>(null);
 const showRestorationModal = ref(false);
 
 const confirmRestoration = () => {
   showRestorationModal.value = false;
-  const redirect = route.query.redirect || "/dashboard";
+  const redirect = (route.query.redirect as string) || "/dashboard";
   router.push(redirect);
 };
 
 onMounted(async () => {
-  const token = route.query.token;
+  const token = route.query.token as string | undefined;
   const wasRestored = route.query.restored === "true";
-  const errorMessage = route.query.error;
+  const errorMessage = route.query.error as string | undefined;
 
   if (errorMessage) {
     error.value = decodeURIComponent(errorMessage);
@@ -165,10 +158,10 @@ onMounted(async () => {
     if (wasRestored) {
       showRestorationModal.value = true;
     } else {
-      const redirect = route.query.redirect || "/dashboard";
+      const redirect = (route.query.redirect as string) || "/dashboard";
       router.push(redirect);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error("OAuth callback error:", err);
     error.value = err.message || "Failed to complete authentication";
     store.clear(); // Clear any partial auth state

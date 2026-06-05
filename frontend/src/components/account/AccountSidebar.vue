@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth.js";
-import { store } from "@/store.js";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
 
 const userName = computed(() => authStore.user?.name || "Клієнт");
 const userEmail = computed(() => authStore.user?.email || "");
@@ -22,23 +23,53 @@ const userInitials = computed(() => {
   );
 });
 
-const navItems = [
+interface NavItem {
+  name: string;
+  icon: string;
+  query?: { tab: string };
+  routeName?: string;
+  action?: () => void;
+  badgeKey?:
+    | "cartCount"
+    | "wishlistCount"
+    | "compareCount"
+    | "unreadNotificationsCount";
+  isGreenBadge?: boolean;
+}
+
+const navItems: NavItem[] = [
   { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
   { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } },
-  { name: "Кошик", icon: "shopping_cart", action: () => store.openDrawer('cart'), badgeKey: "cartCount", isGreenBadge: true },
-  { name: "Моє обране", icon: "favorite", query: { tab: "favorites" }, badgeKey: "wishlistCount" },
-  { name: "Порівняння товарів", icon: "compare_arrows", query: { tab: "compare" }, badgeKey: "compareCount" },
-  { name: "Сповіщення", icon: "notifications", query: { tab: "notifications" }, badgeKey: "unreadNotificationsCount", isGreenBadge: true },
+  {
+    name: "Моє обране",
+    icon: "favorite",
+    query: { tab: "favorites" },
+    badgeKey: "wishlistCount",
+  },
+  {
+    name: "Порівняння товарів",
+    icon: "compare_arrows",
+    query: { tab: "compare" },
+    badgeKey: "compareCount",
+  },
+  { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
+  {
+    name: "Сповіщення",
+    icon: "notifications",
+    query: { tab: "notifications" },
+    badgeKey: "unreadNotificationsCount",
+    isGreenBadge: true,
+  },
 ];
 
-const footerItems = [
+const footerItems: NavItem[] = [
   { name: "Налаштування", icon: "settings", query: { tab: "settings" } },
   { name: "Підтримка", icon: "help", query: { tab: "support" } },
 ];
 
-const activeTab = computed(() => route.query.tab || "dashboard");
+const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 
-const isActive = (item) => {
+const isActive = (item: NavItem) => {
   if (item.action) return false;
   if (item.routeName && item.routeName !== "account") {
     return route.name === item.routeName;
@@ -46,7 +77,7 @@ const isActive = (item) => {
   return route.name === "account" && activeTab.value === item.query?.tab;
 };
 
-const navigate = (item) => {
+const navigate = (item: NavItem) => {
   if (item.action) {
     item.action();
   } else if (item.routeName && !item.query) {
@@ -100,7 +131,13 @@ const handleLogout = async () => {
       class="flex flex-col gap-1 pb-4 border-b border-zinc-150 dark:border-zinc-800"
     >
       <div class="flex items-center gap-3">
+        <img
+          v-if="authStore.user?.avatarUrl"
+          :src="authStore.user.avatarUrl"
+          class="w-12 h-12 rounded-full object-cover border border-emerald-500/20 shrink-0 select-none"
+        />
         <div
+          v-else
           class="w-12 h-12 rounded-full bg-emerald-500/10 text-[#00a046] flex items-center justify-center text-lg font-black border border-emerald-500/20 select-none shrink-0"
         >
           {{ userInitials }}
@@ -111,11 +148,15 @@ const handleLogout = async () => {
           >
             {{ userName }}
           </p>
-          <p class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5">
+          <p
+            class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate mt-0.5"
+          >
             {{ userEmail }}
           </p>
           <div class="flex items-center gap-1.5 mt-1">
-            <span class="material-symbols-outlined text-[13px] text-[#00a046]">verified</span>
+            <span class="material-symbols-outlined text-[13px] text-[#00a046]"
+              >verified</span
+            >
             <p
               class="font-black text-[#00a046] uppercase tracking-widest text-[9px]"
             >
@@ -142,25 +183,27 @@ const handleLogout = async () => {
         <span
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-        >{{ item.icon }}</span>
+          >{{ item.icon }}</span
+        >
         <span class="text-[15px] tracking-wide">{{ item.name }}</span>
 
         <!-- Badges (Rozetka style) -->
         <span
-          v-if="item.badgeKey && store[item.badgeKey] > 0"
+          v-if="item.badgeKey && cartStore[item.badgeKey] > 0"
           class="ml-auto text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black leading-none shrink-0"
           :class="[
             item.isGreenBadge
               ? 'bg-[#00a046] text-white'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400',
           ]"
         >
-          {{ store[item.badgeKey] }}
+          {{ cartStore[item.badgeKey] }}
         </span>
         <span
           v-else-if="isActive(item)"
           class="ml-auto material-symbols-outlined text-[16px]"
-        >chevron_right</span>
+          >chevron_right</span
+        >
       </button>
     </nav>
 
@@ -182,12 +225,14 @@ const handleLogout = async () => {
         <span
           class="material-symbols-outlined text-[20px]"
           :style="isActive(item) ? 'font-variation-settings: \'FILL\' 1;' : ''"
-        >{{ item.icon }}</span>
+          >{{ item.icon }}</span
+        >
         <span class="text-[15px] tracking-wide">{{ item.name }}</span>
         <span
           v-if="isActive(item)"
           class="ml-auto material-symbols-outlined text-[16px]"
-        >chevron_right</span>
+          >chevron_right</span
+        >
       </button>
 
       <button

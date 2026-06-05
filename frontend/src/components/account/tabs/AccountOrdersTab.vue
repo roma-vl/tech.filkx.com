@@ -1,148 +1,99 @@
-<script setup>
-import { ref, computed } from "vue";
-import { store } from "@/store.js";
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useCartStore } from "@/entities/order/model/cartStore";
+import api from "@/services/api";
 
-const defaultOrders = [
-  {
-    id: "120934812",
-    date: "24 Жов, 2025",
-    total: 63149.0,
-    shipTo: "Роман Шевченко",
-    status: "В дорозі - прибуває завтра",
-    statusIcon: "local_shipping",
-    statusClass:
-      "text-[#00a046] bg-emerald-500/10 border border-emerald-500/20",
-    statusCode: "shipped",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "24 Жов, 2025 10:00", done: true },
-      {
-        name: "Обробка та комплектування",
-        date: "24 Жов, 2025 14:00",
-        done: true,
-      },
-      { name: "Передано кур'єру", date: "25 Жов, 2025 09:00", done: true },
-      {
-        name: "Доставка отримувачу",
-        date: "Очікується 28 Жов, 2025",
-        done: false,
-      },
-      { name: "Доставлено", date: "Очікується 29 Жов, 2025", done: false },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Visa", number: "•••• 4242" },
-    items: [
-      {
-        id: 3,
-        slug: "lenovo-legion-5-pro",
-        name: "Lenovo Legion 5 Pro 16ARH7H Storm Grey",
-        price: 62999.0,
-        returnWindow: "24 Лис, 2025",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E",
-      },
-    ],
-  },
-  {
-    id: "992184021",
-    date: "12 Вер, 2025",
-    total: 15149.0,
-    shipTo: "Роман Шевченко",
-    status: "Доставлено 15 Вер, 2025",
-    statusIcon: "check_circle",
-    statusClass:
-      "text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700",
-    statusCode: "delivered",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "12 Вер, 2025 08:30", done: true },
-      {
-        name: "Обробка та комплектування",
-        date: "12 Вер, 2025 11:00",
-        done: true,
-      },
-      { name: "Передано кур'єру", date: "13 Вер, 2025 16:00", done: true },
-      { name: "Доставка отримувачу", date: "15 Вер, 2025 08:00", done: true },
-      { name: "Доставлено", date: "15 Вер, 2025 14:30", done: true },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Mastercard", number: "•••• 9876" },
-    items: [
-      {
-        id: 4,
-        slug: "sony-wh-1000xm5-black",
-        name: "Бездротові навушники Sony WH-1000XM5 Black",
-        price: 14999.0,
-        note: "Залишене біля дверей.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA",
-      },
-    ],
-  },
-  {
-    id: "483920194",
-    date: "02 Тра, 2025",
-    total: 55149.0,
-    shipTo: "Роман Шевченко",
-    status: "Скасовано 02 Тра, 2025",
-    statusIcon: "cancel",
-    statusClass: "text-rose-500 bg-rose-500/10 border border-rose-500/20",
-    statusCode: "cancelled",
-    trackingSteps: [
-      { name: "Замовлення створено", date: "02 Тра, 2025 09:00", done: true },
-      { name: "Скасовано", date: "02 Тра, 2025 09:30", done: true },
-    ],
-    shippingAddress: {
-      recipient: "Роман Шевченко",
-      street: "вул. Хрещатик 22, кв. 14",
-      city: "Київ",
-      state: "Київська обл.",
-      zip: "01001",
-      country: "Україна",
-    },
-    paymentMethod: { type: "Visa", number: "•••• 4242" },
-    items: [
-      {
-        id: 1,
-        slug: "iphone-15-pro-max",
-        name: "Apple iPhone 15 Pro Max 256GB Natural Titanium",
-        price: 54999.0,
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM",
-      },
-    ],
-  },
-];
+const cartStore = useCartStore();
 
-const ordersList = ref([...defaultOrders]);
+interface TrackingStep {
+  name: string;
+  date: string;
+  done: boolean;
+}
+
+interface ShippingAddress {
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
+interface OrderItem {
+  id: number;
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  qty?: number;
+  returnWindow?: string;
+  note?: string;
+}
+
+interface Order {
+  id: string;
+  dbId: number;
+  date: string;
+  total: number;
+  shipTo: string;
+  status: string;
+  statusIcon: string;
+  statusClass: string;
+  statusCode: string;
+  trackingSteps: TrackingStep[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: { type: string; number: string };
+  items: OrderItem[];
+}
+
+const ordersList = ref<Order[]>([]);
+const isLoading = ref(false);
 const ordersFilter = ref("all");
 const ordersSearchQuery = ref("");
 
-const selectedOrder = ref(null);
+const fetchOrders = async () => {
+  isLoading.value = true;
+  try {
+    const response = await api.get("/user/orders");
+    ordersList.value = response.data.data || [];
+  } catch (error) {
+    console.error("Failed to fetch user orders:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchOrders();
+});
+const selectedOrder = ref<Order | null>(null);
 const isDetailsOpen = ref(false);
-const trackingOrder = ref(null);
+const trackingOrder = ref<Order | null>(null);
 const isTrackingOpen = ref(false);
-const reviewProduct = ref(null);
+const reviewProduct = ref<OrderItem | null>(null);
 const reviewRating = ref(5);
 const reviewComment = ref("");
 const isReviewOpen = ref(false);
 
 const filteredOrders = computed(() =>
   ordersList.value.filter((o) => {
-    if (ordersFilter.value !== "all" && o.statusCode !== ordersFilter.value)
-      return false;
+    if (ordersFilter.value !== "all") {
+      const status = o.statusCode;
+      if (ordersFilter.value === "processing") {
+        if (!["pending_payment", "paid", "processing", "packed", "pending"].includes(status)) {
+          return false;
+        }
+      } else if (ordersFilter.value === "shipped") {
+        if (status !== "shipped") return false;
+      } else if (ordersFilter.value === "delivered") {
+        if (!["delivered", "completed"].includes(status)) return false;
+      } else if (ordersFilter.value === "cancelled") {
+        if (!["cancelled", "refunded"].includes(status)) return false;
+      } else if (status !== ordersFilter.value) {
+        return false;
+      }
+    }
     if (ordersSearchQuery.value.trim()) {
       const q = ordersSearchQuery.value.toLowerCase();
       return (
@@ -154,23 +105,49 @@ const filteredOrders = computed(() =>
   }),
 );
 
-const openDetails = (o) => {
+const isCancelling = ref<Record<string, boolean>>({});
+
+const cancelOrderAction = async (order: Order) => {
+  if (!confirm("Ви впевнені, що хочете скасувати це замовлення?")) return;
+
+  isCancelling.value[order.id] = true;
+  try {
+    const response = await api.post(`/user/orders/${order.dbId}/cancel`);
+    if (response.data && response.data.status === "success") {
+      cartStore.addToast("Замовлення успішно скасовано", "success");
+      await fetchOrders();
+      if (selectedOrder.value && selectedOrder.value.id === order.id) {
+        selectedOrder.value = ordersList.value.find((o) => o.id === order.id) || null;
+      }
+    } else {
+      cartStore.addToast(response.data.message || "Помилка при скасуванні замовлення", "error");
+    }
+  } catch (error: any) {
+    console.error("Failed to cancel order:", error);
+    const msg = error.response?.data?.message || "Не вдалося скасувати замовлення";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isCancelling.value[order.id] = false;
+  }
+};
+
+const openDetails = (o: Order) => {
   selectedOrder.value = o;
   isDetailsOpen.value = true;
 };
-const openTracking = (o) => {
+const openTracking = (o: Order) => {
   trackingOrder.value = o;
   isTrackingOpen.value = true;
 };
-const openReview = (i) => {
+const openReview = (i: OrderItem) => {
   reviewProduct.value = i;
   reviewRating.value = 5;
   reviewComment.value = "";
   isReviewOpen.value = true;
 };
-const buyItAgain = (i) => store.addToCart(i);
+const buyItAgain = (i: OrderItem) => cartStore.addToCart(i as any);
 const submitReview = () => {
-  store.addToast(
+  cartStore.addToast(
     `Дякуємо! Ваш відгук із оцінкою ${reviewRating.value} зірок успішно опубліковано.`,
     "success",
   );
@@ -179,6 +156,7 @@ const submitReview = () => {
 
 const filterBtns = [
   { key: "all", label: "Усі" },
+  { key: "processing", label: "В обробці" },
   { key: "shipped", label: "В дорозі" },
   { key: "delivered", label: "Доставлені" },
   { key: "cancelled", label: "Скасовані" },
@@ -211,13 +189,14 @@ const filterBtns = [
       <div class="relative flex-1 max-w-md">
         <span
           class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]"
-        >search</span>
+          >search</span
+        >
         <input
           v-model="ordersSearchQuery"
           type="text"
           placeholder="Пошук замовлень за номером або назвою товару..."
           class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-xs md:text-sm focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] text-zinc-800 dark:text-zinc-200 outline-none"
-        >
+        />
         <button
           v-if="ordersSearchQuery"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650"
@@ -228,11 +207,21 @@ const filterBtns = [
       </div>
     </div>
 
-    <!-- Orders -->
+    <!-- Loading state -->
     <div
-      v-if="filteredOrders.length > 0"
-      class="space-y-6"
+      v-if="isLoading"
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-12 flex flex-col items-center justify-center gap-3 shadow-sm"
     >
+      <div
+        class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#00a046]"
+      />
+      <p class="text-zinc-500 dark:text-zinc-455 font-medium">
+        Завантаження замовлень...
+      </p>
+    </div>
+
+    <!-- Orders -->
+    <div v-else-if="filteredOrders.length > 0" class="space-y-6">
       <div
         v-for="order in filteredOrders"
         :key="order.id"
@@ -290,7 +279,8 @@ const filterBtns = [
               >
                 <span class="material-symbols-outlined text-[12px]">{{
                   order.statusIcon
-                }}</span>{{ order.status }}
+                }}</span
+                >{{ order.status }}
               </span>
             </div>
           </div>
@@ -306,6 +296,14 @@ const filterBtns = [
             >
               Детальніше
             </button>
+            <button
+              v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(order.statusCode)"
+              class="text-rose-500 hover:text-rose-600 font-extrabold text-[11px] md:text-xs hover:underline mt-1 disabled:opacity-50"
+              :disabled="isCancelling[order.id]"
+              @click="cancelOrderAction(order)"
+            >
+              {{ isCancelling[order.id] ? "Скасування..." : "Скасувати" }}
+            </button>
           </div>
         </div>
         <div class="p-6 space-y-6">
@@ -318,12 +316,12 @@ const filterBtns = [
               class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 cursor-pointer hover:border-[#00a046]/40 transition-colors"
               :src="item.image"
               :alt="item.name"
-              @click="store.viewProduct(item)"
-            >
+              @click="cartStore.viewProduct(item as any)"
+            />
             <div class="flex-1">
               <h3
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="store.viewProduct(item)"
+                @click="cartStore.viewProduct(item as any)"
               >
                 {{ item.name }}
               </h3>
@@ -360,7 +358,8 @@ const filterBtns = [
                 >
                   <span
                     class="material-symbols-outlined text-[16px] md:text-[18px]"
-                  >track_changes</span>
+                    >track_changes</span
+                  >
                   Відстежити
                 </button>
               </div>
@@ -375,7 +374,8 @@ const filterBtns = [
     >
       <span
         class="material-symbols-outlined text-[48px] text-zinc-350 dark:text-zinc-600 mb-4"
-      >shopping_bag</span>
+        >shopping_bag</span
+      >
       <h3 class="font-extrabold text-lg text-zinc-850 dark:text-zinc-150">
         Замовлень не знайдено
       </h3>
@@ -387,7 +387,8 @@ const filterBtns = [
       <a
         href="/catalog"
         class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-      >Перейти до каталогу</a>
+        >Перейти до каталогу</a
+      >
     </div>
   </div>
 
@@ -437,12 +438,12 @@ const filterBtns = [
               :src="item.image"
               :alt="item.name"
               class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
-              @click="store.viewProduct(item)"
-            >
+              @click="cartStore.viewProduct(item as any)"
+            />
             <div class="flex-1">
               <p
                 class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="store.viewProduct(item)"
+                @click="cartStore.viewProduct(item as any)"
               >
                 {{ item.name }}
               </p>
@@ -488,7 +489,9 @@ const filterBtns = [
             <p
               class="flex items-center gap-1.5 font-extrabold text-zinc-850 dark:text-zinc-150 mt-1"
             >
-              <span class="material-symbols-outlined text-[18px]">credit_card</span>{{ selectedOrder.paymentMethod.type }}
+              <span class="material-symbols-outlined text-[18px]"
+                >credit_card</span
+              >{{ selectedOrder.paymentMethod.type }}
               {{ selectedOrder.paymentMethod.number }}
             </p>
           </div>
@@ -500,7 +503,8 @@ const filterBtns = [
             Сума
           </h4>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
-            <span>Вартість товарів</span><span>{{ (selectedOrder.total - 150).toFixed(2) }} ₴</span>
+            <span>Вартість товарів</span
+            ><span>{{ (selectedOrder.total - 150).toFixed(2) }} ₴</span>
           </div>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
             <span>Доставка</span><span>150.00 ₴</span>
@@ -508,13 +512,24 @@ const filterBtns = [
           <div
             class="flex justify-between font-black text-sm md:text-base pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-2"
           >
-            <span>Всього</span><span class="text-[#00a046]">{{ selectedOrder.total.toFixed(2) }} ₴</span>
+            <span>Всього</span
+            ><span class="text-[#00a046]"
+              >{{ selectedOrder.total.toFixed(2) }} ₴</span
+            >
           </div>
         </div>
       </div>
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
+        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
       >
+        <button
+          v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(selectedOrder.statusCode)"
+          class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors disabled:opacity-50"
+          :disabled="isCancelling[selectedOrder.id]"
+          @click="cancelOrderAction(selectedOrder)"
+        >
+          {{ isCancelling[selectedOrder.id] ? "Скасування..." : "Скасувати замовлення" }}
+        </button>
         <button
           class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors"
           @click="isDetailsOpen = false"
@@ -644,7 +659,7 @@ const filterBtns = [
             :src="reviewProduct.image"
             :alt="reviewProduct.name"
             class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1"
-          >
+          />
           <p class="font-extrabold text-zinc-800 dark:text-zinc-200">
             {{ reviewProduct.name }}
           </p>
@@ -652,7 +667,8 @@ const filterBtns = [
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Оцінка</label>
+            >Оцінка</label
+          >
           <div class="flex gap-1 text-amber-400 cursor-pointer">
             <span
               v-for="star in 5"
@@ -664,13 +680,15 @@ const filterBtns = [
                   : ''
               "
               @click="reviewRating = star"
-            >star</span>
+              >star</span
+            >
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Коментар</label>
+            >Коментар</label
+          >
           <textarea
             v-model="reviewComment"
             rows="4"

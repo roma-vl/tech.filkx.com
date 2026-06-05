@@ -10,6 +10,7 @@ class SetUserPasswordAction
     {
         $user->password = $password;
         $user->save();
+
         return $user;
     }
 }

@@ -23,7 +23,7 @@ class UpdateAdminProductAction
         $product = $this->productRepository->find($id);
 
         if (! $product) {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException;
         }
 
         return DB::transaction(function () use ($product, $dto) {
@@ -52,7 +52,7 @@ class UpdateAdminProductAction
                         'price' => $vData['price'],
                         'old_price' => $vData['oldPrice'] ?? null,
                         'weight' => $vData['weight'] ?? null,
-                        'dimensions' => ['images' => $vData['images']],
+                        'dimensions' => ['images' => $vData['images'] ?? []],
                     ]);
                 } else {
                     $variant = ProductVariant::create([
@@ -61,7 +61,7 @@ class UpdateAdminProductAction
                         'price' => $vData['price'],
                         'old_price' => $vData['oldPrice'] ?? null,
                         'weight' => $vData['weight'] ?? null,
-                        'dimensions' => ['images' => $vData['images']],
+                        'dimensions' => ['images' => $vData['images'] ?? []],
                     ]);
                 }
 
@@ -86,6 +86,12 @@ class UpdateAdminProductAction
                 ProductAttributeValue::where('variant_id', $variant->id)->delete();
                 if (! empty($vData['attributes'])) {
                     foreach ($vData['attributes'] as $attr) {
+                        if (empty($attr['attributeId'])) {
+                            continue;
+                        }
+                        if (empty($attr['valueId']) && (is_null($attr['value']) || $attr['value'] === '')) {
+                            continue;
+                        }
                         ProductAttributeValue::create([
                             'product_id' => $product->id,
                             'variant_id' => $variant->id,

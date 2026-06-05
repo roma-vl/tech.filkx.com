@@ -11,16 +11,8 @@
         collapsed ? 'flex-col gap-4 px-2 py-6' : 'px-6 py-8',
       ]"
     >
-      <router-link
-        v-if="!collapsed"
-        to="/"
-        class="flex items-center space-x-2"
-      >
-        <img
-          :src="Logo"
-          alt="Filkx"
-          class="w-28"
-        >
+      <router-link v-if="!collapsed" to="/" class="flex items-center space-x-2">
+        <img :src="Logo" alt="Filkx" class="w-28" />
       </router-link>
       <button
         class="p-2.5 rounded-xl bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-white/60 dark:border-white/10 shadow-sm transition-all duration-300 flex items-center justify-center flex-shrink-0"
@@ -39,16 +31,8 @@
     </div>
 
     <nav class="flex-1 py-4 space-y-1 overflow-y-auto custom-scrollbar">
-      <div
-        v-for="group in navigationGroups"
-        :key="group.id"
-        class="px-4"
-      >
-        <div
-          v-for="item in group.items"
-          :key="item.id"
-          class="mb-1"
-        >
+      <div v-for="group in navigationGroups" :key="group.id" class="px-4">
+        <div v-for="item in group.items" :key="item.id" class="mb-1">
           <AppNavDropdown
             v-if="item.items"
             :item="item"
@@ -71,7 +55,7 @@
   </aside>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import {
   ChevronDoubleLeftIcon,
@@ -79,22 +63,20 @@ import {
 } from "@heroicons/vue/24/outline";
 import AppNavItem from "./AppNavItem.vue";
 import AppNavDropdown from "./AppNavDropdown.vue";
-import { useNavigation } from "@/layouts/appllication/useNavigation.js";
+import { useNavigation } from "@/layouts/main/useNavigation.js";
 import Logo from "@/assets/images/logo/logo.png";
-// import TourReminderBanner from "@/components/application/features/onboarding/TourReminderBanner.vue";
-// import TrialActivationBanner from "@/components/application/ui/Banners/TrialActivationBanner.vue";
-import Version from "@/layouts/appllication/components/Version.vue";
+import Version from "@/layouts/main/components/Version.vue";
 
 const { t } = useI18n();
 
-defineProps({
-  collapsed: {
-    type: Boolean,
-    required: true,
-  },
-});
+defineProps<{
+  collapsed: boolean;
+}>();
 
-defineEmits(["toggle", "start-tour"]);
+defineEmits<{
+  (e: "toggle"): void;
+  (e: "start-tour"): void;
+}>();
 
 const { navigationGroups } = useNavigation();
 </script>

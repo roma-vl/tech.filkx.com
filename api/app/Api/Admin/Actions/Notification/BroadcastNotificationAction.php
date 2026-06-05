@@ -3,6 +3,7 @@
 namespace App\Api\Admin\Actions\Notification;
 
 use App\Api\V1\Repositories\NotificationRepositoryInterface;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class BroadcastNotificationAction
@@ -21,7 +22,7 @@ class BroadcastNotificationAction
 
             if ($data['recipients'] === 'all') {
                 // Create separate notifications for all users
-                $userIds = \App\Models\User::pluck('id');
+                $userIds = User::pluck('id');
                 foreach ($userIds as $userId) {
                     $this->notificationRepository->create([
                         'user_id' => $userId,

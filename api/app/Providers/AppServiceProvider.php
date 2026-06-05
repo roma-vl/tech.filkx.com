@@ -2,22 +2,22 @@
 
 namespace App\Providers;
 
-use App\Api\V1\Repositories\ProductRepositoryInterface;
-use App\Api\V1\Repositories\ProductRepository;
-use App\Api\V1\Repositories\OrderRepositoryInterface;
-use App\Api\V1\Repositories\OrderRepository;
-use App\Api\V1\Repositories\CouponRepositoryInterface;
-use App\Api\V1\Repositories\CouponRepository;
-use App\Api\V1\Repositories\PromotionRepositoryInterface;
-use App\Api\V1\Repositories\PromotionRepository;
-use App\Api\V1\Repositories\BrandRepositoryInterface;
-use App\Api\V1\Repositories\BrandRepository;
-use App\Api\V1\Repositories\AttributeRepositoryInterface;
 use App\Api\V1\Repositories\AttributeRepository;
-use App\Api\V1\Repositories\CartRepositoryInterface;
+use App\Api\V1\Repositories\AttributeRepositoryInterface;
+use App\Api\V1\Repositories\BrandRepository;
+use App\Api\V1\Repositories\BrandRepositoryInterface;
 use App\Api\V1\Repositories\CartRepository;
-use App\Api\V1\Repositories\NotificationRepositoryInterface;
+use App\Api\V1\Repositories\CartRepositoryInterface;
+use App\Api\V1\Repositories\CouponRepository;
+use App\Api\V1\Repositories\CouponRepositoryInterface;
 use App\Api\V1\Repositories\NotificationRepository;
+use App\Api\V1\Repositories\NotificationRepositoryInterface;
+use App\Api\V1\Repositories\OrderRepository;
+use App\Api\V1\Repositories\OrderRepositoryInterface;
+use App\Api\V1\Repositories\ProductRepository;
+use App\Api\V1\Repositories\ProductRepositoryInterface;
+use App\Api\V1\Repositories\PromotionRepository;
+use App\Api\V1\Repositories\PromotionRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 

@@ -19,10 +19,10 @@ class PromotionRepository implements PromotionRepositoryInterface
             $status = $filters['status'];
             if ($status === 'active') {
                 $query->where('is_active', true)
-                      ->where(function ($q) {
-                          $q->whereNull('end_date')
+                    ->where(function ($q) {
+                        $q->whereNull('end_date')
                             ->orWhere('end_date', '>=', now());
-                      });
+                    });
             } elseif ($status === 'expired') {
                 $query->where('end_date', '<', now());
             } elseif ($status === 'inactive') {
@@ -50,6 +50,7 @@ class PromotionRepository implements PromotionRepositoryInterface
     public function update(Promotion $promotion, array $data): Promotion
     {
         $promotion->update($data);
+
         return $promotion;
     }
 

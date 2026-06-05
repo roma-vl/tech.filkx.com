@@ -4,6 +4,10 @@ namespace App\Api\Admin\Controllers;
 
 use App\Api\Admin\Actions\GetAdminStatsAction;
 use App\Api\Admin\Requests\StatsRequest;
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class AdminStatsController extends BaseApiController
@@ -82,42 +86,18 @@ class AdminStatsController extends BaseApiController
 
     public function overview(): JsonResponse
     {
-        $totalUsers = \App\Models\User::count();
-        $totalOrders = \App\Models\Order::count();
-        $totalProducts = \App\Models\Product::count();
-        $totalRevenue = \App\Models\Order::where('status', 'completed')->sum('total_price');
+        $totalUsers = User::count();
+        $totalOrders = Order::count();
+        $totalProducts = Product::count();
+        $totalRevenue = Order::where('status', 'completed')->sum('total_price');
 
         $data = [
             'overview' => [
-                [
-                    'label' => 'Total Customers',
-                    'value' => number_format($totalUsers),
-                    'trend' => 12.5,
-                    'icon' => 'UsersIcon',
-                    'bg_class' => 'bg-blue-500',
-                ],
-                [
-                    'label' => 'Orders Completed',
-                    'value' => number_format($totalOrders),
-                    'trend' => 8.2,
-                    'icon' => 'CheckBadgeIcon',
-                    'bg_class' => 'bg-green-500',
-                ],
-                [
-                    'label' => 'Total Revenue',
-                    'value' => '₴' . number_format($totalRevenue, 2),
-                    'trend' => 15.3,
-                    'icon' => 'BanknotesIcon',
-                    'bg_class' => 'bg-orange-500',
-                ],
-                [
-                    'label' => 'Products Active',
-                    'value' => number_format($totalProducts),
-                    'trend' => 4.1,
-                    'icon' => 'Square3Stack3DIcon',
-                    'bg_class' => 'bg-purple-500',
-                ],
-            ]
+                ['label' => 'Total Customers', 'value' => number_format($totalUsers),   'trend' => 12.5, 'icon' => 'UsersIcon',          'bgClass' => 'bg-blue-500'],
+                ['label' => 'Orders Completed', 'value' => number_format($totalOrders),  'trend' => 8.2,  'icon' => 'CheckBadgeIcon',      'bgClass' => 'bg-green-500'],
+                ['label' => 'Total Revenue',   'value' => '₴'.number_format($totalRevenue, 2), 'trend' => 15.3, 'icon' => 'BanknotesIcon', 'bgClass' => 'bg-orange-500'],
+                ['label' => 'Products Active', 'value' => number_format($totalProducts), 'trend' => 4.1,  'icon' => 'Square3Stack3DIcon',  'bgClass' => 'bg-purple-500'],
+            ],
         ];
 
         return self::successfulResponseWithData($data);
@@ -137,7 +117,7 @@ class AdminStatsController extends BaseApiController
                 'revenue' => $revenueData,
                 'streams' => $ordersData,
                 'signups' => $signupsData,
-            ]
+            ],
         ];
 
         return self::successfulResponseWithData($data);
@@ -145,7 +125,7 @@ class AdminStatsController extends BaseApiController
 
     public function distributions(): JsonResponse
     {
-        $categories = \App\Models\Category::take(5)->get();
+        $categories = Category::take(5)->get();
         $plans = [];
 
         if ($categories->count() > 0) {
@@ -154,7 +134,7 @@ class AdminStatsController extends BaseApiController
                 $label = is_array($nameArray) ? ($nameArray['uk'] ?? $nameArray['en'] ?? $category->slug) : $category->slug;
                 $plans[] = [
                     'label' => $label,
-                    'value' => \App\Models\Product::whereHas('categories', function ($query) use ($category) {
+                    'value' => Product::whereHas('categories', function ($query) use ($category) {
                         $query->where('categories.id', $category->id);
                     })->count() ?: rand(5, 20),
                 ];
@@ -168,10 +148,10 @@ class AdminStatsController extends BaseApiController
             ];
         }
 
-        $pendingOrders = \App\Models\Order::where('status', 'pending')->count();
-        $completedOrders = \App\Models\Order::where('status', 'completed')->count();
-        $cancelledOrders = \App\Models\Order::where('status', 'cancelled')->count();
-        $processingOrders = \App\Models\Order::where('status', 'processing')->count();
+        $pendingOrders = Order::where('status', 'pending')->count();
+        $completedOrders = Order::where('status', 'completed')->count();
+        $cancelledOrders = Order::where('status', 'cancelled')->count();
+        $processingOrders = Order::where('status', 'processing')->count();
 
         if ($pendingOrders + $completedOrders + $cancelledOrders + $processingOrders === 0) {
             $pendingOrders = 15;

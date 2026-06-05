@@ -19,7 +19,7 @@ class RemoveCartItemAction
         $cartItem = $this->cartRepository->findItem($cart, $itemId);
 
         if (! $cartItem) {
-            throw new CartItemNotFoundException();
+            throw new CartItemNotFoundException;
         }
 
         $this->cartRepository->removeItem($cartItem);

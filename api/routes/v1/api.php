@@ -5,6 +5,7 @@ use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
 use App\Api\Admin\Controllers\AdminMarketingController;
+use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
 use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
@@ -14,7 +15,6 @@ use App\Api\Admin\Controllers\AdminStatsController;
 use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
-use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
@@ -59,6 +59,7 @@ Route::prefix('v1')->group(function () {
         Route::get('brands', [CatalogController::class, 'brands']);
         Route::get('filters', [CatalogController::class, 'filters']);
         Route::get('products', [CatalogController::class, 'products']);
+        Route::get('products/random', [CatalogController::class, 'randomProducts']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
     });
 
@@ -73,6 +74,7 @@ Route::prefix('v1')->group(function () {
 
     // Checkout route
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
+    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder']);
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
 });
 
@@ -111,6 +113,26 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     // User settings
     Route::get('/user/settings/preferences', [UserController::class, 'getPreferences']);
     Route::put('/user/settings/preferences', [UserController::class, 'updatePreferences']);
+
+    // User orders endpoint
+    Route::get('/user/orders', [UserController::class, 'getOrders']);
+    Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
+
+    // Favorites (wishlist) database-backed endpoints
+    Route::get('/user/favorites', [UserController::class, 'getFavorites']);
+    Route::post('/user/favorites/toggle', [UserController::class, 'toggleFavorite']);
+    Route::post('/user/favorites/sync', [UserController::class, 'syncFavorites']);
+
+    // Compare database-backed endpoints
+    Route::get('/user/compares', [UserController::class, 'getCompares']);
+    Route::post('/user/compares/toggle', [UserController::class, 'toggleCompare']);
+    Route::post('/user/compares/sync', [UserController::class, 'syncCompares']);
+
+    // Viewed products history database-backed endpoints
+    Route::get('/user/viewed-products', [UserController::class, 'getViewedProducts']);
+    Route::post('/user/viewed-products/track', [UserController::class, 'trackViewedProduct']);
+    Route::post('/user/viewed-products/sync', [UserController::class, 'syncViewedProducts']);
+    Route::delete('/user/viewed-products/clear', [UserController::class, 'clearViewedProducts']);
 
     // Session management
     Route::get('/user/sessions', [UserController::class, 'sessions']);

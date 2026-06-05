@@ -1,10 +1,7 @@
 <template>
   <AuthLayout size="lg">
     <template #left>
-      <div
-        ref="container"
-        class="w-full"
-      />
+      <div ref="container" class="w-full" />
     </template>
 
     <div class="max-w-md mx-auto md:mx-0 w-full">
@@ -17,10 +14,7 @@
         {{ $t("auth.register.subtitle") }}
       </p>
 
-      <form
-        class="space-y-5"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-5" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.name"
           :label="$t('auth.register.nameLabel')"
@@ -69,7 +63,7 @@
             type="submit"
             variant="primary"
             size="lg"
-            class="w-full !rounded-xl !py-4 text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
             :loading="loading"
           >
             {{ $t("auth.register.submit") }}
@@ -81,7 +75,7 @@
         {{ $t("auth.register.hasAccount") }}
         <router-link
           to="/login"
-          class="text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           {{ $t("auth.register.signIn") }}
         </router-link>
@@ -90,36 +84,37 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
-const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;
 
 const router = useRouter();
 const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 const form = reactive({
@@ -127,9 +122,10 @@ const form = reactive({
   email: "",
   password: "",
   password_confirmation: "",
+  recaptcha_token: "" as string | undefined,
 });
 
-const errors = reactive({
+const errors = reactive<Record<string, any>>({
   name: null,
   email: null,
   password: null,
@@ -157,12 +153,14 @@ async function handleSubmit() {
   loading.value = true;
 
   if (store.failedAttempts >= 3) {
-    await recaptchaLoaded();
-    const token = await executeRecaptcha("register");
-    form.recaptcha_token = token;
+    if (recaptchaLoaded) {
+      await recaptchaLoaded();
+      const token = await executeRecaptcha("register");
+      form.recaptcha_token = token;
+    }
   }
 
-  const result = await store.register(form);
+  const result: any = await store.register(form);
   loading.value = false;
 
   if (result.ok) {
@@ -173,7 +171,8 @@ async function handleSubmit() {
       Object.keys(result.errors).forEach((key) => {
         if (errors.hasOwnProperty(key)) errors[key] = result.errors[key][0];
       });
-      toast.error(Object.values(result.errors)[0][0]);
+      const errValues: any = Object.values(result.errors);
+      toast.error(errValues[0][0]);
     } else {
       toast.error(result.error || t("auth.register.errorMessage"));
     }

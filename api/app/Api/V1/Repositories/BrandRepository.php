@@ -25,6 +25,7 @@ class BrandRepository implements BrandRepositoryInterface
     public function update(Brand $brand, array $data): Brand
     {
         $brand->update($data);
+
         return $brand;
     }
 

@@ -1,10 +1,7 @@
 <template>
   <AuthLayout size="lg">
     <template #left>
-      <div
-        ref="container"
-        class="w-full"
-      />
+      <div ref="container" class="w-full" />
     </template>
 
     <div class="max-w-md mx-auto md:mx-0 w-full">
@@ -17,10 +14,7 @@
         {{ $t("auth.login.subtitle") }}
       </p>
 
-      <form
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="form.email"
           :label="$t('auth.login.emailLabel')"
@@ -42,7 +36,7 @@
             </label>
             <router-link
               to="/forgot-password"
-              class="text-sm font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+              class="text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
             >
               {{ $t("auth.login.forgotPassword") }}
             </router-link>
@@ -62,7 +56,7 @@
             type="submit"
             variant="primary"
             size="lg"
-            class="w-full !rounded-xl !py-4 text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
             :loading="loading"
           >
             {{ $t("auth.login.submit") }}
@@ -75,9 +69,7 @@
           <div class="w-full border-t border-gray-300 dark:border-gray-700" />
         </div>
         <div class="relative flex justify-center text-sm">
-          <span
-            class="px-2 bg-white dark:bg-gray-900 text-gray-500 font-medium"
-          >
+          <span class="px-2 bg-[#1e293b] text-gray-400 font-medium">
             {{ $t("auth.or_continue_with") }}
           </span>
         </div>
@@ -89,7 +81,7 @@
         {{ $t("auth.login.noAccount") }}
         <router-link
           to="/register"
-          class="text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           {{ $t("auth.login.createAccount") }}
         </router-link>
@@ -98,21 +90,20 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import OAuthButtons from "@/components/auth/OAuthButtons.vue";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
-const { executeRecaptcha, recaptchaLoaded } = useReCaptcha();
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;
 
 const router = useRouter();
 const route = useRoute();
@@ -120,27 +111,30 @@ const toast = useToast();
 const store = useAuthStore();
 const { t } = useI18n();
 
-const container = ref(null);
+const container = ref<HTMLElement | null>(null);
 const loading = ref(false);
 
 const form = reactive({
   email: "",
   password: "",
+  recaptcha_token: "" as string | undefined,
 });
 
-const errors = reactive({
+const errors = reactive<Record<string, any>>({
   email: null,
   password: null,
 });
 
 onMounted(() => {
-  lottie.loadAnimation({
-    container: container.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: CheckedAnimation,
-  });
+  if (container.value) {
+    lottie.loadAnimation({
+      container: container.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: CheckedAnimation,
+    });
+  }
 });
 
 async function handleSubmit() {
@@ -149,18 +143,20 @@ async function handleSubmit() {
   loading.value = true;
 
   if (store.failedAttempts >= 3) {
-    await recaptchaLoaded();
-    const token = await executeRecaptcha("login");
-    form.recaptcha_token = token;
+    if (recaptchaLoaded) {
+      await recaptchaLoaded();
+      const token = await executeRecaptcha("login");
+      form.recaptcha_token = token;
+    }
   }
 
-  const result = await store.login(form);
+  const result: any = await store.login(form);
 
   loading.value = false;
 
   if (result.ok) {
     toast.success(t("auth.login.successMessage"));
-    const redirect = route.query.redirect || "/dashboard";
+    const redirect = (route.query.redirect as string) || "/dashboard";
     router.push(redirect);
   } else {
     if (result.errors) {

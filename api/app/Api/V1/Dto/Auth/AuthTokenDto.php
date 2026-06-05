@@ -28,10 +28,10 @@ readonly class AuthTokenDto
     public function toArray(): array
     {
         return [
-            'access_token' => $this->accessToken,
-            'token_type' => $this->tokenType,
-            'expires_in' => $this->expiresIn,
-            'expires_at' => $this->expiresAt,
+            'accessToken' => $this->accessToken,
+            'tokenType' => $this->tokenType,
+            'expiresIn' => $this->expiresIn,
+            'expiresAt' => $this->expiresAt,
         ];
     }
 }

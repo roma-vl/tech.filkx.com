@@ -9,7 +9,7 @@ class UpdateUserPasswordAction
 {
     public function execute(User $user, string $currentPassword, string $newPassword): bool
     {
-        if (!Hash::check($currentPassword, $user->password)) {
+        if (! Hash::check($currentPassword, $user->password)) {
             return false;
         }
 

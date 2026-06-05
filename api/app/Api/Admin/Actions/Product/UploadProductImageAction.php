@@ -9,7 +9,7 @@ class UploadProductImageAction
     public function execute(UploadedFile $file): array
     {
         $path = $file->store('catalog', 'public');
-        $url = asset('storage/' . $path);
+        $url = asset('storage/'.$path);
 
         return [
             'url' => $url,

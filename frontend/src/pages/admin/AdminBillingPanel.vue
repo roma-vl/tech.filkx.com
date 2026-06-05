@@ -7,7 +7,9 @@
     <div
       class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
     >
-      <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+      <div
+        class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between"
+      >
         <h3 class="font-bold text-lg text-gray-900 dark:text-white">
           {{ t("admin.billing.tabs.pending") }}
         </h3>
@@ -15,7 +17,8 @@
           v-if="pendingPayments.length"
           class="text-xs bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-400 px-2.5 py-1 rounded-full font-bold animate-pulse"
         >
-          {{ pendingPayments.length }} {{ t("admin.billing.tabs.pending_count_label") || "new" }}
+          {{ pendingPayments.length }}
+          {{ t("admin.billing.tabs.pending_count_label") || "new" }}
         </span>
       </div>
 

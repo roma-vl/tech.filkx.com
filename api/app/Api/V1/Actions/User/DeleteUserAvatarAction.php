@@ -14,6 +14,7 @@ class DeleteUserAvatarAction
             $user->avatar_path = null;
             $user->save();
         }
+
         return $user;
     }
 }

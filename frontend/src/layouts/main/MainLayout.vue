@@ -25,11 +25,10 @@
   </div>
 </template>
 
-<script setup>
-import PromoBar from "@/components/layout/PromoBar.vue";
-import Header from "@/components/layout/Header.vue";
-import Footer from "@/components/layout/Footer.vue";
-import { useAuthStore } from "@/stores/auth";
+<script setup lang="ts">
+import Header from "@/widgets/Header/Header.vue";
+import Footer from "@/widgets/Footer/Footer.vue";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useLayout } from "@/layouts/main/useLayout.js";
 
 const { isMobile } = useLayout();

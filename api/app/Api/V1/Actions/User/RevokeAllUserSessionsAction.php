@@ -13,6 +13,7 @@ class RevokeAllUserSessionsAction
         if ($currentToken) {
             $query->where('id', '!=', $currentToken->id);
         }
+
         return $query->update(['revoked' => true]);
     }
 }

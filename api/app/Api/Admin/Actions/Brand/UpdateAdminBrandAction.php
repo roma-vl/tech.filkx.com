@@ -18,7 +18,7 @@ class UpdateAdminBrandAction
         $brand = $this->brandRepository->find($id);
 
         if (! $brand) {
-            throw new BrandNotFoundException();
+            throw new BrandNotFoundException;
         }
 
         return $this->brandRepository->update($brand, $dto->toArray());

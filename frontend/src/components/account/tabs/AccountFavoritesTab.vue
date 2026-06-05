@@ -1,15 +1,17 @@
-<script setup>
-import { store } from "@/store.js";
+<script setup lang="ts">
+import { useCartStore } from "@/entities/order/model/cartStore";
+
+const cartStore = useCartStore();
 </script>
 
 <template>
   <div class="space-y-6 animate-fade font-sans select-none">
     <div
-      v-if="store.wishlist.length > 0"
+      v-if="cartStore.wishlist.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
     >
       <div
-        v-for="product in store.wishlist"
+        v-for="product in cartStore.wishlist"
         :key="product.id"
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
       >
@@ -20,13 +22,13 @@ import { store } from "@/store.js";
             :src="product.image"
             :alt="product.name"
             class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-            @click="store.viewProduct(product)"
+            @click="cartStore.viewProduct(product as any)"
           >
           <button
-            class="absolute top-3 right-3 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-550 rounded-full transition-colors"
-            @click="store.toggleWishlist(product)"
+            class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-500 rounded-full transition-all"
+            @click="cartStore.toggleWishlist(product as any)"
           >
-            <span class="material-symbols-outlined text-[18px]">close</span>
+            <span class="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
         <div class="p-5 flex-1 flex flex-col justify-between gap-4">
@@ -38,7 +40,7 @@ import { store } from "@/store.js";
             </p>
             <h3
               class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors cursor-pointer"
-              @click="store.viewProduct(product)"
+              @click="cartStore.viewProduct(product as any)"
             >
               {{ product.name }}
             </h3>
@@ -47,7 +49,7 @@ import { store } from "@/store.js";
             <span class="font-black text-[#00a046] text-lg">{{ product.price.toFixed(2) }} ₴</span>
             <button
               class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-all uppercase tracking-wider flex items-center gap-1.5"
-              @click="store.addToCart(product)"
+              @click="cartStore.addToCart(product as any)"
             >
               <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
               Додати

@@ -1,18 +1,21 @@
 <template>
-  <footer
-    v-if="buildDate"
-    class="text-xs text-gray-400"
-  >
+  <footer v-if="buildDate" class="text-xs text-gray-400">
     Build: {{ version.version }} ({{ version.commit }}) —
     {{ buildDate }}
   </footer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import api from "@/services/api.js";
+import apiClient from "@/shared/services/api/apiClient";
 
-const version = ref({
+interface VersionInfo {
+  version: string;
+  commit: string | null;
+  timestamp: string | null;
+}
+
+const version = ref<VersionInfo>({
   version: "dev",
   commit: null,
   timestamp: null,
@@ -25,7 +28,7 @@ const buildDate = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await api.get("/version");
+    const res = await apiClient.get("/version");
     version.value = res.data.data.version;
   } catch (e) {
     console.error("Cannot fetch version", e);

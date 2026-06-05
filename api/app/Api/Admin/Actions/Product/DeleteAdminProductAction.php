@@ -16,7 +16,7 @@ class DeleteAdminProductAction
         $product = $this->productRepository->find($id);
 
         if (! $product) {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException;
         }
 
         $this->productRepository->delete($product);

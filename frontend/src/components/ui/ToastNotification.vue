@@ -1,7 +1,9 @@
-<script setup>
-import { store } from "@/store.js";
+<script setup lang="ts">
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const getIcon = (type) => {
+const cartStore = useCartStore();
+
+const getIcon = (type: string) => {
   switch (type) {
     case "success":
       return "check_circle";
@@ -15,7 +17,7 @@ const getIcon = (type) => {
   }
 };
 
-const getBgColor = (type) => {
+const getBgColor = (type: string) => {
   switch (type) {
     case "success":
       return "bg-emerald-600 text-white";
@@ -44,7 +46,7 @@ const getBgColor = (type) => {
       leave-to-class="transform translate-x-12 opacity-0"
     >
       <div
-        v-for="toast in store.toasts"
+        v-for="toast in cartStore.toasts"
         :key="toast.id"
         class="flex items-start gap-3 p-4 rounded-xl shadow-lg border border-white/10 backdrop-blur-md transition-all duration-300 pointer-events-auto"
         :class="getBgColor(toast.type)"
@@ -57,7 +59,7 @@ const getBgColor = (type) => {
         </div>
         <button
           class="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-          @click="store.removeToast(toast.id)"
+          @click="cartStore.removeToast(toast.id)"
         >
           <span class="material-symbols-outlined text-[16px]">close</span>
         </button>

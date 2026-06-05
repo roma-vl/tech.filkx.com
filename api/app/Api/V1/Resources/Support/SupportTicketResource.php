@@ -13,12 +13,12 @@ class SupportTicketResource extends JsonResource
             'id' => $this->id,
             'subject' => $this->subject,
             'status' => $this->status,
-            'read_at' => $this->read_at ? $this->read_at->toIso8601String() : null,
+            'readAt' => $this->read_at ? $this->read_at->toIso8601String() : null,
             'messages' => SupportMessageResource::collection($this->whenLoaded('messages')),
             'publicMessages' => SupportMessageResource::collection($this->whenLoaded('publicMessages')),
             'user' => $this->whenLoaded('user'),
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'createdAt' => $this->created_at->toIso8601String(),
+            'updatedAt' => $this->updated_at->toIso8601String(),
         ];
     }
 }

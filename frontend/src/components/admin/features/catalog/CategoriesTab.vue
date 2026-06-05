@@ -45,6 +45,11 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
+                Характеристики
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Батьківська категорія
               </th>
               <th
@@ -78,6 +83,28 @@
               >
                 {{ cat.slug }}
               </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350">
+                <div class="flex flex-col gap-1">
+                  <span
+                    v-if="getOwnAttributesCount(cat.id) > 0"
+                    class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
+                  >
+                    Власних: {{ getOwnAttributesCount(cat.id) }}
+                  </span>
+                  <span
+                    v-if="getInheritedAttributesCount(cat.id) > 0"
+                    class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
+                  >
+                    Успадкованих: {{ getInheritedAttributesCount(cat.id) }}
+                  </span>
+                  <span
+                    v-if="getOwnAttributesCount(cat.id) === 0 && getInheritedAttributesCount(cat.id) === 0"
+                    class="text-gray-400 dark:text-gray-500 text-xs italic"
+                  >
+                    —
+                  </span>
+                </div>
+              </td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                 {{ cat.parentName || "—" }}
               </td>
@@ -85,6 +112,27 @@
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
               >
                 <div class="flex justify-end gap-2">
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    class="!p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                    title="Характеристики"
+                    @click="openCategoryAttributesModal(cat)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                      />
+                    </svg>
+                  </AppButton>
                   <AppButton
                     variant="ghost"
                     size="sm"
@@ -200,6 +248,15 @@
         </AppButton>
       </template>
     </AppModal>
+
+    <!-- Category Attributes Modal -->
+    <CategoryAttributesModal
+      v-model="showCategoryAttributesModal"
+      :category="selectedCategoryForAttributes"
+      :categories="categories"
+      :attributes="attributes"
+      @refresh="emit('refresh')"
+    />
   </div>
 </template>
 
@@ -210,12 +267,42 @@ import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";
 import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import CategoryAttributesModal from "./CategoryAttributesModal.vue";
 
 const props = defineProps({
   categories: { type: Array, required: true },
+  attributes: { type: Array, required: true },
 });
 
 const emit = defineEmits(["refresh"]);
+
+const showCategoryAttributesModal = ref(false);
+const selectedCategoryForAttributes = ref(null);
+
+const openCategoryAttributesModal = (cat) => {
+  selectedCategoryForAttributes.value = cat;
+  showCategoryAttributesModal.value = true;
+};
+
+const getOwnAttributesCount = (catId) => {
+  return props.attributes.filter(a => a.categoryIds?.includes(catId)).length;
+};
+
+const getInheritedAttributesCount = (catId) => {
+  const cat = props.categories.find(c => c.id === catId);
+  const ancestorIds = [];
+  let currentParentId = cat ? cat.parentId : null;
+  while (currentParentId) {
+    ancestorIds.push(currentParentId);
+    const parent = props.categories.find(c => c.id === currentParentId);
+    currentParentId = parent ? parent.parentId : null;
+  }
+  if (ancestorIds.length === 0) return 0;
+  return props.attributes.filter(a => 
+    !a.categoryIds?.includes(catId) && 
+    a.categoryIds?.some(id => ancestorIds.includes(id))
+  ).length;
+};
 
 const showCategoryModal = ref(false);
 const isEditing = ref(false);

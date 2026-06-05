@@ -3,8 +3,8 @@
 namespace App\Api\V1\Repositories;
 
 use App\Models\Order;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -26,6 +26,7 @@ class OrderRepository implements OrderRepositoryInterface
     public function update(Order $order, array $data): Order
     {
         $order->update($data);
+
         return $order;
     }
 
@@ -73,8 +74,8 @@ class OrderRepository implements OrderRepositoryInterface
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%");
             });
         }
 
@@ -103,9 +104,9 @@ class OrderRepository implements OrderRepositoryInterface
         $refunds = Order::where('status', 'cancelled')->sum('total_price');
 
         return [
-            'totalRevenueMinor' => (int)($revenue * 100),
-            'totalRefundsMinor' => (int)($refunds * 100),
-            'netRevenueMinor' => (int)(($revenue - $refunds) * 100),
+            'totalRevenueMinor' => (int) ($revenue * 100),
+            'totalRefundsMinor' => (int) ($refunds * 100),
+            'netRevenueMinor' => (int) (($revenue - $refunds) * 100),
         ];
     }
 
@@ -115,7 +116,7 @@ class OrderRepository implements OrderRepositoryInterface
         $pendingPayments = Order::where('status', 'pending')->count();
 
         return [
-            'revenueMinor' => (int)($revenue * 100),
+            'revenueMinor' => (int) ($revenue * 100),
             'activeSubscriptions' => 0,
             'pendingPaymentsCount' => $pendingPayments,
         ];

@@ -1,20 +1,42 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
-import { store } from "@/store.js";
-import { useAuthStore } from "@/stores/auth.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/services/api.js";
 
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+interface AddressItem {
+  id: number;
+  type: string;
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  phone: string;
+  isDefault: boolean;
+}
+
+interface CardItem {
+  id: number;
+  type: string;
+  number: string;
+  holder: string;
+  expiry: string;
+  isDefault: boolean;
+}
 
 // Accordion Expand/Collapse State
-const expandedSections = reactive({
+const expandedSections = reactive<Record<string, boolean>>({
   profile: true,
   password: false,
   addresses: false,
   cards: false,
 });
 
-const toggleSection = (section) => {
+const toggleSection = (section: string) => {
   expandedSections[section] = !expandedSections[section];
 };
 
@@ -32,12 +54,22 @@ const passwordForm = reactive({
   confirm: "",
 });
 
-const addressesList = ref([]);
-const cardsList = ref([]);
+const addressesList = ref<AddressItem[]>([]);
+const cardsList = ref<CardItem[]>([]);
 
 // Modals
 const isAddressModalOpen = ref(false);
-const addressForm = reactive({
+const addressForm = reactive<{
+  id: number | null;
+  type: string;
+  recipient: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  phone: string;
+}>({
   id: null,
   type: "Дім",
   recipient: "",
@@ -61,13 +93,14 @@ const cardForm = reactive({
 // Initialization
 const initData = () => {
   if (authStore.user) {
-    profileForm.name = authStore.user.name || "";
-    profileForm.email = authStore.user.email || "";
-    profileForm.phone = authStore.user.phone || "";
-    profileForm.language = authStore.user.language || "Українська";
+    const user = authStore.user as any;
+    profileForm.name = user.name || "";
+    profileForm.email = user.email || "";
+    profileForm.phone = user.phone || "";
+    profileForm.language = user.language || "Українська";
 
-    addressesList.value = authStore.user.addresses || [];
-    cardsList.value = authStore.user.cards || [];
+    addressesList.value = user.addresses || [];
+    cardsList.value = user.cards || [];
   }
 };
 
@@ -75,6 +108,86 @@ onMounted(async () => {
   await authStore.fetchUser();
   initData();
 });
+
+// Avatar Upload Logic
+const userInitials = computed(() => {
+  const name = authStore.user?.name || "";
+  return (
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase() || "К"
+  );
+});
+
+const isUploadingAvatar = ref(false);
+const avatarFileInput = ref<HTMLInputElement | null>(null);
+
+const triggerAvatarUpload = () => {
+  avatarFileInput.value?.click();
+};
+
+const handleAvatarFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    cartStore.addToast("Будь ласка, виберіть файл зображення.", "warning");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    cartStore.addToast("Розмір файлу не повинен перевищувати 2 МБ.", "warning");
+    return;
+  }
+
+  isUploadingAvatar.value = true;
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  try {
+    const response = await api.post("/user/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.data && response.data.status === "success") {
+      authStore.user = response.data.data;
+      cartStore.addToast("Аватар успішно оновлено!", "success");
+    }
+  } catch (error: any) {
+    console.error("Avatar upload failed:", error);
+    const msg = error.response?.data?.message || "Не вдалося завантажити аватар.";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isUploadingAvatar.value = false;
+    if (avatarFileInput.value) {
+      avatarFileInput.value.value = "";
+    }
+  }
+};
+
+const deleteAvatarAction = async () => {
+  if (!confirm("Ви впевнені, що хочете видалити свій аватар?")) return;
+
+  isUploadingAvatar.value = true;
+  try {
+    const response = await api.delete("/user/avatar");
+    if (response.data && response.data.status === "success") {
+      authStore.user = response.data.data;
+      cartStore.addToast("Аватар видалено.", "info");
+    }
+  } catch (error: any) {
+    console.error("Failed to delete avatar:", error);
+    const msg = error.response?.data?.message || "Не вдалося видалити аватар.";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isUploadingAvatar.value = false;
+  }
+};
 
 // Save actions
 const isSavingProfile = ref(false);
@@ -91,11 +204,11 @@ const saveProfile = async () => {
     });
     if (response.data.success) {
       await authStore.fetchUser();
-      store.addToast("Профіль успішно оновлено!", "success");
+      cartStore.addToast("Профіль успішно оновлено!", "success");
     }
-  } catch (e) {
+  } catch (e: any) {
     const msg = e.response?.data?.message || "Не вдалося оновити профіль.";
-    store.addToast(msg, "error");
+    cartStore.addToast(msg, "error");
   } finally {
     isSavingProfile.value = false;
   }
@@ -104,11 +217,11 @@ const saveProfile = async () => {
 const isUpdatingPassword = ref(false);
 const updatePassword = async () => {
   if (!passwordForm.current || !passwordForm.new || !passwordForm.confirm) {
-    store.addToast("Будь ласка, заповніть усі поля пароля.", "warning");
+    cartStore.addToast("Будь ласка, заповніть усі поля пароля.", "warning");
     return;
   }
   if (passwordForm.new !== passwordForm.confirm) {
-    store.addToast("Нові паролі не співпадають.", "error");
+    cartStore.addToast("Нові паролі не співпадають.", "error");
     return;
   }
   isUpdatingPassword.value = true;
@@ -118,14 +231,14 @@ const updatePassword = async () => {
       newPassword: passwordForm.new,
     });
     if (response.data.success) {
-      store.addToast("Пароль успішно змінено!", "success");
+      cartStore.addToast("Пароль успішно змінено!", "success");
       passwordForm.current = "";
       passwordForm.new = "";
       passwordForm.confirm = "";
     }
-  } catch (e) {
+  } catch (e: any) {
     const msg = e.response?.data?.message || "Поточний пароль вказано невірно.";
-    store.addToast(msg, "error");
+    cartStore.addToast(msg, "error");
   } finally {
     isUpdatingPassword.value = false;
   }
@@ -145,12 +258,12 @@ const syncSettingsWithBackend = async () => {
     await authStore.fetchUser();
   } catch (e) {
     console.error("Failed to sync settings with backend:", e);
-    store.addToast("Не вдалося зберегти зміни на сервері.", "error");
+    cartStore.addToast("Не вдалося зберегти зміни на сервері.", "error");
   }
 };
 
 // Address Book Handlers
-const openAddressModal = (address = null) => {
+const openAddressModal = (address: AddressItem | null = null) => {
   if (address) {
     Object.assign(addressForm, address);
   } else {
@@ -176,15 +289,18 @@ const saveAddress = async () => {
     !addressForm.city ||
     !addressForm.zip
   ) {
-    store.addToast("Будь ласка, заповніть усі обов'язкові поля.", "warning");
+    cartStore.addToast(
+      "Будь ласка, заповніть усі обов'язкові поля.",
+      "warning",
+    );
     return;
   }
   if (addressForm.id) {
     const idx = addressesList.value.findIndex((a) => a.id === addressForm.id);
     if (idx !== -1) {
-      addressesList.value[idx] = { ...addressForm };
+      addressesList.value[idx] = { ...addressForm } as any;
     }
-    store.addToast("Адресу оновлено!", "success");
+    cartStore.addToast("Адресу оновлено!", "success");
   } else {
     const newId = addressesList.value.length
       ? Math.max(...addressesList.value.map((a) => a.id), 0) + 1
@@ -193,14 +309,14 @@ const saveAddress = async () => {
       ...addressForm,
       id: newId,
       isDefault: addressesList.value.length === 0,
-    });
-    store.addToast("Нову адресу збережено!", "success");
+    } as any);
+    cartStore.addToast("Нову адресу збережено!", "success");
   }
   isAddressModalOpen.value = false;
   await syncSettingsWithBackend();
 };
 
-const deleteAddress = async (id) => {
+const deleteAddress = async (id: number) => {
   const idx = addressesList.value.findIndex((a) => a.id === id);
   if (idx !== -1) {
     const wasDefault = addressesList.value[idx].isDefault;
@@ -208,14 +324,14 @@ const deleteAddress = async (id) => {
     if (wasDefault && addressesList.value.length > 0) {
       addressesList.value[0].isDefault = true;
     }
-    store.addToast("Адресу видалено.", "info");
+    cartStore.addToast("Адресу видалено.", "info");
     await syncSettingsWithBackend();
   }
 };
 
-const setAddressDefault = async (id) => {
+const setAddressDefault = async (id: number) => {
   addressesList.value.forEach((a) => (a.isDefault = a.id === id));
-  store.addToast("Адресу за замовчуванням оновлено.", "success");
+  cartStore.addToast("Адресу за замовчуванням оновлено.", "success");
   await syncSettingsWithBackend();
 };
 
@@ -238,7 +354,7 @@ const saveCard = async () => {
     !cardForm.expiry ||
     !cardForm.cvv
   ) {
-    store.addToast("Будь ласка, заповніть усі дані картки.", "warning");
+    cartStore.addToast("Будь ласка, заповніть усі дані картки.", "warning");
     return;
   }
   const digits = cardForm.number.replace(/\D/g, "");
@@ -254,12 +370,12 @@ const saveCard = async () => {
     expiry: cardForm.expiry,
     isDefault: cardsList.value.length === 0,
   });
-  store.addToast("Картку додано успішно!", "success");
+  cartStore.addToast("Картку додано успішно!", "success");
   isCardModalOpen.value = false;
   await syncSettingsWithBackend();
 };
 
-const deleteCard = async (id) => {
+const deleteCard = async (id: number) => {
   const idx = cardsList.value.findIndex((c) => c.id === id);
   if (idx !== -1) {
     const wasDefault = cardsList.value[idx].isDefault;
@@ -267,14 +383,14 @@ const deleteCard = async (id) => {
     if (wasDefault && cardsList.value.length > 0) {
       cardsList.value[0].isDefault = true;
     }
-    store.addToast("Картку видалено.", "info");
+    cartStore.addToast("Картку видалено.", "info");
     await syncSettingsWithBackend();
   }
 };
 
-const setCardDefault = async (id) => {
+const setCardDefault = async (id: number) => {
   cardsList.value.forEach((c) => (c.isDefault = c.id === id));
-  store.addToast("Основну картку оновлено.", "success");
+  cartStore.addToast("Основну картку оновлено.", "success");
   await syncSettingsWithBackend();
 };
 
@@ -331,13 +447,71 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.profile }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
         v-show="expandedSections.profile"
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
+        <!-- Avatar Section -->
+        <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80">
+          <div class="relative group">
+            <img
+              v-if="authStore.user?.avatarUrl"
+              :src="authStore.user.avatarUrl"
+              class="w-24 h-24 rounded-full object-cover border-2 border-[#00a046]"
+            />
+            <div
+              v-else
+              class="w-24 h-24 rounded-full bg-emerald-500/10 text-[#00a046] flex items-center justify-center text-3xl font-black border-2 border-emerald-500/20 select-none"
+            >
+              {{ userInitials }}
+            </div>
+            
+            <div
+              v-if="isUploadingAvatar"
+              class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center"
+            >
+              <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 text-center sm:text-left">
+            <h4 class="font-extrabold text-sm text-zinc-800 dark:text-zinc-200">
+              Ваш аватар
+            </h4>
+            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal">
+              Дозволені формати: JPG, PNG, GIF. Максимальний розмір файлу: 2 МБ.
+            </p>
+            <div class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start">
+              <input
+                ref="avatarFileInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarFileChange"
+              />
+              <button
+                type="button"
+                class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-black text-xs transition-colors shadow-sm"
+                @click="triggerAvatarUpload"
+              >
+                Завантажити фото
+              </button>
+              <button
+                v-if="authStore.user?.avatarUrl"
+                type="button"
+                class="border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-rose-500 px-4 py-2 rounded-lg font-black text-xs transition-colors"
+                @click="deleteAvatarAction"
+              >
+                Видалити
+              </button>
+            </div>
+          </div>
+        </div>
+
         <form
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
           @submit.prevent="saveProfile"
@@ -345,44 +519,46 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Повне ім'я</label>
+              >Повне ім'я</label
+            >
             <input
               v-model="profileForm.name"
               type="text"
               required
               :class="inputClass"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Електронна пошта</label>
+              >Електронна пошта</label
+            >
             <input
               v-model="profileForm.email"
               type="email"
               required
-              :class="inputClass"
-            >
+              disabled
+              :class="[inputClass, '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed']"
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Номер телефону</label>
+              >Номер телефону</label
+            >
             <input
               v-model="profileForm.phone"
               type="text"
               placeholder="+380..."
               :class="inputClass"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Мова інтерфейсу</label>
-            <select
-              v-model="profileForm.language"
-              :class="inputClass"
+              >Мова інтерфейсу</label
             >
+            <select v-model="profileForm.language" :class="inputClass">
               <option>Українська</option>
               <option>Англійська</option>
             </select>
@@ -435,50 +611,51 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.password }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
         v-show="expandedSections.password"
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
-        <form
-          class="space-y-4"
-          @submit.prevent="updatePassword"
-        >
+        <form class="space-y-4" @submit.prevent="updatePassword">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >Поточний пароль</label>
+              >Поточний пароль</label
+            >
             <input
               v-model="passwordForm.current"
               type="password"
               required
               :class="inputClass"
-            >
+            />
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Новий пароль</label>
+                >Новий пароль</label
+              >
               <input
                 v-model="passwordForm.new"
                 type="password"
                 required
                 :class="inputClass"
-              >
+              />
             </div>
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Підтвердження пароля</label>
+                >Підтвердження пароля</label
+              >
               <input
                 v-model="passwordForm.confirm"
                 type="password"
                 required
                 :class="inputClass"
-              >
+              />
             </div>
           </div>
           <div class="pt-2 text-right">
@@ -529,7 +706,8 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.addresses }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
@@ -537,14 +715,18 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+          <span
+            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
+          >
             Збережені адреси доставки
           </span>
           <button
             class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
             @click="openAddressModal()"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >add</span
+            >
             Додати
           </button>
         </div>
@@ -566,7 +748,8 @@ const inputClass =
                 <span
                   v-if="address.isDefault"
                   class="bg-[#00a046]/10 text-[#00a046] text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-[#00a046]/20"
-                >Основна</span>
+                  >Основна</span
+                >
               </div>
               <p class="text-zinc-800 dark:text-zinc-200 font-extrabold">
                 {{ address.recipient }}
@@ -605,11 +788,9 @@ const inputClass =
           </div>
         </div>
 
-        <div
-          v-else
-          class="text-center py-6 text-zinc-400 dark:text-zinc-555"
-        >
-          У вас немає збережених адрес. Додайте першу адресу для швидкого оформлення замовлення.
+        <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
+          У вас немає збережених адрес. Додайте першу адресу для швидкого
+          оформлення замовлення.
         </div>
       </div>
     </div>
@@ -626,7 +807,9 @@ const inputClass =
           <div
             class="w-10 h-10 rounded-lg bg-[#00a046]/10 text-[#00a046] flex items-center justify-center shrink-0"
           >
-            <span class="material-symbols-outlined text-[22px]">credit_card</span>
+            <span class="material-symbols-outlined text-[22px]"
+              >credit_card</span
+            >
           </div>
           <div>
             <h3
@@ -645,7 +828,8 @@ const inputClass =
         <span
           class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
           :class="{ 'rotate-180': expandedSections.cards }"
-        >keyboard_arrow_down</span>
+          >keyboard_arrow_down</span
+        >
       </button>
 
       <div
@@ -653,14 +837,18 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+          <span
+            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
+          >
             Ваші платіжні методи
           </span>
           <button
             class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
             @click="openCardModal()"
           >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
+            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
+              >add</span
+            >
             Додати
           </button>
         </div>
@@ -738,10 +926,7 @@ const inputClass =
           </div>
         </div>
 
-        <div
-          v-else
-          class="text-center py-6 text-zinc-400 dark:text-zinc-555"
-        >
+        <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
           У вас немає збережених платіжних карток.
         </div>
       </div>
@@ -779,7 +964,8 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Тип адреси</label>
+              >Тип адреси</label
+            >
             <select
               v-model="addressForm.type"
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
@@ -792,82 +978,89 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Отримувач *</label>
+              >Отримувач *</label
+            >
             <input
               v-model="addressForm.recipient"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Вулиця, будинок, квартира *</label>
+            >Вулиця, будинок, квартира *</label
+          >
           <input
             v-model="addressForm.street"
             type="text"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div class="space-y-1.5 col-span-2">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Місто *</label>
+              >Місто *</label
+            >
             <input
               v-model="addressForm.city"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Область</label>
+              >Область</label
+            >
             <input
               v-model="addressForm.state"
               type="text"
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Поштовий індекс *</label>
+              >Поштовий індекс *</label
+            >
             <input
               v-model="addressForm.zip"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Країна *</label>
+              >Країна *</label
+            >
             <input
               v-model="addressForm.country"
               type="text"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Номер телефону</label>
+            >Номер телефону</label
+          >
           <input
             v-model="addressForm.phone"
             type="text"
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div
           class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
@@ -913,70 +1106,76 @@ const inputClass =
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <form
-        class="p-6 space-y-4 text-xs md:text-sm"
-        @submit.prevent="saveCard"
-      >
+      <form class="p-6 space-y-4 text-xs md:text-sm" @submit.prevent="saveCard">
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Платіжна система</label>
+            >Платіжна система</label
+          >
           <div class="flex gap-4">
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"><input
-              v-model="cardForm.type"
-              type="radio"
-              value="Visa"
-              class="accent-[#00a046]"
-            ><span>Visa</span></label>
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"><input
-              v-model="cardForm.type"
-              type="radio"
-              value="Mastercard"
-              class="accent-[#00a046]"
-            ><span>Mastercard</span></label>
+            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
+              ><input
+                v-model="cardForm.type"
+                type="radio"
+                value="Visa"
+                class="accent-[#00a046]"
+              /><span>Visa</span></label
+            >
+            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
+              ><input
+                v-model="cardForm.type"
+                type="radio"
+                value="Mastercard"
+                class="accent-[#00a046]"
+              /><span>Mastercard</span></label
+            >
           </div>
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Ім'я власника картки *</label>
+            >Ім'я власника картки *</label
+          >
           <input
             v-model="cardForm.holder"
             type="text"
             placeholder="напр. ROMAN SHEVCHENKO"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-          >Номер картки *</label>
+            >Номер картки *</label
+          >
           <input
             v-model="cardForm.number"
             type="text"
             placeholder="16-значний номер картки"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          >
+          />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Термін дії *</label>
+              >Термін дії *</label
+            >
             <input
               v-model="cardForm.expiry"
               type="text"
               placeholder="ММ/РР"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >CVV *</label>
+              >CVV *</label
+            >
             <input
               v-model="cardForm.cvv"
               type="password"
@@ -984,7 +1183,7 @@ const inputClass =
               placeholder="•••"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
+            />
           </div>
         </div>
         <div

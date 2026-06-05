@@ -11,7 +11,7 @@ class UpdateUserProfileAction
         // Update user direct fields
         $user->name = $data['name'] ?? $user->name;
         $user->email = $data['email'] ?? $user->email;
-        
+
         // Save phone, language, addresses, and cards inside settings json
         $settings = $user->settings ?? [];
         if (array_key_exists('phone', $data)) {

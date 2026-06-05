@@ -10,11 +10,7 @@
         {{ $t("auth.forgotPassword.subtitle") }}
       </p>
 
-      <form
-        v-if="!sent"
-        class="space-y-6"
-        @submit.prevent="handleSubmit"
-      >
+      <form v-if="!sent" class="space-y-6" @submit.prevent="handleSubmit">
         <AppInput
           v-model="email"
           :label="$t('auth.forgotPassword.emailLabel')"
@@ -34,7 +30,7 @@
             type="submit"
             variant="primary"
             size="lg"
-            class="w-full !rounded-xl !py-4 text-lg font-bold shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300"
+            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
             :loading="loading"
           >
             {{ $t("auth.forgotPassword.submit") }}
@@ -43,16 +39,13 @@
 
         <router-link
           to="/login"
-          class="block text-center text-sm font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+          class="block text-center text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
         >
           {{ $t("auth.forgotPassword.backToLogin") }}
         </router-link>
       </form>
 
-      <div
-        v-else
-        class="text-center py-4"
-      >
+      <div v-else class="text-center py-4">
         <div
           class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 rounded-[2rem] border border-green-100 dark:border-green-800/30"
         >
@@ -63,7 +56,7 @@
 
         <router-link
           to="/login"
-          class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-500 font-bold transition-colors"
+          class="inline-flex items-center gap-2 text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
         >
           <span>{{ $t("auth.forgotPassword.returnToLogin") }}</span>
           <ArrowRightIcon class="w-5 h-5" />
@@ -73,14 +66,13 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import AppInput from "@/components/ui/AppInput.vue";
-import AppButton from "@/components/ui/AppButton.vue";
+import { AppInput, AppButton } from "@/shared/ui";
 import ArrowRightIcon from "@/components/Icon/ArrowRightIcon.vue";
 
 const toast = useToast();
@@ -88,15 +80,15 @@ const store = useAuthStore();
 const { t } = useI18n();
 
 const email = ref("");
-const error = ref(null);
+const error = ref<string>();
 const loading = ref(false);
 const sent = ref(false);
 
 async function handleSubmit() {
-  error.value = null;
+  error.value = undefined;
   loading.value = true;
 
-  const result = await store.forgotPassword(email.value);
+  const result: any = await store.forgotPassword(email.value);
 
   loading.value = false;
 

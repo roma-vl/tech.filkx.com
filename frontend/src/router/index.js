@@ -37,6 +37,17 @@ router.beforeEach(async (to, from, next) => {
         await auth.fetchUser();
       } catch {}
     }
+
+    try {
+      const { useCartStore } = await import("@/entities/order/model/cartStore");
+      const cartStore = useCartStore();
+      cartStore.fetchCart();
+      if (auth.isAuthenticated) {
+        cartStore.syncUserLists();
+      }
+    } catch (e) {
+      console.warn("Failed to load cart/user lists on startup", e);
+    }
   }
 
   if (to.meta.guest && auth.isAuthenticated) {

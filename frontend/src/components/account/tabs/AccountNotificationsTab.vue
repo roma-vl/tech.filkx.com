@@ -1,11 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import api from "@/services/api";
-import { store } from "@/store.js";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
-const notifications = ref([]);
+interface NotificationItem {
+  id: string | number;
+  read_at: string | null;
+  type: string;
+  title: string;
+  content: string;
+  created_at: string;
+  link?: string;
+}
+
+const cartStore = useCartStore();
+
+const notifications = ref<NotificationItem[]>([]);
 const isLoading = ref(true);
-const error = ref(null);
+const error = ref<string | null>(null);
 
 const fetchNotifications = async () => {
   isLoading.value = true;
@@ -13,7 +25,10 @@ const fetchNotifications = async () => {
   try {
     const { data } = await api.get("/notifications");
     notifications.value = data.data?.data || data.data || [];
-    console.log("Loaded notifications:", JSON.parse(JSON.stringify(notifications.value)));
+    console.log(
+      "Loaded notifications:",
+      JSON.parse(JSON.stringify(notifications.value)),
+    );
   } catch (err) {
     console.error("Failed to load notifications:", err);
     error.value = "Не вдалося завантажити сповіщення";
@@ -22,95 +37,100 @@ const fetchNotifications = async () => {
   }
 };
 
-const markAsRead = async (notification) => {
+const markAsRead = async (notification: NotificationItem) => {
   if (notification.read_at) return;
   try {
     const { data } = await api.post(`/notifications/${notification.id}/read`);
     // update local state
-    const index = notifications.value.findIndex(n => n.id === notification.id);
+    const index = notifications.value.findIndex(
+      (n) => n.id === notification.id,
+    );
     if (index !== -1) {
       notifications.value[index] = data.data?.data || data.data;
     }
     // Update store counter if needed
-    store.fetchUnreadNotificationsCount();
-    store.addToast("Сповіщення прочитано", "success");
+    (cartStore as any).fetchUnreadNotificationsCount();
+    cartStore.addToast("Сповіщення прочитано", "success");
   } catch (err) {
     console.error("Failed to mark notification as read:", err);
   }
 };
 
 const markAllRead = async () => {
-  if (notifications.value.every(n => n.read_at)) return;
+  if (notifications.value.every((n) => n.read_at)) return;
   try {
     await api.post("/notifications/mark-all-read");
-    notifications.value = notifications.value.map(n => ({
+    notifications.value = notifications.value.map((n) => ({
       ...n,
-      read_at: new Date().toISOString()
+      read_at: new Date().toISOString(),
     }));
-    store.fetchUnreadNotificationsCount();
-    store.addToast("Всі сповіщення позначено як прочитані", "success");
+    (cartStore as any).fetchUnreadNotificationsCount();
+    cartStore.addToast("Всі сповіщення позначено як прочитані", "success");
   } catch (err) {
     console.error("Failed to mark all notifications as read:", err);
   }
 };
 
-const getNotificationStyles = (type) => {
-  const styles = {
+const getNotificationStyles = (type: string) => {
+  const styles: Record<
+    string,
+    { bg: string; text: string; icon: string; iconColor: string }
+  > = {
     success: {
       bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20",
       text: "text-emerald-800 dark:text-emerald-400",
       icon: "check_circle",
-      iconColor: "text-emerald-500"
+      iconColor: "text-emerald-500",
     },
     error: {
       bg: "bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20",
       text: "text-rose-800 dark:text-rose-400",
       icon: "error",
-      iconColor: "text-rose-500"
+      iconColor: "text-rose-500",
     },
     warning: {
       bg: "bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20",
       text: "text-amber-800 dark:text-amber-400",
       icon: "warning",
-      iconColor: "text-amber-500"
+      iconColor: "text-amber-500",
     },
     info: {
       bg: "bg-blue-50 dark:bg-blue-500/10 border-blue-100 dark:border-blue-500/20",
       text: "text-blue-800 dark:text-blue-400",
       icon: "info",
-      iconColor: "text-blue-500"
+      iconColor: "text-blue-500",
     },
     promo: {
       bg: "bg-purple-50 dark:bg-purple-500/10 border-purple-100 dark:border-purple-500/20",
       text: "text-purple-800 dark:text-purple-400",
       icon: "local_offer",
-      iconColor: "text-purple-500"
+      iconColor: "text-purple-500",
     },
     news: {
       bg: "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20",
       text: "text-indigo-800 dark:text-indigo-400",
       icon: "newspaper",
-      iconColor: "text-indigo-500"
+      iconColor: "text-indigo-500",
     },
     order: {
       bg: "bg-teal-50 dark:bg-teal-500/10 border-teal-100 dark:border-teal-500/20",
       text: "text-teal-800 dark:text-teal-400",
       icon: "shopping_bag",
-      iconColor: "text-teal-500"
-    }
+      iconColor: "text-teal-500",
+    },
   };
 
   return styles[type] || styles.info;
 };
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr?: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   return d.toLocaleString("uk-UA", {
     day: "numeric",
     month: "long",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 };
 
@@ -125,7 +145,7 @@ onMounted(fetchNotifications);
         Ваші сповіщення
       </h2>
       <button
-        v-if="notifications.length > 0 && notifications.some(n => !n.read_at)"
+        v-if="notifications.length > 0 && notifications.some((n) => !n.read_at)"
         class="text-xs font-black text-[#00a046] hover:text-[#00b050] dark:text-[#00b050] dark:hover:text-[#00c060] transition-colors uppercase tracking-widest flex items-center gap-1.5"
         @click="markAllRead"
       >
@@ -135,16 +155,15 @@ onMounted(fetchNotifications);
     </div>
 
     <!-- Loading State -->
-    <div
-      v-if="isLoading"
-      class="space-y-4"
-    >
+    <div v-if="isLoading" class="space-y-4">
       <div
         v-for="n in 3"
         :key="n"
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-2xl p-5 animate-pulse flex gap-4"
       >
-        <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0" />
+        <div
+          class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"
+        />
         <div class="flex-grow space-y-2">
           <div class="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-1/4" />
           <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4" />
@@ -161,16 +180,15 @@ onMounted(fetchNotifications);
     </div>
 
     <!-- Notifications List -->
-    <div
-      v-else-if="notifications.length > 0"
-      class="space-y-4"
-    >
+    <div v-else-if="notifications.length > 0" class="space-y-4">
       <div
         v-for="item in notifications"
         :key="item.id"
         class="bg-white dark:bg-zinc-900 border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
         :class="[
-          item.read_at ? 'border-zinc-100 dark:border-zinc-850/80 opacity-75' : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5'
+          item.read_at
+            ? 'border-zinc-100 dark:border-zinc-855/80 opacity-75'
+            : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5',
         ]"
       >
         <div class="flex gap-4 items-start">
@@ -192,7 +210,11 @@ onMounted(fetchNotifications);
             <div class="flex flex-wrap items-center gap-2">
               <h3
                 class="text-sm md:text-base leading-snug"
-                :class="item.read_at ? 'font-medium text-zinc-500 dark:text-zinc-400' : 'font-black text-zinc-900 dark:text-white'"
+                :class="
+                  item.read_at
+                    ? 'font-medium text-zinc-550 dark:text-zinc-400'
+                    : 'font-black text-zinc-900 dark:text-white'
+                "
               >
                 {{ item.title }}
               </h3>
@@ -203,15 +225,18 @@ onMounted(fetchNotifications);
                 Нове
               </span>
             </div>
-            <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            <p
+              class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed"
+            >
               {{ item.content }}
             </p>
-            <div class="flex items-center gap-3 pt-1 text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider">
+            <div
+              class="flex items-center gap-3 pt-1 text-[10px] font-extrabold text-zinc-450 uppercase tracking-wider"
+            >
               <span>{{ formatDate(item.created_at) }}</span>
-              <span
-                v-if="item.read_at"
-                class="text-zinc-350 dark:text-zinc-650"
-              >• Прочитано</span>
+              <span v-if="item.read_at" class="text-zinc-350 dark:text-zinc-650"
+                >• Прочитано</span
+              >
             </div>
           </div>
         </div>
@@ -224,7 +249,9 @@ onMounted(fetchNotifications);
             class="bg-zinc-100 dark:bg-zinc-800 hover:bg-[#00a046]/10 hover:text-[#00a046] text-zinc-600 dark:text-zinc-300 px-4 py-2 rounded-xl font-extrabold text-xs transition-all uppercase tracking-wider flex items-center gap-1.5"
             @click="markAsRead(item)"
           >
-            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+            <span class="material-symbols-outlined text-[16px]"
+              >open_in_new</span
+            >
             Детальніше
           </a>
           <button
@@ -255,7 +282,8 @@ onMounted(fetchNotifications);
       <p
         class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 max-w-sm mx-auto mt-2"
       >
-        Тут будуть з'являтися системні повідомлення, спеціальні пропозиції та інформація про ваші замовлення.
+        Тут будуть з'являтися системні повідомлення, спеціальні пропозиції та
+        інформація про ваші замовлення.
       </p>
     </div>
   </div>

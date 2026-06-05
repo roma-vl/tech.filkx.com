@@ -4,6 +4,7 @@ services:
     build:
       context: frontend/docker
       dockerfile: development/node/Dockerfile
+    restart: always
     volumes:
       - ./frontend:/app
     command: [ "sh", "-c", "npm install && npm run dev" ]

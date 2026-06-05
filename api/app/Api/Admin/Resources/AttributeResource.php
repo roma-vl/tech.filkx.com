@@ -15,6 +15,7 @@ class AttributeResource extends JsonResource
             'nameUk' => $this->name['uk'] ?? '',
             'nameEn' => $this->name['en'] ?? '',
             'type' => $this->type,
+            'categoryIds' => $this->categories->pluck('id')->toArray(),
             'values' => $this->values->map(function ($val) {
                 if ($this->type === 'color') {
                     return [

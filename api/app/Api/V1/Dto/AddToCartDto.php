@@ -12,7 +12,7 @@ class AddToCartDto
     public static function fromRequest($request): self
     {
         return new self(
-            variantId: $request->input('variant_id'),
+            variantId: $request->input('variantId'),
             quantity: (int) $request->input('quantity', 1)
         );
     }

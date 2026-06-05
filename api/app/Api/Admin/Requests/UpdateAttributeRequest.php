@@ -23,6 +23,8 @@ class UpdateAttributeRequest extends FormRequest
             'nameEn' => 'required|string',
             'type' => ['required', 'string', Rule::in(AttributeTypeEnum::values())],
             'values' => 'nullable|array',
+            'categoryIds' => 'nullable|array',
+            'categoryIds.*' => 'integer|exists:categories,id',
         ];
     }
 }

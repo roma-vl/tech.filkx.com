@@ -15,8 +15,8 @@ class UpdateNotificationPreferencesRequest extends FormRequest
     {
         return [
             'newsletter' => ['required', 'boolean'],
-            'product_updates' => ['required', 'boolean'],
-            'marketing_emails' => ['required', 'boolean'],
+            'productUpdates' => ['required', 'boolean'],
+            'marketingEmails' => ['required', 'boolean'],
         ];
     }
 }

@@ -5,8 +5,8 @@ namespace App\Api\V1\Actions\Notification;
 use App\Api\V1\Repositories\NotificationRepositoryInterface;
 use App\Models\Notification;
 use App\Models\User;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MarkNotificationReadAction
 {
