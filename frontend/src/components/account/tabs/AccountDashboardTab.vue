@@ -36,47 +36,6 @@ const recentOrders = computed(() => {
   return ordersList.value.slice(0, 3);
 });
 
-const summaryStats = computed(() => {
-  const activeCount = ordersList.value.filter(
-    (o) => o.statusCode === "shipped" || o.statusCode === "pending"
-  ).length;
-
-  return [
-    {
-      icon: "local_shipping",
-      label: "Активні доставки",
-      value: String(activeCount).padStart(2, "0"),
-      color: "text-[#00a046]",
-      progress: activeCount > 0 ? "75%" : "",
-      progressColor: "bg-[#00a046]",
-      tab: "orders",
-      action: "",
-      trend: "",
-      trendIcon: "",
-    },
-    {
-      icon: "shopping_bag",
-      label: "Всього замовлень",
-      value: String(ordersList.value.length).padStart(2, "0"),
-      color: "text-blue-500",
-      tab: "orders",
-      action: "",
-      trend: "",
-      trendIcon: "",
-    },
-    {
-      icon: "favorite",
-      label: "Товарів в обраному",
-      value: String(cartStore.wishlist.length).padStart(2, "0"),
-      color: "text-rose-500",
-      tab: "favorites",
-      action: "",
-      trend: "",
-      trendIcon: "",
-    },
-  ];
-});
-
 const defaultAddress = {
   recipient: "Роман Шевченко",
   street: "вул. Хрещатик 22, кв. 14",
@@ -89,58 +48,6 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
 
 <template>
   <div class="space-y-6 animate-fade font-sans select-none">
-    <!-- Summary Grid -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div
-        v-for="stat in summaryStats"
-        :key="stat.label"
-        class="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col gap-2 hover:shadow-md transition-shadow relative overflow-hidden group"
-      >
-        <span
-          class="material-symbols-outlined text-[32px] transition-transform group-hover:scale-110 duration-200"
-          :class="stat.color"
-          >{{ stat.icon }}</span
-        >
-        <p
-          class="font-extrabold text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-wider mt-1"
-        >
-          {{ stat.label }}
-        </p>
-        <p
-          class="font-black text-2xl md:text-3xl text-zinc-900 dark:text-white mt-1"
-        >
-          {{ stat.value }}
-        </p>
-
-        <div
-          v-if="stat.progress"
-          class="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden mt-3"
-        >
-          <div
-            class="h-full rounded-full"
-            :class="stat.progressColor"
-            :style="{ width: stat.progress }"
-          />
-        </div>
-        <p
-          v-if="stat.trend"
-          class="text-xs text-[#00a046] font-extrabold flex items-center gap-1 mt-2"
-        >
-          <span class="material-symbols-outlined text-[16px]">{{
-            stat.trendIcon
-          }}</span>
-          {{ stat.trend }}
-        </p>
-        <button
-          v-if="stat.tab"
-          class="absolute top-4 right-4 text-zinc-400 hover:text-[#00a046] transition-colors"
-          @click="go(stat.tab)"
-        >
-          <span class="material-symbols-outlined text-[20px]">open_in_new</span>
-        </button>
-      </div>
-    </section>
-
     <!-- Overview grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Recent Orders -->

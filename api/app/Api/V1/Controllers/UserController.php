@@ -2,6 +2,8 @@
 
 namespace App\Api\V1\Controllers;
 
+use App\Api\Admin\Actions\Order\UpdateAdminOrderStatusAction;
+use App\Api\Admin\Dto\UpdateOrderStatusDto;
 use App\Api\V1\Actions\User\DeleteUserAvatarAction;
 use App\Api\V1\Actions\User\GetUserAction;
 use App\Api\V1\Actions\User\GetUserSessionsAction;
@@ -21,6 +23,7 @@ use App\Api\V1\Requests\User\UpdateUserPasswordRequest;
 use App\Api\V1\Requests\User\UpdateUserProfileRequest;
 use App\Api\V1\Requests\User\UploadAvatarRequest;
 use App\Api\V1\Resources\User\UserResource;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -725,7 +728,7 @@ class UserController extends BaseApiController
     {
         $user = $request->user();
 
-        $orders = \App\Models\Order::with(['items.variant.product'])
+        $orders = Order::with(['items.variant.product'])
             ->where('user_id', $user->id)
             ->orWhere('customer_email', $user->email)
             ->orderBy('created_at', 'desc')
@@ -737,7 +740,7 @@ class UserController extends BaseApiController
             $itemsMapped = $order->items->map(function ($item) {
                 $variant = $item->variant;
                 $images = $variant ? ($variant->dimensions['images'] ?? []) : [];
-                $imageUrl = !empty($images) ? ($images[0]['url'] ?? null) : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop';
+                $imageUrl = ! empty($images) ? ($images[0]['url'] ?? null) : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop';
 
                 return [
                     'id' => $item->id,
@@ -783,7 +786,7 @@ class UserController extends BaseApiController
     {
         $months = [
             1 => 'Січ', 2 => 'Лют', 3 => 'Бер', 4 => 'Кві', 5 => 'Тра', 6 => 'Чер',
-            7 => 'Лип', 8 => 'Сер', 9 => 'Вер', 10 => 'Жов', 11 => 'Лис', 12 => 'Гру'
+            7 => 'Лип', 8 => 'Сер', 9 => 'Вер', 10 => 'Жов', 11 => 'Лис', 12 => 'Гру',
         ];
 
         $day = $carbonDate->format('d');
@@ -799,12 +802,18 @@ class UserController extends BaseApiController
 
         switch ($dbStatus) {
             case 'completed':
+                return [
+                    'statusCode' => 'completed',
+                    'status' => "Виконано {$formattedUpdateDate}",
+                    'statusIcon' => 'task_alt',
+                    'statusClass' => 'text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700',
+                ];
             case 'delivered':
                 return [
                     'statusCode' => 'delivered',
                     'status' => "Доставлено {$formattedUpdateDate}",
                     'statusIcon' => 'check_circle',
-                    'statusClass' => 'text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700',
+                    'statusClass' => 'text-teal-500 bg-teal-550/10 border border-teal-550/20',
                 ];
             case 'cancelled':
                 return [
@@ -813,21 +822,55 @@ class UserController extends BaseApiController
                     'statusIcon' => 'cancel',
                     'statusClass' => 'text-rose-500 bg-rose-500/10 border border-rose-500/20',
                 ];
+            case 'refunded':
+                return [
+                    'statusCode' => 'refunded',
+                    'status' => "Повернуто кошти {$formattedUpdateDate}",
+                    'statusIcon' => 'undo',
+                    'statusClass' => 'text-gray-500 bg-gray-500/10 border border-gray-500/20',
+                ];
             case 'shipped':
                 return [
                     'statusCode' => 'shipped',
-                    'status' => 'В дорозі - прибуває незабаром',
+                    'status' => 'Відправлено - в дорозі',
                     'statusIcon' => 'local_shipping',
                     'statusClass' => 'text-[#00a046] bg-emerald-500/10 border border-emerald-500/20',
                 ];
-            case 'pending':
+            case 'pending_payment':
+                return [
+                    'statusCode' => 'pending_payment',
+                    'status' => 'Очікує оплати',
+                    'statusIcon' => 'hourglass_empty',
+                    'statusClass' => 'text-amber-500 bg-amber-500/10 border border-amber-500/20',
+                ];
+            case 'paid':
+                return [
+                    'statusCode' => 'paid',
+                    'status' => 'Оплачено',
+                    'statusIcon' => 'payments',
+                    'statusClass' => 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20',
+                ];
             case 'processing':
+                return [
+                    'statusCode' => 'processing',
+                    'status' => 'Обробляється',
+                    'statusIcon' => 'hourglass_empty',
+                    'statusClass' => 'text-blue-550 bg-blue-550/10 border border-blue-550/20',
+                ];
+            case 'packed':
+                return [
+                    'statusCode' => 'packed',
+                    'status' => 'Запаковано',
+                    'statusIcon' => 'inventory_2',
+                    'statusClass' => 'text-cyan-500 bg-cyan-500/10 border border-cyan-500/20',
+                ];
+            case 'pending':
             default:
                 return [
                     'statusCode' => 'pending',
                     'status' => 'В обробці',
                     'statusIcon' => 'hourglass_empty',
-                    'statusClass' => 'text-amber-500 bg-amber-500/10 border border-amber-500/20',
+                    'statusClass' => 'text-amber-505 bg-amber-500/10 border border-amber-500/20',
                 ];
         }
     }
@@ -837,20 +880,24 @@ class UserController extends BaseApiController
         $createdStr = $createdAt->format('d.m.Y H:i');
         $updatedStr = $updatedAt->format('d.m.Y H:i');
 
-        if ($statusCode === 'cancelled') {
+        if ($statusCode === 'cancelled' || $statusCode === 'refunded') {
+            $name = $statusCode === 'refunded' ? 'Повернуто кошти' : 'Скасовано';
+
             return [
                 ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-                ['name' => 'Скасовано', 'date' => $updatedStr, 'done' => true],
+                ['name' => $name, 'date' => $updatedStr, 'done' => true],
             ];
         }
 
-        if ($statusCode === 'delivered') {
+        if ($statusCode === 'delivered' || $statusCode === 'completed') {
+            $name = $statusCode === 'completed' ? 'Виконано' : 'Доставлено';
+
             return [
                 ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
                 ['name' => 'Обробка та комплектування', 'date' => $createdStr, 'done' => true],
                 ['name' => 'Передано кур\'єру', 'date' => $updatedStr, 'done' => true],
                 ['name' => 'Доставка отримувачу', 'date' => $updatedStr, 'done' => true],
-                ['name' => 'Доставлено', 'date' => $updatedStr, 'done' => true],
+                ['name' => $name, 'date' => $updatedStr, 'done' => true],
             ];
         }
 
@@ -864,12 +911,52 @@ class UserController extends BaseApiController
             ];
         }
 
-        // pending / default
+        // pending_payment, paid, processing, packed, pending / default
+        $stageText = 'В процесі';
+        if ($statusCode === 'pending_payment') {
+            $stageText = 'Очікує оплати';
+        } elseif ($statusCode === 'paid') {
+            $stageText = 'Оплачено';
+        } elseif ($statusCode === 'packed') {
+            $stageText = 'Запаковано';
+        }
+
         return [
             ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-            ['name' => 'Обробка та комплектування', 'date' => 'В процесі', 'done' => false],
+            ['name' => 'Обробка та комплектування', 'date' => $stageText, 'done' => $statusCode !== 'pending_payment'],
             ['name' => 'Передано кур\'єру', 'date' => 'Очікується', 'done' => false],
             ['name' => 'Доставлено', 'date' => 'Очікується', 'done' => false],
         ];
+    }
+
+    public function cancelOrder(Request $request, int $id, UpdateAdminOrderStatusAction $action): JsonResponse
+    {
+        $user = $request->user();
+        $order = Order::find($id);
+
+        if (! $order) {
+            return self::failedResponse('Замовлення не знайдено', 404);
+        }
+
+        if ($order->user_id !== $user->id && $order->customer_email !== $user->email) {
+            return self::failedResponse('У вас немає доступу до цього замовлення', 403);
+        }
+
+        // Cancellable statuses: pending_payment, paid, processing, packed, pending
+        if (in_array($order->status, ['shipped', 'delivered', 'completed', 'refunded'])) {
+            return self::failedResponse('Це замовлення вже відправлено або виконано і його не можна скасувати.', 422);
+        }
+
+        if ($order->status === 'cancelled') {
+            return self::failedResponse('Це замовлення вже скасовано.', 400);
+        }
+
+        $action->execute($id, new UpdateOrderStatusDto(
+            status: 'cancelled',
+            carrier: null,
+            trackingNumber: null
+        ));
+
+        return self::successfulResponse('Замовлення успішно скасовано.');
     }
 }

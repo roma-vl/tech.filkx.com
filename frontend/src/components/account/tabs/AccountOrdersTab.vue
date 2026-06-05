@@ -78,8 +78,22 @@ const isReviewOpen = ref(false);
 
 const filteredOrders = computed(() =>
   ordersList.value.filter((o) => {
-    if (ordersFilter.value !== "all" && o.statusCode !== ordersFilter.value)
-      return false;
+    if (ordersFilter.value !== "all") {
+      const status = o.statusCode;
+      if (ordersFilter.value === "processing") {
+        if (!["pending_payment", "paid", "processing", "packed", "pending"].includes(status)) {
+          return false;
+        }
+      } else if (ordersFilter.value === "shipped") {
+        if (status !== "shipped") return false;
+      } else if (ordersFilter.value === "delivered") {
+        if (!["delivered", "completed"].includes(status)) return false;
+      } else if (ordersFilter.value === "cancelled") {
+        if (!["cancelled", "refunded"].includes(status)) return false;
+      } else if (status !== ordersFilter.value) {
+        return false;
+      }
+    }
     if (ordersSearchQuery.value.trim()) {
       const q = ordersSearchQuery.value.toLowerCase();
       return (
@@ -90,6 +104,32 @@ const filteredOrders = computed(() =>
     return true;
   }),
 );
+
+const isCancelling = ref<Record<string, boolean>>({});
+
+const cancelOrderAction = async (order: Order) => {
+  if (!confirm("Ви впевнені, що хочете скасувати це замовлення?")) return;
+
+  isCancelling.value[order.id] = true;
+  try {
+    const response = await api.post(`/user/orders/${order.dbId}/cancel`);
+    if (response.data && response.data.status === "success") {
+      cartStore.addToast("Замовлення успішно скасовано", "success");
+      await fetchOrders();
+      if (selectedOrder.value && selectedOrder.value.id === order.id) {
+        selectedOrder.value = ordersList.value.find((o) => o.id === order.id) || null;
+      }
+    } else {
+      cartStore.addToast(response.data.message || "Помилка при скасуванні замовлення", "error");
+    }
+  } catch (error: any) {
+    console.error("Failed to cancel order:", error);
+    const msg = error.response?.data?.message || "Не вдалося скасувати замовлення";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isCancelling.value[order.id] = false;
+  }
+};
 
 const openDetails = (o: Order) => {
   selectedOrder.value = o;
@@ -116,6 +156,7 @@ const submitReview = () => {
 
 const filterBtns = [
   { key: "all", label: "Усі" },
+  { key: "processing", label: "В обробці" },
   { key: "shipped", label: "В дорозі" },
   { key: "delivered", label: "Доставлені" },
   { key: "cancelled", label: "Скасовані" },
@@ -254,6 +295,14 @@ const filterBtns = [
               @click="openDetails(order)"
             >
               Детальніше
+            </button>
+            <button
+              v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(order.statusCode)"
+              class="text-rose-500 hover:text-rose-600 font-extrabold text-[11px] md:text-xs hover:underline mt-1 disabled:opacity-50"
+              :disabled="isCancelling[order.id]"
+              @click="cancelOrderAction(order)"
+            >
+              {{ isCancelling[order.id] ? "Скасування..." : "Скасувати" }}
             </button>
           </div>
         </div>
@@ -471,8 +520,16 @@ const filterBtns = [
         </div>
       </div>
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
+        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
       >
+        <button
+          v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(selectedOrder.statusCode)"
+          class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors disabled:opacity-50"
+          :disabled="isCancelling[selectedOrder.id]"
+          @click="cancelOrderAction(selectedOrder)"
+        >
+          {{ isCancelling[selectedOrder.id] ? "Скасування..." : "Скасувати замовлення" }}
+        </button>
         <button
           class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors"
           @click="isDetailsOpen = false"

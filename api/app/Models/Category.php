@@ -50,6 +50,7 @@ class Category extends Model
             $ids[] = $child->id;
             $ids = array_merge($ids, $child->getDescendantIds());
         }
+
         return $ids;
     }
 }

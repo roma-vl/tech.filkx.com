@@ -116,6 +116,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
 
     // User orders endpoint
     Route::get('/user/orders', [UserController::class, 'getOrders']);
+    Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
 
     // Favorites (wishlist) database-backed endpoints
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);
