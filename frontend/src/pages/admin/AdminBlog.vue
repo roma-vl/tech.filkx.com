@@ -395,7 +395,43 @@
 
                 <!-- Tags -->
                 <div>
-                  <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Теги</label>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Теги</label>
+                    <button
+                      @click="openInlineTagCreate"
+                      class="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+                    >
+                      <PlusIcon class="w-3 h-3" />
+                      Новий тег
+                    </button>
+                  </div>
+                  <!-- Quick create tag inline -->
+                  <div v-if="showInlineTagForm" class="mb-3 flex gap-2">
+                    <input
+                      v-model="inlineTagNameUk"
+                      type="text"
+                      placeholder="Назва (УК)"
+                      class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      @keyup.enter="saveInlineTag"
+                    />
+                    <input
+                      v-model="inlineTagNameEn"
+                      type="text"
+                      placeholder="Name (EN)"
+                      class="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      @keyup.enter="saveInlineTag"
+                    />
+                    <button
+                      @click="saveInlineTag"
+                      :disabled="savingInlineTag"
+                      class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold disabled:opacity-50"
+                    >
+                      {{ savingInlineTag ? '...' : '✓' }}
+                    </button>
+                    <button @click="showInlineTagForm = false" class="px-2 py-1.5 rounded-lg text-gray-400 hover:text-gray-600 text-xs">
+                      ✕
+                    </button>
+                  </div>
                   <div class="flex flex-wrap gap-2">
                     <button
                       v-for="tag in tags"
@@ -410,6 +446,7 @@
                     >
                       {{ tag.nameUk || tag.nameEn }}
                     </button>
+                    <span v-if="tags.length === 0" class="text-xs text-gray-400 italic">Тегів ще немає — створіть перший</span>
                   </div>
                 </div>
 
@@ -578,6 +615,42 @@ const editingTag = ref(null);
 const savingTag = ref(false);
 const tagForm = ref({ nameUk: '', nameEn: '' });
 
+// ─── Inline tag creation (inside post editor sidebar) ────────────────────────
+const showInlineTagForm = ref(false);
+const inlineTagNameUk = ref('');
+const inlineTagNameEn = ref('');
+const savingInlineTag = ref(false);
+
+const openInlineTagCreate = () => {
+  inlineTagNameUk.value = '';
+  inlineTagNameEn.value = '';
+  showInlineTagForm.value = true;
+};
+
+const saveInlineTag = async () => {
+  if (!inlineTagNameUk.value.trim() || !inlineTagNameEn.value.trim()) {
+    toast.warning('Вкажіть назву для обох мов');
+    return;
+  }
+  savingInlineTag.value = true;
+  try {
+    const { data } = await api.post('/admin/blog/tags', {
+      nameUk: inlineTagNameUk.value.trim(),
+      nameEn: inlineTagNameEn.value.trim(),
+    });
+    // Add to tags list and auto-select it
+    const newTag = data.data;
+    tags.value.unshift(newTag);
+    postForm.value.tagIds.push(newTag.id);
+    showInlineTagForm.value = false;
+    toast.success('Тег створено та додано');
+  } catch (e) {
+    toast.error('Помилка створення тегу');
+  } finally {
+    savingInlineTag.value = false;
+  }
+};
+
 // ─── Methods ─────────────────────────────────────────────────────────────────
 const fetchPosts = async (page = 1) => {
   loading.value = true;
@@ -645,6 +718,9 @@ const openEditPost = async (post) => {
 const closePostModal = () => {
   showPostModal.value = false;
   editingPost.value = null;
+  showInlineTagForm.value = false;
+  inlineTagNameUk.value = '';
+  inlineTagNameEn.value = '';
 };
 
 const savePost = async () => {
@@ -695,7 +771,9 @@ const uploadCover = async (e) => {
   const form = new FormData();
   form.append('image', file);
   try {
-    const { data } = await api.post('/admin/blog/upload', form);
+    const { data } = await api.post('/admin/blog/upload', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     postForm.value.coverImage = data.data.url;
   } catch (e) {
     toast.error('Помилка завантаження зображення');
@@ -706,7 +784,9 @@ const handleImageUpload = async (file, callback) => {
   const form = new FormData();
   form.append('image', file);
   try {
-    const { data } = await api.post('/admin/blog/upload', form);
+    const { data } = await api.post('/admin/blog/upload', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     callback(data.data.url);
   } catch (e) {
     toast.error('Помилка завантаження зображення');
