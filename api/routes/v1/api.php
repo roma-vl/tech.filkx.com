@@ -23,6 +23,8 @@ use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\CheckoutController;
 use App\Api\V1\Controllers\CouponController;
+use App\Api\Admin\Controllers\AdminBlogController;
+use App\Api\V1\Controllers\BlogController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
@@ -61,6 +63,14 @@ Route::prefix('v1')->group(function () {
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/random', [CatalogController::class, 'randomProducts']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
+    });
+
+    // Blog public routes
+    Route::prefix('blog')->group(function () {
+        Route::get('posts', [BlogController::class, 'index']);
+        Route::get('posts/{slug}', [BlogController::class, 'show']);
+        Route::get('categories', [BlogController::class, 'categories']);
+        Route::get('tags', [BlogController::class, 'tags']);
     });
 
     // Cart routes
@@ -275,6 +285,24 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('notifications', [AdminNotificationController::class, 'store']);
         Route::post('notifications/broadcast', [AdminNotificationController::class, 'broadcast']);
         Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy']);
+
+        // Blog Management
+        Route::get('blog/posts', [AdminBlogController::class, 'posts']);
+        Route::get('blog/posts/{id}', [AdminBlogController::class, 'showPost']);
+        Route::post('blog/posts', [AdminBlogController::class, 'storePost']);
+        Route::put('blog/posts/{id}', [AdminBlogController::class, 'updatePost']);
+        Route::delete('blog/posts/{id}', [AdminBlogController::class, 'destroyPost']);
+        Route::post('blog/upload', [AdminBlogController::class, 'uploadImage']);
+
+        Route::get('blog/categories', [AdminBlogController::class, 'categories']);
+        Route::post('blog/categories', [AdminBlogController::class, 'storeCategory']);
+        Route::put('blog/categories/{id}', [AdminBlogController::class, 'updateCategory']);
+        Route::delete('blog/categories/{id}', [AdminBlogController::class, 'destroyCategory']);
+
+        Route::get('blog/tags', [AdminBlogController::class, 'tags']);
+        Route::post('blog/tags', [AdminBlogController::class, 'storeTag']);
+        Route::put('blog/tags/{id}', [AdminBlogController::class, 'updateTag']);
+        Route::delete('blog/tags/{id}', [AdminBlogController::class, 'destroyTag']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);

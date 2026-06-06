@@ -142,6 +142,15 @@
         :product="quickViewProduct"
         @close="closeQuickView"
       />
+
+      <!-- Payment Simulator Modal -->
+      <PaymentSimulatorModal
+        v-if="isPaymentSimulatorOpen && pendingSuccessData"
+        :order-data="pendingSuccessData"
+        :format-price="formatPrice"
+        @success="confirmSimulatedPayment"
+        @close="isPaymentSimulatorOpen = false"
+      />
     </div>
   </main>
 </template>
@@ -154,6 +163,7 @@ import CartItemsList from "@/widgets/ShoppingCart/CartItemsList.vue";
 import CartSummary from "@/widgets/ShoppingCart/CartSummary.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
+import PaymentSimulatorModal from "@/widgets/ShoppingCart/PaymentSimulatorModal.vue";
 
 const {
   router,
@@ -177,6 +187,9 @@ const {
   quickViewProduct,
   openQuickView,
   closeQuickView,
+  isPaymentSimulatorOpen,
+  pendingSuccessData,
+  confirmSimulatedPayment,
   formatPrice,
   applyPromo,
   addRecommended,

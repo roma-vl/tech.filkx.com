@@ -19,26 +19,21 @@ class GetHomeDataAction
         // 1. Popular categories (6 categories with most active products)
         $categories = $this->categoryRepository->getPopularCategories(6);
 
-        // 2. Flash Deals (is_hot = true or highest variant discount percentage)
-        $flashDealsRaw = $this->productRepository->getHotDeals();
-        $flashDeals = $flashDealsRaw->sortByDesc(function ($product) {
-            if ($product->is_hot) {
-                return 9.99; // Top priority
-            }
-            $maxDiscountPct = 0;
-            foreach ($product->variants as $variant) {
-                if ($variant->old_price && $variant->old_price > $variant->price) {
-                    $pct = ($variant->old_price - $variant->price) / $variant->old_price;
-                    if ($pct > $maxDiscountPct) {
-                        $maxDiscountPct = $pct;
-                    }
-                }
-            }
-
-            return $maxDiscountPct;
-        })
+        // 2. Flash Deals (seeded by date/hour to rotate every hour randomly)
+        $seed = (int) date('YmdH');
+        $flashDeals = Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'attributeValues.attribute',
+            'attributeValues.attributeValue',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue',
+        ])
+            ->where('status', 'active')
+            ->inRandomOrder($seed)
             ->take(4)
-            ->values();
+            ->get();
 
         // 3. Smart Recommendations Algorithm
         $recommendedIds = collect();

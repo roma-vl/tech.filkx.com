@@ -29,6 +29,10 @@ const props = defineProps<{
   products: FlashProduct[];
 }>();
 
+const emit = defineEmits<{
+  (e: "refresh-products"): void;
+}>();
+
 const cartStore = useCartStore();
 
 const formatPrice = (price: number) => {
@@ -39,33 +43,29 @@ const formatPrice = (price: number) => {
   }).format(price);
 };
 
-// Countdown Timer Logic
-const hours = ref(23);
-const minutes = ref(59);
-const seconds = ref(59);
+// Countdown Timer Logic (counts down the current hour)
+const hours = ref(0);
+const minutes = ref(0);
+const seconds = ref(0);
 let timerId: ReturnType<typeof setInterval> | null = null;
+let lastRefreshedHour = new Date().getHours();
+
+const updateTimer = () => {
+  const now = new Date();
+  hours.value = 0;
+  minutes.value = 59 - now.getMinutes();
+  seconds.value = 59 - now.getSeconds();
+
+  const currentHour = now.getHours();
+  if (currentHour !== lastRefreshedHour) {
+    lastRefreshedHour = currentHour;
+    emit("refresh-products");
+  }
+};
 
 const startCountdown = () => {
-  timerId = setInterval(() => {
-    if (seconds.value > 0) {
-      seconds.value--;
-    } else {
-      seconds.value = 59;
-      if (minutes.value > 0) {
-        minutes.value--;
-      } else {
-        minutes.value = 59;
-        if (hours.value > 0) {
-          hours.value--;
-        } else {
-          // Reset countdown to 24h
-          hours.value = 23;
-          minutes.value = 59;
-          seconds.value = 59;
-        }
-      }
-    }
-  }, 1000);
+  updateTimer();
+  timerId = setInterval(updateTimer, 1000);
 };
 
 onMounted(() => {

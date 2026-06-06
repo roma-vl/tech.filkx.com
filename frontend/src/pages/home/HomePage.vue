@@ -40,6 +40,7 @@
       <FlashDeals
         v-if="flashDeals.length > 0"
         :products="flashDeals"
+        @refresh-products="loadHomeData"
       />
       <RecommendedProducts
         v-if="recommended.length > 0"
@@ -62,5 +63,5 @@ import RecommendedProducts from "@/components/home/RecommendedProducts.vue";
 import TechBlog from "@/components/home/TechBlog.vue";
 import BrandPartners from "@/components/home/BrandPartners.vue";
 
-const { categories, flashDeals, recommended, loading } = useHome();
+const { categories, flashDeals, recommended, loading, loadHomeData } = useHome();
 </script>

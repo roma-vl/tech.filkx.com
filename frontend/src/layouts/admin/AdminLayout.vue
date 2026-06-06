@@ -293,6 +293,7 @@ import {
   Cog6ToothIcon,
   InformationCircleIcon,
   MegaphoneIcon,
+  NewspaperIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   SignalIcon,
@@ -377,6 +378,12 @@ const navItems = shallowRef<NavItem[]>([
       { name: t("admin.nav.categories"), path: "/admin/categories" },
       { name: t("admin.nav.brands"), path: "/admin/brands" },
     ],
+  },
+  {
+    key: "blog",
+    name: t("admin.nav.blog"),
+    path: "/admin/blog",
+    icon: markRaw(NewspaperIcon),
   },
   {
     key: "orders",

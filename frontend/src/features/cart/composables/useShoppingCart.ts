@@ -193,6 +193,16 @@ export function useShoppingCart() {
     cartStore.addToCart(product);
   };
 
+  const isPaymentSimulatorOpen = ref(false);
+  const pendingSuccessData = ref<any>(null);
+
+  const confirmSimulatedPayment = () => {
+    isPaymentSimulatorOpen.value = false;
+    orderSuccessData.value = pendingSuccessData.value;
+    pendingSuccessData.value = null;
+    isSuccessMode.value = true;
+  };
+
   const handlePlaceOrder = async () => {
     if (
       !checkoutForm.value.customerName ||
@@ -200,14 +210,12 @@ export function useShoppingCart() {
       !checkoutForm.value.customerPhone ||
       !checkoutForm.value.shippingAddress
     ) {
-      cartStore.addToast("Please fill in all required fields.", "error");
+      cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "error");
       return;
     }
 
     isSubmitting.value = true;
     try {
-      // Convert state properties to backend snake_case if they aren't parsed by middleware,
-      // but ConvertCamelCaseToSnakeCase middleware does it for request body, so camelCase is perfect!
       const response = await orderApi.placeOrder({
         customerName: checkoutForm.value.customerName,
         customerEmail: checkoutForm.value.customerEmail,
@@ -222,15 +230,21 @@ export function useShoppingCart() {
       });
 
       if (response.data && response.data.status === "success") {
-        cartStore.addToast("Order successfully placed!", "success");
-        orderSuccessData.value = response.data.data;
+        cartStore.addToast("Замовлення успішно створено!", "success");
         cartStore.cart = [];
-        isSuccessMode.value = true;
+        
+        if (checkoutForm.value.paymentMethod === "card") {
+          pendingSuccessData.value = response.data.data;
+          isPaymentSimulatorOpen.value = true;
+        } else {
+          orderSuccessData.value = response.data.data;
+          isSuccessMode.value = true;
+        }
       }
     } catch (error: any) {
       console.error("Checkout failed:", error);
       const errMsg =
-        error.response?.data?.message || "Error occurred during checkout";
+        error.response?.data?.message || "Помилка при оформленні замовлення";
       cartStore.addToast(errMsg, "error");
     } finally {
       isSubmitting.value = false;
@@ -260,6 +274,9 @@ export function useShoppingCart() {
     quickViewProduct,
     openQuickView,
     closeQuickView,
+    isPaymentSimulatorOpen,
+    pendingSuccessData,
+    confirmSimulatedPayment,
     formatPrice,
     applyPromo,
     addRecommended,
