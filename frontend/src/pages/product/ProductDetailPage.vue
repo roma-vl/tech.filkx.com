@@ -1,64 +1,75 @@
 <template>
-  <div
-    v-if="isLoading"
-    class="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950"
-  >
-    <div
-      class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"
-    />
+  <!-- Skeleton loading -->
+  <div v-if="isLoading" class="max-w-container-max mx-auto px-4 md:px-8 py-8 font-sans">
+    <!-- Breadcrumb skeleton -->
+    <div class="flex items-center gap-2 mb-6">
+      <div class="h-3 w-16 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div class="h-3 w-3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div class="h-3 w-14 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div class="h-3 w-3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div class="h-3 w-40 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Gallery skeleton -->
+      <div class="lg:col-span-7 flex gap-4">
+        <div class="flex flex-col gap-3 shrink-0">
+          <div v-for="i in 3" :key="i" class="w-20 h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        </div>
+        <div class="flex-1 aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+      </div>
+
+      <!-- Purchase skeleton -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="h-3 w-24 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div class="h-8 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div class="h-5 w-2/3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div class="h-4 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div class="h-px bg-zinc-100 dark:bg-zinc-800 mt-4" />
+        <div class="h-44 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        <div class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        <div class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+      </div>
+    </div>
   </div>
+
+  <!-- Not found -->
   <div
     v-else-if="!product"
-    class="min-h-screen flex flex-col items-center justify-center text-center bg-white dark:bg-zinc-950 px-4"
+    class="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 font-sans"
   >
-    <span class="material-symbols-outlined text-[64px] text-zinc-400 mb-4">search_off</span>
-    <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">
-      Товар не знайдено
-    </h1>
-    <p class="text-zinc-555 dark:text-zinc-500 mb-6">
-      Будь ласка, перевірте правильність посилання або скористайтесь каталогом.
+    <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+      <span class="material-symbols-outlined text-[32px] text-zinc-400">search_off</span>
+    </div>
+    <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">Товар не знайдено</h1>
+    <p class="text-sm text-zinc-500 mb-6 max-w-sm">
+      Перевірте правильність посилання або скористайтесь каталогом.
     </p>
     <button
-      class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-md text-sm font-extrabold transition-all"
+      class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all"
       @click="router.push('/catalog')"
     >
       Перейти до каталогу
     </button>
   </div>
-  <div v-else>
+
+  <!-- Product page -->
+  <div v-else class="font-sans">
     <!-- Breadcrumbs -->
-    <nav
-      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-2 text-[11px] md:text-xs font-sans text-zinc-400 dark:text-zinc-500 text-left"
-    >
-      <a
-        class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-bold"
-        href="#"
-        @click.prevent="router.push('/')"
-      >
-        <span class="material-symbols-outlined text-[16px] leading-none">home</span>
-        <span>Головна</span>
+    <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500">
+      <a class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold" href="#" @click.prevent="router.push('/')">
+        <span class="material-symbols-outlined text-[15px]">home</span>
+        Головна
       </a>
-      <span
-        class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
-      >chevron_right</span>
-      <a
-        class="hover:text-[#00a046] transition-colors font-bold"
-        href="#"
-        @click.prevent="router.push('/catalog')"
-      >Каталог</a>
-      <span
-        class="material-symbols-outlined text-[14px] text-zinc-300 dark:text-zinc-700 leading-none"
-      >chevron_right</span>
-      <span class="text-zinc-800 dark:text-zinc-100 font-extrabold">{{
-        product.name
-      }}</span>
+      <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
+      <a class="hover:text-[#00a046] transition-colors font-semibold" href="#" @click.prevent="router.push('/catalog')">Каталог</a>
+      <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
+      <span class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]">{{ product.name }}</span>
     </nav>
-    <main
-      class="max-w-container-max mx-auto px-4 md:px-8 py-6 text-zinc-800 dark:text-zinc-200 font-sans"
-    >
+
+    <main class="max-w-container-max mx-auto px-4 md:px-8 py-6">
       <!-- Hero block -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <!-- Gallery Column -->
         <div class="lg:col-span-7">
           <ProductGallery
             :gallery-images="galleryImages"
@@ -74,8 +85,6 @@
             @mouse-leave="handleMouseLeave"
           />
         </div>
-
-        <!-- Purchase Column -->
         <div class="lg:col-span-5">
           <ProductPurchase
             :product="product"
@@ -90,7 +99,7 @@
         </div>
       </div>
 
-      <!-- Combo Bundle section -->
+      <!-- Combo Bundle -->
       <ComboDeal
         :bundle-items="bundleItems"
         :selected-bundle-ids="selectedBundleIds"
@@ -102,7 +111,7 @@
         @add-bundle="addBundleToCart"
       />
 
-      <!-- Tabs and specs review panel -->
+      <!-- Tabs -->
       <ProductTabs
         :active-tab="activeTab"
         :tabs="tabs"
@@ -114,50 +123,35 @@
       />
     </main>
 
-    <!-- Sticky Bottom Buy Bar -->
+    <!-- Sticky Buy Bar -->
     <div
-      class="fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 shadow-lg backdrop-blur-md transition-transform duration-300 ease-in-out translate-y-full"
+      class="fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-100 dark:border-zinc-800 bg-white/96 dark:bg-zinc-900/96 backdrop-blur-md shadow-xl transition-transform duration-300 ease-in-out translate-y-full"
       :class="{ 'translate-y-0': showStickyBar }"
     >
-      <div
-        class="max-w-container-max mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-6"
-      >
-        <div class="flex items-center gap-4 overflow-hidden min-w-0">
-          <img
-            alt="Компактне прев'ю товару"
-            class="w-12 h-12 object-contain rounded-md border border-zinc-200 dark:border-zinc-800 hidden sm:block p-1 bg-white"
-            :src="selectedImage"
-          >
-          <div class="truncate text-left">
-            <p
-              class="font-black text-zinc-900 dark:text-white text-sm truncate tracking-tight font-bold"
-            >
-              {{ product.name }}
-            </p>
-            <div class="flex items-center gap-3 text-xs mt-0.5">
-              <span class="text-[#00a046] font-black font-bold">{{
-                formatPrice(product.price)
-              }}</span>
-              <span
-                class="text-[9px] font-black text-white bg-[#00a046] px-1.5 py-0.5 rounded uppercase tracking-wider font-bold"
-              >В наявності</span>
-            </div>
-          </div>
+      <div class="max-w-container-max mx-auto px-4 md:px-8 h-[68px] flex items-center gap-4">
+        <img
+          alt="product"
+          class="w-10 h-10 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 hidden sm:block shrink-0"
+          :src="selectedImage"
+        />
+        <div class="flex-1 min-w-0 text-left">
+          <p class="font-bold text-sm text-zinc-900 dark:text-white truncate leading-tight">{{ product.name }}</p>
+          <p class="text-[#00a046] font-black text-sm mt-0.5">{{ formatPrice(product.price) }}</p>
         </div>
         <div class="flex gap-2 shrink-0">
           <button
-            class="border border-zinc-350 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-850 dark:text-zinc-200 px-3 sm:px-5 py-3 rounded-md font-extrabold text-[10px] sm:text-xs active:scale-[0.98] transition-all uppercase tracking-wider font-bold"
-            type="button"
+            class="hidden sm:flex border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 px-4 py-2.5 rounded-lg font-bold text-xs transition-all items-center gap-1.5"
             @click="openQuickOrder"
           >
+            <span class="material-symbols-outlined text-[15px]">bolt</span>
             Швидке замовлення
           </button>
           <button
-            class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 sm:px-5 py-3 rounded-md font-extrabold text-[10px] sm:text-xs shadow-md transition-all active:scale-[0.98] uppercase tracking-wider font-bold"
-            type="button"
+            class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg font-bold text-xs shadow-sm transition-all active:scale-[0.98] flex items-center gap-1.5"
             @click="cartStore.addToCart(product)"
           >
-            Додати в кошик
+            <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+            В кошик
           </button>
         </div>
       </div>
@@ -213,11 +207,8 @@ const {
   selectPreviousImage,
   toggleBundleItem,
   addBundleToCart,
-  fetchProductDetails,
   isQuickOrderOpen,
   openQuickOrder,
   closeQuickOrder,
 } = useProductDetail();
 </script>
-
-<style scoped></style>

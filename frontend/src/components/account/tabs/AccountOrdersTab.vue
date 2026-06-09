@@ -64,17 +64,53 @@ const fetchOrders = async () => {
   }
 };
 
+interface UserReview {
+  id: number;
+  product_slug: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  photos: string[];
+}
+
+const userReviewsMap = ref<Record<string, UserReview>>({});
+
+const fetchUserReviews = async () => {
+  try {
+    const res = await api.get("/v1/user/reviews");
+    const reviews: UserReview[] = res.data.data || [];
+    const map: Record<string, UserReview> = {};
+    for (const r of reviews) {
+      if (r.product_slug) map[r.product_slug] = r;
+    }
+    userReviewsMap.value = map;
+  } catch {
+    // not critical — silently skip
+  }
+};
+
 onMounted(() => {
   fetchOrders();
+  fetchUserReviews();
 });
+
 const selectedOrder = ref<Order | null>(null);
 const isDetailsOpen = ref(false);
 const trackingOrder = ref<Order | null>(null);
 const isTrackingOpen = ref(false);
 const reviewProduct = ref<OrderItem | null>(null);
+const reviewOrderId = ref<number | null>(null);
 const reviewRating = ref(5);
+const reviewTitle = ref("");
 const reviewComment = ref("");
+const reviewPhotos = ref<File[]>([]);
+const reviewPhotoPreviews = ref<string[]>([]);
+const existingPhotoUrls = ref<string[]>([]);
+const isEditMode = ref(false);
+const isSubmittingReview = ref(false);
 const isReviewOpen = ref(false);
+
+const totalPhotoCount = computed(() => existingPhotoUrls.value.length + reviewPhotos.value.length);
 
 const filteredOrders = computed(() =>
   ordersList.value.filter((o) => {
@@ -139,19 +175,86 @@ const openTracking = (o: Order) => {
   trackingOrder.value = o;
   isTrackingOpen.value = true;
 };
-const openReview = (i: OrderItem) => {
+const openReview = (i: OrderItem, orderId?: string) => {
   reviewProduct.value = i;
-  reviewRating.value = 5;
-  reviewComment.value = "";
+  reviewOrderId.value = orderId ? parseInt(orderId) : null;
+  reviewPhotos.value = [];
+  reviewPhotoPreviews.value = [];
+
+  const existing = userReviewsMap.value[i.slug];
+  if (existing) {
+    isEditMode.value = true;
+    reviewRating.value = existing.rating;
+    reviewTitle.value = existing.title ?? "";
+    reviewComment.value = existing.body;
+    existingPhotoUrls.value = [...(existing.photos || [])];
+  } else {
+    isEditMode.value = false;
+    reviewRating.value = 5;
+    reviewTitle.value = "";
+    reviewComment.value = "";
+    existingPhotoUrls.value = [];
+  }
+
   isReviewOpen.value = true;
 };
+
+const handleReviewPhotos = (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const files = Array.from(input.files || []);
+  const remaining = 5 - totalPhotoCount.value;
+  const toAdd = files.slice(0, remaining);
+  toAdd.forEach((file) => {
+    reviewPhotos.value.push(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => reviewPhotoPreviews.value.push(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  });
+  input.value = "";
+};
+
+const removeExistingPhoto = (index: number) => {
+  existingPhotoUrls.value.splice(index, 1);
+};
+const removeNewPhoto = (index: number) => {
+  reviewPhotos.value.splice(index, 1);
+  reviewPhotoPreviews.value.splice(index, 1);
+};
 const buyItAgain = (i: OrderItem) => cartStore.addToCart(i as any);
-const submitReview = () => {
-  cartStore.addToast(
-    `Дякуємо! Ваш відгук із оцінкою ${reviewRating.value} зірок успішно опубліковано.`,
-    "success",
-  );
-  isReviewOpen.value = false;
+const submitReview = async () => {
+  if (!reviewProduct.value || !reviewComment.value.trim()) return;
+  isSubmittingReview.value = true;
+  try {
+    const formData = new FormData();
+    formData.append("rating", String(reviewRating.value));
+    formData.append("body", reviewComment.value);
+    if (reviewTitle.value) formData.append("title", reviewTitle.value);
+    reviewPhotos.value.forEach((f) => formData.append("photos[]", f));
+
+    if (isEditMode.value) {
+      // _method spoofing: POST with _method=PUT so PHP populates $_FILES
+      formData.append("_method", "PUT");
+      existingPhotoUrls.value.forEach((url) => formData.append("existing_photos[]", url));
+    } else {
+      if (reviewOrderId.value) formData.append("order_id", String(reviewOrderId.value));
+    }
+
+    await api.post(`/v1/catalog/products/${reviewProduct.value.slug}/reviews`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    const successMsg = isEditMode.value
+      ? "Відгук успішно оновлено."
+      : "Дякуємо! Ваш відгук успішно опубліковано.";
+    cartStore.addToast(successMsg, "success");
+    await fetchUserReviews();
+    isReviewOpen.value = false;
+  } catch (e: any) {
+    const msg = e.response?.data?.message || "Не вдалося надіслати відгук.";
+    cartStore.addToast(msg, "error");
+  } finally {
+    isSubmittingReview.value = false;
+  }
 };
 
 const filterBtns = [
@@ -346,10 +449,11 @@ const filterBtns = [
                 </button>
                 <button
                   v-if="order.statusCode === 'delivered'"
-                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm"
-                  @click="openReview(item)"
+                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm flex items-center gap-1.5"
+                  @click="openReview(item, order.id)"
                 >
-                  Написати відгук
+                  <span class="material-symbols-outlined text-[15px]">{{ userReviewsMap[item.slug] ? 'edit' : 'rate_review' }}</span>
+                  {{ userReviewsMap[item.slug] ? 'Редагувати відгук' : 'Написати відгук' }}
                 </button>
                 <button
                   v-if="order.statusCode !== 'cancelled'"
@@ -631,87 +735,153 @@ const filterBtns = [
   <div
     v-if="isReviewOpen && reviewProduct"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade"
+    @click.self="isReviewOpen = false"
   >
     <div
-      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-md w-full shadow-2xl overflow-hidden"
+      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
+        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
       >
-        <h3
-          class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
-        >
-          Написати відгук
-        </h3>
-        <button
-          class="text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-255"
-          @click="isReviewOpen = false"
-        >
+        <h3 class="font-black text-base text-zinc-900 dark:text-white">{{ isEditMode ? 'Редагувати відгук' : 'Написати відгук' }}</h3>
+        <button class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" @click="isReviewOpen = false">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <form
-        class="p-6 space-y-4 text-xs md:text-sm"
-        @submit.prevent="submitReview"
-      >
-        <div class="flex items-center gap-3">
+
+      <form class="p-6 space-y-4 text-xs md:text-sm overflow-y-auto" @submit.prevent="submitReview">
+        <!-- Product preview -->
+        <div class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-850 rounded-lg border border-zinc-100 dark:border-zinc-800">
           <img
             :src="reviewProduct.image"
             :alt="reviewProduct.name"
-            class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1"
+            class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 shrink-0"
           />
-          <p class="font-extrabold text-zinc-800 dark:text-zinc-200">
-            {{ reviewProduct.name }}
-          </p>
+          <p class="font-bold text-zinc-800 dark:text-zinc-200 line-clamp-2 text-xs leading-snug">{{ reviewProduct.name }}</p>
         </div>
+
+        <!-- Rating -->
         <div class="space-y-1.5">
-          <label
-            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Оцінка</label
-          >
-          <div class="flex gap-1 text-amber-400 cursor-pointer">
+          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Оцінка *</label>
+          <div class="flex gap-1 cursor-pointer">
             <span
               v-for="star in 5"
               :key="star"
-              class="material-symbols-outlined text-[26px]"
-              :style="
-                star <= reviewRating
-                  ? 'font-variation-settings: \'FILL\' 1;'
-                  : ''
-              "
+              class="material-symbols-outlined text-[30px] transition-colors"
+              :class="star <= reviewRating ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700'"
+              :style="star <= reviewRating ? 'font-variation-settings: \'FILL\' 1;' : ''"
               @click="reviewRating = star"
-              >star</span
-            >
+            >star</span>
           </div>
         </div>
+
+        <!-- Title -->
         <div class="space-y-1.5">
-          <label
-            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Коментар</label
-          >
+          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Заголовок</label>
+          <input
+            v-model="reviewTitle"
+            type="text"
+            maxlength="120"
+            placeholder="Коротко про враження..."
+            class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
+          />
+        </div>
+
+        <!-- Comment -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Відгук *</label>
           <textarea
             v-model="reviewComment"
             rows="4"
-            placeholder="Поділіться вашими враженнями про товар..."
+            minlength="10"
+            placeholder="Поділіться враженнями: якість, відповідність опису, зручність використання..."
             required
             class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
           />
         </div>
-        <div
-          class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
-        >
+
+        <!-- Photo upload -->
+        <div class="space-y-2">
+          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+            Фото (до 5 штук)
+          </label>
+
+          <!-- Previews (existing + new) -->
+          <div v-if="totalPhotoCount > 0" class="flex flex-wrap gap-2">
+            <!-- Existing photos (from saved review) -->
+            <div
+              v-for="(url, idx) in existingPhotoUrls"
+              :key="`existing-${idx}`"
+              class="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 group"
+            >
+              <img :src="url" class="w-full h-full object-cover" />
+              <button
+                type="button"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                @click="removeExistingPhoto(idx)"
+              >
+                <span class="material-symbols-outlined text-white text-[18px]">close</span>
+              </button>
+            </div>
+
+            <!-- New file previews -->
+            <div
+              v-for="(preview, idx) in reviewPhotoPreviews"
+              :key="`new-${idx}`"
+              class="relative w-16 h-16 rounded-lg overflow-hidden border border-[#00a046]/40 dark:border-[#00a046]/30 group"
+            >
+              <img :src="preview" class="w-full h-full object-cover" />
+              <button
+                type="button"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                @click="removeNewPhoto(idx)"
+              >
+                <span class="material-symbols-outlined text-white text-[18px]">close</span>
+              </button>
+            </div>
+
+            <!-- Add more slot -->
+            <label
+              v-if="totalPhotoCount < 5"
+              class="w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center cursor-pointer hover:border-[#00a046]/50 transition-colors"
+            >
+              <span class="material-symbols-outlined text-zinc-400 text-[20px]">add_photo_alternate</span>
+              <input type="file" accept="image/*" multiple class="hidden" @change="handleReviewPhotos" />
+            </label>
+          </div>
+
+          <!-- Upload button when no photos -->
+          <label
+            v-else
+            class="flex items-center gap-3 p-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer hover:border-[#00a046]/40 hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-all group"
+          >
+            <div class="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors shrink-0">
+              <span class="material-symbols-outlined text-[18px] text-zinc-400 group-hover:text-[#00a046] transition-colors">add_photo_alternate</span>
+            </div>
+            <div>
+              <p class="font-bold text-zinc-600 dark:text-zinc-400 text-xs">Додати фото товару</p>
+              <p class="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">JPG, PNG, WebP · до 5 МБ кожне</p>
+            </div>
+            <input type="file" accept="image/*" multiple class="hidden" @change="handleReviewPhotos" />
+          </label>
+        </div>
+
+        <!-- Footer buttons -->
+        <div class="flex justify-end gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 mt-2">
           <button
             type="button"
-            class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs md:text-sm"
+            class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs"
             @click="isReviewOpen = false"
           >
             Скасувати
           </button>
           <button
             type="submit"
-            class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs md:text-sm"
+            :disabled="isSubmittingReview || !reviewComment.trim()"
+            class="bg-[#00a046] hover:bg-[#00b050] disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs flex items-center gap-2"
           >
-            Надіслати
+            <span v-if="isSubmittingReview" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            {{ isSubmittingReview ? 'Надсилання...' : (isEditMode ? 'Зберегти зміни' : 'Опублікувати відгук') }}
           </button>
         </div>
       </form>

@@ -68,4 +68,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttributeValue::class);
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class)->where('status', 'approved');
+    }
 }

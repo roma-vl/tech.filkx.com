@@ -3,6 +3,8 @@ import CatalogPage from "@/pages/catalog/CatalogPage.vue";
 import ProductDetailPage from "@/pages/product/ProductDetailPage.vue";
 import ShoppingCart from "@/pages/cart/ShoppingCart.vue";
 import UserCabinetPage from "@/pages/account/UserCabinetPage.vue";
+import BlogPage from "@/pages/blog/BlogPage.vue";
+import BlogPostPage from "@/pages/blog/BlogPostPage.vue";
 // import VideosPage from "@/pages/application/VideosPage.vue";
 // import StreamsPage from "@/pages/application/StreamsPage.vue";
 // import SettingsPage from "@/pages/application/SettingsPage.vue";
@@ -62,6 +64,18 @@ export default [
         name: "account",
         component: UserCabinetPage,
         meta: { title: "Account — FilkxTech" },
+      },
+      {
+        path: "blog",
+        name: "blog",
+        component: BlogPage,
+        meta: { title: "Блог — FilkxTech" },
+      },
+      {
+        path: "blog/:slug",
+        name: "blog-post",
+        component: BlogPostPage,
+        meta: { title: "Стаття — FilkxTech" },
       },
     ],
   },

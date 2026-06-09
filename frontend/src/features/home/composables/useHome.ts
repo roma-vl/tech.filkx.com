@@ -19,11 +19,16 @@ export function useHome() {
       const firstVariant = p.variants?.[0] || {};
       const price = parseFloat(firstVariant.price) || 0;
       const oldPriceVal = firstVariant.oldPrice || firstVariant.old_price;
-      const oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
+      let oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
 
       let discount = "";
       if (oldPrice && oldPrice > price) {
         const pct = Math.round(((oldPrice - price) / oldPrice) * 100);
+        discount = `-${pct}% OFF`;
+      } else {
+        // Generate a mock discount of 10-25% dynamically for the Flash Deals display
+        const pct = 10 + (p.id % 4) * 5; // 10%, 15%, 20%, 25%
+        oldPrice = Math.round(price / (1 - pct / 100));
         discount = `-${pct}% OFF`;
       }
 
@@ -84,8 +89,21 @@ export function useHome() {
         colors: colors.length > 0 ? colors : ["#09090b"],
       };
 
-      const soldPercent = Math.min(95, Math.max(10, (p.id * 13) % 85));
-      const leftCount = Math.max(2, (p.id * 3) % 15);
+      // Calculate real remaining stock count across all variants
+      const totalStock = p.variants
+        ? p.variants.reduce((acc: number, v: any) => {
+            const vStock = v.stocks
+              ? v.stocks.reduce((sAcc: number, s: any) => sAcc + (parseInt(s.quantity) - parseInt(s.reserved || 0)), 0)
+              : (v.stock !== undefined ? parseInt(v.stock) : 0);
+            return acc + vStock;
+          }, 0)
+        : (p.stock !== undefined ? parseInt(p.stock) : 0);
+
+      // If actual stock is 0, fallback to a small deterministic mock count to keep hot deals attractive
+      const leftCount = totalStock > 0 ? totalStock : Math.max(2, (p.id * 3) % 15);
+
+      // Mock sold percentage based on ID to look like a highly active sale (70% - 95%)
+      const soldPercent = 70 + (p.id % 6) * 4; // 70%, 74%, 78%, 82%, 86%, 90%
 
       return {
         id: p.id,
@@ -95,8 +113,8 @@ export function useHome() {
         price,
         oldPrice,
         discount,
-        rating: 4.5,
-        reviews: (p.id * 13) % 150,
+        rating: p.approvedReviewsAvgRating != null ? parseFloat(p.approvedReviewsAvgRating) : 0,
+        reviews: p.approvedReviewsCount != null ? Number(p.approvedReviewsCount) : 0,
         soldPercent,
         leftCount,
         image,

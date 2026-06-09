@@ -159,7 +159,7 @@ onMounted(fetchNotifications);
       <div
         v-for="n in 3"
         :key="n"
-        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-2xl p-5 animate-pulse flex gap-4"
+        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-xl p-5 animate-pulse flex gap-4"
       >
         <div
           class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"
@@ -174,7 +174,7 @@ onMounted(fetchNotifications);
     <!-- Error State -->
     <div
       v-else-if="error"
-      class="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 p-5 rounded-2xl text-center"
+      class="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 p-5 rounded-xl text-center"
     >
       {{ error }}
     </div>
@@ -184,7 +184,7 @@ onMounted(fetchNotifications);
       <div
         v-for="item in notifications"
         :key="item.id"
-        class="bg-white dark:bg-zinc-900 border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
+        class="bg-white dark:bg-zinc-900 border rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
         :class="[
           item.read_at
             ? 'border-zinc-100 dark:border-zinc-855/80 opacity-75'
@@ -269,7 +269,7 @@ onMounted(fetchNotifications);
     <!-- Empty State -->
     <div
       v-else
-      class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-12 text-center shadow-sm"
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-12 text-center shadow-sm"
     >
       <div
         class="w-16 h-16 bg-[#00a046]/10 border border-[#00a046]/20 text-[#00a046] rounded-full flex items-center justify-center mx-auto mb-4"

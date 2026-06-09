@@ -80,55 +80,41 @@ onMounted(() => {
     <!-- Content Workspace -->
     <div class="flex-1 px-4 md:px-8 py-10 min-w-0">
       <!-- Page Header -->
-      <header class="mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6">
-        <div
-          class="flex flex-col md:flex-row md:items-center justify-between gap-4"
-        >
-          <div>
-            <h1
-              class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight"
-            >
-              {{ tabTitles[activeTab] || "Особистий кабінет" }}
+      <header class="mb-8">
+        <div class="flex items-start justify-between gap-4 pb-5 border-b border-zinc-200 dark:border-zinc-800">
+          <div class="min-w-0">
+            <p class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1">Особистий кабінет</p>
+            <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight">
+              {{ tabTitles[activeTab] || "Кабінет" }}
             </h1>
-            <p
-              class="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-1"
-            >
-              Вітаємо, {{ userName }}! Керуйте своїм профілем, замовленнями та
-              налаштуваннями акаунту FilkxTech.
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5">
+              Вітаємо, <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{ userName }}</span>! Керуйте профілем та замовленнями.
             </p>
           </div>
-          <div
-            class="lg:hidden self-start flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
-          >
-            <span class="material-symbols-outlined text-[16px] text-[#00a046]"
-              >verified</span
-            >
-            <span
-              class="text-[11px] font-black text-[#00a046] uppercase tracking-widest"
-              >Клієнт</span
-            >
+          <div class="lg:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+            <span class="material-symbols-outlined text-[15px] text-[#00a046]">verified</span>
+            <span class="text-[10px] font-black text-[#00a046] uppercase tracking-widest">Клієнт</span>
           </div>
         </div>
       </header>
 
       <!-- Mobile Navigation Scroll Bar -->
-      <div
-        class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-4"
-      >
+      <div class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1">
         <button
           v-for="item in navTabs"
           :key="item.tab"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs md:text-sm font-extrabold whitespace-nowrap transition-all shadow-sm border border-zinc-200 dark:border-zinc-850"
+          class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-extrabold whitespace-nowrap transition-all shrink-0"
           :class="
             activeTab === item.tab
-              ? 'bg-[#00a046] text-white border-[#00a046]'
-              : 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              ? 'bg-[#00a046] text-white shadow-sm'
+              : 'bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800'
           "
           @click="selectTab(item.tab)"
         >
-          <span class="material-symbols-outlined text-[16px] md:text-[18px]">{{
-            item.icon
-          }}</span>
+          <span
+            class="material-symbols-outlined text-[15px]"
+            :style="activeTab === item.tab ? 'font-variation-settings: \'FILL\' 1' : ''"
+          >{{ item.icon }}</span>
           {{ item.label }}
         </button>
       </div>

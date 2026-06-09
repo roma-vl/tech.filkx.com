@@ -149,13 +149,13 @@ class ListProductsAction
             $query->orderBy('products.created_at', 'desc');
         } elseif ($sortBy === 'price-asc') {
             $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                ->select('products.*')
+                ->addSelect('products.*')
                 ->selectRaw('MIN(product_variants.price) as min_price')
                 ->groupBy('products.id')
                 ->orderBy('min_price', 'asc');
         } elseif ($sortBy === 'price-desc') {
             $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                ->select('products.*')
+                ->addSelect('products.*')
                 ->selectRaw('MIN(product_variants.price) as min_price')
                 ->groupBy('products.id')
                 ->orderBy('min_price', 'desc');

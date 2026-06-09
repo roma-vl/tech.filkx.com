@@ -73,6 +73,11 @@ export default {
     runnerNodes: "Stream Nodes",
     transcoderNodes: "Transcoder Nodes",
     converter: "Converter",
+    blog: "Blog",
+  },
+  blog: {
+    title: "Blog Management",
+    description: "Manage blog posts, categories and tags",
   },
   accounting: {
     export: "Export CSV",

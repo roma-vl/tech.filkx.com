@@ -6,7 +6,7 @@
       class="font-title-lg text-title-lg text-zinc-900 dark:text-white border-b border-outline-variant pb-3 flex items-center gap-2 font-bold text-lg"
     >
       <span class="material-symbols-outlined text-primary">contact_mail</span>
-      Shipping and Contact Information
+      Контактна інформація
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -14,13 +14,13 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="customer_name"
-          >Full Name *</label
+          >ПІБ / Повне ім'я *</label
         >
         <input
           id="customer_name"
           :value="modelValue.customerName"
           type="text"
-          placeholder="John Doe"
+          placeholder="Іванов Іван"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
           @input="
@@ -35,7 +35,7 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="customer_phone"
-          >Phone *</label
+          >Номер телефону *</label
         >
         <input
           id="customer_phone"
@@ -58,13 +58,13 @@
       <label
         class="font-label-md text-on-surface-variant text-sm font-semibold"
         for="customer_email"
-        >Email Address *</label
+        >Електронна пошта *</label
       >
       <input
         id="customer_email"
         :value="modelValue.customerEmail"
         type="email"
-        placeholder="john@example.com"
+        placeholder="ivan@example.com"
         class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
         required
         @input="
@@ -80,7 +80,7 @@
       class="font-title-lg text-title-lg text-zinc-900 dark:text-white border-b border-outline-variant pt-4 pb-3 flex items-center gap-2 font-bold text-lg"
     >
       <span class="material-symbols-outlined text-primary">local_shipping</span>
-      Delivery Details
+      Деталі доставки та оплати
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,7 +88,7 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="delivery_method"
-          >Delivery Method *</label
+          >Спосіб доставки *</label
         >
         <select
           id="delivery_method"
@@ -101,17 +101,17 @@
             )
           "
         >
-          <option value="nova_poshta">Nova Poshta Branch</option>
-          <option value="ukr_poshta">Ukrposhta</option>
-          <option value="courier">Address Courier</option>
-          <option value="pickup">Self-pickup from Shop</option>
+          <option value="nova_poshta">Нова Пошта (у відділення)</option>
+          <option value="ukr_poshta">Укрпошта (у відділення)</option>
+          <option value="courier">Адресна доставка кур'єром</option>
+          <option value="pickup">Самовивіз із магазину</option>
         </select>
       </div>
       <div class="flex flex-col gap-1.5">
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="payment_method"
-          >Payment Method *</label
+          >Спосіб оплати *</label
         >
         <select
           id="payment_method"
@@ -124,9 +124,9 @@
             )
           "
         >
-          <option value="cod">Cash on Delivery</option>
-          <option value="card">Online Payment by Card</option>
-          <option value="bank">Bank Wire Transfer</option>
+          <option value="cod">Оплата при отриманні (післяплата)</option>
+          <option value="card">Онлайн-оплата (Visa/Mastercard, Monobank)</option>
+          <option value="bank">Банківський переказ (на рахунок IBAN)</option>
         </select>
       </div>
     </div>
@@ -136,13 +136,13 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="shipping_city"
-          >City *</label
+          >Місто *</label
         >
         <input
           id="shipping_city"
           :value="modelValue.shippingCity"
           type="text"
-          placeholder="Kyiv"
+          placeholder="Київ"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
           @input="
@@ -157,13 +157,13 @@
         <label
           class="font-label-md text-on-surface-variant text-sm font-semibold"
           for="shipping_address"
-          >Address / Branch Number *</label
+          >Адреса або номер відділення *</label
         >
         <input
           id="shipping_address"
           :value="modelValue.shippingAddress"
           type="text"
-          placeholder="Nova Poshta Branch №14"
+          placeholder="Відділення №14"
           class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
           required
           @input="

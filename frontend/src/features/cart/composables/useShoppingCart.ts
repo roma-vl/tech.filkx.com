@@ -1,8 +1,9 @@
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { orderApi } from "@/shared/services/api/orderApi";
+import { productApi } from "@/shared/services/api/productApi";
 
 export function useShoppingCart() {
   const router = useRouter();
@@ -47,54 +48,106 @@ export function useShoppingCart() {
     () => cartStore.cartTotal - discount.value + shipping.value + tax.value,
   );
 
-  const recommended = [
-    {
-      id: 701,
-      name: "MultiPort Dock Pro",
-      price: 3200,
-      rating: 4,
-      reviews: 124,
-      category: "Accessories",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuC_mIjGBAHFLCSnmpKkdkgluw78gP5fDfIt-rj8aDqau9wiUubv68sZfet_avneXb0BdlHgR8tzh3aBL5MKj83GuvSVij-YABBwJRePuzTKdMA2zqGbTvdzQGsHdD3NSTTjSbbPxVOKuECFtHzRaEhD9fBoyYGXR717CRPpYrJXHDa8z0XI66M4gP_g_9Hv82KaVGHSzypPCWknl6Ub4H9C30mao8EJzqQoOOGmGd51ETyjAo19kwe1UWnNWg4Och35CqAlSn6pqGQ",
-    },
-    {
-      id: 702,
-      name: "NitroSpeed 2TB SSD",
-      price: 6800,
-      rating: 5,
-      reviews: 52,
-      category: "Storage",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDOzwSs-mEurkjnbxEorFqVI75POVdV9XlGLWzSzMbWRXxsy59HiItmmyAeg4BLoPf41gWBwaO7cGo-wpz3obaat4JK8vFzPZPhVCB6c1hEeinn3ky228a8QpSiKYty-HviuFXBQJ3MjUJ20Bj1_gieN_lhw3jws_vEvCogRvq8uGZrmKzsaeyHsJ2qJUCHjTvmsaFvAqKylsmuMcOq1_FxcL45gtBztQumOMczuls1pA5qK0RtuMAz51QPeJp8aKMl-s7m9o2Q6kw",
-    },
-    {
-      id: 703,
-      name: "Apex Stand Walnut",
-      price: 2100,
-      rating: 4,
-      reviews: 89,
-      category: "Workspace",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCpUg5-c12LFVGvfSy_r-hIiDuew4xWOPJHE5r1BTJ6C0SZoI81TX4Rso9DsY1kRnI-dH4EFoBtyDeLNxxGygB1RRNSy9b0j8V56zv-H9qAPZ2x_vlxd74Tc0OThpmrAsLQzYdgSvQMIaNe0UOyn6T8rpdRKrfFIf4PTDzngldwuJzQznuYiB7OqKWxdkYKDPFxAQPQcY-KsiBUwnpQYYMJUcNKzoxl20RwAv9SQOcid5iX-yumFX-rfDMswz-Tif6n278ku7FlrLY",
-    },
-    {
-      id: 704,
-      name: 'VelvetSleeve 16"',
-      price: 1800,
-      rating: 5,
-      reviews: 210,
-      category: "Cases",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCX0fRCtuolTkfK9Qa7tIVfBzYdLZrzoSEhGM_-ily0VsCSeEySc7yxUa42o7WB4OmDKMhFXwjw4aqNXCqvB5F_Oy0wSF8bvt7VsLpc27B96CzLYrxHt6nqgHQ7hKNHs222ilnNc1wvmr-quRJPU_o60YDoynDPHeDdqqJ3tquNiLYCRgDv6knsZqFN-eM-mXWw7kOxnQgXn0pJdd0pLwnNruSvEbkzpyxXMfW0X5nIoX3pokXrMUne4unP2CH0HOs-nZTlestvNj8",
-    },
-  ];
+  const recommended = ref<any[]>([]);
 
-  const savedItem = {
-    name: "PulseWatch Elite",
-    price: 7600,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBz2rEecMMKZDqSlTy2wn1wPo-W6lV9QKlZyMs-UQYlUhbtAafWpYU1bJvaAYXheNG0Kh1DFumEhrCByWghjO4L6jynlHaGoCG1wIpkWhuLd30oKLVVu6fOGzAiZqNCKah13ZPgq0lCOYJmrdDLIWiyq5MkHDzbP4kcxt8l0RyC2B83QZlw9AnwgA4cGsknwJsaRcH2tL4erIWhClRt0j3FxcBbAPR23b2ddRn9SXgTUiBD18p245Dr7tM40NDVEiD4kOgijyISvXc",
+  const mapProduct = (p: any) => {
+    const mainVariant = p.variants?.[0];
+    const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
+    const oldPrice = mainVariant && mainVariant.old_price ? parseFloat(mainVariant.old_price) : (p.oldPrice || p.old_price || null);
+    
+    let image = p.image || "";
+    if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
+      const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+      if (primary && primary.url) {
+        image = primary.url;
+      }
+    }
+    if (!image) {
+      image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+    }
+
+    const category = p.categories?.[0]
+      ? (p.categories[0].name?.uk || p.categories[0].name?.en || p.categories[0].name)
+      : (p.category || "Electronics");
+
+    const brandName = p.brand?.name || p.brand || "Brand";
+
+    // Extract specs
+    const ram = p.attributeValues?.find((av: any) => av.attribute?.code === "ram")?.customValue || "8GB";
+    const screen = p.attributeValues?.find((av: any) => av.attribute?.code === "screen")?.customValue || "6.1\"";
+    const storage = p.attributeValues?.find((av: any) => av.attribute?.code === "storage")?.customValue || "128GB";
+
+    const totalStock = mainVariant
+      ? (mainVariant.stocks
+          ? mainVariant.stocks.reduce((acc: number, s: any) => acc + (parseInt(s.quantity) - parseInt(s.reserved || 0)), 0)
+          : (mainVariant.stock !== undefined ? mainVariant.stock : 0))
+      : (p.stock !== undefined ? p.stock : 10);
+
+    return {
+      id: p.id,
+      name: p.name?.uk || p.name?.en || p.name,
+      slug: p.slug,
+      price: price,
+      oldPrice: oldPrice,
+      image: image,
+      category: category,
+      brand: brandName,
+      rating: p.rating || 4.5,
+      reviews: p.reviews || Math.floor(Math.random() * 80) + 12,
+      inStock: totalStock > 0,
+      ram: ram,
+      specs: {
+        screen: screen,
+        storage: storage
+      }
+    };
+  };
+
+  const fetchRecommended = async () => {
+    try {
+      const response = await productApi.catalogGetRandomProducts();
+      if (response.data && response.data.status === "success") {
+        const rawProducts = response.data.data || [];
+        recommended.value = rawProducts.slice(0, 4).map(mapProduct);
+      }
+    } catch (e) {
+      console.error("Failed to fetch recommended products", e);
+    }
+  };
+
+  onMounted(() => {
+    fetchRecommended();
+  });
+
+  const moveToCart = async (product: any) => {
+    await cartStore.addToCart(product);
+    if (cartStore.isInWishlist(product.id)) {
+      await cartStore.toggleWishlist(product);
+    }
+  };
+
+  const removePromo = () => {
+    appliedPromo.value = "";
+    promoDiscountAmount.value = 0;
+    promoCode.value = "";
+    cartStore.addToast("Промокод видалено.", "info");
+  };
+
+  const hasOutOfStockItems = computed(() => {
+    return cartStore.cart.some(item => item.stock !== undefined && item.stock <= 0);
+  });
+
+  const isQuickViewOpen = ref(false);
+  const quickViewProduct = ref<any>(null);
+
+  const openQuickView = (product: any) => {
+    quickViewProduct.value = product;
+    isQuickViewOpen.value = true;
+  };
+
+  const closeQuickView = () => {
+    isQuickViewOpen.value = false;
+    quickViewProduct.value = null;
   };
 
   const formatPrice = (price: number) => {
@@ -140,6 +193,16 @@ export function useShoppingCart() {
     cartStore.addToCart(product);
   };
 
+  const isPaymentSimulatorOpen = ref(false);
+  const pendingSuccessData = ref<any>(null);
+
+  const confirmSimulatedPayment = () => {
+    isPaymentSimulatorOpen.value = false;
+    orderSuccessData.value = pendingSuccessData.value;
+    pendingSuccessData.value = null;
+    isSuccessMode.value = true;
+  };
+
   const handlePlaceOrder = async () => {
     if (
       !checkoutForm.value.customerName ||
@@ -147,14 +210,12 @@ export function useShoppingCart() {
       !checkoutForm.value.customerPhone ||
       !checkoutForm.value.shippingAddress
     ) {
-      cartStore.addToast("Please fill in all required fields.", "error");
+      cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "error");
       return;
     }
 
     isSubmitting.value = true;
     try {
-      // Convert state properties to backend snake_case if they aren't parsed by middleware,
-      // but ConvertCamelCaseToSnakeCase middleware does it for request body, so camelCase is perfect!
       const response = await orderApi.placeOrder({
         customerName: checkoutForm.value.customerName,
         customerEmail: checkoutForm.value.customerEmail,
@@ -169,15 +230,21 @@ export function useShoppingCart() {
       });
 
       if (response.data && response.data.status === "success") {
-        cartStore.addToast("Order successfully placed!", "success");
-        orderSuccessData.value = response.data.data;
+        cartStore.addToast("Замовлення успішно створено!", "success");
         cartStore.cart = [];
-        isSuccessMode.value = true;
+        
+        if (checkoutForm.value.paymentMethod === "card") {
+          pendingSuccessData.value = response.data.data;
+          isPaymentSimulatorOpen.value = true;
+        } else {
+          orderSuccessData.value = response.data.data;
+          isSuccessMode.value = true;
+        }
       }
     } catch (error: any) {
       console.error("Checkout failed:", error);
       const errMsg =
-        error.response?.data?.message || "Error occurred during checkout";
+        error.response?.data?.message || "Помилка при оформленні замовлення";
       cartStore.addToast(errMsg, "error");
     } finally {
       isSubmitting.value = false;
@@ -200,7 +267,16 @@ export function useShoppingCart() {
     tax,
     total,
     recommended,
-    savedItem,
+    moveToCart,
+    removePromo,
+    hasOutOfStockItems,
+    isQuickViewOpen,
+    quickViewProduct,
+    openQuickView,
+    closeQuickView,
+    isPaymentSimulatorOpen,
+    pendingSuccessData,
+    confirmSimulatedPayment,
     formatPrice,
     applyPromo,
     addRecommended,

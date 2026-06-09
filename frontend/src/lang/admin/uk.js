@@ -75,6 +75,11 @@ export default {
     runnerNodes: "Вузли трансляцій",
     transcoderNodes: "Вузли перекодування",
     converter: "Конвертер",
+    blog: "Блог",
+  },
+  blog: {
+    title: "Керування блогом",
+    description: "Управління постами, категоріями та тегами блогу",
   },
   accounting: {
     export: "Експорт CSV",

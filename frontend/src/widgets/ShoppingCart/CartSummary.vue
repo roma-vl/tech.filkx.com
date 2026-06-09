@@ -15,10 +15,21 @@
         }}</span>
       </div>
       <div
-        v-if="discount > 0"
-        class="flex justify-between font-body-lg text-body-lg text-primary text-blue-600"
+        v-if="appliedPromo"
+        class="flex justify-between items-center font-body-lg text-body-lg text-[#00a046] font-bold"
       >
-        <span>Promo Discount</span>
+        <span class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-[18px]">sell</span>
+          Promo Code ({{ appliedPromo }})
+          <button
+            class="text-red-500 hover:text-red-700 ml-1 flex items-center"
+            type="button"
+            title="Remove Promo Code"
+            @click="$emit('removePromo')"
+          >
+            <span class="material-symbols-outlined text-[16px]">close</span>
+          </button>
+        </span>
         <span class="font-semibold">-{{ formatPrice(discount) }}</span>
       </div>
       <div class="flex justify-between font-body-lg text-body-lg">
@@ -71,11 +82,20 @@
       </div>
     </div>
 
+    <!-- Out of Stock Warning -->
+    <div
+      v-if="hasOutOfStockItems"
+      class="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 text-xs font-semibold p-3 rounded-lg border border-red-200 dark:border-red-900/50 mb-4 flex items-start gap-1.5"
+    >
+      <span class="material-symbols-outlined text-[18px] shrink-0 text-red-500">warning</span>
+      <span>Деякі товари відсутні в наявності. Будь ласка, видаліть їх із кошика, щоб оформити замовлення.</span>
+    </div>
+
     <!-- Primary Checkout Button -->
     <button
-      class="w-full py-4 bg-[#00a046] hover:bg-[#00b050] text-white rounded-xl font-bold shadow-md active:scale-95 transition-all mb-4 uppercase tracking-wider flex items-center justify-center gap-2"
+      class="w-full py-4 bg-[#00a046] hover:bg-[#00b050] text-white rounded-xl font-bold shadow-md active:scale-95 transition-all mb-4 uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
       type="button"
-      :disabled="isSubmitting"
+      :disabled="isSubmitting || hasOutOfStockItems"
       @click="$emit('submit')"
     >
       <span
@@ -113,12 +133,15 @@ defineProps<{
   isCheckoutMode: boolean;
   isSubmitting: boolean;
   promoCode: string;
+  appliedPromo: string;
+  hasOutOfStockItems: boolean;
   formatPrice: (p: number) => string;
 }>();
 
 defineEmits<{
   (e: "update:promoCode", val: string): void;
   (e: "applyPromo"): void;
+  (e: "removePromo"): void;
   (e: "submit"): void;
 }>();
 </script>
