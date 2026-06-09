@@ -47,6 +47,11 @@ const nextSlide = () => {
   activeIndex.value = (activeIndex.value + 1) % slides.length;
 };
 
+const prevSlide = () => {
+  activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length;
+  resetTimer();
+};
+
 const setSlide = (index) => {
   activeIndex.value = index;
   resetTimer();
@@ -146,6 +151,27 @@ onUnmounted(() => {
           </div>
         </div>
 
+        <!-- Prev/Next Navigation Arrows -->
+        <button
+          class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 active:scale-95"
+          aria-label="Попередній слайд"
+          @click="prevSlide"
+        >
+          <span class="material-symbols-outlined text-white text-[20px]">chevron_left</span>
+        </button>
+        <button
+          class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 active:scale-95"
+          aria-label="Наступний слайд"
+          @click="() => { nextSlide(); resetTimer(); }"
+        >
+          <span class="material-symbols-outlined text-white text-[20px]">chevron_right</span>
+        </button>
+
+        <!-- Slide counter -->
+        <div class="absolute bottom-6 right-8 z-20 text-white/40 text-xs font-bold tabular-nums">
+          {{ activeIndex + 1 }}&nbsp;/&nbsp;{{ slides.length }}
+        </div>
+
         <!-- Slider Navigation Indicators -->
         <div class="absolute bottom-6 left-8 md:left-16 flex gap-2.5 z-20">
           <button
@@ -157,6 +183,7 @@ onUnmounted(() => {
                 ? 'w-12 bg-[#00a046]'
                 : 'w-6 bg-white/30 hover:bg-white/50',
             ]"
+            :aria-label="`Слайд ${index + 1}`"
             @click="setSlide(index)"
           />
         </div>

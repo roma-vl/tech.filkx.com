@@ -126,7 +126,7 @@ const getCategoryStyle = (slug) => {
       >
         <!-- Background Gradient Accent on Hover -->
         <div
-          class="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-350"
+          class="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           :class="getCategoryStyle(cat.slug).color"
         />
 
