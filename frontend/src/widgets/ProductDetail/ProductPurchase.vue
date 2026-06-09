@@ -39,12 +39,13 @@
     <!-- Rating + SKU -->
     <div class="flex flex-wrap items-center gap-3 text-sm pb-1 border-b border-zinc-100 dark:border-zinc-800">
       <div class="flex items-center gap-1.5">
-        <div class="flex text-amber-400">
+        <div class="flex">
           <span
             v-for="star in 5"
             :key="star"
             class="material-symbols-outlined text-[15px]"
-            style="font-variation-settings: &quot;FILL&quot; 1"
+            :class="star <= Math.round(product.rating) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
+            :style="star <= Math.round(product.rating) ? 'font-variation-settings: &quot;FILL&quot; 1' : ''"
           >star</span>
         </div>
         <span class="font-semibold text-zinc-700 dark:text-zinc-300 text-xs hover:text-[#00a046] transition-colors cursor-pointer">

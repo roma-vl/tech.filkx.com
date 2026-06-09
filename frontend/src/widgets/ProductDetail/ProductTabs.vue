@@ -13,9 +13,9 @@
       >
         {{ tab.label }}
         <span
-          v-if="tab.id === 'reviews' && reviewStats.count > 0"
+          v-if="tab.id === 'reviews' && reviewTabCount > 0"
           class="ml-1.5 text-[10px] font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full"
-        >{{ reviewStats.count }}</span>
+        >{{ reviewTabCount }}</span>
       </button>
     </div>
 
@@ -269,7 +269,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import api from "@/services/api";
 
 interface TabItem { id: string; label: string }
@@ -296,6 +296,12 @@ const supportCards = [
 const liveReviews = ref<LiveReview[]>([]);
 const reviewsLoading = ref(false);
 const reviewStats = reactive({ count: 0, avg: 0, distribution: [0, 0, 0, 0, 0] });
+const reviewsFetched = ref(false);
+
+// Show product.reviews from API immediately; update to real count after tab is loaded
+const reviewTabCount = computed(() =>
+  reviewsFetched.value ? reviewStats.count : (props.product?.reviews ?? 0)
+);
 
 const fetchReviews = async () => {
   if (!props.product?.slug) return;
@@ -309,6 +315,7 @@ const fetchReviews = async () => {
       reviewStats.avg = s.avg;
       reviewStats.distribution = s.distribution;
     }
+    reviewsFetched.value = true;
   } catch {
     liveReviews.value = [];
   } finally {
@@ -317,13 +324,14 @@ const fetchReviews = async () => {
 };
 
 watch(() => props.activeTab, (tab) => {
-  if (tab === 'reviews' && liveReviews.value.length === 0 && !reviewsLoading.value) {
+  if (tab === 'reviews' && !reviewsFetched.value && !reviewsLoading.value) {
     fetchReviews();
   }
 });
 
 onMounted(() => {
-  if (props.activeTab === 'reviews') fetchReviews();
+  // Always fetch to get the accurate count for the tab badge
+  fetchReviews();
 });
 
 const formatReviewDate = (iso: string) => {

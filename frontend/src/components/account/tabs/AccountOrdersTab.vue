@@ -64,9 +64,36 @@ const fetchOrders = async () => {
   }
 };
 
+interface UserReview {
+  id: number;
+  product_slug: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  photos: string[];
+}
+
+const userReviewsMap = ref<Record<string, UserReview>>({});
+
+const fetchUserReviews = async () => {
+  try {
+    const res = await api.get("/v1/user/reviews");
+    const reviews: UserReview[] = res.data.data || [];
+    const map: Record<string, UserReview> = {};
+    for (const r of reviews) {
+      if (r.product_slug) map[r.product_slug] = r;
+    }
+    userReviewsMap.value = map;
+  } catch {
+    // not critical — silently skip
+  }
+};
+
 onMounted(() => {
   fetchOrders();
+  fetchUserReviews();
 });
+
 const selectedOrder = ref<Order | null>(null);
 const isDetailsOpen = ref(false);
 const trackingOrder = ref<Order | null>(null);
@@ -78,8 +105,12 @@ const reviewTitle = ref("");
 const reviewComment = ref("");
 const reviewPhotos = ref<File[]>([]);
 const reviewPhotoPreviews = ref<string[]>([]);
+const existingPhotoUrls = ref<string[]>([]);
+const isEditMode = ref(false);
 const isSubmittingReview = ref(false);
 const isReviewOpen = ref(false);
+
+const totalPhotoCount = computed(() => existingPhotoUrls.value.length + reviewPhotos.value.length);
 
 const filteredOrders = computed(() =>
   ordersList.value.filter((o) => {
@@ -147,18 +178,31 @@ const openTracking = (o: Order) => {
 const openReview = (i: OrderItem, orderId?: string) => {
   reviewProduct.value = i;
   reviewOrderId.value = orderId ? parseInt(orderId) : null;
-  reviewRating.value = 5;
-  reviewTitle.value = "";
-  reviewComment.value = "";
   reviewPhotos.value = [];
   reviewPhotoPreviews.value = [];
+
+  const existing = userReviewsMap.value[i.slug];
+  if (existing) {
+    isEditMode.value = true;
+    reviewRating.value = existing.rating;
+    reviewTitle.value = existing.title ?? "";
+    reviewComment.value = existing.body;
+    existingPhotoUrls.value = [...(existing.photos || [])];
+  } else {
+    isEditMode.value = false;
+    reviewRating.value = 5;
+    reviewTitle.value = "";
+    reviewComment.value = "";
+    existingPhotoUrls.value = [];
+  }
+
   isReviewOpen.value = true;
 };
 
 const handleReviewPhotos = (e: Event) => {
   const input = e.target as HTMLInputElement;
   const files = Array.from(input.files || []);
-  const remaining = 5 - reviewPhotos.value.length;
+  const remaining = 5 - totalPhotoCount.value;
   const toAdd = files.slice(0, remaining);
   toAdd.forEach((file) => {
     reviewPhotos.value.push(file);
@@ -169,7 +213,10 @@ const handleReviewPhotos = (e: Event) => {
   input.value = "";
 };
 
-const removeReviewPhoto = (index: number) => {
+const removeExistingPhoto = (index: number) => {
+  existingPhotoUrls.value.splice(index, 1);
+};
+const removeNewPhoto = (index: number) => {
   reviewPhotos.value.splice(index, 1);
   reviewPhotoPreviews.value.splice(index, 1);
 };
@@ -182,13 +229,25 @@ const submitReview = async () => {
     formData.append("rating", String(reviewRating.value));
     formData.append("body", reviewComment.value);
     if (reviewTitle.value) formData.append("title", reviewTitle.value);
-    if (reviewOrderId.value) formData.append("order_id", String(reviewOrderId.value));
     reviewPhotos.value.forEach((f) => formData.append("photos[]", f));
+
+    if (isEditMode.value) {
+      // _method spoofing: POST with _method=PUT so PHP populates $_FILES
+      formData.append("_method", "PUT");
+      existingPhotoUrls.value.forEach((url) => formData.append("existing_photos[]", url));
+    } else {
+      if (reviewOrderId.value) formData.append("order_id", String(reviewOrderId.value));
+    }
 
     await api.post(`/v1/catalog/products/${reviewProduct.value.slug}/reviews`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    cartStore.addToast("Дякуємо! Ваш відгук успішно опубліковано.", "success");
+
+    const successMsg = isEditMode.value
+      ? "Відгук успішно оновлено."
+      : "Дякуємо! Ваш відгук успішно опубліковано.";
+    cartStore.addToast(successMsg, "success");
+    await fetchUserReviews();
     isReviewOpen.value = false;
   } catch (e: any) {
     const msg = e.response?.data?.message || "Не вдалося надіслати відгук.";
@@ -390,10 +449,11 @@ const filterBtns = [
                 </button>
                 <button
                   v-if="order.statusCode === 'delivered'"
-                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm"
+                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm flex items-center gap-1.5"
                   @click="openReview(item, order.id)"
                 >
-                  Написати відгук
+                  <span class="material-symbols-outlined text-[15px]">{{ userReviewsMap[item.slug] ? 'edit' : 'rate_review' }}</span>
+                  {{ userReviewsMap[item.slug] ? 'Редагувати відгук' : 'Написати відгук' }}
                 </button>
                 <button
                   v-if="order.statusCode !== 'cancelled'"
@@ -683,7 +743,7 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
       >
-        <h3 class="font-black text-base text-zinc-900 dark:text-white">Написати відгук</h3>
+        <h3 class="font-black text-base text-zinc-900 dark:text-white">{{ isEditMode ? 'Редагувати відгук' : 'Написати відгук' }}</h3>
         <button class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" @click="isReviewOpen = false">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -746,18 +806,35 @@ const filterBtns = [
             Фото (до 5 штук)
           </label>
 
-          <!-- Previews -->
-          <div v-if="reviewPhotoPreviews.length > 0" class="flex flex-wrap gap-2">
+          <!-- Previews (existing + new) -->
+          <div v-if="totalPhotoCount > 0" class="flex flex-wrap gap-2">
+            <!-- Existing photos (from saved review) -->
+            <div
+              v-for="(url, idx) in existingPhotoUrls"
+              :key="`existing-${idx}`"
+              class="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 group"
+            >
+              <img :src="url" class="w-full h-full object-cover" />
+              <button
+                type="button"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                @click="removeExistingPhoto(idx)"
+              >
+                <span class="material-symbols-outlined text-white text-[18px]">close</span>
+              </button>
+            </div>
+
+            <!-- New file previews -->
             <div
               v-for="(preview, idx) in reviewPhotoPreviews"
-              :key="idx"
-              class="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 group"
+              :key="`new-${idx}`"
+              class="relative w-16 h-16 rounded-lg overflow-hidden border border-[#00a046]/40 dark:border-[#00a046]/30 group"
             >
               <img :src="preview" class="w-full h-full object-cover" />
               <button
                 type="button"
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                @click="removeReviewPhoto(idx)"
+                @click="removeNewPhoto(idx)"
               >
                 <span class="material-symbols-outlined text-white text-[18px]">close</span>
               </button>
@@ -765,7 +842,7 @@ const filterBtns = [
 
             <!-- Add more slot -->
             <label
-              v-if="reviewPhotos.length < 5"
+              v-if="totalPhotoCount < 5"
               class="w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center cursor-pointer hover:border-[#00a046]/50 transition-colors"
             >
               <span class="material-symbols-outlined text-zinc-400 text-[20px]">add_photo_alternate</span>
@@ -804,7 +881,7 @@ const filterBtns = [
             class="bg-[#00a046] hover:bg-[#00b050] disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs flex items-center gap-2"
           >
             <span v-if="isSubmittingReview" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            {{ isSubmittingReview ? 'Надсилання...' : 'Опублікувати відгук' }}
+            {{ isSubmittingReview ? 'Надсилання...' : (isEditMode ? 'Зберегти зміни' : 'Опублікувати відгук') }}
           </button>
         </div>
       </form>

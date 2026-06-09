@@ -123,4 +123,81 @@ class ReviewController extends BaseApiController
             'created_at' => $review->created_at->toISOString(),
         ], 201);
     }
+
+    public function update(Request $request, string $slug): JsonResponse
+    {
+        $product = $this->productRepository->findBySlug($slug);
+
+        if (! $product) {
+            abort(404, 'Product not found.');
+        }
+
+        $review = ProductReview::where('product_id', $product->id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'nullable|string|max:120',
+            'body' => 'required|string|min:10|max:2000',
+            'existing_photos' => 'nullable|array',
+            'existing_photos.*' => 'nullable|string',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        // Keep URLs the user explicitly kept, add new uploads
+        $keptPhotos = $request->input('existing_photos', []);
+        $newPhotoUrls = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store("reviews/{$product->id}", 'public');
+                $newPhotoUrls[] = url(Storage::url($path));
+            }
+        }
+        $allPhotos = array_merge($keptPhotos, $newPhotoUrls);
+
+        $review->update([
+            'rating' => (int) $request->input('rating'),
+            'title' => $request->input('title'),
+            'body' => $request->input('body'),
+            'photos' => $allPhotos ?: null,
+        ]);
+
+        return self::successfulResponseWithData([
+            'id' => $review->id,
+            'rating' => $review->rating,
+            'title' => $review->title,
+            'body' => $review->body,
+            'photos' => $review->photos ?? [],
+            'author' => Auth::user()?->name ?? 'Анонім',
+            'created_at' => $review->created_at->toISOString(),
+        ]);
+    }
+
+    public function myReviews(): JsonResponse
+    {
+        $reviews = ProductReview::with('product:id,slug')
+            ->where('user_id', Auth::id())
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'product_slug' => $r->product?->slug,
+                'product_id' => $r->product_id,
+                'rating' => $r->rating,
+                'title' => $r->title,
+                'body' => $r->body,
+                'photos' => $r->photos ?? [],
+                'created_at' => $r->created_at->toISOString(),
+            ]);
+
+        return self::successfulResponseWithData($reviews);
+    }
 }

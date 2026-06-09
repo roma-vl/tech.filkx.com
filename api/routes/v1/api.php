@@ -130,8 +130,10 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::get('/user/orders', [UserController::class, 'getOrders']);
     Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
 
-    // Product reviews (auth required to submit)
+    // Product reviews (auth required to submit/edit)
     Route::post('v1/catalog/products/{slug}/reviews', [ReviewController::class, 'store']);
+    Route::put('v1/catalog/products/{slug}/reviews', [ReviewController::class, 'update']);
+    Route::get('v1/user/reviews', [ReviewController::class, 'myReviews']);
 
     // Favorites (wishlist) database-backed endpoints
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);

@@ -57,6 +57,8 @@ class ProductRepository implements ProductRepositoryInterface
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active');
     }
 
@@ -85,6 +87,8 @@ class ProductRepository implements ProductRepositoryInterface
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
             ->where(function ($q) {
                 $q->where('is_hot', true)
@@ -107,6 +111,8 @@ class ProductRepository implements ProductRepositoryInterface
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
             ->where('is_recommended', true)
             ->take($limit)
@@ -124,6 +130,8 @@ class ProductRepository implements ProductRepositoryInterface
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
             ->whereNotIn('id', $excludeIds)
             ->inRandomOrder()

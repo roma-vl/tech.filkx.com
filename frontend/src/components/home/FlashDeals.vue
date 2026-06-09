@@ -7,6 +7,7 @@ interface FlashProduct {
   slug: string;
   category: string;
   name: string;
+  rating: number;
   reviews: number;
   price: number;
   oldPrice?: number;
@@ -199,12 +200,12 @@ const decrementQty = () => {
             <div class="flex items-center gap-1 mb-2.5 mt-auto">
               <div class="flex text-amber-400">
                 <span
-                  v-for="star in 4"
+                  v-for="star in 5"
                   :key="star"
                   class="material-symbols-outlined text-[14px]"
-                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  :class="star <= Math.round(prod.rating) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
+                  :style="star <= Math.round(prod.rating) ? 'font-variation-settings: &quot;FILL&quot; 1' : ''"
                 >star</span>
-                <span class="material-symbols-outlined text-[14px]">star_half</span>
               </div>
               <span class="text-zinc-500 dark:text-zinc-400 text-[11px] font-bold ml-1">({{ prod.reviews }})</span>
             </div>
@@ -323,12 +324,13 @@ const decrementQty = () => {
                     {{ activeProduct.name }}
                   </h3>
                   <div class="flex items-center gap-1.5 mt-2">
-                    <div class="flex text-amber-400">
+                    <div class="flex">
                       <span
                         v-for="star in 5"
                         :key="star"
                         class="material-symbols-outlined text-[14px]"
-                        style="font-variation-settings: &quot;FILL&quot; 1"
+                        :class="star <= Math.round(activeProduct.rating) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
+                        :style="star <= Math.round(activeProduct.rating) ? 'font-variation-settings: &quot;FILL&quot; 1' : ''"
                       >star</span>
                     </div>
                     <span class="text-zinc-500 text-xs font-bold">({{ activeProduct.reviews }} відгуків)</span>
