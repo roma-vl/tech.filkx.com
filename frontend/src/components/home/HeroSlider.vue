@@ -82,7 +82,7 @@ onUnmounted(() => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Left side: Main Slider (takes 2 columns) -->
       <div
-        class="lg:col-span-2 relative rounded-2xl overflow-hidden bg-zinc-950 h-[380px] md:h-[480px] flex items-center group shadow-md border border-zinc-800"
+        class="lg:col-span-2 relative rounded-xl overflow-hidden bg-zinc-950 h-[380px] md:h-[480px] flex items-center group shadow-md border border-zinc-800"
       >
         <!-- Slides -->
         <div
@@ -136,14 +136,14 @@ onUnmounted(() => {
             <div class="flex items-center gap-4">
               <a
                 :href="slide.link"
-                class="bg-[#00a046] hover:bg-[#00b050] text-white px-7 py-3 rounded-lg text-xs md:text-sm font-bold transition-all shadow-md flex items-center gap-1.5"
+                class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-1.5"
               >
                 {{ slide.btnPrimary }}
                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
               </a>
               <a
                 :href="slide.link"
-                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-7 py-3 rounded-lg text-xs md:text-sm font-bold transition-colors"
+                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
               >
                 {{ slide.btnSecondary }}
               </a>
@@ -193,7 +193,7 @@ onUnmounted(() => {
       <div class="flex flex-col gap-5 h-[380px] md:h-[480px] justify-between">
         <!-- Promo 1: Smart Home Setup -->
         <div
-          class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950 to-purple-900 border border-purple-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-purple-500/40 transition-colors"
+          class="relative flex-1 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-950 to-purple-900 border border-purple-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-purple-500/40 transition-colors"
         >
           <div
             class="absolute right-0 bottom-0 w-1/2 h-full opacity-30 group-hover:scale-110 transition-transform duration-700 pointer-events-none"
@@ -238,7 +238,7 @@ onUnmounted(() => {
 
         <!-- Promo 2: Active Lifestyle Accessories -->
         <div
-          class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-950 to-teal-900 border border-emerald-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-emerald-500/40 transition-colors"
+          class="relative flex-1 rounded-xl overflow-hidden bg-gradient-to-br from-emerald-950 to-teal-900 border border-emerald-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-emerald-500/40 transition-colors"
         >
           <div
             class="absolute right-0 bottom-0 w-1/2 h-full opacity-35 group-hover:scale-110 transition-transform duration-700 pointer-events-none"

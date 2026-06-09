@@ -37,7 +37,7 @@ const items = [
       <div
         v-for="item in items"
         :key="item.title"
-        class="group flex items-start gap-4 p-5 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl hover:border-zinc-200 dark:hover:border-zinc-700 hover:shadow-md transition-all duration-300"
+        class="group flex items-start gap-4 p-5 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl hover:border-zinc-200 dark:hover:border-zinc-700 hover:shadow-md transition-all duration-300"
       >
         <div
           class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
