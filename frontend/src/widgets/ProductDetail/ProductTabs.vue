@@ -1,94 +1,59 @@
 <template>
-  <section class="mt-16">
-    <div
-      class="flex border-b border-zinc-200 dark:border-zinc-800 mb-12 overflow-x-auto hide-scrollbar scroll-smooth"
-    >
+  <section class="mt-14">
+    <!-- Tab bar -->
+    <div class="flex border-b border-zinc-200 dark:border-zinc-800 mb-10 overflow-x-auto hide-scrollbar">
       <button
         v-for="tab in tabs"
         :key="tab.id"
-        :class="
-          activeTab === tab.id
-            ? 'text-[#00a046] font-black border-b-2 border-[#00a046]'
-            : 'text-zinc-450 hover:text-[#00a046] font-bold'
-        "
-        class="px-8 py-5 text-sm whitespace-nowrap transition-all uppercase tracking-wider font-bold"
-        type="button"
+        :class="activeTab === tab.id
+          ? 'text-zinc-900 dark:text-white font-bold border-b-2 border-[#00a046]'
+          : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium'"
+        class="px-6 py-4 text-sm whitespace-nowrap transition-all -mb-px"
         @click="$emit('change-tab', tab.id)"
       >
         {{ tab.label }}
       </button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <!-- Tab Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <!-- Tab content -->
       <div class="lg:col-span-8">
-        <!-- Experience Tab -->
-        <section v-if="activeTab === 'experience'" class="space-y-6 text-left">
-          <div class="max-w-2xl space-y-4">
-            <h3
-              class="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight leading-snug font-bold"
-            >
-              Опис товару
-            </h3>
-            <p
-              class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed whitespace-pre-line"
-            >
+
+        <!-- Overview tab -->
+        <section v-if="activeTab === 'experience'" class="space-y-8 text-left">
+          <div class="max-w-2xl space-y-3">
+            <h3 class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Опис товару</h3>
+            <p class="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
               {{ product.description }}
             </p>
           </div>
           <img
             v-if="galleryImages[1]"
             :alt="product.name"
-            class="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm object-contain max-h-[450px] bg-white p-4"
+            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 object-contain max-h-[480px] bg-white p-6"
             :src="galleryImages[1].src"
           />
         </section>
 
-        <!-- Specifications Tab -->
-        <section v-else-if="activeTab === 'specs'" class="space-y-6 text-left">
-          <h3
-            class="font-extrabold text-lg text-zinc-900 dark:text-white flex items-center gap-2 font-bold"
-          >
-            <span class="material-symbols-outlined text-[#00a046]"
-              >terminal</span
-            >
+        <!-- Specs tab -->
+        <section v-else-if="activeTab === 'specs'" class="space-y-5 text-left">
+          <h3 class="text-lg font-extrabold text-zinc-900 dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#00a046] text-[22px]">terminal</span>
             Технічні характеристики
           </h3>
-          <div
-            class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm"
-          >
-            <table class="w-full text-left border-collapse text-xs md:text-sm">
-              <thead>
-                <tr
-                  class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-200 dark:border-zinc-800"
-                >
-                  <th
-                    class="p-4 font-black uppercase tracking-wider text-[10px] text-zinc-450 dark:text-zinc-500 w-1/3"
-                  >
-                    Характеристика
-                  </th>
-                  <th
-                    class="p-4 font-black uppercase tracking-wider text-[10px] text-zinc-450 dark:text-zinc-500"
-                  >
-                    Значення
-                  </th>
-                </tr>
-              </thead>
+          <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <table class="w-full text-left border-collapse">
               <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 <tr
                   v-for="(spec, index) in product.specs"
                   :key="spec[0]"
-                  :class="
-                    Number(index) % 2 ? 'bg-zinc-50/30 dark:bg-zinc-850/10' : ''
-                  "
-                  class="hover:bg-emerald-500/5 transition-colors"
+                  :class="Number(index) % 2 ? 'bg-zinc-50/50 dark:bg-zinc-800/20' : ''"
+                  class="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors"
                 >
-                  <td class="p-4 font-bold text-zinc-800 dark:text-zinc-200">
+                  <td class="px-5 py-3.5 text-sm font-semibold text-zinc-500 dark:text-zinc-400 w-2/5">
                     {{ spec[0] }}
                   </td>
-                  <td
-                    class="p-4 text-zinc-650 dark:text-zinc-400 font-extrabold"
-                  >
+                  <td class="px-5 py-3.5 text-sm font-bold text-zinc-800 dark:text-zinc-200">
                     {{ spec[1] }}
                   </td>
                 </tr>
@@ -97,215 +62,113 @@
           </div>
         </section>
 
-        <!-- Reviews Tab -->
-        <section
-          v-else-if="activeTab === 'reviews'"
-          class="space-y-6 text-left"
-        >
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
-            <div
-              class="md:col-span-4 p-6 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-center space-y-2"
-            >
-              <p
-                class="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter font-bold"
-              >
-                {{ product.rating }}
-              </p>
-              <div class="flex justify-center text-amber-400 mb-1">
+        <!-- Reviews tab -->
+        <section v-else-if="activeTab === 'reviews'" class="space-y-8 text-left">
+          <!-- Summary -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+            <div class="md:col-span-4 p-6 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-center space-y-2">
+              <p class="text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tighter">{{ product.rating }}</p>
+              <div class="flex justify-center text-amber-400">
                 <span
                   v-for="star in 5"
                   :key="star"
                   class="material-symbols-outlined text-[20px]"
                   style="font-variation-settings: &quot;FILL&quot; 1"
-                  >star</span
-                >
+                >star</span>
               </div>
-              <p
-                class="text-[10px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 font-bold"
-              >
-                Середня оцінка
-              </p>
+              <p class="text-xs text-zinc-400 dark:text-zinc-500">Середня оцінка ({{ product.reviews }} відгуків)</p>
             </div>
-            <div
-              class="md:col-span-8 p-6 border border-zinc-200 dark:border-zinc-800 rounded-lg flex flex-col justify-center space-y-3"
-            >
+            <div class="md:col-span-8 p-6 border border-zinc-200 dark:border-zinc-800 rounded-xl flex flex-col justify-center gap-3">
               <div
-                v-for="rating in [
-                  { label: '5 зірок', value: '85%' },
-                  { label: '4 зірки', value: '10%' },
-                  { label: '3 зірки', value: '5%' },
-                ]"
-                :key="rating.label"
-                class="flex items-center gap-4 text-xs"
+                v-for="r in [{ label: '5 зірок', value: '85%' }, { label: '4 зірки', value: '10%' }, { label: '3 зірки', value: '5%' }]"
+                :key="r.label"
+                class="flex items-center gap-3 text-sm"
               >
-                <span
-                  class="font-extrabold w-12 text-right text-zinc-600 dark:text-zinc-400 font-semibold"
-                  >{{ rating.label }}</span
-                >
-                <div
-                  class="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"
-                >
-                  <div
-                    class="h-full bg-[#00a046]"
-                    :style="{ width: rating.value }"
-                  />
+                <span class="font-semibold w-14 text-right text-zinc-500 dark:text-zinc-400 shrink-0">{{ r.label }}</span>
+                <div class="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00a046] rounded-full" :style="{ width: r.value }" />
                 </div>
-                <span class="font-extrabold w-10 text-zinc-400 font-semibold">{{
-                  rating.value
-                }}</span>
+                <span class="font-semibold w-9 text-zinc-400 dark:text-zinc-500 shrink-0">{{ r.value }}</span>
               </div>
             </div>
           </div>
 
+          <!-- Review cards -->
           <div class="space-y-4">
             <article
               v-for="review in reviews"
               :key="review.name"
-              class="p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3"
+              class="p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-3"
             >
-              <div class="flex items-center justify-between gap-4">
-                <div>
-                  <h4
-                    class="font-black text-sm text-zinc-900 dark:text-white leading-snug font-bold"
-                  >
-                    {{ review.title }}
-                  </h4>
-                  <p
-                    class="text-[10px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-500 mt-0.5"
-                  >
-                    {{ review.name }}
-                  </p>
+              <div class="flex items-start justify-between gap-4">
+                <div class="space-y-0.5">
+                  <h4 class="font-bold text-sm text-zinc-900 dark:text-white">{{ review.title }}</h4>
+                  <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ review.name }}</p>
                 </div>
-                <div class="flex text-amber-400">
+                <div class="flex text-amber-400 shrink-0">
                   <span
                     v-for="star in 5"
                     :key="star"
-                    class="material-symbols-outlined text-[16px]"
+                    class="material-symbols-outlined text-[15px]"
                     style="font-variation-settings: &quot;FILL&quot; 1"
-                    >star</span
-                  >
+                  >star</span>
                 </div>
               </div>
-              <p
-                class="text-xs md:text-sm text-zinc-650 dark:text-zinc-400 leading-relaxed"
-              >
-                {{ review.text }}
-              </p>
+              <p class="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed">{{ review.text }}</p>
             </article>
           </div>
         </section>
 
-        <!-- Support Tab -->
-        <section v-else class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+        <!-- Support tab -->
+        <section v-else class="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
           <div
-            class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
+            v-for="item in supportCards"
+            :key="item.title"
+            class="p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-2.5"
           >
-            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
-              >support_agent</span
-            >
-            <h3
-              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
-            >
-              Консультація експерта
-            </h3>
-            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
-              Наші спеціалісти готові допомогти з налаштуванням та перенесенням
-              даних.
-            </p>
-          </div>
-          <div
-            class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
-          >
-            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
-              >local_shipping</span
-            >
-            <h3
-              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
-            >
-              Доставка і заміна
-            </h3>
-            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
-              Безкоштовна доставка, можливість примірки та швидкий обмін товару.
-            </p>
-          </div>
-          <div
-            class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-3 text-center md:text-left"
-          >
-            <span class="material-symbols-outlined text-[#00a046] text-[28px]"
-              >workspace_premium</span
-            >
-            <h3
-              class="font-black text-sm text-zinc-900 dark:text-white font-bold"
-            >
-              Програма захисту
-            </h3>
-            <p class="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed">
-              Можливість продовження гарантії та страхування від випадкових
-              пошкоджень.
-            </p>
+            <span class="material-symbols-outlined text-[#00a046] text-[26px]">{{ item.icon }}</span>
+            <h3 class="font-bold text-sm text-zinc-900 dark:text-white">{{ item.title }}</h3>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{{ item.text }}</p>
           </div>
         </section>
       </div>
 
-      <!-- Guarantees Sidebar -->
-      <aside class="lg:col-span-4 space-y-6 text-left">
-        <div
-          class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm space-y-5"
-        >
-          <h4
-            class="font-black text-[10px] uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-2 font-bold"
-          >
-            <span class="material-symbols-outlined text-[#00a046] text-[18px]"
-              >verified</span
-            >
+      <!-- Guarantees sidebar -->
+      <aside class="lg:col-span-4 space-y-5 text-left">
+        <div class="p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-5">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#00a046] text-[17px]">verified</span>
             Гарантії якості
           </h4>
-          <ul class="space-y-4 text-xs">
+          <ul class="space-y-4">
             <li
               v-for="item in qualityGuarantees"
               :key="item.title"
-              class="flex gap-4 items-start"
+              class="flex gap-3.5 items-start"
             >
-              <span class="material-symbols-outlined text-[#00a046] mt-0.5">{{
-                item.icon
-              }}</span>
-              <div class="space-y-0.5">
-                <p
-                  class="font-black text-zinc-850 dark:text-zinc-100 font-bold"
-                >
-                  {{ item.title }}
-                </p>
-                <p class="text-zinc-500 dark:text-zinc-400">
-                  {{ item.text }}
-                </p>
+              <span class="material-symbols-outlined text-[#00a046] text-[20px] mt-0.5 shrink-0">{{ item.icon }}</span>
+              <div>
+                <p class="font-bold text-sm text-zinc-800 dark:text-zinc-100">{{ item.title }}</p>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed">{{ item.text }}</p>
               </div>
             </li>
           </ul>
         </div>
 
-        <div
-          class="p-6 bg-emerald-500/10 dark:bg-emerald-950/20 text-[#00a046] rounded-lg border border-emerald-500/20 shadow-sm space-y-4 relative overflow-hidden"
-        >
-          <div class="relative z-10 space-y-3">
-            <h4
-              class="font-black text-sm uppercase tracking-wider text-[#00a046] font-bold"
-            >
-              Технічний радник
-            </h4>
-            <p class="text-xs text-zinc-650 dark:text-zinc-400 leading-relaxed">
-              Наші інженери допоможуть обрати ідеальну конфігурацію під ваші
-              потреби в режимі реального часу.
-            </p>
-            <button
-              class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-md font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm font-bold"
-              type="button"
-            >
-              <span class="material-symbols-outlined text-[16px]"
-                >chat_bubble</span
-              >
-              ПОЧАТИ ЧАТ
-            </button>
+        <div class="p-5 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-700/20 rounded-xl space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#00a046] text-[20px]">chat_bubble</span>
+            <h4 class="font-bold text-sm text-zinc-800 dark:text-zinc-200">Технічний радник</h4>
           </div>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Наші інженери допоможуть обрати ідеальну конфігурацію під ваші потреби.
+          </p>
+          <button
+            class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-1.5 transition-all shadow-sm"
+          >
+            <span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+            Почати чат
+          </button>
         </div>
       </aside>
     </div>
@@ -313,22 +176,9 @@
 </template>
 
 <script setup lang="ts">
-interface TabItem {
-  id: string;
-  label: string;
-}
-
-interface QualityGuarantee {
-  icon: string;
-  title: string;
-  text: string;
-}
-
-interface Review {
-  name: string;
-  title: string;
-  text: string;
-}
+interface TabItem { id: string; label: string }
+interface QualityGuarantee { icon: string; title: string; text: string }
+interface Review { name: string; title: string; text: string }
 
 defineProps<{
   activeTab: string;
@@ -339,17 +189,16 @@ defineProps<{
   reviews: Review[];
 }>();
 
-defineEmits<{
-  (e: "change-tab", tabId: string): void;
-}>();
+defineEmits<{ (e: "change-tab", tabId: string): void }>();
+
+const supportCards = [
+  { icon: "support_agent", title: "Консультація експерта", text: "Наші спеціалісти допоможуть з налаштуванням та перенесенням даних." },
+  { icon: "local_shipping", title: "Доставка і заміна", text: "Безкоштовна доставка та швидкий обмін товару за вашим запитом." },
+  { icon: "workspace_premium", title: "Програма захисту", text: "Продовження гарантії та страхування від випадкових пошкоджень." },
+];
 </script>
 
 <style scoped>
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
