@@ -30,6 +30,8 @@ class GetHomeDataAction
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
             ->inRandomOrder($seed)
             ->take(4)
@@ -61,6 +63,8 @@ class GetHomeDataAction
                     'variants.attributeValues.attribute',
                     'variants.attributeValues.attributeValue',
                 ])
+                    ->withCount('approvedReviews')
+                    ->withAvg('approvedReviews', 'rating')
                     ->where('status', 'active')
                     ->whereNotIn('id', $seedIds)
                     ->where(function ($query) use ($seedCategoryIds, $seedBrandIds) {
@@ -96,6 +100,8 @@ class GetHomeDataAction
             'variants.attributeValues.attribute',
             'variants.attributeValues.attributeValue',
         ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
             ->whereIn('id', $combinedIds)
             ->where('status', 'active')
             ->get()

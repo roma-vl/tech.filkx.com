@@ -128,19 +128,14 @@ const formatPrice = (price: number) => {
             >{{ product.brand }}</span
           >
           <div class="flex items-center gap-1">
-            <div class="flex text-amber-400">
+            <div class="flex">
               <span
                 v-for="star in 5"
                 :key="star"
                 class="material-symbols-outlined text-[14px]"
-                :style="
-                  star <= Math.floor(product.rating)
-                    ? 'font-variation-settings: \'FILL\' 1;'
-                    : ''
-                "
-              >
-                {{ star <= Math.floor(product.rating) ? "star" : "star_half" }}
-              </span>
+                :class="star <= Math.round(product.rating) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'"
+                :style="star <= Math.round(product.rating) ? 'font-variation-settings: \'FILL\' 1;' : ''"
+              >star</span>
             </div>
             <span
               class="text-[10px] font-black text-zinc-450 dark:text-zinc-500"
