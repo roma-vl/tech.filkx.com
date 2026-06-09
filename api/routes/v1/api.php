@@ -18,6 +18,7 @@ use App\Api\Admin\Controllers\AdminSystemController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
+use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\Auth\OAuthController;
 use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
@@ -63,6 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/random', [CatalogController::class, 'randomProducts']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
+        Route::get('products/{slug}/reviews', [ReviewController::class, 'index']);
     });
 
     // Blog public routes
@@ -127,6 +129,9 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     // User orders endpoint
     Route::get('/user/orders', [UserController::class, 'getOrders']);
     Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
+
+    // Product reviews (auth required to submit)
+    Route::post('v1/catalog/products/{slug}/reviews', [ReviewController::class, 'store']);
 
     // Favorites (wishlist) database-backed endpoints
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);
