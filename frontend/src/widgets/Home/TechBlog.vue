@@ -96,13 +96,13 @@ onMounted(fetchLatestPosts);
           Корисні статті, огляди новинок та поради від експертів FilkxTech
         </p>
       </div>
-      <a
+      <router-link
+        :to="{ name: 'blog' }"
         class="inline-flex items-center gap-1.5 text-sm font-bold text-[#00a046] hover:text-[#00b050] transition-colors shrink-0"
-        href="/blog"
       >
         Читати всі статті
         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-      </a>
+      </router-link>
     </div>
 
     <!-- Skeleton -->
@@ -123,11 +123,10 @@ onMounted(fetchLatestPosts);
 
     <!-- Posts grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <component
-        :is="post.slug ? 'RouterLink' : 'a'"
+      <router-link
         v-for="post in posts"
         :key="post.id"
-        v-bind="post.slug ? { to: { name: 'blog-post', params: { slug: post.slug } } } : { href: '/blog' }"
+        :to="post.slug ? { name: 'blog-post', params: { slug: post.slug } } : { name: 'blog' }"
         class="group bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 flex flex-col"
       >
         <!-- Image -->
@@ -187,7 +186,7 @@ onMounted(fetchLatestPosts);
             </span>
           </div>
         </div>
-      </component>
+      </router-link>
     </div>
   </section>
 </template>

@@ -1,4 +1,7 @@
 <script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const props = defineProps({
   categories: {
     type: Array,
@@ -50,20 +53,20 @@ const getCategoryStyle = (slug) => {
           Швидкий перехід до потрібних розділів нашого каталогу
         </p>
       </div>
-      <a
+      <router-link
+        :to="{ name: 'catalog' }"
         class="text-[#00a046] hover:text-[#00b050] font-bold text-sm hover:underline flex items-center gap-1.5 transition-colors shrink-0"
-        href="/catalog"
       >
         Усі категорії
         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-      </a>
+      </router-link>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-      <a
+      <router-link
         v-for="cat in categories"
         :key="cat.id"
-        :href="`/catalog?category=${cat.slug}`"
+        :to="{ name: 'catalog', query: { category: cat.slug } }"
         class="group flex flex-col items-center p-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden"
       >
         <!-- Background Gradient on Hover -->
@@ -90,7 +93,7 @@ const getCategoryStyle = (slug) => {
         >
           {{ cat.name?.uk || cat.name?.en || cat.name }}
         </span>
-      </a>
+      </router-link>
     </div>
   </section>
 </template>

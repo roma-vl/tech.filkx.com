@@ -134,13 +134,13 @@ const decrementQty = () => {
             </div>
           </div>
         </div>
-        <a
+        <router-link
+          :to="{ name: 'catalog' }"
           class="text-zinc-500 hover:text-[#00a046] font-bold text-sm flex items-center gap-1 transition-colors"
-          href="/catalog"
         >
           Всі акційні товари
           <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-        </a>
+        </router-link>
       </div>
 
       <!-- Products Grid -->

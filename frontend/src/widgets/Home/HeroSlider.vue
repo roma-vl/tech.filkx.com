@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+import UiButton from "@/shared/ui/UiButton.vue";
 
 const activeIndex = ref(0);
 let intervalId = null;
@@ -134,19 +135,16 @@ onUnmounted(() => {
             </p>
 
             <div class="flex items-center gap-4">
-              <a
-                :href="slide.link"
-                class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md flex items-center gap-1.5"
-              >
+              <UiButton :to="slide.link" size="md">
                 {{ slide.btnPrimary }}
                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </a>
-              <a
-                :href="slide.link"
-                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
+              </UiButton>
+              <router-link
+                :to="slide.link"
+                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-4 py-2.5 rounded-lg text-sm font-bold transition-colors"
               >
                 {{ slide.btnSecondary }}
-              </a>
+              </router-link>
             </div>
           </div>
         </div>
@@ -227,13 +225,13 @@ onUnmounted(() => {
               Керуйте освітленням, безпекою та кліматом за допомогою смартфона.
             </p>
           </div>
-          <a
-            href="/catalog"
+          <router-link
+            :to="{ name: 'catalog' }"
             class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-purple-300 transition-colors flex items-center gap-1.5 w-fit mt-4"
           >
             Перейти в каталог
             <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </router-link>
         </div>
 
         <!-- Promo 2: Active Lifestyle Accessories -->
@@ -277,13 +275,13 @@ onUnmounted(() => {
               Нові моделі фітнес-браслетів та смарт-годинників з GPS.
             </p>
           </div>
-          <a
-            href="/catalog"
+          <router-link
+            :to="{ name: 'catalog' }"
             class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-emerald-300 transition-colors flex items-center gap-1.5 w-fit mt-4"
           >
             Переглянути акції
             <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </router-link>
         </div>
       </div>
     </div>
