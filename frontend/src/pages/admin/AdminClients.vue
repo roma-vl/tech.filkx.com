@@ -76,8 +76,8 @@ import api from "@/shared/services/api/apiClient";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
 
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
-import AppPagination from "@/components/application/ui/Data/AppPagination.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
+import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import AdminClientFilters from "@/components/admin/features/client/AdminClientFilters.vue";
 import AdminClientTable from "@/components/admin/features/client/AdminClientTable.vue";
 import AdminClientModal from "@/components/admin/features/client/AdminClientModal.vue";

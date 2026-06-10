@@ -179,7 +179,7 @@ import {
   InformationCircleIcon as InfoIcon,
   StarIcon,
 } from "@heroicons/vue/24/outline";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

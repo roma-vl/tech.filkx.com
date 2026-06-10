@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import AppStatCard from "@/components/admin/ui/Data/AppStatCard.vue";
+import AppStatCard from "@/components/admin/ui/AppStatCard.vue";
 
 defineProps({
   stats: {

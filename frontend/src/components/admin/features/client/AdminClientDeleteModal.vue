@@ -62,8 +62,8 @@
 </template>
 
 <script setup>
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 
@@ -78,7 +78,7 @@ const { t } = useI18n();
 
 const closeModal = () => {
   emit("close");
-};
+};1
 
 const submit = () => {
   emit("confirm");

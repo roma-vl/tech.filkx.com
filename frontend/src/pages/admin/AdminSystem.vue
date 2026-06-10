@@ -122,7 +122,7 @@ import {
 import api from "@/shared/services/api/apiClient";
 
 // Feature Components
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import SystemHealthStatus from "@/components/admin/features/system/SystemHealthStatus.vue";
 import ResourceCard from "@/components/admin/features/system/ResourceCard.vue";
 import NetworkCard from "@/components/admin/features/system/NetworkCard.vue";

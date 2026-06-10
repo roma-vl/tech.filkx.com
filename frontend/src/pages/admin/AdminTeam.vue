@@ -92,8 +92,8 @@ import { useToast } from "vue-toastification";
 import { UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
 import axios from "@/shared/services/api/apiClient";
 
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import TeamStats from "@/components/admin/features/team/TeamStats.vue";
 import TeamMemberGrid from "@/components/admin/features/team/TeamMemberGrid.vue";
 import TeamMemberListRow from "@/components/admin/features/team/TeamMemberListRow.vue";

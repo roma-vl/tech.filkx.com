@@ -55,7 +55,7 @@ import {
   KeyIcon,
   NoSymbolIcon,
 } from "@heroicons/vue/24/outline";
-import AppToggle from "@/components/application/ui/Form/AppToggle.vue";
+import AppToggle from "@/components/admin/ui/AppToggle.vue";
 
 defineProps({
   modelValue: {

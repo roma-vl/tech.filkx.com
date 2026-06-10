@@ -263,10 +263,10 @@
 <script setup>
 import { ref } from "vue";
 import api from "@/shared/services/api/apiClient";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
 import CategoryAttributesModal from "./CategoryAttributesModal.vue";
 
 const props = defineProps({

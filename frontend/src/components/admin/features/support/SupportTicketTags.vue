@@ -91,8 +91,8 @@
 <script setup>
 import { ref } from "vue";
 import { PlusIcon, TagIcon } from "@heroicons/vue/24/outline";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
 
 const props = defineProps({
   tags: {

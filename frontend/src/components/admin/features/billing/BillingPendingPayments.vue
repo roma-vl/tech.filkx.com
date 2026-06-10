@@ -157,9 +157,9 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
+import AdminTable from "@/components/admin/ui/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
 import { ArrowPathIcon, TagIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();

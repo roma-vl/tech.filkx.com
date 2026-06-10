@@ -52,7 +52,7 @@ import CouponStats from "@/components/admin/features/marketing/coupons/CouponSta
 import CouponTable from "@/components/admin/features/marketing/coupons/CouponTable.vue";
 import CouponEditModal from "@/components/admin/features/marketing/coupons/CouponEditModal.vue";
 import CouponDeleteModal from "@/components/admin/features/marketing/coupons/CouponDeleteModal.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();

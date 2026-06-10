@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import AppCard from "@/components/application/ui/Data/AppCard.vue";
+import AppCard from "@/components/admin/ui/AppCard.vue";
 
 defineProps({
   actions: {

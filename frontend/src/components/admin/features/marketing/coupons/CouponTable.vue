@@ -159,11 +159,11 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import AppPagination from "@/components/application/ui/Data/AppPagination.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AdminTable from "@/components/admin/ui/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
+import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import dayjs from "dayjs";
 import { useToast } from "vue-toastification";
 

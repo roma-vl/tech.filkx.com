@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import AppCard from "@/components/application/ui/Data/AppCard.vue";
+import AppCard from "@/components/admin/ui/AppCard.vue";
 import { UsersIcon } from "@heroicons/vue/24/outline";
 
 defineProps({

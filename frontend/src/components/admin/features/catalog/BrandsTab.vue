@@ -203,10 +203,10 @@
 <script setup>
 import { ref } from "vue";
 import api from "@/shared/services/api/apiClient";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
 
 const props = defineProps({
   brands: { type: Array, required: true },

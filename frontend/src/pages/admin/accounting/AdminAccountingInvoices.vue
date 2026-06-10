@@ -70,10 +70,10 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import AccountingService from "@/services/AccountingService";
 import { useI18n } from "vue-i18n";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import AdminInvoiceFilters from "@/components/admin/features/accounting/AdminInvoiceFilters.vue";
-import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
+import AdminTable from "@/components/admin/ui/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
 import InvoiceDetailsModal from "@/components/admin/features/accounting/InvoiceDetailsModal.vue";
 import { useToast } from "vue-toastification";
 

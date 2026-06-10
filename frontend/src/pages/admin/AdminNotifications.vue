@@ -4,11 +4,11 @@ import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import { useToast } from "vue-toastification";
 
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
-import AppRadio from "@/components/admin/ui/Form/AppRadio.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppRadio from "@/components/admin/ui/AppRadio.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 const toast = useToast();

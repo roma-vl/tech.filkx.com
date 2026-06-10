@@ -207,8 +207,8 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import Keyicon from "@/components/Icon/Keyicon.vue";
 import EyeIcon from "@/components/Icon/EyeIcon.vue";
 

@@ -122,9 +122,9 @@
 </template>
 
 <script setup>
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 defineProps({
   modelValue: Boolean,

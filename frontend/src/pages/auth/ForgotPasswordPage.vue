@@ -11,7 +11,7 @@
       </p>
 
       <form v-if="!sent" class="space-y-6" @submit.prevent="handleSubmit">
-        <AppInput
+        <UiInput
           v-model="email"
           :label="$t('auth.forgotPassword.emailLabel')"
           type="email"
@@ -26,7 +26,7 @@
         />
 
         <div class="pt-2">
-          <AppButton
+          <UiButton
             type="submit"
             variant="primary"
             size="lg"
@@ -34,7 +34,7 @@
             :loading="loading"
           >
             {{ $t("auth.forgotPassword.submit") }}
-          </AppButton>
+          </UiButton>
         </div>
 
         <router-link
@@ -72,7 +72,8 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import { AppInput, AppButton } from "@/shared/ui";
+import UiButton from "@/shared/ui/UiButton.vue";
+import UiInput from "@/shared/ui/UiInput.vue";
 import ArrowRightIcon from "@/components/Icon/ArrowRightIcon.vue";
 
 const toast = useToast();

@@ -78,7 +78,7 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import avatarPlaceholder from "@/assets/images/avatars/info/empty.png";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

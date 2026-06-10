@@ -144,8 +144,8 @@
 <script setup>
 import { ref } from "vue";
 import api from "@/shared/services/api/apiClient";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const props = defineProps({
   modelValue: {
