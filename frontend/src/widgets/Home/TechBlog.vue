@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/shared/services/api/apiClient";
+import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
 const router = useRouter();
 const posts = ref([]);
@@ -96,13 +97,7 @@ onMounted(fetchLatestPosts);
           Корисні статті, огляди новинок та поради від експертів FilkxTech
         </p>
       </div>
-      <router-link
-        :to="{ name: 'blog' }"
-        class="inline-flex items-center gap-1.5 text-sm font-bold text-[#00a046] hover:text-[#00b050] transition-colors shrink-0"
-      >
-        Читати всі статті
-        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-      </router-link>
+      <UiSectionLink :to="{ name: 'blog' }">Читати всі статті</UiSectionLink>
     </div>
 
     <!-- Skeleton -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
 interface FlashProduct {
   id: string | number;
@@ -134,13 +135,7 @@ const decrementQty = () => {
             </div>
           </div>
         </div>
-        <router-link
-          :to="{ name: 'catalog' }"
-          class="text-zinc-500 hover:text-[#00a046] font-bold text-sm flex items-center gap-1 transition-colors"
-        >
-          Всі акційні товари
-          <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-        </router-link>
+        <UiSectionLink :to="{ name: 'catalog' }">Всі акційні товари</UiSectionLink>
       </div>
 
       <!-- Products Grid -->

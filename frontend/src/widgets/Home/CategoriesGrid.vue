@@ -1,7 +1,6 @@
 <script setup>
-import { useRouter } from "vue-router";
+import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
-const router = useRouter();
 const props = defineProps({
   categories: {
     type: Array,
@@ -53,13 +52,7 @@ const getCategoryStyle = (slug) => {
           Швидкий перехід до потрібних розділів нашого каталогу
         </p>
       </div>
-      <router-link
-        :to="{ name: 'catalog' }"
-        class="text-[#00a046] hover:text-[#00b050] font-bold text-sm hover:underline flex items-center gap-1.5 transition-colors shrink-0"
-      >
-        Усі категорії
-        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-      </router-link>
+      <UiSectionLink :to="{ name: 'catalog' }">Усі категорії</UiSectionLink>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
