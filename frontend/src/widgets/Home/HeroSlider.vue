@@ -1,6 +1,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
 import UiButton from "@/shared/ui/UiButton.vue";
+
+const props = defineProps({
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+const router = useRouter();
 
 const activeIndex = ref(0);
 let intervalId = null;
@@ -69,6 +79,30 @@ const resetTimer = () => {
   }
 };
 
+const getCategoryIcon = (slug) => {
+  const s = slug ? slug.toLowerCase() : "";
+  if (s.includes("phone") || s.includes("smartfon") || s.includes("telefon")) return "smartphone";
+  if (s.includes("laptop") || s.includes("noutbuk") || s.includes("comp") || s.includes("komp")) return "laptop_mac";
+  if (s.includes("audio") || s.includes("sound") || s.includes("navushn") || s.includes("headphone")) return "headphones";
+  if (s.includes("watch") || s.includes("hodynn") || s.includes("braslet")) return "watch";
+  if (s.includes("game") || s.includes("igr") || s.includes("heym") || s.includes("play")) return "sports_esports";
+  if (s.includes("camera") || s.includes("foto") || s.includes("kamer")) return "photo_camera";
+  if (s.includes("tab") || s.includes("plansh")) return "tablet_mac";
+  if (s.includes("tv") || s.includes("telev")) return "tv";
+  if (s.includes("home") || s.includes("dim") || s.includes("pobu")) return "home";
+  return "grid_view";
+};
+
+const getCatName = (cat) => {
+  if (!cat) return "";
+  if (typeof cat.name === "object") return cat.name?.uk || cat.name?.en || "";
+  return cat.name || cat.label || "";
+};
+
+const goCat = (slug) => {
+  if (slug) router.push({ name: "catalog", query: { category: slug } });
+};
+
 onMounted(() => {
   startTimer();
 });
@@ -80,10 +114,42 @@ onUnmounted(() => {
 
 <template>
   <section class="max-w-container-max mx-auto px-4 md:px-8 py-6 font-sans">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left side: Main Slider (takes 2 columns) -->
+    <div class="flex gap-4 items-stretch">
+
+      <!-- Left: Category Sidebar (hidden on mobile) -->
+      <div class="hidden lg:flex flex-col w-[220px] xl:w-[240px] shrink-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+        <!-- Green header -->
+        <div class="bg-[#00a046] px-4 py-2.5 flex items-center gap-2 shrink-0">
+          <span class="material-symbols-outlined text-white text-[17px]">grid_view</span>
+          <span class="text-white font-extrabold text-[11px] uppercase tracking-widest">Каталог товарів</span>
+        </div>
+        <!-- Category list -->
+        <nav class="flex-1 overflow-y-auto py-1 custom-scrollbar">
+          <template v-if="categories.length > 0">
+            <button
+              v-for="cat in categories"
+              :key="cat.slug || cat.id"
+              class="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-[#f0faf6] dark:hover:bg-zinc-800 hover:text-[#00a046] text-zinc-700 dark:text-zinc-300 transition-colors group/catlink"
+              @click="goCat(cat.slug)"
+            >
+              <span class="material-symbols-outlined text-[15px] shrink-0 text-zinc-400 group-hover/catlink:text-[#00a046] transition-colors">
+                {{ getCategoryIcon(cat.slug) }}
+              </span>
+              <span class="text-xs font-semibold line-clamp-1 flex-1">{{ getCatName(cat) }}</span>
+              <span class="material-symbols-outlined text-[12px] shrink-0 opacity-0 group-hover/catlink:opacity-100 text-[#00a046] transition-opacity">
+                chevron_right
+              </span>
+            </button>
+          </template>
+          <template v-else>
+            <div v-for="i in 10" :key="i" class="mx-3 my-1 h-7 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+          </template>
+        </nav>
+      </div>
+
+      <!-- Right: Main Slider -->
       <div
-        class="lg:col-span-2 relative rounded-xl overflow-hidden bg-zinc-950 h-[380px] md:h-[480px] flex items-center group shadow-md border border-zinc-800"
+        class="flex-1 min-w-0 relative rounded-xl overflow-hidden bg-zinc-950 h-[380px] md:h-[480px] flex items-center group shadow-md border border-zinc-800"
       >
         <!-- Slides -->
         <div
@@ -187,105 +253,22 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Right side: Mini Promo Cards (takes 1 column) -->
-      <div class="flex flex-col gap-5 h-[380px] md:h-[480px] justify-between">
-        <!-- Promo 1: Smart Home Setup -->
-        <div
-          class="relative flex-1 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-950 to-purple-900 border border-purple-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-purple-500/40 transition-colors"
-        >
-          <div
-            class="absolute right-0 bottom-0 w-1/2 h-full opacity-30 group-hover:scale-110 transition-transform duration-700 pointer-events-none"
-          >
-            <svg
-              class="w-full h-full text-purple-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M2.25 21h19.5M3 10.5h.008v.008H3V10.5zm3 0h.008v.008H6V10.5zm3 0h.008v.008H9V10.5zm0-3h.008v.008H9V7.5zm3 3h.008v.008h-.008V10.5zm3 0h.008v.008H15V10.5zm3 0h.008v.008H18V10.5zm-3-3h.008v.008H15V7.5zm-6 6h.008v.008H9v-.008zm3 0h.008v.008h-.008v-.008zm3 0h.008v.008H15v-.008z"
-              />
-            </svg>
-          </div>
-          <div class="relative z-10">
-            <span
-              class="text-[10px] bg-purple-500/20 border border-purple-400/30 text-purple-300 px-2 py-0.5 rounded font-black uppercase tracking-wider"
-            >Розумний Дім</span>
-            <h3
-              class="font-extrabold text-lg md:text-xl text-white mt-3 leading-snug"
-            >
-              Технології майбутнього вже сьогодні
-            </h3>
-            <p
-              class="text-xs md:text-sm text-zinc-400 mt-1.5 leading-relaxed max-w-[220px]"
-            >
-              Керуйте освітленням, безпекою та кліматом за допомогою смартфона.
-            </p>
-          </div>
-          <router-link
-            :to="{ name: 'catalog' }"
-            class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-purple-300 transition-colors flex items-center gap-1.5 w-fit mt-4"
-          >
-            Перейти в каталог
-            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </router-link>
-        </div>
-
-        <!-- Promo 2: Active Lifestyle Accessories -->
-        <div
-          class="relative flex-1 rounded-xl overflow-hidden bg-gradient-to-br from-emerald-950 to-teal-900 border border-emerald-500/20 shadow-md p-6 flex flex-col justify-between group hover:border-emerald-500/40 transition-colors"
-        >
-          <div
-            class="absolute right-0 bottom-0 w-1/2 h-full opacity-35 group-hover:scale-110 transition-transform duration-700 pointer-events-none"
-          >
-            <svg
-              class="w-full h-full text-emerald-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 2.25V4.5m0 15v2.25m-9.75-9.75h2.25m15 0h2.25M6.22 6.22l1.59 1.59m10.38 10.38l1.59 1.59M6.22 17.78l1.59-1.59m10.38-10.38l1.59-1.59"
-              />
-            </svg>
-          </div>
-          <div class="relative z-10">
-            <span
-              class="text-[10px] bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 px-2 py-0.5 rounded font-black uppercase tracking-wider"
-            >Суперсила</span>
-            <h3
-              class="font-extrabold text-lg md:text-xl text-white mt-3 leading-snug"
-            >
-              Спорт та Здоров'я на максимумі
-            </h3>
-            <p
-              class="text-xs md:text-sm text-zinc-400 mt-1.5 leading-relaxed max-w-[220px]"
-            >
-              Нові моделі фітнес-браслетів та смарт-годинників з GPS.
-            </p>
-          </div>
-          <router-link
-            :to="{ name: 'catalog' }"
-            class="relative z-10 text-xs md:text-sm font-bold text-white hover:text-emerald-300 transition-colors flex items-center gap-1.5 w-fit mt-4"
-          >
-            Переглянути акції
-            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </router-link>
-        </div>
-      </div>
     </div>
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e4e4e7;
+  border-radius: 2px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+</style>

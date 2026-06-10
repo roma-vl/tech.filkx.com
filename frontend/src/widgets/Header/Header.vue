@@ -295,6 +295,32 @@ onUnmounted(() => {
 <template>
   <!-- Main Header Shell -->
   <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
+    <!-- Announcement bar -->
+    <div class="hidden md:block bg-zinc-950 border-b border-white/[0.06]">
+      <div class="max-w-container-max mx-auto px-4 md:px-8 py-1.5 flex items-center justify-between text-[11px] text-zinc-400 gap-4">
+        <a href="tel:0800123456" class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap">
+          <span class="material-symbols-outlined text-[13px]">phone</span>
+          0 800 123 456
+          <span class="mx-1.5 text-zinc-700">·</span>
+          <span class="text-[#00a046]">Безкоштовно</span>
+        </a>
+        <div class="flex items-center gap-3 text-zinc-400">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[13px] text-[#00a046]">local_shipping</span>
+            Безкоштовна доставка від 500 грн
+          </span>
+          <span class="text-zinc-700">·</span>
+          <span>Офіційна гарантія</span>
+          <span class="text-zinc-700">·</span>
+          <span>Повернення 14 днів</span>
+        </div>
+        <div class="flex items-center gap-1 whitespace-nowrap">
+          <span class="material-symbols-outlined text-[13px]">schedule</span>
+          Пн–Пт: 9:00–18:00
+        </div>
+      </div>
+    </div>
+
     <div
       class="max-w-container-max mx-auto h-16 px-4 md:px-8 flex items-center justify-between gap-4"
     >
@@ -331,15 +357,16 @@ onUnmounted(() => {
 
       <!-- Catalog Toggle Button -->
       <button
-        :class="
-          isMegaMenuOpen
-            ? 'bg-white/20 border-white/40'
-            : 'border-white/20 hover:bg-white/10 hover:border-white/40'
-        "
-        class="catalog-btn hidden md:flex items-center gap-2 border px-4 py-2 rounded-lg font-bold text-sm tracking-wide text-white transition-all"
+        :class="isMegaMenuOpen ? 'bg-[#009040]' : 'bg-[#00a046] hover:bg-[#00b050]'"
+        class="catalog-btn hidden md:flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm text-white transition-all shrink-0 shadow-sm"
         @click="toggleCatalog"
       >
-        <span class="material-symbols-outlined text-[18px]">grid_view</span>
+        <span v-if="!isMegaMenuOpen" class="flex flex-col gap-[4px] w-[15px] shrink-0">
+          <span class="block h-[2px] bg-white rounded-full w-full" />
+          <span class="block h-[2px] bg-white rounded-full w-[10px]" />
+          <span class="block h-[2px] bg-white rounded-full w-full" />
+        </span>
+        <span v-else class="material-symbols-outlined text-[18px]">close</span>
         <span>Каталог</span>
       </button>
 

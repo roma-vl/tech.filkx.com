@@ -2,13 +2,10 @@
   <main class="flex-grow pb-8 bg-zinc-50/50 dark:bg-zinc-950/50">
     <template v-if="loading">
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-6 space-y-6">
-        <!-- Hero Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 h-[380px] md:h-[480px] bg-zinc-200 dark:bg-zinc-800 rounded-2xl animate-pulse" />
-          <div class="flex flex-col gap-5">
-            <div class="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-2xl animate-pulse" />
-            <div class="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-2xl animate-pulse" />
-          </div>
+        <!-- Hero Skeleton (categories sidebar + slider) -->
+        <div class="flex gap-4 items-stretch">
+          <div class="hidden lg:block w-[220px] xl:w-[240px] shrink-0 h-[380px] md:h-[480px] bg-zinc-200 dark:bg-zinc-800 rounded-xl animate-pulse" />
+          <div class="flex-1 h-[380px] md:h-[480px] bg-zinc-200 dark:bg-zinc-800 rounded-2xl animate-pulse" />
         </div>
 
         <!-- USP Skeleton -->
@@ -49,9 +46,10 @@
     </template>
 
     <template v-else>
-      <HeroSlider />
+      <HeroSlider :categories="categories" />
       <UspGrid />
       <CategoriesGrid :categories="categories" />
+      <BestSellers />
       <FlashDeals
         v-if="flashDeals.length > 0"
         :products="flashDeals"
@@ -73,6 +71,7 @@ import { useHome } from "@/features/home/composables/useHome";
 import HeroSlider from "@/widgets/Home/HeroSlider.vue";
 import UspGrid from "@/widgets/Home/UspGrid.vue";
 import CategoriesGrid from "@/widgets/Home/CategoriesGrid.vue";
+import BestSellers from "@/widgets/Home/BestSellers.vue";
 import FlashDeals from "@/widgets/Home/FlashDeals.vue";
 import RecommendedProducts from "@/widgets/Home/RecommendedProducts.vue";
 import TechBlog from "@/widgets/Home/TechBlog.vue";
