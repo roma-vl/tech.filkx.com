@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import Dropdown from "@/components/ui/Dropdown.vue";
+import Dropdown from "@/shared/ui/Dropdown.vue";
 import BellIcon from "@/components/Icon/BellIcon.vue";
 // import { useNotifications } from "@/composables/useNotifications";
 

@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import BrandsTab from "@/components/admin/features/catalog/BrandsTab.vue";
 
 const isLoading = ref(false);

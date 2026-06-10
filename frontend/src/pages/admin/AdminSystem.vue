@@ -119,7 +119,7 @@ import {
   CpuChipIcon,
   FolderIcon,
 } from "@heroicons/vue/24/outline";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 // Feature Components
 import AppButton from "@/components/application/ui/Button/AppButton.vue";

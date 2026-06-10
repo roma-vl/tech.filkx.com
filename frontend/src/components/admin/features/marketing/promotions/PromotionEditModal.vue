@@ -471,7 +471,7 @@ import {
   RocketLaunchIcon,
 } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 const props = defineProps({
   isOpen: Boolean,

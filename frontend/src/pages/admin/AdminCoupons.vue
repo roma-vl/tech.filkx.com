@@ -46,7 +46,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
 import CouponTable from "@/components/admin/features/marketing/coupons/CouponTable.vue";

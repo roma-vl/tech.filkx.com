@@ -70,13 +70,13 @@
 
 <script setup lang="ts">
 import { useHome } from "@/features/home/composables/useHome";
-import HeroSlider from "@/components/home/HeroSlider.vue";
-import UspGrid from "@/components/home/UspGrid.vue";
-import CategoriesGrid from "@/components/home/CategoriesGrid.vue";
-import FlashDeals from "@/components/home/FlashDeals.vue";
-import RecommendedProducts from "@/components/home/RecommendedProducts.vue";
-import TechBlog from "@/components/home/TechBlog.vue";
-import BrandPartners from "@/components/home/BrandPartners.vue";
+import HeroSlider from "@/widgets/Home/HeroSlider.vue";
+import UspGrid from "@/widgets/Home/UspGrid.vue";
+import CategoriesGrid from "@/widgets/Home/CategoriesGrid.vue";
+import FlashDeals from "@/widgets/Home/FlashDeals.vue";
+import RecommendedProducts from "@/widgets/Home/RecommendedProducts.vue";
+import TechBlog from "@/widgets/Home/TechBlog.vue";
+import BrandPartners from "@/widgets/Home/BrandPartners.vue";
 
 const { categories, flashDeals, recommended, loading, loadHomeData } = useHome();
 </script>

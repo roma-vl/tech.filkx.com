@@ -133,7 +133,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import ArrowUpDownIcon from "@/components/Icon/ArrowUpDownIcon.vue";
-import Dropdown from "@/components/ui/Dropdown.vue";
+import Dropdown from "@/shared/ui/Dropdown.vue";
 import Pagination from "@/components/Pagination.vue";
 
 const props = defineProps({

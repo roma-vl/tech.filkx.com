@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import { useToast } from "vue-toastification";
 
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";

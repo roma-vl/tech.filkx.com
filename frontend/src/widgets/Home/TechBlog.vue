@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 const router = useRouter();
 const posts = ref([]);

@@ -2,7 +2,7 @@
 import { ref, reactive, computed, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
-import api from "@/services/api.js";
+import api from "@/shared/services/api/apiClient";
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();

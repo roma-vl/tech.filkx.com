@@ -84,7 +84,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 // Feature Components
 import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";

@@ -4,15 +4,15 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
-import AccountSidebar from "@/components/account/AccountSidebar.vue";
-import AccountDashboardTab from "@/components/account/tabs/AccountDashboardTab.vue";
-import AccountOrdersTab from "@/components/account/tabs/AccountOrdersTab.vue";
-import AccountFavoritesTab from "@/components/account/tabs/AccountFavoritesTab.vue";
-import AccountCompareTab from "@/components/account/tabs/AccountCompareTab.vue";
-import AccountViewedTab from "@/components/account/tabs/AccountViewedTab.vue";
-import AccountSettingsTab from "@/components/account/tabs/AccountSettingsTab.vue";
-import AccountSupportTab from "@/components/account/tabs/AccountSupportTab.vue";
-import AccountNotificationsTab from "@/components/account/tabs/AccountNotificationsTab.vue";
+import AccountSidebar from "@/widgets/Account/AccountSidebar.vue";
+import AccountDashboardTab from "@/widgets/Account/tabs/AccountDashboardTab.vue";
+import AccountOrdersTab from "@/widgets/Account/tabs/AccountOrdersTab.vue";
+import AccountFavoritesTab from "@/widgets/Account/tabs/AccountFavoritesTab.vue";
+import AccountCompareTab from "@/widgets/Account/tabs/AccountCompareTab.vue";
+import AccountViewedTab from "@/widgets/Account/tabs/AccountViewedTab.vue";
+import AccountSettingsTab from "@/widgets/Account/tabs/AccountSettingsTab.vue";
+import AccountSupportTab from "@/widgets/Account/tabs/AccountSupportTab.vue";
+import AccountNotificationsTab from "@/widgets/Account/tabs/AccountNotificationsTab.vue";
 
 const route = useRoute();
 const router = useRouter();

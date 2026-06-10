@@ -112,7 +112,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import api from '@/services/api';
+import api from '@/shared/services/api/apiClient';
 
 const route = useRoute();
 const post = ref(null);

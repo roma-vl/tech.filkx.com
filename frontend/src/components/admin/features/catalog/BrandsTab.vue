@@ -202,7 +202,7 @@
 
 <script setup>
 import { ref } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/Form/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";

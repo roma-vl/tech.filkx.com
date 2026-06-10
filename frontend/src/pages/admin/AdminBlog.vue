@@ -547,7 +547,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import api from '@/services/api';
+import api from "@/shared/services/api/apiClient";
 import RichEditor from '@/components/admin/features/blog/RichEditor.vue';
 import {
   PlusIcon,

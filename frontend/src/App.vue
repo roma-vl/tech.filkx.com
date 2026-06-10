@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CartDrawer from "@/widgets/CartDrawer/CartDrawer.vue";
 import AccountDrawer from "@/widgets/AccountDrawer/AccountDrawer.vue";
-import ToastNotification from "./components/ui/ToastNotification.vue";
+import ToastNotification from "@/shared/ui/ToastNotification.vue";
 </script>
 
 <template>

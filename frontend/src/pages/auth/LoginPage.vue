@@ -100,7 +100,7 @@ import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
 import { AppInput, AppButton } from "@/shared/ui";
-import OAuthButtons from "@/components/auth/OAuthButtons.vue";
+import OAuthButtons from "@/features/auth/components/OAuthButtons.vue";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
 const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;

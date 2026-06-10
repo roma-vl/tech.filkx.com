@@ -270,7 +270,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 interface TabItem { id: string; label: string }
 interface QualityGuarantee { icon: string; title: string; text: string }

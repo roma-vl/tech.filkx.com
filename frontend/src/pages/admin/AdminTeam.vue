@@ -90,7 +90,7 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import { UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
-import axios from "@/services/api";
+import axios from "@/shared/services/api/apiClient";
 
 import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
 import AppButton from "@/components/admin/ui/Button/AppButton.vue";

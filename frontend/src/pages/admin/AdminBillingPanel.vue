@@ -64,7 +64,7 @@
 import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 import BillingStats from "@/components/admin/features/billing/BillingStats.vue";
 import BillingPendingPayments from "@/components/admin/features/billing/BillingPendingPayments.vue";

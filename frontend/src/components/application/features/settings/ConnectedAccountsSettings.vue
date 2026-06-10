@@ -127,7 +127,7 @@
 import { computed, ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import AppButton from "@/components/application/ui/Button/AppButton.vue";
 
 const store = useAuthStore();

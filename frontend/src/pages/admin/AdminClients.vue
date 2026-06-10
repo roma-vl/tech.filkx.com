@@ -72,7 +72,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
 

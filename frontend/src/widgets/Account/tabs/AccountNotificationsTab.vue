@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
 interface NotificationItem {
