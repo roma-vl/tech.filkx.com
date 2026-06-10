@@ -12,16 +12,16 @@
         : 'w-full sm:w-56 border-b sm:border-b-0 sm:border-r border-zinc-100 dark:border-zinc-800 shrink-0'"
       class="relative bg-zinc-50 dark:bg-zinc-800/30 flex justify-center items-center aspect-square overflow-hidden"
     >
-      <a
-        class="w-full h-full flex items-center justify-center p-4 cursor-pointer"
-        @click.prevent="cartStore.viewProduct(product)"
+      <router-link
+        :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
+        class="w-full h-full flex items-center justify-center p-4"
       >
         <img
           :alt="product.name"
           class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           :src="product.image"
         />
-      </a>
+      </router-link>
 
       <!-- Sale Badge -->
       <span
@@ -79,14 +79,14 @@
         </div>
 
         <!-- Product Name -->
-        <a class="block cursor-pointer" @click.prevent="cartStore.viewProduct(product)">
+        <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }" class="block">
           <h2
             :class="viewMode === 'grid' ? 'text-sm line-clamp-2 min-h-[40px]' : 'text-[15px]'"
             class="font-bold text-zinc-900 dark:text-white group-hover:text-[#00a046] transition-colors leading-snug"
           >
             {{ product.name }}
           </h2>
-        </a>
+        </router-link>
 
         <!-- Spec Pills -->
         <div class="flex flex-wrap gap-1.5">

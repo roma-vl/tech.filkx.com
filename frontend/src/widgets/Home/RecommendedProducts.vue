@@ -83,9 +83,9 @@ const formatPrice = (price: number) => {
         class="group flex flex-col p-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 relative overflow-hidden w-[calc(50%-8px)] md:w-[calc(33.33%-11px)] lg:w-[calc(20%-13px)] min-w-[220px] snap-start shrink-0"
       >
         <!-- Image -->
-        <div
-          class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-lg mb-3 overflow-hidden relative flex items-center justify-center cursor-pointer"
-          @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
+        <router-link
+          :to="{ name: 'product-detail', params: { id: prod.slug } }"
+          class="block aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-lg mb-3 overflow-hidden relative flex items-center justify-center"
         >
           <img
             class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
@@ -105,19 +105,17 @@ const formatPrice = (price: number) => {
               favorite
             </span>
           </button>
-        </div>
+        </router-link>
 
         <!-- Info -->
         <div class="flex flex-col flex-grow">
           <span class="text-zinc-400 dark:text-zinc-500 font-extrabold text-[10px] mb-1 uppercase tracking-wider">
             {{ prod.category }}
           </span>
-          <h3
-            class="font-bold text-sm text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] transition-colors line-clamp-2 leading-snug min-h-[40px] cursor-pointer"
-            @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
-          >
-            {{ prod.name }}
-          </h3>
+          <router-link
+            :to="{ name: 'product-detail', params: { id: prod.slug } }"
+            class="font-bold text-sm text-zinc-800 dark:text-zinc-200 hover:text-[#00a046] transition-colors line-clamp-2 leading-snug min-h-[40px] block"
+          >{{ prod.name }}</router-link>
 
           <!-- Rating -->
           <div class="flex items-center gap-1 my-2">

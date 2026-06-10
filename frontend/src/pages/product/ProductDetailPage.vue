@@ -45,24 +45,24 @@
     <p class="text-sm text-zinc-500 mb-6 max-w-sm">
       Перевірте правильність посилання або скористайтесь каталогом.
     </p>
-    <button
+    <router-link
+      :to="{ name: 'catalog' }"
       class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all"
-      @click="router.push('/catalog')"
     >
       Перейти до каталогу
-    </button>
+    </router-link>
   </div>
 
   <!-- Product page -->
   <div v-else class="font-sans">
     <!-- Breadcrumbs -->
     <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500">
-      <a class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold" href="#" @click.prevent="router.push('/')">
+      <router-link :to="{ name: 'home' }" class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold">
         <span class="material-symbols-outlined text-[15px]">home</span>
         Головна
-      </a>
+      </router-link>
       <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
-      <a class="hover:text-[#00a046] transition-colors font-semibold" href="#" @click.prevent="router.push('/catalog')">Каталог</a>
+      <router-link :to="{ name: 'catalog' }" class="hover:text-[#00a046] transition-colors font-semibold">Каталог</router-link>
       <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
       <span class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]">{{ product.name }}</span>
     </nav>

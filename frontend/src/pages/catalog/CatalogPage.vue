@@ -1,18 +1,17 @@
 <template>
   <!-- Breadcrumbs -->
   <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs font-sans text-zinc-400 dark:text-zinc-500">
-    <a
+    <router-link
+      :to="{ name: 'home' }"
       class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
-      href="#"
-      @click.prevent="router.push('/')"
     >
       <span class="material-symbols-outlined text-[15px]">home</span>
       Головна
-    </a>
+    </router-link>
     <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
-    <a class="hover:text-[#00a046] transition-colors font-semibold" href="#" @click.prevent="selectCategory('')">
+    <router-link :to="{ name: 'catalog' }" class="hover:text-[#00a046] transition-colors font-semibold">
       Каталог
-    </a>
+    </router-link>
     <template v-if="route.query.category">
       <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
       <span class="text-zinc-800 dark:text-zinc-200 font-bold">{{ currentCategoryName }}</span>
@@ -89,22 +88,13 @@
         </div>
 
         <!-- Sort -->
-        <div class="relative">
-          <select
-            v-model="sortBy"
-            class="appearance-none bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg pl-3 pr-8 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] cursor-pointer outline-none"
-          >
-            <option value="popularity">За популярністю</option>
-            <option value="newest">Новинки</option>
-            <option value="price-asc">Ціна: дешевші спочатку</option>
-            <option value="price-desc">Ціна: дорожчі спочатку</option>
-          </select>
-          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-[18px]">expand_more</span>
-        </div>
+        <UiSelect v-model="sortBy" :options="sortOptions" class="w-52" />
 
         <!-- Mobile Filter Button -->
-        <button
-          class="lg:hidden relative flex items-center gap-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 py-2 rounded-lg text-sm font-semibold transition-colors hover:border-[#00a046] hover:text-[#00a046]"
+        <UiButton
+          variant="secondary"
+          size="sm"
+          class="lg:hidden relative"
           @click="isMobileFilterOpen = true"
         >
           <span class="material-symbols-outlined text-[18px]">tune</span>
@@ -113,7 +103,7 @@
             v-if="activeFilters.length"
             class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
           >{{ activeFilters.length }}</span>
-        </button>
+        </UiButton>
       </div>
 
       <!-- Active Filters Chips -->
@@ -127,13 +117,15 @@
           {{ filter.label }}
           <span class="material-symbols-outlined text-[11px]">close</span>
         </button>
-        <button
-          class="ml-auto text-zinc-400 hover:text-rose-500 font-semibold text-xs flex items-center gap-1 transition-colors"
+        <UiButton
+          variant="ghost"
+          size="sm"
+          class="ml-auto !text-zinc-400 hover:!text-rose-500"
           @click="clearFilters"
         >
           <span class="material-symbols-outlined text-[14px]">filter_list_off</span>
           Скинути все
-        </button>
+        </UiButton>
       </div>
 
       <!-- Loading Skeleton -->
@@ -195,12 +187,7 @@
         <p class="text-sm text-zinc-400 dark:text-zinc-500 mb-6 max-w-xs mx-auto">
           Спробуйте змінити фільтри або скинути пошук
         </p>
-        <button
-          class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold text-sm py-2.5 px-6 rounded-lg transition-all"
-          @click="clearFilters"
-        >
-          Скинути фільтри
-        </button>
+        <UiButton @click="clearFilters">Скинути фільтри</UiButton>
       </div>
 
       <!-- Pagination -->
@@ -292,18 +279,8 @@
 
         <!-- Footer Buttons -->
         <div class="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-3">
-          <button
-            class="flex-1 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-bold py-2.5 rounded-lg text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            @click="clearFilters"
-          >
-            Скинути
-          </button>
-          <button
-            class="flex-1 bg-[#00a046] hover:bg-[#00b050] text-white font-bold py-2.5 rounded-lg text-sm transition-colors"
-            @click="isMobileFilterOpen = false"
-          >
-            Застосувати
-          </button>
+          <UiButton variant="secondary" class="flex-1" @click="clearFilters">Скинути</UiButton>
+          <UiButton class="flex-1" @click="isMobileFilterOpen = false">Застосувати</UiButton>
         </div>
       </div>
     </div>
@@ -323,6 +300,8 @@ import { useCatalog } from "@/features/catalog/composables/useCatalog";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
+import UiButton from "@/shared/ui/UiButton.vue";
+import UiSelect from "@/shared/ui/UiSelect.vue";
 
 const {
   route,
@@ -355,6 +334,13 @@ const {
   closeQuickView,
   currentCategoryName,
 } = useCatalog();
+
+const sortOptions = [
+  { value: "popularity", label: "За популярністю" },
+  { value: "newest", label: "Новинки" },
+  { value: "price-asc", label: "Ціна: дешевші спочатку" },
+  { value: "price-desc", label: "Ціна: дорожчі спочатку" },
+];
 
 const paginationPages = computed(() => {
   const total = pagination.value.lastPage;

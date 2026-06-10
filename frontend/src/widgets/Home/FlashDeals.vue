@@ -170,26 +170,24 @@ const decrementQty = () => {
 
           <div class="p-4 md:p-5 flex-grow flex flex-col">
             <!-- Product Image -->
-            <div
-              class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-lg mb-3 overflow-hidden relative flex items-center justify-center cursor-pointer"
-              @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
+            <router-link
+              :to="{ name: 'product-detail', params: { id: prod.slug } }"
+              class="block aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-lg mb-3 overflow-hidden relative flex items-center justify-center"
             >
               <img
                 class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
                 :src="prod.image"
                 :alt="prod.name"
               />
-            </div>
+            </router-link>
 
             <p class="text-zinc-400 dark:text-zinc-500 font-extrabold text-[10px] mb-1 uppercase tracking-wider">
               {{ prod.category }}
             </p>
-            <h3
-              class="font-bold text-[15px] text-zinc-800 dark:text-zinc-100 line-clamp-3 mb-2 leading-snug min-h-[66px] hover:text-[#00a046] transition-colors cursor-pointer"
-              @click="$router.push({ name: 'product-detail', params: { id: prod.slug } })"
-            >
-              {{ prod.name }}
-            </h3>
+            <router-link
+              :to="{ name: 'product-detail', params: { id: prod.slug } }"
+              class="block font-bold text-[15px] text-zinc-800 dark:text-zinc-100 line-clamp-3 mb-2 leading-snug min-h-[66px] hover:text-[#00a046] transition-colors"
+            >{{ prod.name }}</router-link>
 
             <!-- Rating -->
             <div class="flex items-center gap-1 mb-2.5 mt-auto">
