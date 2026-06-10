@@ -123,20 +123,14 @@
 
       <!-- Action buttons -->
       <div class="space-y-2.5 pt-1">
-        <button
-          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3.5 rounded-lg font-bold text-sm shadow-sm hover:shadow-md hover:shadow-emerald-500/15 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-          @click="cartStore.addToCart(product)"
-        >
-          <span class="material-symbols-outlined text-[19px]">shopping_cart</span>
+        <UiButton size="lg" class="w-full" @click="cartStore.addToCart(product)">
+          <template #prefix><span class="material-symbols-outlined text-[19px]">shopping_cart</span></template>
           Додати в кошик
-        </button>
-        <button
-          class="w-full border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 py-3.5 rounded-lg font-bold text-sm active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-          @click="$emit('quick-order')"
-        >
-          <span class="material-symbols-outlined text-[17px]">bolt</span>
+        </UiButton>
+        <UiButton variant="secondary" size="lg" class="w-full" @click="$emit('quick-order')">
+          <template #prefix><span class="material-symbols-outlined text-[17px]">bolt</span></template>
           Швидке замовлення
-        </button>
+        </UiButton>
       </div>
     </div>
 
@@ -169,6 +163,7 @@
 
 <script setup lang="ts">
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { UiButton } from "@/shared/ui";
 
 defineProps<{
   product: any;

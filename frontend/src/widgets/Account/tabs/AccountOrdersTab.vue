@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/shared/services/api/apiClient";
+import { UiButton } from "@/shared/ui";
 
 const cartStore = useCartStore();
 
@@ -267,7 +268,7 @@ const filterBtns = [
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
     <!-- Filters & Search -->
     <div
       class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm"
@@ -415,19 +416,20 @@ const filterBtns = [
             :key="item.name"
             class="flex gap-6 flex-col sm:flex-row"
           >
-            <img
-              class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 cursor-pointer hover:border-[#00a046]/40 transition-colors"
-              :src="item.image"
-              :alt="item.name"
-              @click="cartStore.viewProduct(item as any)"
-            />
+            <router-link :to="{ name: 'product-detail', params: { id: item.slug || item.id } }">
+              <img
+                class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 hover:border-[#00a046]/40 transition-colors"
+                :src="item.image"
+                :alt="item.name"
+              />
+            </router-link>
             <div class="flex-1">
-              <h3
-                class="font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="cartStore.viewProduct(item as any)"
+              <router-link
+                :to="{ name: 'product-detail', params: { id: item.slug || item.id } }"
+                class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight hover:text-[#00a046] transition-colors"
               >
                 {{ item.name }}
-              </h3>
+              </router-link>
               <p
                 v-if="item.returnWindow"
                 class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 mt-1.5"
@@ -441,31 +443,15 @@ const filterBtns = [
                 {{ item.note }}
               </p>
               <div class="mt-5 flex gap-3 flex-wrap">
-                <button
-                  class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg font-extrabold text-xs md:text-sm transition-all shadow-sm"
-                  @click="buyItAgain(item)"
-                >
-                  Купити знову
-                </button>
-                <button
-                  v-if="order.statusCode === 'delivered'"
-                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm flex items-center gap-1.5"
-                  @click="openReview(item, order.id)"
-                >
-                  <span class="material-symbols-outlined text-[15px]">{{ userReviewsMap[item.slug] ? 'edit' : 'rate_review' }}</span>
+                <UiButton size="sm" @click="buyItAgain(item)">Купити знову</UiButton>
+                <UiButton v-if="order.statusCode === 'delivered'" variant="secondary" size="sm" @click="openReview(item, order.id)">
+                  <template #prefix><span class="material-symbols-outlined text-[15px]">{{ userReviewsMap[item.slug] ? 'edit' : 'rate_review' }}</span></template>
                   {{ userReviewsMap[item.slug] ? 'Редагувати відгук' : 'Написати відгук' }}
-                </button>
-                <button
-                  v-if="order.statusCode !== 'cancelled'"
-                  class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-5 py-2.5 rounded-lg font-extrabold hover:bg-zinc-55 dark:hover:bg-zinc-850 transition-all text-xs md:text-sm flex items-center gap-1.5"
-                  @click="openTracking(order)"
-                >
-                  <span
-                    class="material-symbols-outlined text-[16px] md:text-[18px]"
-                    >track_changes</span
-                  >
+                </UiButton>
+                <UiButton v-if="order.statusCode !== 'cancelled'" variant="secondary" size="sm" @click="openTracking(order)">
+                  <template #prefix><span class="material-symbols-outlined text-[16px]">track_changes</span></template>
                   Відстежити
-                </button>
+                </UiButton>
               </div>
             </div>
           </div>
@@ -488,11 +474,7 @@ const filterBtns = [
       >
         Спробуйте змінити фільтр або пошуковий запит.
       </p>
-      <a
-        href="/catalog"
-        class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-        >Перейти до каталогу</a
-      >
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до каталогу</UiButton>
     </div>
   </div>
 
@@ -538,31 +520,27 @@ const filterBtns = [
             :key="item.name"
             class="flex gap-4 items-center"
           >
-            <img
-              :src="item.image"
-              :alt="item.name"
-              class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
-              @click="cartStore.viewProduct(item as any)"
-            />
+            <router-link :to="{ name: 'product-detail', params: { id: item.slug || item.id } }">
+              <img
+                :src="item.image"
+                :alt="item.name"
+                class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 hover:border-[#00a046]/40 transition-colors"
+              />
+            </router-link>
             <div class="flex-1">
-              <p
-                class="font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 cursor-pointer hover:text-[#00a046] transition-colors"
-                @click="cartStore.viewProduct(item as any)"
+              <router-link
+                :to="{ name: 'product-detail', params: { id: item.slug || item.id } }"
+                class="block font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 hover:text-[#00a046] transition-colors"
               >
                 {{ item.name }}
-              </p>
+              </router-link>
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-0.5"
               >
                 1x • {{ selectedOrder.total.toFixed(2) }} ₴
               </p>
             </div>
-            <button
-              class="text-[#00a046] hover:text-[#00b050] font-extrabold"
-              @click="buyItAgain(item)"
-            >
-              Купити знову
-            </button>
+            <UiButton size="sm" @click="buyItAgain(item)">Купити знову</UiButton>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5">
@@ -626,20 +604,16 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
       >
-        <button
+        <UiButton
           v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(selectedOrder.statusCode)"
-          class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors disabled:opacity-50"
+          variant="danger"
+          size="sm"
           :disabled="isCancelling[selectedOrder.id]"
           @click="cancelOrderAction(selectedOrder)"
         >
           {{ isCancelling[selectedOrder.id] ? "Скасування..." : "Скасувати замовлення" }}
-        </button>
-        <button
-          class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors"
-          @click="isDetailsOpen = false"
-        >
-          Закрити
-        </button>
+        </UiButton>
+        <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false">Закрити</UiButton>
       </div>
     </div>
   </div>
@@ -721,12 +695,7 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
       >
-        <button
-          class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-colors"
-          @click="isTrackingOpen = false"
-        >
-          Готово
-        </button>
+        <UiButton size="sm" @click="isTrackingOpen = false">Готово</UiButton>
       </div>
     </div>
   </div>
@@ -868,21 +837,15 @@ const filterBtns = [
 
         <!-- Footer buttons -->
         <div class="flex justify-end gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 mt-2">
-          <button
-            type="button"
-            class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs"
-            @click="isReviewOpen = false"
-          >
-            Скасувати
-          </button>
-          <button
+          <UiButton type="button" variant="secondary" size="sm" @click="isReviewOpen = false">Скасувати</UiButton>
+          <UiButton
             type="submit"
+            size="sm"
             :disabled="isSubmittingReview || !reviewComment.trim()"
-            class="bg-[#00a046] hover:bg-[#00b050] disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs flex items-center gap-2"
+            :loading="isSubmittingReview"
           >
-            <span v-if="isSubmittingReview" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             {{ isSubmittingReview ? 'Надсилання...' : (isEditMode ? 'Зберегти зміни' : 'Опублікувати відгук') }}
-          </button>
+          </UiButton>
         </div>
       </form>
     </div>

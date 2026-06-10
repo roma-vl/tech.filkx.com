@@ -207,7 +207,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Left: FAQ + History -->
       <div class="lg:col-span-2 space-y-6">

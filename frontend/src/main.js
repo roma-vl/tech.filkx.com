@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useUiStore } from "@/stores/ui.js";
 import { createHead } from "@vueuse/head";
 import router from "@/router";
+import "@fontsource-variable/inter";
 import "@/assets/style.css";
 import { VueReCaptcha } from "vue-recaptcha-v3";
 import Toast from "vue-toastification";

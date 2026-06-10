@@ -88,7 +88,7 @@
         </div>
 
         <!-- Sort -->
-        <UiSelect v-model="sortBy" :options="sortOptions" class="w-52" />
+        <UiDropdown v-model="sortBy" :options="sortOptions" align-right />
 
         <!-- Mobile Filter Button -->
         <UiButton
@@ -301,7 +301,7 @@ import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
-import UiSelect from "@/shared/ui/UiSelect.vue";
+import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
 const {
   route,

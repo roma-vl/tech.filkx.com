@@ -414,7 +414,7 @@ const inputClass =
 </script>
 
 <template>
-  <div class="space-y-4 animate-fade font-sans select-none pb-12">
+  <div class="space-y-4 animate-fade font-sans pb-12">
     <!-- 1. PERSONAL PROFILE ACCORDION -->
     <div
       class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"

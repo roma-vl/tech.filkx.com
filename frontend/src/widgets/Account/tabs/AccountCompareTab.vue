@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
+import { UiButton } from "@/shared/ui";
 
 interface ProductItem {
   id: string | number;
@@ -222,7 +223,7 @@ watch(() => route.query.items, loadSharedItems);
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
     <!-- CATEGORY LIST VIEW (Default State) -->
     <div v-if="!selectedCategory">
       <div v-if="cartStore.compare.length > 0" class="space-y-4">
@@ -255,19 +256,20 @@ watch(() => route.query.items, loadSharedItems);
 
               <!-- Thumbnails list -->
               <div class="flex flex-wrap gap-2.5">
-                <div
+                <router-link
                   v-for="prod in products"
                   :key="prod.id"
-                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform cursor-pointer"
+                  :to="{ name: 'product-detail', params: { id: prod.slug || prod.id } }"
+                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform hover:border-[#00a046]/40"
                   :title="prod.name"
-                  @click.stop="cartStore.viewProduct(prod as any)"
+                  @click.stop
                 >
                   <img
                     :src="prod.image"
                     :alt="prod.name"
                     class="w-full h-full object-contain"
                   />
-                </div>
+                </router-link>
               </div>
             </div>
 
@@ -328,11 +330,7 @@ watch(() => route.query.items, loadSharedItems);
           Додайте товари до порівняння, натиснувши кнопку порівняння на картках
           товарів.
         </p>
-        <a
-          href="/catalog"
-          class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-          >Перейти до каталогу</a
-        >
+        <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до каталогу</UiButton>
       </div>
     </div>
 
@@ -439,18 +437,19 @@ watch(() => route.query.items, loadSharedItems);
                 class="p-5"
               >
                 <div class="flex flex-col gap-3 items-center">
-                  <img
-                    :src="product.image"
-                    :alt="product.name"
-                    class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 cursor-pointer hover:border-[#00a046]/40 transition-all hover:scale-105 duration-300"
-                    @click="cartStore.viewProduct(product as any)"
-                  />
-                  <h4
-                    class="font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-855 dark:text-zinc-200 max-w-[180px] cursor-pointer hover:text-[#00a046] transition-colors"
-                    @click="cartStore.viewProduct(product as any)"
+                  <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }">
+                    <img
+                      :src="product.image"
+                      :alt="product.name"
+                      class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 hover:border-[#00a046]/40 transition-all hover:scale-105 duration-300"
+                    />
+                  </router-link>
+                  <router-link
+                    :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
+                    class="block font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-855 dark:text-zinc-200 max-w-[180px] hover:text-[#00a046] transition-colors"
                   >
                     {{ product.name }}
-                  </h4>
+                  </router-link>
                 </div>
               </td>
             </tr>
@@ -549,16 +548,10 @@ watch(() => route.query.items, loadSharedItems);
                 :key="product.id"
                 class="p-5 text-center"
               >
-                <button
-                  class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2.5 rounded-lg font-extrabold text-xs transition-all uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm active:scale-95"
-                  @click="cartStore.addToCart(product as any)"
-                >
-                  <span
-                    class="material-symbols-outlined text-[16px] md:text-[18px]"
-                    >shopping_cart</span
-                  >
+                <UiButton size="sm" @click="cartStore.addToCart(product as any)">
+                  <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
                   У кошик
-                </button>
+                </UiButton>
               </td>
             </tr>
           </tbody>

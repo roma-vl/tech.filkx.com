@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/shared/services/api/apiClient";
+import { UiButton } from "@/shared/ui";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -34,7 +35,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -90,13 +91,13 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         <h2 class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white">
           Останні замовлення
         </h2>
-        <button
-          class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-extrabold hover:underline flex items-center gap-1"
-          @click="go('orders')"
+        <router-link
+          :to="{ name: 'account', query: { tab: 'orders' } }"
+          class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-extrabold flex items-center gap-1 transition-colors"
         >
           Усі замовлення
           <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-        </button>
+        </router-link>
       </div>
 
       <!-- Skeleton loading -->
@@ -153,12 +154,12 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                 </span>
               </div>
             </div>
-            <button
-              class="text-[#00a046] hover:text-[#00b050] font-extrabold text-xs hover:underline"
-              @click="go('orders')"
+            <router-link
+              :to="{ name: 'account', query: { tab: 'orders' } }"
+              class="text-[#00a046] hover:text-[#00b050] font-extrabold text-xs transition-colors"
             >
               Детальніше
-            </button>
+            </router-link>
           </div>
           <div class="p-6">
             <div
@@ -166,37 +167,31 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
               :key="item.name"
               class="flex gap-4 flex-col sm:flex-row items-center sm:items-start"
             >
-              <img
-                class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 cursor-pointer hover:border-[#00a046]/40 transition-colors"
-                :src="item.image"
-                :alt="item.name"
-                @click="cartStore.viewProduct(item as any)"
-              />
+              <router-link :to="{ name: 'product-detail', params: { id: (item as any).slug || (item as any).id } }">
+                <img
+                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 hover:border-[#00a046]/40 transition-colors"
+                  :src="item.image"
+                  :alt="item.name"
+                />
+              </router-link>
               <div class="flex-1 text-center sm:text-left">
-                <h3
-                  class="font-extrabold text-zinc-850 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 cursor-pointer hover:text-[#00a046] transition-colors"
-                  @click="cartStore.viewProduct(item as any)"
+                <router-link
+                  :to="{ name: 'product-detail', params: { id: (item as any).slug || (item as any).id } }"
+                  class="block font-extrabold text-zinc-850 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 hover:text-[#00a046] transition-colors"
                 >
                   {{ item.name }}
-                </h3>
+                </router-link>
                 <p v-if="(item as any).returnWindow" class="text-xs text-zinc-450 dark:text-zinc-500 mt-1.5">
                   Повернення можливе до {{ (item as any).returnWindow }}
                 </p>
               </div>
               <div class="flex gap-2.5">
-                <button
-                  v-if="order.statusCode !== 'cancelled'"
-                  class="border border-zinc-200 dark:border-zinc-850 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg text-xs font-extrabold hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
-                  @click="go('orders')"
-                >
+                <UiButton v-if="order.statusCode !== 'cancelled'" variant="secondary" size="sm" @click="go('orders')">
                   Відстежити
-                </button>
-                <button
-                  class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs font-extrabold transition-all"
-                  @click="cartStore.addToCart(item as any)"
-                >
+                </UiButton>
+                <UiButton size="sm" @click="cartStore.addToCart(item as any)">
                   Повторити
-                </button>
+                </UiButton>
               </div>
             </div>
           </div>
@@ -211,12 +206,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         <span class="material-symbols-outlined text-[40px] text-zinc-300 dark:text-zinc-700 mb-2">shopping_bag</span>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm font-bold">У вас ще немає замовлень</p>
         <p class="text-zinc-400 dark:text-zinc-500 text-xs mt-1">Оформіть своє перше замовлення в магазині!</p>
-        <button
-          class="mt-4 bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-all"
-          @click="router.push('/catalog')"
-        >
-          Перейти до каталогу
-        </button>
+        <UiButton :to="{ name: 'catalog' }" class="mt-4">Перейти до каталогу</UiButton>
       </div>
     </section>
   </div>

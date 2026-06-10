@@ -9,7 +9,7 @@
     />
     <!-- Visual indicator -->
     <span
-      class="relative flex items-center justify-center w-4 h-4 transition-all duration-150 flex-shrink-0"
+      class="relative flex items-center justify-center w-[18px] h-[18px] transition-all duration-150 flex-shrink-0"
       :class="[
         isRadio ? 'rounded-full' : 'rounded',
         isChecked

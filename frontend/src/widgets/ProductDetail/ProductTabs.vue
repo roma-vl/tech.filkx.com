@@ -212,12 +212,10 @@
           <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Наші інженери допоможуть обрати ідеальну конфігурацію під ваші потреби.
           </p>
-          <button
-            class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-1.5 transition-all shadow-sm"
-          >
-            <span class="material-symbols-outlined text-[16px]">chat_bubble</span>
+          <UiButton class="w-full">
+            <template #prefix><span class="material-symbols-outlined text-[16px]">chat_bubble</span></template>
             Почати чат
-          </button>
+          </UiButton>
         </div>
       </aside>
     </div>
@@ -271,6 +269,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import api from "@/shared/services/api/apiClient";
+import { UiButton } from "@/shared/ui";
 
 interface TabItem { id: string; label: string }
 interface QualityGuarantee { icon: string; title: string; text: string }

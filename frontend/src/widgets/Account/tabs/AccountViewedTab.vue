@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { UiButton } from "@/shared/ui";
 
 interface ViewedItem {
   id: string | number;
@@ -56,12 +57,19 @@ const formatDate = (isoString: string) => {
   if (!isoString) return "";
   try {
     const date = new Date(isoString);
-    return date.toLocaleString("uk-UA", {
-      day: "numeric",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (isNaN(date.getTime())) return "";
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60_000);
+    const diffHours = Math.floor(diffMs / 3_600_000);
+    const diffDays = Math.floor(diffMs / 86_400_000);
+
+    if (diffMin < 1) return "щойно";
+    if (diffMin < 60) return `${diffMin} хв тому`;
+    if (diffHours < 24) return `${diffHours} год тому`;
+    if (diffDays === 1) return "вчора";
+    if (diffDays < 7) return `${diffDays} дн тому`;
+    return date.toLocaleDateString("uk-UA", { day: "numeric", month: "short" });
   } catch (e) {
     return "";
   }
@@ -69,7 +77,7 @@ const formatDate = (isoString: string) => {
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
     <!-- Filters & Actions Header -->
     <div
       v-if="viewedProducts.length > 0"
@@ -135,12 +143,13 @@ const formatDate = (isoString: string) => {
         <div
           class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-zinc-150 dark:border-zinc-800"
         >
-          <img
-            :src="product.image"
-            :alt="product.name"
-            class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-            @click="cartStore.viewProduct(product as any)"
-          />
+          <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }" class="w-full h-full flex items-center justify-center">
+            <img
+              :src="product.image"
+              :alt="product.name"
+              class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+            />
+          </router-link>
 
           <!-- Delete button (cross) -->
           <button
@@ -153,27 +162,21 @@ const formatDate = (isoString: string) => {
           </button>
 
           <!-- View Counter & Last Viewed badge -->
-          <div class="absolute bottom-3 left-3 flex flex-col gap-1">
+          <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-1">
             <span
-              class="bg-zinc-900/80 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest flex items-center gap-1 select-none shadow-sm"
-              title="Кількість переглядів"
+              class="bg-zinc-900/80 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded flex items-center gap-1 select-none shadow-sm shrink-0"
+              :title="`Переглянуто разів: ${product.viewCount}`"
             >
-              <span class="material-symbols-outlined text-[10px]"
-                >visibility</span
-              >
-              <span>{{ product.viewCount }}</span>
+              <span class="material-symbols-outlined text-[10px]">visibility</span>
+              <span>{{ product.viewCount }}×</span>
             </span>
-          </div>
-
-          <div class="absolute bottom-3 right-3">
             <span
-              class="bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest flex items-center gap-1 select-none shadow-sm"
-              title="Останній перегляд"
+              v-if="formatDate(product.lastViewedAt)"
+              class="bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded flex items-center gap-1 select-none shadow-sm min-w-0 truncate"
+              :title="`Останній перегляд: ${new Date(product.lastViewedAt).toLocaleString('uk-UA')}`"
             >
-              <span class="material-symbols-outlined text-[10px]"
-                >schedule</span
-              >
-              <span>{{ formatDate(product.lastViewedAt) }}</span>
+              <span class="material-symbols-outlined text-[10px] shrink-0">schedule</span>
+              <span class="truncate">{{ formatDate(product.lastViewedAt) }}</span>
             </span>
           </div>
         </div>
@@ -193,12 +196,12 @@ const formatDate = (isoString: string) => {
                 {{ product.brand }}
               </span>
             </div>
-            <h3
-              class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors cursor-pointer"
-              @click="cartStore.viewProduct(product as any)"
+            <router-link
+              :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
+              class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors"
             >
               {{ product.name }}
-            </h3>
+            </router-link>
           </div>
 
           <!-- Bottom Price & Cart -->
@@ -206,15 +209,10 @@ const formatDate = (isoString: string) => {
             <span class="font-black text-[#00a046] text-lg">
               {{ formatPrice(product.price) }}
             </span>
-            <button
-              class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-all uppercase tracking-wider flex items-center gap-1.5 active:scale-95 shadow-sm"
-              @click="cartStore.addToCart(product as any)"
-            >
-              <span class="material-symbols-outlined text-[16px] md:text-[18px]"
-                >shopping_cart</span
-              >
+            <UiButton size="sm" @click="cartStore.addToCart(product as any)">
+              <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
               Додати
-            </button>
+            </UiButton>
           </div>
         </div>
       </div>
@@ -239,12 +237,7 @@ const formatDate = (isoString: string) => {
         Ви ще не переглянули жодного товару. Ваша історія переглядів
         відображатиметься тут.
       </p>
-      <a
-        href="/catalog"
-        class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-      >
-        Перейти до товарів
-      </a>
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до товарів</UiButton>
     </div>
   </div>
 </template>

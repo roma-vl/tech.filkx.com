@@ -12,7 +12,7 @@
         </span>
         <span
           v-if="activeCount"
-          class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#00a046] text-white text-[9px] font-black"
+          class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#00a046] text-white text-[11px] font-black"
         >{{ activeCount }}</span>
       </div>
       <div class="flex items-center gap-2">

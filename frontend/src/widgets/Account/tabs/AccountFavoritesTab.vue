@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { UiButton } from "@/shared/ui";
 
 const cartStore = useCartStore();
 </script>
 
 <template>
-  <div class="space-y-6 animate-fade font-sans select-none">
+  <div class="space-y-6 animate-fade font-sans">
     <div
       v-if="cartStore.wishlist.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
@@ -18,12 +19,13 @@ const cartStore = useCartStore();
         <div
           class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-zinc-100 dark:border-zinc-800"
         >
-          <img
-            :src="product.image"
-            :alt="product.name"
-            class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-            @click="cartStore.viewProduct(product as any)"
-          >
+          <router-link :to="{ name: 'product-detail', params: { id: (product as any).slug || product.id } }" class="w-full h-full flex items-center justify-center">
+            <img
+              :src="product.image"
+              :alt="product.name"
+              class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+            />
+          </router-link>
           <button
             class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-500 rounded-full transition-all"
             @click="cartStore.toggleWishlist(product as any)"
@@ -38,22 +40,19 @@ const cartStore = useCartStore();
             >
               {{ product.category }}
             </p>
-            <h3
-              class="font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors cursor-pointer"
-              @click="cartStore.viewProduct(product as any)"
+            <router-link
+              :to="{ name: 'product-detail', params: { id: (product as any).slug || product.id } }"
+              class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors"
             >
               {{ product.name }}
-            </h3>
+            </router-link>
           </div>
           <div class="flex items-center justify-between gap-2 mt-auto">
             <span class="font-black text-[#00a046] text-lg">{{ product.price.toFixed(2) }} ₴</span>
-            <button
-              class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-extrabold text-xs md:text-sm transition-all uppercase tracking-wider flex items-center gap-1.5"
-              @click="cartStore.addToCart(product as any)"
-            >
-              <span class="material-symbols-outlined text-[16px] md:text-[18px]">shopping_cart</span>
+            <UiButton size="sm" @click="cartStore.addToCart(product as any)">
+              <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
               Додати
-            </button>
+            </UiButton>
           </div>
         </div>
       </div>
@@ -79,10 +78,7 @@ const cartStore = useCartStore();
       >
         Натисніть на іконку серця біля будь-якого товару, щоб зберегти його тут.
       </p>
-      <a
-        href="/catalog"
-        class="inline-block bg-[#00a046] hover:bg-[#00b050] text-white font-extrabold text-xs md:text-sm py-3 px-6 rounded-lg transition-all mt-6 shadow-sm"
-      >Перейти до товарів</a>
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до товарів</UiButton>
     </div>
   </div>
 </template>

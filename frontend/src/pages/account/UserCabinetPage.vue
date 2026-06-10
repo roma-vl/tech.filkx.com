@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -15,7 +15,6 @@ import AccountSupportTab from "@/widgets/Account/tabs/AccountSupportTab.vue";
 import AccountNotificationsTab from "@/widgets/Account/tabs/AccountNotificationsTab.vue";
 
 const route = useRoute();
-const router = useRouter();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 
@@ -43,9 +42,6 @@ const navTabs = [
   { label: "Налаштування", icon: "settings", tab: "settings" },
   { label: "Підтримка", icon: "help", tab: "support" },
 ];
-
-const selectTab = (tab: string) =>
-  router.push({ name: "account", query: { tab } });
 
 const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
@@ -100,23 +96,23 @@ onMounted(() => {
 
       <!-- Mobile Navigation Scroll Bar -->
       <div class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1">
-        <button
+        <router-link
           v-for="item in navTabs"
           :key="item.tab"
+          :to="{ name: 'account', query: { tab: item.tab } }"
           class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-extrabold whitespace-nowrap transition-all shrink-0"
           :class="
             activeTab === item.tab
               ? 'bg-[#00a046] text-white shadow-sm'
               : 'bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800'
           "
-          @click="selectTab(item.tab)"
         >
           <span
             class="material-symbols-outlined text-[15px]"
             :style="activeTab === item.tab ? 'font-variation-settings: \'FILL\' 1' : ''"
           >{{ item.icon }}</span>
           {{ item.label }}
-        </button>
+        </router-link>
       </div>
 
       <!-- Tab Content — dynamic component swap -->

@@ -45,12 +45,7 @@
     <p class="text-sm text-zinc-500 mb-6 max-w-sm">
       Перевірте правильність посилання або скористайтесь каталогом.
     </p>
-    <router-link
-      :to="{ name: 'catalog' }"
-      class="bg-[#00a046] hover:bg-[#00b050] text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all"
-    >
-      Перейти до каталогу
-    </router-link>
+    <UiButton :to="{ name: 'catalog' }">Перейти до каталогу</UiButton>
   </div>
 
   <!-- Product page -->
@@ -139,20 +134,14 @@
           <p class="text-[#00a046] font-black text-sm mt-0.5">{{ formatPrice(product.price) }}</p>
         </div>
         <div class="flex gap-2 shrink-0">
-          <button
-            class="hidden sm:flex border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 px-4 py-2.5 rounded-lg font-bold text-xs transition-all items-center gap-1.5"
-            @click="openQuickOrder"
-          >
-            <span class="material-symbols-outlined text-[15px]">bolt</span>
+          <UiButton variant="secondary" size="sm" class="hidden sm:inline-flex" @click="openQuickOrder">
+            <template #prefix><span class="material-symbols-outlined text-[15px]">bolt</span></template>
             Швидке замовлення
-          </button>
-          <button
-            class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg font-bold text-xs shadow-sm transition-all active:scale-[0.98] flex items-center gap-1.5"
-            @click="cartStore.addToCart(product)"
-          >
-            <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+          </UiButton>
+          <UiButton size="sm" @click="cartStore.addToCart(product)">
+            <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
             В кошик
-          </button>
+          </UiButton>
         </div>
       </div>
     </div>
@@ -173,6 +162,7 @@ import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
 import ComboDeal from "@/widgets/ProductDetail/ComboDeal.vue";
 import ProductTabs from "@/widgets/ProductDetail/ProductTabs.vue";
 import QuickOrderModal from "@/widgets/Catalog/QuickOrderModal.vue";
+import { UiButton } from "@/shared/ui";
 
 const {
   router,

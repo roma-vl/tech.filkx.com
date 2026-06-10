@@ -77,16 +77,6 @@ const isActive = (item: NavItem) => {
   return route.name === "account" && activeTab.value === item.query?.tab;
 };
 
-const navigate = (item: NavItem) => {
-  if (item.action) {
-    item.action();
-  } else if (item.routeName && !item.query) {
-    router.push({ name: item.routeName });
-  } else {
-    router.push({ name: "account", query: item.query });
-  }
-};
-
 const handleLogout = async () => {
   await authStore.logout();
   router.push("/login");
@@ -162,16 +152,16 @@ const handleLogout = async () => {
 
     <!-- Main nav -->
     <nav class="flex flex-col gap-1.5">
-      <button
+      <router-link
         v-for="item in navItems"
         :key="item.name"
+        :to="{ name: 'account', query: item.query }"
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group w-full text-left relative"
         :class="
           isActive(item)
             ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
             : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
         "
-        @click="navigate(item)"
       >
         <span
           class="material-symbols-outlined text-[20px]"
@@ -197,23 +187,23 @@ const handleLogout = async () => {
           class="ml-auto material-symbols-outlined text-[16px]"
           >chevron_right</span
         >
-      </button>
+      </router-link>
     </nav>
 
     <!-- Footer nav -->
     <div
       class="mt-auto flex flex-col gap-1.5 pt-4 border-t border-zinc-150 dark:border-zinc-800"
     >
-      <button
+      <router-link
         v-for="item in footerItems"
         :key="item.name"
+        :to="{ name: 'account', query: item.query }"
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left"
         :class="
           isActive(item)
             ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
             : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
         "
-        @click="navigate(item)"
       >
         <span
           class="material-symbols-outlined text-[20px]"
@@ -226,7 +216,7 @@ const handleLogout = async () => {
           class="ml-auto material-symbols-outlined text-[16px]"
           >chevron_right</span
         >
-      </button>
+      </router-link>
 
       <button
         class="flex items-center gap-3 text-rose-500 hover:bg-rose-500/8 dark:hover:bg-rose-500/12 rounded-xl px-3 py-2.5 transition-all duration-200 mt-2 w-full text-left font-black text-[15px]"
