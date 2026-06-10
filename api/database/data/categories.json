@@ -105,5 +105,20 @@
   { "slug": "used-macbook",          "name": { "uk": "Б/В MacBook",                         "en": "Used MacBook" },                   "parent_slug": "used-tech", "order": 2 },
   { "slug": "used-ipad",             "name": { "uk": "Б/В iPad",                            "en": "Used iPad" },                      "parent_slug": "used-tech", "order": 3 },
   { "slug": "used-apple-watch",      "name": { "uk": "Б/В Apple Watch",                     "en": "Used Apple Watch" },               "parent_slug": "used-tech", "order": 4 },
-  { "slug": "used-samsung",          "name": { "uk": "Б/В Samsung Galaxy",                  "en": "Used Samsung Galaxy" },            "parent_slug": "used-tech", "order": 5 }
+  { "slug": "used-samsung",          "name": { "uk": "Б/В Samsung Galaxy",                  "en": "Used Samsung Galaxy" },            "parent_slug": "used-tech", "order": 5 },
+
+  { "slug": "feature-phones",        "name": { "uk": "Мобільні телефони (кнопкові)",          "en": "Feature Phones" },                 "parent_slug": "smartphones", "order": 1  },
+  { "slug": "rugged-phones",         "name": { "uk": "Захищені смартфони",                    "en": "Rugged Smartphones" },             "parent_slug": "smartphones", "order": 2  },
+  { "slug": "refurbished-phones",    "name": { "uk": "Уцінені смартфони",                     "en": "Refurbished Smartphones" },        "parent_slug": "smartphones", "order": 3  },
+  { "slug": "smartphones-apple",     "name": { "uk": "Apple iPhone",                          "en": "Apple iPhone" },                   "parent_slug": "smartphones", "order": 4  },
+  { "slug": "smartphones-samsung",   "name": { "uk": "Samsung Galaxy",                        "en": "Samsung Galaxy" },                 "parent_slug": "smartphones", "order": 5  },
+  { "slug": "smartphones-xiaomi",    "name": { "uk": "Xiaomi / Redmi",                        "en": "Xiaomi / Redmi" },                 "parent_slug": "smartphones", "order": 6  },
+  { "slug": "smartphones-motorola",  "name": { "uk": "Motorola",                              "en": "Motorola" },                       "parent_slug": "smartphones", "order": 7  },
+  { "slug": "smartphones-oppo",      "name": { "uk": "OPPO",                                  "en": "OPPO" },                           "parent_slug": "smartphones", "order": 8  },
+  { "slug": "smartphones-poco",      "name": { "uk": "POCO",                                  "en": "POCO" },                           "parent_slug": "smartphones", "order": 9  },
+  { "slug": "smartphones-realme",    "name": { "uk": "Realme",                                "en": "Realme" },                         "parent_slug": "smartphones", "order": 10 },
+  { "slug": "smartphones-oneplus",   "name": { "uk": "OnePlus",                               "en": "OnePlus" },                        "parent_slug": "smartphones", "order": 11 },
+  { "slug": "smartphones-google",    "name": { "uk": "Google Pixel",                          "en": "Google Pixel" },                   "parent_slug": "smartphones", "order": 12 },
+  { "slug": "smartphones-nokia",     "name": { "uk": "Nokia / HMD",                           "en": "Nokia / HMD" },                    "parent_slug": "smartphones", "order": 13 },
+  { "slug": "smartphones-honor",     "name": { "uk": "Honor",                                 "en": "Honor" },                          "parent_slug": "smartphones", "order": 14 }
 ]

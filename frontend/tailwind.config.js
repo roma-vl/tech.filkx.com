@@ -69,7 +69,7 @@ export default {
         "stack-sm": "8px",
         "stack-xl": "64px",
         "margin-mobile": "16px",
-        "container-max": "1200px",
+        "container-max": "1440px",
         "margin-desktop": "32px",
         "stack-md": "16px",
         "stack-lg": "32px",

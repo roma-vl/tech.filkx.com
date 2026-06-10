@@ -1,0 +1,196 @@
+{
+  "category_slugs": ["smartphones"],
+
+  "attributes": [
+    {
+      "code": "screen_size",
+      "name": { "uk": "Діагональ екрану", "en": "Screen Diagonal" },
+      "type": "select",
+      "values": [
+        { "uk": "До 4\"",       "en": "Up to 4\""   },
+        { "uk": "4\" – 4.9\"",  "en": "4\" – 4.9\"" },
+        { "uk": "5\" – 5.9\"",  "en": "5\" – 5.9\"" },
+        { "uk": "6\" – 6.4\"",  "en": "6\" – 6.4\"" },
+        { "uk": "6.5\" – 6.9\"","en": "6.5\" – 6.9\""},
+        { "uk": "7\" і більше", "en": "7\" and larger"}
+      ]
+    },
+    {
+      "code": "display_type",
+      "name": { "uk": "Тип матриці", "en": "Display Type" },
+      "type": "select",
+      "values": [
+        { "uk": "AMOLED",      "en": "AMOLED"      },
+        { "uk": "IPS",         "en": "IPS"         },
+        { "uk": "IPS LCD",     "en": "IPS LCD"     },
+        { "uk": "LCD",         "en": "LCD"         },
+        { "uk": "LTPO AMOLED", "en": "LTPO AMOLED" },
+        { "uk": "LTPO OLED",   "en": "LTPO OLED"   },
+        { "uk": "OLED",        "en": "OLED"        },
+        { "uk": "P-OLED",      "en": "P-OLED"      },
+        { "uk": "PLS LCD",     "en": "PLS LCD"     },
+        { "uk": "TFT",         "en": "TFT"         },
+        { "uk": "TN",          "en": "TN"          }
+      ]
+    },
+    {
+      "code": "refresh_rate",
+      "name": { "uk": "Частота оновлення", "en": "Refresh Rate" },
+      "type": "select",
+      "values": [
+        { "uk": "60 Гц",  "en": "60 Hz"  },
+        { "uk": "90 Гц",  "en": "90 Hz"  },
+        { "uk": "120 Гц", "en": "120 Hz" },
+        { "uk": "144 Гц", "en": "144 Hz" },
+        { "uk": "165 Гц", "en": "165 Hz" },
+        { "uk": "240 Гц", "en": "240 Hz" }
+      ]
+    },
+    {
+      "code": "processor_brand",
+      "name": { "uk": "Виробник процесора", "en": "Processor Brand" },
+      "type": "select",
+      "values": [
+        { "uk": "Apple",               "en": "Apple"               },
+        { "uk": "Exynos",              "en": "Exynos"              },
+        { "uk": "Google",              "en": "Google"              },
+        { "uk": "MediaTek",            "en": "MediaTek"            },
+        { "uk": "Qualcomm Snapdragon", "en": "Qualcomm Snapdragon" },
+        { "uk": "UNISOC",              "en": "UNISOC"              },
+        { "uk": "Інші",                "en": "Other"               }
+      ]
+    },
+    {
+      "code": "core_count",
+      "name": { "uk": "Кількість ядер", "en": "Core Count" },
+      "type": "select",
+      "values": [
+        { "uk": "4 ядра",  "en": "4 cores"  },
+        { "uk": "6 ядер",  "en": "6 cores"  },
+        { "uk": "8 ядер",  "en": "8 cores"  },
+        { "uk": "9 ядер",  "en": "9 cores"  },
+        { "uk": "10 ядер", "en": "10 cores" }
+      ]
+    },
+    {
+      "code": "battery_capacity",
+      "name": { "uk": "Ємність акумулятора", "en": "Battery Capacity" },
+      "type": "select",
+      "values": [
+        { "uk": "До 2999 мАг",          "en": "Up to 2999 mAh"     },
+        { "uk": "3000 – 3999 мАг",      "en": "3000 – 3999 mAh"    },
+        { "uk": "4000 – 4999 мАг",      "en": "4000 – 4999 mAh"    },
+        { "uk": "5000 – 5999 мАг",      "en": "5000 – 5999 mAh"    },
+        { "uk": "6000 – 6999 мАг",      "en": "6000 – 6999 mAh"    },
+        { "uk": "7000 – 7999 мАг",      "en": "7000 – 7999 mAh"    },
+        { "uk": "8000 – 8999 мАг",      "en": "8000 – 8999 mAh"    },
+        { "uk": "9000 – 9999 мАг",      "en": "9000 – 9999 mAh"    },
+        { "uk": "10000 мАг і більше",   "en": "10000+ mAh"          }
+      ]
+    },
+    {
+      "code": "main_camera",
+      "name": { "uk": "Основна камера", "en": "Main Camera" },
+      "type": "select",
+      "values": [
+        { "uk": "До 12 Мп",       "en": "Up to 12 MP"  },
+        { "uk": "13 – 23 Мп",     "en": "13 – 23 MP"   },
+        { "uk": "24 – 48 Мп",     "en": "24 – 48 MP"   },
+        { "uk": "49 – 64 Мп",     "en": "49 – 64 MP"   },
+        { "uk": "100 Мп і більше","en": "100+ MP"       }
+      ]
+    },
+    {
+      "code": "front_camera",
+      "name": { "uk": "Фронтальна камера", "en": "Front Camera" },
+      "type": "select",
+      "values": [
+        { "uk": "До 8 Мп",       "en": "Up to 8 MP" },
+        { "uk": "9 – 19 Мп",     "en": "9 – 19 MP"  },
+        { "uk": "20 – 31 Мп",    "en": "20 – 31 MP" },
+        { "uk": "32 – 49 Мп",    "en": "32 – 49 MP" },
+        { "uk": "50 Мп і більше","en": "50+ MP"      }
+      ]
+    },
+    {
+      "code": "os",
+      "name": { "uk": "Операційна система", "en": "Operating System" },
+      "type": "select",
+      "values": [
+        { "uk": "Android", "en": "Android" },
+        { "uk": "iOS",     "en": "iOS"     },
+        { "uk": "Інші",    "en": "Other"   }
+      ]
+    },
+    {
+      "code": "storage",
+      "name": { "uk": "Вбудована пам'ять", "en": "Internal Storage" },
+      "type": "select",
+      "values": [
+        { "uk": "1 ГБ",   "en": "1 GB"   },
+        { "uk": "16 ГБ",  "en": "16 GB"  },
+        { "uk": "32 ГБ",  "en": "32 GB"  },
+        { "uk": "64 ГБ",  "en": "64 GB"  },
+        { "uk": "128 ГБ", "en": "128 GB" },
+        { "uk": "256 ГБ", "en": "256 GB" },
+        { "uk": "512 ГБ", "en": "512 GB" },
+        { "uk": "1 ТБ",   "en": "1 TB"   },
+        { "uk": "2 ТБ",   "en": "2 TB"   }
+      ]
+    },
+    {
+      "code": "nfc",
+      "name": { "uk": "NFC", "en": "NFC" },
+      "type": "select",
+      "values": [
+        { "uk": "Є",     "en": "Yes" },
+        { "uk": "Немає", "en": "No"  }
+      ]
+    },
+    {
+      "code": "wireless_charging",
+      "name": { "uk": "Бездротова зарядка", "en": "Wireless Charging" },
+      "type": "select",
+      "values": [
+        { "uk": "Є",     "en": "Yes" },
+        { "uk": "Немає", "en": "No"  }
+      ]
+    },
+    {
+      "code": "mobile_network",
+      "name": { "uk": "Мобільна мережа", "en": "Mobile Network" },
+      "type": "select",
+      "values": [
+        { "uk": "2G", "en": "2G" },
+        { "uk": "3G", "en": "3G" },
+        { "uk": "4G", "en": "4G" },
+        { "uk": "5G", "en": "5G" }
+      ]
+    },
+    {
+      "code": "sim_count",
+      "name": { "uk": "Кількість SIM-карт", "en": "SIM Card Count" },
+      "type": "select",
+      "values": [
+        { "uk": "1 SIM",             "en": "1 SIM"             },
+        { "uk": "2 SIM",             "en": "2 SIM"             },
+        { "uk": "Nano-SIM + eSIM",   "en": "Nano-SIM + eSIM"   },
+        { "uk": "eSIM",              "en": "eSIM"              }
+      ]
+    },
+    {
+      "code": "connectivity",
+      "name": { "uk": "Інтерфейси підключення", "en": "Connectivity Interfaces" },
+      "type": "select",
+      "values": [
+        { "uk": "USB Type-C",       "en": "USB Type-C"       },
+        { "uk": "Lightning",        "en": "Lightning"        },
+        { "uk": "Micro-USB",        "en": "Micro-USB"        },
+        { "uk": "Mini-Jack 3.5 мм", "en": "3.5mm Mini-Jack"  },
+        { "uk": "Wi-Fi",            "en": "Wi-Fi"            },
+        { "uk": "Bluetooth",        "en": "Bluetooth"        },
+        { "uk": "IrDA",             "en": "IrDA"             }
+      ]
+    }
+  ]
+}
