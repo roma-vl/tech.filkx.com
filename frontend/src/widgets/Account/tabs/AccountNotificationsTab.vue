@@ -159,7 +159,7 @@ onMounted(fetchNotifications);
       <div
         v-for="n in 3"
         :key="n"
-        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-xl p-5 animate-pulse flex gap-4"
+        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-5 animate-pulse flex gap-4"
       >
         <div
           class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"
@@ -187,7 +187,7 @@ onMounted(fetchNotifications);
         class="bg-white dark:bg-zinc-900 border rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
         :class="[
           item.read_at
-            ? 'border-zinc-100 dark:border-zinc-855/80 opacity-75'
+            ? 'border-zinc-100 dark:border-zinc-800/80 opacity-75'
             : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5',
         ]"
       >
@@ -276,7 +276,7 @@ onMounted(fetchNotifications);
       >
         <span class="material-symbols-outlined text-[32px]">notifications</span>
       </div>
-      <h3 class="font-extrabold text-lg text-zinc-850 dark:text-zinc-150">
+      <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
         У вас немає нових сповіщень
       </h3>
       <p

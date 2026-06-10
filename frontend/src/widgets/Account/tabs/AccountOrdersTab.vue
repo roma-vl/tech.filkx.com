@@ -274,7 +274,7 @@ const filterBtns = [
       class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm"
     >
       <div
-        class="flex items-center bg-zinc-50 dark:bg-zinc-850 p-1 rounded-lg w-fit"
+        class="flex items-center bg-zinc-50 dark:bg-zinc-800 p-1 rounded-lg w-fit"
       >
         <button
           v-for="btn in filterBtns"
@@ -282,7 +282,7 @@ const filterBtns = [
           :class="
             ordersFilter === btn.key
               ? 'bg-[#00a046] text-white shadow-sm'
-              : 'text-zinc-550 hover:text-zinc-800 dark:hover:text-zinc-200'
+              : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
           "
           class="py-2 px-4 rounded-lg font-extrabold text-xs md:text-sm transition-all"
           @click="ordersFilter = btn.key"
@@ -299,7 +299,7 @@ const filterBtns = [
           v-model="ordersSearchQuery"
           type="text"
           placeholder="Пошук замовлень за номером або назвою товару..."
-          class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-xs md:text-sm focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] text-zinc-800 dark:text-zinc-200 outline-none"
+          class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg pl-10 pr-4 py-2.5 text-xs md:text-sm focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] text-zinc-800 dark:text-zinc-200 outline-none"
         />
         <button
           v-if="ordersSearchQuery"
@@ -319,7 +319,7 @@ const filterBtns = [
       <div
         class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#00a046]"
       />
-      <p class="text-zinc-500 dark:text-zinc-455 font-medium">
+      <p class="text-zinc-500 dark:text-zinc-400 font-medium">
         Завантаження замовлень...
       </p>
     </div>
@@ -332,7 +332,7 @@ const filterBtns = [
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
       >
         <div
-          class="bg-zinc-50 dark:bg-zinc-850 px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4"
+          class="bg-zinc-50 dark:bg-zinc-800 px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4"
         >
           <div class="flex gap-8 flex-wrap">
             <div>
@@ -418,7 +418,7 @@ const filterBtns = [
           >
             <router-link :to="{ name: 'product-detail', params: { id: item.slug || item.id } }">
               <img
-                class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-2 hover:border-[#00a046]/40 transition-colors"
+                class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-2 hover:border-[#00a046]/40 transition-colors"
                 :src="item.image"
                 :alt="item.name"
               />
@@ -466,11 +466,11 @@ const filterBtns = [
         class="material-symbols-outlined text-[48px] text-zinc-350 dark:text-zinc-600 mb-4"
         >shopping_bag</span
       >
-      <h3 class="font-extrabold text-lg text-zinc-850 dark:text-zinc-150">
+      <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
         Замовлень не знайдено
       </h3>
       <p
-        class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 max-w-sm mx-auto mt-2"
+        class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-2"
       >
         Спробуйте змінити фільтр або пошуковий запит.
       </p>
@@ -487,7 +487,7 @@ const filterBtns = [
       class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
+        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <div>
           <h3 class="font-black text-lg text-zinc-900 dark:text-white">
@@ -524,7 +524,7 @@ const filterBtns = [
               <img
                 :src="item.image"
                 :alt="item.name"
-                class="w-12 h-12 object-contain rounded-lg bg-white border border-zinc-100 dark:border-zinc-800 p-1 hover:border-[#00a046]/40 transition-colors"
+                class="w-12 h-12 object-contain rounded-lg bg-white dark:bg-zinc-850 border border-zinc-100 dark:border-zinc-800 p-1 hover:border-[#00a046]/40 transition-colors"
               />
             </router-link>
             <div class="flex-1">
@@ -569,7 +569,7 @@ const filterBtns = [
               Спосіб оплати
             </h4>
             <p
-              class="flex items-center gap-1.5 font-extrabold text-zinc-850 dark:text-zinc-150 mt-1"
+              class="flex items-center gap-1.5 font-extrabold text-zinc-800 dark:text-zinc-200 mt-1"
             >
               <span class="material-symbols-outlined text-[18px]"
                 >credit_card</span
@@ -602,7 +602,7 @@ const filterBtns = [
         </div>
       </div>
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
+        class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
       >
         <UiButton
           v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(selectedOrder.statusCode)"
@@ -627,7 +627,7 @@ const filterBtns = [
       class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-md w-full shadow-2xl overflow-hidden"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
+        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <div>
           <h3
@@ -680,8 +680,8 @@ const filterBtns = [
               class="font-extrabold"
               :class="
                 step.done
-                  ? 'text-zinc-850 dark:text-zinc-150'
-                  : 'text-zinc-400 dark:text-zinc-550'
+                  ? 'text-zinc-800 dark:text-zinc-200'
+                  : 'text-zinc-400 dark:text-zinc-500'
               "
             >
               {{ step.name }}
@@ -693,7 +693,7 @@ const filterBtns = [
         </div>
       </div>
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
+        class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
       >
         <UiButton size="sm" @click="isTrackingOpen = false">Готово</UiButton>
       </div>
@@ -710,7 +710,7 @@ const filterBtns = [
       class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
+        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
       >
         <h3 class="font-black text-base text-zinc-900 dark:text-white">{{ isEditMode ? 'Редагувати відгук' : 'Написати відгук' }}</h3>
         <button class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" @click="isReviewOpen = false">
@@ -720,11 +720,11 @@ const filterBtns = [
 
       <form class="p-6 space-y-4 text-xs md:text-sm overflow-y-auto" @submit.prevent="submitReview">
         <!-- Product preview -->
-        <div class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-850 rounded-lg border border-zinc-100 dark:border-zinc-800">
+        <div class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-100 dark:border-zinc-800">
           <img
             :src="reviewProduct.image"
             :alt="reviewProduct.name"
-            class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 shrink-0"
+            class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 shrink-0"
           />
           <p class="font-bold text-zinc-800 dark:text-zinc-200 line-clamp-2 text-xs leading-snug">{{ reviewProduct.name }}</p>
         </div>
@@ -752,7 +752,7 @@ const filterBtns = [
             type="text"
             maxlength="120"
             placeholder="Коротко про враження..."
-            class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
+            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-250 dark:border-zinc-700 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
           />
         </div>
 
@@ -765,7 +765,7 @@ const filterBtns = [
             minlength="10"
             placeholder="Поділіться враженнями: якість, відповідність опису, зручність використання..."
             required
-            class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
+            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-250 dark:border-zinc-700 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
           />
         </div>
 

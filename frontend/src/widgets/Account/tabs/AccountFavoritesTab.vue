@@ -14,10 +14,10 @@ const cartStore = useCartStore();
       <div
         v-for="product in cartStore.wishlist"
         :key="product.id"
-        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
       >
         <div
-          class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-zinc-100 dark:border-zinc-800"
+          class="p-4 bg-white dark:bg-zinc-800 relative flex justify-center items-center aspect-square border-b border-zinc-200 dark:border-zinc-800"
         >
           <router-link :to="{ name: 'product-detail', params: { id: (product as any).slug || product.id } }" class="w-full h-full flex items-center justify-center">
             <img
@@ -60,7 +60,7 @@ const cartStore = useCartStore();
 
     <div
       v-else
-      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 p-12 text-center shadow-sm"
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 text-center shadow-sm"
     >
       <div
         class="w-16 h-16 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -70,7 +70,7 @@ const cartStore = useCartStore();
           style="font-variation-settings: &quot;FILL&quot; 1"
         >favorite</span>
       </div>
-      <h3 class="font-extrabold text-lg text-zinc-855 dark:text-zinc-150">
+      <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
         Ваш список обраного порожній
       </h3>
       <p

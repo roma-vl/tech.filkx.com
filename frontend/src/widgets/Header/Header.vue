@@ -3,21 +3,8 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
-import { AppDropdown } from "@/shared/ui";
 import { productApi } from "@/shared/services/api/productApi";
-
-interface CategorySub {
-  name: string;
-  slug: string;
-  badge: string;
-}
-
-interface Category {
-  id: string;
-  label: string;
-  icon: string;
-  sub: CategorySub[];
-}
+import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
 
 interface SearchProduct {
   id: string | number;
@@ -31,6 +18,25 @@ interface SearchProduct {
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+
+const isDark = ref(false);
+const currentLang = ref("UA");
+
+const toggleDarkMode = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+};
+
+const setLanguage = (lang: string) => {
+  currentLang.value = lang;
+  localStorage.setItem("lang", lang);
+};
 
 const searchInput = ref<HTMLInputElement | null>(null);
 const searchQuery = ref("");
@@ -125,35 +131,35 @@ watch(searchQuery, (newQuery) => {
   }, 300);
 });
 
-const getCategoryIcon = (slug: string) => {
-  const mapping: Record<string, string> = {
-    phones: "smartphone",
-    smartphones: "smartphone",
-    laptops: "laptop",
-    notebooks: "laptop",
-    gaming: "sports_esports",
-    audio: "headphones",
-    "audio-headphones": "headphones",
-    wearables: "watch",
-    watches: "watch",
-    cameras: "photo_camera",
-    tablets: "tablet",
-    "smart-home": "home",
-    "home-appliances": "home",
-  };
-  return mapping[slug] || "grid_view";
-};
+// Using dynamic database categories mapped to columns layout
+const categories = ref<any[]>([]);
+const activeCat = ref<any>(null);
 
-const categories = ref<Category[]>([]);
-const activeCat = ref<Category | null>(null);
-
-const selectCategory = (cat: Category) => {
+const selectCategory = (cat: any) => {
   activeCat.value = cat;
 };
 
-const clickCategorySub = (sub: CategorySub) => {
+const handleLinkClick = (link: any) => {
   isMegaMenuOpen.value = false;
-  router.push({ name: "catalog", query: { category: sub.slug } });
+  if (link.slug) {
+    router.push({
+      name: "catalog",
+      query: { category: link.slug, q: link.name }
+    });
+  } else {
+    router.push({
+      name: "catalog",
+      query: { q: link.name }
+    });
+  }
+};
+
+const handleGroupTitleClick = (group: any) => {
+  isMegaMenuOpen.value = false;
+  router.push({
+    name: "catalog",
+    query: { category: group.showMoreSlug || "phones", q: group.title }
+  });
 };
 
 const selectPopularQuery = (query: string) => {
@@ -190,7 +196,7 @@ const highlightMatch = (name: string, query: string) => {
   const regex = new RegExp(`(${query.trim()})`, "gi");
   return name.replace(
     regex,
-    '<span class="font-extrabold text-[#09090b]">$1</span>',
+    '<span class="font-extrabold text-[#00a046] dark:text-[#00b050]">$1</span>',
   );
 };
 
@@ -259,6 +265,19 @@ onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
   fetchUnreadCount();
 
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    isDark.value = true;
+    document.documentElement.classList.add("dark");
+  } else {
+    isDark.value = false;
+    document.documentElement.classList.remove("dark");
+  }
+
+  // Load language
+  currentLang.value = localStorage.getItem("lang") || "UA";
+
   try {
     const response = await productApi.catalogGetCategories();
     const responseData = response.data;
@@ -266,17 +285,8 @@ onMounted(async () => {
       responseData &&
       (responseData.success || responseData.status === "success")
     ) {
-      categories.value = responseData.data.map((cat: any) => ({
-        id: cat.slug,
-        label: cat.name?.uk || cat.name?.en || cat.name || "",
-        icon: getCategoryIcon(cat.slug),
-        sub: (cat.children || []).map((child: any) => ({
-          name: child.name?.uk || child.name?.en || child.name || "",
-          slug: child.slug,
-          badge: "",
-        })),
-      }));
-
+      const dbCats = responseData.data || [];
+      categories.value = mapDbCategoriesToMenu(dbCats);
       if (categories.value.length > 0) {
         activeCat.value = categories.value[0];
       }
@@ -296,27 +306,66 @@ onUnmounted(() => {
   <!-- Main Header Shell -->
   <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
     <!-- Announcement bar -->
-    <div class="hidden md:block bg-zinc-950 border-b border-white/[0.06]">
-      <div class="max-w-container-max mx-auto px-4 md:px-8 py-1.5 flex items-center justify-between text-[11px] text-zinc-400 gap-4">
-        <a href="tel:0800123456" class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap">
-          <span class="material-symbols-outlined text-[13px]">phone</span>
-          0 800 123 456
-          <span class="mx-1.5 text-zinc-700">·</span>
-          <span class="text-[#00a046]">Безкоштовно</span>
-        </a>
-        <div class="flex items-center gap-3 text-zinc-400">
-          <span class="flex items-center gap-1">
-            <span class="material-symbols-outlined text-[13px] text-[#00a046]">local_shipping</span>
-            Безкоштовна доставка від 500 грн
-          </span>
-          <span class="text-zinc-700">·</span>
-          <span>Офіційна гарантія</span>
-          <span class="text-zinc-700">·</span>
-          <span>Повернення 14 днів</span>
+    <div class="hidden md:block bg-[#13191f] border-b border-white/[0.06] text-zinc-400">
+      <div class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4">
+        <!-- Left: sota.store style top menu links -->
+        <div class="flex items-center gap-5">
+          <a href="/shipping-payment" class="hover:text-white transition-colors">Оплата та доставка</a>
+          <a href="/warranty-returns" class="hover:text-white transition-colors">Гарантія та обмін</a>
+          <a href="/service" class="hover:text-white transition-colors">Сервіс</a>
+          <a href="/services" class="hover:text-white transition-colors">Послуги</a>
+          <a href="/installments" class="hover:text-white transition-colors">Розстрочка</a>
+          <a href="/sota-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">Filkx Обмін</a>
+          <a href="/contacts" class="hover:text-white transition-colors">Контакти</a>
         </div>
-        <div class="flex items-center gap-1 whitespace-nowrap">
-          <span class="material-symbols-outlined text-[13px]">schedule</span>
-          Пн–Пт: 9:00–18:00
+
+        <!-- Right: phone, theme toggle, and language switcher -->
+        <div class="flex items-center gap-5">
+          <!-- Phone link -->
+          <a href="tel:0800330131" class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300">
+            0 800 33-01-31
+            <span class="material-symbols-outlined text-[13px] select-none">keyboard_arrow_down</span>
+          </a>
+
+          <!-- Theme Toggle Button -->
+          <button 
+            type="button" 
+            class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+            @click="toggleDarkMode"
+            :title="isDark ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'"
+          >
+            <span class="material-symbols-outlined text-[16px]">
+              {{ isDark ? 'light_mode' : 'dark_mode' }}
+            </span>
+          </button>
+
+          <!-- Language Selector -->
+          <div class="flex items-center bg-[#252a32] p-0.5 rounded border border-white/[0.05]">
+            <button
+              type="button"
+              class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
+              :class="
+                currentLang === 'UA'
+                  ? 'bg-[#00a046] text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              "
+              @click="setLanguage('UA')"
+            >
+              UA
+            </button>
+            <button
+              type="button"
+              class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
+              :class="
+                currentLang === 'RU'
+                  ? 'bg-[#00a046] text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              "
+              @click="setLanguage('RU')"
+            >
+              RU
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -373,18 +422,18 @@ onUnmounted(() => {
       <!-- Center: Rozetka Styled Search Input -->
       <div class="flex-grow max-w-3xl search-container relative z-40">
         <form
-          class="flex items-center bg-white rounded-lg overflow-hidden shadow-sm h-10 border border-transparent focus-within:border-zinc-500"
+          class="flex items-center bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm h-10 border border-transparent dark:border-zinc-700/80 focus-within:border-zinc-500 dark:focus-within:border-zinc-400"
           @submit.prevent="triggerSearch"
         >
           <div class="relative flex-grow flex items-center h-full px-3">
             <span
-              class="material-symbols-outlined text-zinc-400 mr-2 text-[20px]"
+              class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 mr-2 text-[20px]"
               >search</span
             >
             <input
               ref="searchInput"
               v-model="searchQuery"
-              class="w-full h-full text-zinc-800 text-sm focus:outline-none placeholder-zinc-400 bg-transparent"
+              class="w-full h-full text-zinc-800 dark:text-zinc-100 text-sm focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent"
               placeholder="Я шукаю..."
               type="text"
               @focus="showDropdown = true"
@@ -393,7 +442,7 @@ onUnmounted(() => {
             <button
               v-if="searchQuery"
               type="button"
-              class="p-1 text-zinc-400 hover:text-zinc-600 mr-1 flex items-center justify-center"
+              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 mr-1 flex items-center justify-center"
               @click="searchQuery = ''"
             >
               <span class="material-symbols-outlined text-[16px]">close</span>
@@ -401,7 +450,7 @@ onUnmounted(() => {
             <!-- Microphone Voice Search Button -->
             <button
               type="button"
-              class="p-1 text-zinc-400 hover:text-zinc-600 flex items-center justify-center"
+              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex items-center justify-center"
               @click="triggerVoiceSearch"
             >
               <span class="material-symbols-outlined text-[20px]">mic</span>
@@ -410,7 +459,7 @@ onUnmounted(() => {
           <!-- Rozetka Green Find Button -->
           <button
             type="submit"
-            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 shrink-0"
+            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
           >
             Знайти
           </button>
@@ -419,12 +468,12 @@ onUnmounted(() => {
         <!-- Dropdown Panel (Rozetka matching auto-completion & popular queries) -->
         <div
           v-if="showDropdown"
-          class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-zinc-200 z-[110] overflow-hidden p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-800 z-[110] overflow-hidden p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- Suggestions results -->
           <div v-if="isSearching" class="space-y-2 py-2">
             <div
-              class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2"
+              class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
               Шукаємо товари...
             </div>
@@ -433,28 +482,28 @@ onUnmounted(() => {
               :key="n"
               class="flex items-center gap-3 p-2 animate-pulse"
             >
-              <div class="w-10 h-10 bg-zinc-150 rounded shrink-0" />
+              <div class="w-10 h-10 bg-zinc-150 dark:bg-zinc-800 rounded shrink-0" />
               <div class="flex-grow space-y-1.5">
-                <div class="h-2 bg-zinc-200 rounded w-1/4" />
-                <div class="h-3 bg-zinc-200 rounded w-3/4" />
+                <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded w-1/4" />
+                <div class="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-3/4" />
               </div>
-              <div class="w-12 h-3 bg-zinc-200 rounded shrink-0" />
+              <div class="w-12 h-3 bg-zinc-200 dark:bg-zinc-700 rounded shrink-0" />
             </div>
           </div>
           <div v-else-if="filteredProducts.length > 0" class="space-y-1">
             <div
-              class="text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2"
+              class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
               Результати пошуку
             </div>
             <div
               v-for="prod in filteredProducts"
               :key="prod.id"
-              class="flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg cursor-pointer transition-colors group/item"
+              class="flex items-center gap-3 p-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 rounded-lg cursor-pointer transition-colors group/item"
               @click="selectSearchResult(prod)"
             >
               <div
-                class="w-10 h-10 bg-zinc-100 rounded p-1 shrink-0 flex items-center justify-center"
+                class="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded p-1 shrink-0 flex items-center justify-center"
               >
                 <img
                   class="max-h-full object-contain"
@@ -464,16 +513,16 @@ onUnmounted(() => {
               </div>
               <div class="flex-grow">
                 <p
-                  class="text-[9px] font-bold text-zinc-400 uppercase tracking-wide leading-none mb-0.5"
+                  class="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide leading-none mb-0.5"
                 >
                   {{ prod.category }}
                 </p>
                 <p
-                  class="text-xs text-zinc-700 line-clamp-1 group-hover/item:text-primary transition-colors"
+                  class="text-xs text-zinc-700 dark:text-zinc-300 line-clamp-1 group-hover/item:text-primary transition-colors"
                   v-html="highlightMatch(prod.name, searchQuery)"
                 />
               </div>
-              <span class="text-xs font-bold text-zinc-900 shrink-0">{{
+              <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 shrink-0">{{
                 formatPrice(prod.price)
               }}</span>
             </div>
@@ -481,7 +530,7 @@ onUnmounted(() => {
 
           <div
             v-else-if="searchQuery.trim()"
-            class="text-center text-xs text-zinc-400 py-2"
+            class="text-center text-xs text-zinc-400 dark:text-zinc-500 py-2"
           >
             Нічого не знайдено для "{{ searchQuery }}".
           </div>
@@ -489,7 +538,7 @@ onUnmounted(() => {
           <!-- Popular Searches (Rozetka Tags Style) -->
           <div class="space-y-2.5">
             <div
-              class="text-[10px] font-black uppercase text-zinc-400 tracking-wider"
+              class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider"
             >
               Популярні запити
             </div>
@@ -498,7 +547,7 @@ onUnmounted(() => {
                 v-for="tag in popularQueries"
                 :key="tag"
                 type="button"
-                class="px-3 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:border-zinc-300 transition-colors"
+                class="px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
                 @click="selectPopularQuery(tag)"
               >
                 {{ tag }}
@@ -583,47 +632,41 @@ onUnmounted(() => {
     <!-- Dropdown Floating Mega Menu Overlay -->
     <div
       v-if="isMegaMenuOpen && categories.length > 0 && activeCat"
-      class="mega-menu-wrapper absolute left-0 right-0 top-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-900 dark:text-zinc-100 border-t border-zinc-200 dark:border-zinc-800 shadow-2xl z-[120] duration-350 flex animate-in fade-in slide-in-from-top-4"
+      class="mega-menu-wrapper absolute left-0 right-0 top-full bg-[#1c2229] text-zinc-150 border-t border-zinc-800 shadow-2xl z-[120] duration-350 flex animate-in fade-in slide-in-from-top-4 rounded-none"
     >
       <div class="max-w-container-max mx-auto w-full flex min-h-[480px]">
         <!-- Left Sidebar: Category list -->
         <div
-          class="w-1/4 border-r border-zinc-250/60 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/20 p-5"
+          class="w-[230px] xl:w-[250px] border-r border-zinc-800 bg-[#1c2229] p-4 shrink-0"
         >
-          <ul class="space-y-1.5">
+          <ul class="space-y-1">
             <li
               v-for="cat in categories"
               :key="cat.id"
               :class="
                 activeCat && activeCat.id === cat.id
-                  ? 'bg-gradient-to-r from-[#00a046] to-[#00b050] text-white shadow-md shadow-emerald-500/10 font-bold'
-                  : 'hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300'
+                  ? 'bg-[#252e37] text-white font-bold'
+                  : 'hover:bg-[#252e37]/75 text-zinc-300 hover:text-white'
               "
-              class="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group/item"
+              class="flex items-center justify-between p-2.5 rounded-none cursor-pointer transition-all duration-150 group/item"
               @mouseenter="selectCategory(cat)"
+              @click="router.push({ name: 'catalog', query: { category: cat.slug } })"
             >
               <div class="flex items-center gap-3">
                 <span
-                  class="material-symbols-outlined text-[21px] transition-transform duration-300"
+                  class="material-symbols-outlined text-[19px] transition-transform duration-300"
                   :class="
                     activeCat && activeCat.id === cat.id
-                      ? 'scale-110'
-                      : 'group-hover/item:scale-110 text-zinc-400 dark:text-zinc-500'
+                      ? 'scale-110 text-white'
+                      : 'group-hover/item:scale-110 text-zinc-400'
                   "
                 >
                   {{ cat.icon }}
                 </span>
-                <span class="text-xs uppercase tracking-wider font-extrabold">{{
-                  cat.label
-                }}</span>
+                <span class="text-xs font-semibold">{{ cat.label }}</span>
               </div>
               <span
-                class="material-symbols-outlined text-[16px] transition-transform duration-300"
-                :class="
-                  activeCat && activeCat.id === cat.id
-                    ? 'translate-x-0.5 opacity-100'
-                    : 'opacity-0 group-hover/item:opacity-75 group-hover/item:translate-x-0.5'
-                "
+                class="material-symbols-outlined text-[14px] text-zinc-650 transition-transform duration-300 group-hover/item:text-zinc-400 group-hover/item:translate-x-0.5"
               >
                 chevron_right
               </span>
@@ -631,151 +674,67 @@ onUnmounted(() => {
           </ul>
         </div>
 
-        <!-- Center/Right: Sub-categories Grid & Promo Widget -->
+        <!-- Center/Right: Sub-categories Columns (Identical to screenshot) -->
         <div
-          class="flex-grow p-8 bg-white dark:bg-zinc-900 flex gap-8 justify-between"
+          class="flex-grow p-6 pl-8 bg-[#1c2229] text-white"
         >
-          <!-- Left: Sub-categories grid -->
-          <div class="flex-grow flex flex-col justify-between max-w-4xl">
-            <div>
+          <div
+            v-if="activeCat.columns && activeCat.columns.length > 0"
+            class="grid grid-cols-4 gap-6"
+          >
+            <div
+              v-for="(col, colIdx) in activeCat.columns"
+              :key="colIdx"
+              class="space-y-6"
+            >
               <div
-                class="flex items-center gap-3 mb-6 text-[#00a046] dark:text-[#00b050] border-b border-zinc-150 dark:border-zinc-800 pb-3.5"
+                v-for="(group, gIdx) in col"
+                :key="gIdx"
+                class="space-y-2"
               >
-                <span class="material-symbols-outlined text-[26px] font-bold">{{
-                  activeCat.icon
-                }}</span>
-                <h3 class="text-lg font-black uppercase tracking-wider">
-                  {{ activeCat.label }}
-                </h3>
-              </div>
-
-              <div
-                v-if="activeCat.sub && activeCat.sub.length > 0"
-                class="grid grid-cols-2 lg:grid-cols-3 gap-5"
-              >
-                <div
-                  v-for="sub in activeCat.sub"
-                  :key="sub.slug"
-                  class="p-4 border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/20 hover:border-zinc-200 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-850 rounded-2xl cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between h-24 group/sub"
-                  @click="clickCategorySub(sub)"
+                <h4
+                  class="text-[#3898ec] hover:underline font-extrabold text-[11.5px] uppercase tracking-wider cursor-pointer"
+                  @click="handleGroupTitleClick(group)"
                 >
-                  <div class="flex justify-between items-start gap-2">
-                    <span
-                      class="text-xs font-black text-zinc-800 dark:text-zinc-200 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors leading-snug"
-                      >{{ sub.name }}</span
-                    >
-                    <span
-                      v-if="sub.badge"
-                      class="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 animate-pulse"
-                      >{{ sub.badge }}</span
-                    >
-                  </div>
-                  <span
-                    class="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover/sub:text-[#00a046] dark:group-hover/sub:text-[#00b050] transition-colors flex items-center gap-1 font-bold uppercase tracking-wider"
+                  {{ group.title }}
+                </h4>
+                <ul class="space-y-1.5">
+                  <li
+                    v-for="(link, lIdx) in group.links"
+                    :key="lIdx"
+                    class="flex items-center"
                   >
-                    Переглянути товари
                     <span
-                      class="material-symbols-outlined text-[13px] group-hover/sub:translate-x-1 transition-transform"
-                      >arrow_forward</span
+                      class="text-zinc-300 hover:text-[#3898ec] text-xs cursor-pointer transition-colors leading-relaxed"
+                      @click="handleLinkClick(link)"
                     >
-                  </span>
+                      {{ link.name }}
+                    </span>
+                    <span
+                      v-if="link.badge"
+                      class="text-[#ff4b5f] text-[9px] font-black uppercase tracking-wider ml-1"
+                    >
+                      {{ link.badge }}
+                    </span>
+                  </li>
+                </ul>
+                <div
+                  v-if="group.showMoreSlug"
+                  class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
+                  @click="handleGroupTitleClick(group)"
+                >
+                  Дивитися далі →
                 </div>
               </div>
-              <div
-                v-else
-                class="text-center py-12 text-zinc-400 dark:text-zinc-550"
-              >
-                <span class="material-symbols-outlined text-4xl mb-2"
-                  >category</span
-                >
-                <p class="text-xs font-bold">
-                  У цій категорії поки що немає підкатегорій.
-                </p>
-              </div>
-            </div>
-
-            <div
-              class="mt-8 pt-4 border-t border-zinc-150 dark:border-zinc-800 flex justify-between items-center"
-            >
-              <p
-                class="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider"
-              >
-                Швидка доставка та офіційна гарантія на всі товари
-              </p>
-              <button
-                class="inline-flex items-center gap-2 text-xs font-black text-[#00a046] hover:text-[#00b050] dark:text-[#00b050] dark:hover:text-[#00c060] transition-colors uppercase tracking-widest"
-                @click="
-                  isMegaMenuOpen = false;
-                  router.push({
-                    name: 'catalog',
-                    query: { category: activeCat?.id },
-                  });
-                "
-              >
-                Всі товари {{ activeCat.label }}
-                <span class="material-symbols-outlined text-sm font-bold"
-                  >arrow_forward</span
-                >
-              </button>
             </div>
           </div>
-
-          <!-- Right Promo Widget (Featured Banner) -->
           <div
-            class="w-80 shrink-0 hidden xl:flex flex-col justify-between relative rounded-3xl overflow-hidden bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 shadow-lg p-6 text-white group/promo"
+            v-else
+            class="flex items-center justify-center h-full text-zinc-500"
           >
-            <!-- Glow Effect -->
-            <div
-              class="absolute -right-16 -top-16 w-36 h-36 rounded-full bg-emerald-500/10 blur-2xl group-hover/promo:bg-emerald-500/20 transition-all duration-500"
-            />
-
-            <div class="relative z-10 space-y-4">
-              <span
-                class="inline-block text-[9px] bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-2.5 py-0.5 rounded-full font-black uppercase tracking-widest"
-              >
-                Пропозиція тижня
-              </span>
-              <h4
-                class="font-extrabold text-lg leading-snug tracking-tight text-white group-hover/promo:text-[#00b050] transition-colors"
-              >
-                Оновлюйте гаджети на весну зі знижкою до 40%
-              </h4>
-              <p class="text-[11px] text-zinc-400 leading-relaxed">
-                Спеціальні ціни на преміальні смартфони, навушники та ноутбуки.
-              </p>
-            </div>
-
-            <div class="relative z-10 mt-6 space-y-3">
-              <div
-                class="flex items-center gap-2 text-xs font-bold text-zinc-300"
-              >
-                <span class="material-symbols-outlined text-emerald-400 text-sm"
-                  >check_circle</span
-                >
-                <span>Офіційна гарантія</span>
-              </div>
-              <div
-                class="flex items-center gap-2 text-xs font-bold text-zinc-300"
-              >
-                <span class="material-symbols-outlined text-emerald-400 text-sm"
-                  >local_shipping</span
-                >
-                <span>Безкоштовна доставка</span>
-              </div>
-
-              <button
-                class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-xl transition-all shadow-md hover:shadow-emerald-500/10 flex items-center justify-center gap-1.5"
-                @click="
-                  isMegaMenuOpen = false;
-                  router.push({ name: 'catalog', query: { is_hot: 'true' } });
-                "
-              >
-                <span>Перейти до акцій</span>
-                <span
-                  class="material-symbols-outlined text-sm font-bold group-hover/promo:translate-x-0.5 transition-transform"
-                  >arrow_forward</span
-                >
-              </button>
+            <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2">category</span>
+              <p class="text-xs font-bold">Немає дочірніх розділів.</p>
             </div>
           </div>
         </div>

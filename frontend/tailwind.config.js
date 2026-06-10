@@ -1,3 +1,5 @@
+import colors from "tailwindcss/colors";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
@@ -5,6 +7,25 @@ export default {
   theme: {
     extend: {
       colors: {
+        zinc: {
+          ...colors.zinc,
+          150: "#ececed",
+          250: "#dcdce0",
+          350: "#bcbcc2",
+          355: "#b8b8be",
+          450: "#8b8b93",
+          550: "#62626b",
+          555: "#606068",
+          650: "#494950",
+          750: "#333338",
+          850: "#1f1f22",
+          855: "#1a1a1d",
+        },
+        emerald: {
+          ...colors.emerald,
+          450: "#22c68d",
+          850: "#065640",
+        },
         "on-secondary": "#ffffff",
         "surface-dim": "#e4e4e7",
         secondary: "#52525b",

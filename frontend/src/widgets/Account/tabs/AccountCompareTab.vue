@@ -243,12 +243,12 @@ watch(() => route.query.items, loadSharedItems);
             <div class="space-y-4 flex-1">
               <div>
                 <h3
-                  class="font-extrabold text-base md:text-lg text-zinc-855 dark:text-zinc-150 group-hover:text-[#00a046] transition-colors"
+                  class="font-extrabold text-base md:text-lg text-zinc-800 dark:text-zinc-200 group-hover:text-[#00a046] transition-colors"
                 >
                   {{ catName }}
                 </h3>
                 <p
-                  class="text-xs text-zinc-455 dark:text-zinc-500 font-bold mt-1"
+                  class="text-xs text-zinc-500 mt-1 font-bold"
                 >
                   Кількість товарів: {{ products.length }}
                 </p>
@@ -260,7 +260,7 @@ watch(() => route.query.items, loadSharedItems);
                   v-for="prod in products"
                   :key="prod.id"
                   :to="{ name: 'product-detail', params: { id: prod.slug || prod.id } }"
-                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-150 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform hover:border-[#00a046]/40"
+                  class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform hover:border-[#00a046]/40"
                   :title="prod.name"
                   @click.stop
                 >
@@ -283,7 +283,7 @@ watch(() => route.query.items, loadSharedItems);
                 :class="
                   sharedStates[catName as string]
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
-                    : 'border-zinc-150 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-555 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-250'
+                    : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
                 "
                 title="Поділитися списком"
                 type="button"
@@ -298,7 +298,7 @@ watch(() => route.query.items, loadSharedItems);
               </button>
 
               <button
-                class="p-2.5 rounded-lg border border-zinc-150 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-955/20 text-zinc-455 hover:text-rose-550 transition-colors flex items-center justify-center"
+                class="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-zinc-500 hover:text-rose-500 transition-colors flex items-center justify-center"
                 title="Видалити весь список"
                 type="button"
                 @click="removeCategoryComparison(catName as string)"
@@ -321,11 +321,11 @@ watch(() => route.query.items, loadSharedItems);
           class="material-symbols-outlined text-[48px] text-zinc-350 dark:text-zinc-600 mb-4"
           >compare_arrows</span
         >
-        <h3 class="font-extrabold text-lg text-zinc-855 dark:text-zinc-150">
+        <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
           Немає товарів для порівняння
         </h3>
         <p
-          class="text-xs md:text-sm text-zinc-455 dark:text-zinc-500 max-w-sm mx-auto mt-2"
+          class="text-xs md:text-sm text-zinc-500 dark:text-zinc-500 max-w-sm mx-auto mt-2"
         >
           Додайте товари до порівняння, натиснувши кнопку порівняння на картках
           товарів.
@@ -340,7 +340,7 @@ watch(() => route.query.items, loadSharedItems);
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800"
       >
         <button
-          class="flex items-center gap-1.5 text-zinc-555 dark:text-zinc-400 hover:text-[#00a046] transition-colors font-extrabold text-xs md:text-sm"
+          class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 hover:text-[#00a046] transition-colors font-extrabold text-xs md:text-sm"
           type="button"
           @click="selectedCategory = null"
         >
@@ -359,7 +359,7 @@ watch(() => route.query.items, loadSharedItems);
             :class="
               sharedStates[selectedCategory]
                 ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
-                : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-650 hover:text-[#00a046] dark:text-zinc-355 dark:hover:text-white'
+                : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-[#00a046] dark:text-zinc-400 dark:hover:text-white'
             "
             title="Поділитися цим порівнянням"
             type="button"
@@ -384,10 +384,10 @@ watch(() => route.query.items, loadSharedItems);
         <table class="w-full min-w-[800px] border-collapse text-left text-sm">
           <thead>
             <tr
-              class="bg-zinc-50 dark:bg-zinc-850/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-extrabold uppercase text-[10px] tracking-wider"
+              class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 font-extrabold uppercase text-[10px] tracking-wider"
             >
               <th
-                class="p-5 w-1/4 sticky left-0 bg-zinc-50 dark:bg-zinc-850 z-20 border-r border-zinc-200 dark:border-zinc-800"
+                class="p-5 w-1/4 sticky left-0 bg-zinc-50 dark:bg-zinc-800 z-20 border-r border-zinc-200 dark:border-zinc-800"
               >
                 Параметри
               </th>
@@ -397,7 +397,7 @@ watch(() => route.query.items, loadSharedItems);
                 class="p-5 relative text-center min-w-[220px]"
               >
                 <button
-                  class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-455 dark:text-zinc-500 rounded-full transition-all border border-zinc-200/40 dark:border-zinc-800/40"
+                  class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-500 dark:text-zinc-400 rounded-full transition-all border border-zinc-200/40 dark:border-zinc-800/40"
                   type="button"
                   @click="
                     cartStore.removeFromCompare(product.id as any);
@@ -413,7 +413,7 @@ watch(() => route.query.items, loadSharedItems);
                   >
                 </button>
                 <span
-                  class="inline-block py-1 font-bold text-zinc-555 dark:text-zinc-400"
+                  class="inline-block py-1 font-bold text-zinc-500 dark:text-zinc-400"
                   >Товар</span
                 >
               </th>
@@ -424,7 +424,7 @@ watch(() => route.query.items, loadSharedItems);
           >
             <!-- Image Row -->
             <tr
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
@@ -441,12 +441,12 @@ watch(() => route.query.items, loadSharedItems);
                     <img
                       :src="product.image"
                       :alt="product.name"
-                      class="w-20 h-20 object-contain mx-auto bg-white rounded-lg border border-zinc-150 dark:border-zinc-850 p-2 hover:border-[#00a046]/40 transition-all hover:scale-105 duration-300"
+                      class="w-20 h-20 object-contain mx-auto bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 p-2 hover:border-[#00a046]/40 transition-all hover:scale-105 duration-300"
                     />
                   </router-link>
                   <router-link
                     :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
-                    class="block font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-855 dark:text-zinc-200 max-w-[180px] hover:text-[#00a046] transition-colors"
+                    class="block font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-800 dark:text-zinc-200 max-w-[180px] hover:text-[#00a046] transition-colors"
                   >
                     {{ product.name }}
                   </router-link>
@@ -455,7 +455,7 @@ watch(() => route.query.items, loadSharedItems);
             </tr>
             <!-- Price Row -->
             <tr
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
@@ -472,7 +472,7 @@ watch(() => route.query.items, loadSharedItems);
             </tr>
             <!-- Rating Row -->
             <tr
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
@@ -493,7 +493,7 @@ watch(() => route.query.items, loadSharedItems);
                     >star</span
                   >
                   <span
-                    class="font-extrabold text-zinc-650 dark:text-zinc-350 text-xs md:text-sm"
+                    class="font-extrabold text-zinc-500 dark:text-zinc-400 text-xs md:text-sm"
                   >
                     {{ product.rating || "4.8" }} ({{ product.reviews || 0 }})
                   </span>
@@ -504,7 +504,7 @@ watch(() => route.query.items, loadSharedItems);
             <tr
               v-for="label in dynamicSpecLabels"
               :key="label"
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
@@ -514,14 +514,14 @@ watch(() => route.query.items, loadSharedItems);
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
                 :key="product.id"
-                class="p-5 text-center text-xs md:text-sm font-semibold text-zinc-850 dark:text-zinc-200"
+                class="p-5 text-center text-xs md:text-sm font-semibold text-zinc-800 dark:text-zinc-200"
               >
                 {{ getSpecValue(product, label) }}
               </td>
             </tr>
             <!-- Description Row -->
             <tr
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
@@ -538,7 +538,7 @@ watch(() => route.query.items, loadSharedItems);
             </tr>
             <!-- Actions Row -->
             <tr
-              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-850/20 transition-colors"
+              class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
             >
               <td
                 class="p-5 bg-zinc-50 dark:bg-zinc-900 sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"

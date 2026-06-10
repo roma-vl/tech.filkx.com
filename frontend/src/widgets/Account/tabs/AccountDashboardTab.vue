@@ -107,7 +107,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           :key="i"
           class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden"
         >
-          <div class="bg-zinc-50 dark:bg-zinc-850 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex gap-6">
+          <div class="bg-zinc-50 dark:bg-zinc-800 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex gap-6">
             <div class="h-3 w-24 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
             <div class="h-3 w-20 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
             <div class="h-4 w-16 bg-zinc-200 dark:bg-zinc-800 rounded-lg animate-pulse" />
@@ -133,7 +133,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           :key="order.id"
           class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
         >
-          <div class="bg-zinc-50 dark:bg-zinc-850 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4">
+          <div class="bg-zinc-50 dark:bg-zinc-800 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4">
             <div class="flex gap-6 flex-wrap">
               <div>
                 <p class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Дата оформлення</p>
@@ -169,7 +169,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
             >
               <router-link :to="{ name: 'product-detail', params: { id: (item as any).slug || (item as any).id } }">
                 <img
-                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 hover:border-[#00a046]/40 transition-colors"
+                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 hover:border-[#00a046]/40 transition-colors"
                   :src="item.image"
                   :alt="item.name"
                 />
@@ -177,11 +177,11 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
               <div class="flex-1 text-center sm:text-left">
                 <router-link
                   :to="{ name: 'product-detail', params: { id: (item as any).slug || (item as any).id } }"
-                  class="block font-extrabold text-zinc-850 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 hover:text-[#00a046] transition-colors"
+                  class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 hover:text-[#00a046] transition-colors"
                 >
                   {{ item.name }}
                 </router-link>
-                <p v-if="(item as any).returnWindow" class="text-xs text-zinc-450 dark:text-zinc-500 mt-1.5">
+                <p v-if="(item as any).returnWindow" class="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5">
                   Повернення можливе до {{ (item as any).returnWindow }}
                 </p>
               </div>

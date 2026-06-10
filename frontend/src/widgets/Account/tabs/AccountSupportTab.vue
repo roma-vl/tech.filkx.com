@@ -271,7 +271,7 @@ onMounted(() => {
             <div
               v-for="ticket in ticketsList"
               :key="ticket.id"
-              class="py-4.5 first:pt-0 last:pb-0 flex flex-wrap justify-between items-center gap-4 text-xs md:text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-850 px-2 rounded-xl transition-all"
+              class="py-4.5 first:pt-0 last:pb-0 flex flex-wrap justify-between items-center gap-4 text-xs md:text-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2 rounded-xl transition-all"
               @click="openTicket(ticket)"
             >
               <div>
@@ -326,7 +326,7 @@ onMounted(() => {
             >
             <select
               v-model="ticketForm.category"
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
             >
               <option>Проблеми із замовленням</option>
               <option>Гарантія та повернення</option>
@@ -344,7 +344,7 @@ onMounted(() => {
               type="text"
               placeholder="Коротко опишіть тему..."
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
             />
           </div>
           <div class="space-y-1.5">
@@ -357,7 +357,7 @@ onMounted(() => {
               rows="4"
               placeholder="Детально опишіть вашу проблему..."
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
             />
           </div>
           <button
@@ -488,7 +488,7 @@ onMounted(() => {
                 rows="2"
                 placeholder="Введіть ваше повідомлення..."
                 required
-                class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
+                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
                 @keydown.enter.prevent="sendTicketReply"
               />
             </div>

@@ -109,9 +109,8 @@ const handleLogout = async () => {
       </div>
     </div>
 
-    <!-- User info -->
     <div
-      class="flex flex-col gap-1 pb-4 border-b border-zinc-150 dark:border-zinc-800"
+      class="flex flex-col gap-1 pb-4 border-b border-zinc-200 dark:border-zinc-800"
     >
       <div class="flex items-center gap-3">
         <img
@@ -127,7 +126,7 @@ const handleLogout = async () => {
         </div>
         <div class="min-w-0">
           <p
-            class="font-black text-zinc-850 dark:text-zinc-150 leading-tight truncate text-sm"
+            class="font-black text-zinc-800 dark:text-zinc-200 leading-tight truncate text-sm"
           >
             {{ userName }}
           </p>
@@ -160,7 +159,7 @@ const handleLogout = async () => {
         :class="
           isActive(item)
             ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
-            : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
+            : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white font-extrabold'
         "
       >
         <span
@@ -190,9 +189,8 @@ const handleLogout = async () => {
       </router-link>
     </nav>
 
-    <!-- Footer nav -->
     <div
-      class="mt-auto flex flex-col gap-1.5 pt-4 border-t border-zinc-150 dark:border-zinc-800"
+      class="mt-auto flex flex-col gap-1.5 pt-4 border-t border-zinc-200 dark:border-zinc-800"
     >
       <router-link
         v-for="item in footerItems"
@@ -202,7 +200,7 @@ const handleLogout = async () => {
         :class="
           isActive(item)
             ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
-            : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
+            : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white font-extrabold'
         "
       >
         <span

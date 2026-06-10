@@ -410,7 +410,7 @@ const cardsSummary = computed(() => {
 });
 
 const inputClass =
-  "w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none transition-all";
+  "w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-800 dark:text-zinc-100 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none transition-all";
 </script>
 
 <template>
@@ -420,7 +420,7 @@ const inputClass =
       class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"
     >
       <button
-        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-850/30 transition-colors"
+        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
         @click="toggleSection('profile')"
       >
         <div class="flex items-center gap-4">
@@ -585,7 +585,7 @@ const inputClass =
       class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"
     >
       <button
-        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-850/30 transition-colors"
+        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
         @click="toggleSection('password')"
       >
         <div class="flex items-center gap-4">
@@ -680,7 +680,7 @@ const inputClass =
       class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"
     >
       <button
-        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-850/30 transition-colors"
+        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
         @click="toggleSection('addresses')"
       >
         <div class="flex items-center gap-4">
@@ -800,7 +800,7 @@ const inputClass =
       class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"
     >
       <button
-        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-850/30 transition-colors"
+        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
         @click="toggleSection('cards')"
       >
         <div class="flex items-center gap-4">
@@ -942,7 +942,7 @@ const inputClass =
       class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-md w-full shadow-2xl overflow-hidden"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
+        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <h3
           class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
@@ -968,7 +968,7 @@ const inputClass =
             >
             <select
               v-model="addressForm.type"
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             >
               <option>Дім</option>
               <option>Офіс</option>
@@ -984,7 +984,7 @@ const inputClass =
               v-model="addressForm.recipient"
               type="text"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
         </div>
@@ -1010,7 +1010,7 @@ const inputClass =
               v-model="addressForm.city"
               type="text"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
           <div class="space-y-1.5">
@@ -1021,7 +1021,7 @@ const inputClass =
             <input
               v-model="addressForm.state"
               type="text"
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
         </div>
@@ -1035,7 +1035,7 @@ const inputClass =
               v-model="addressForm.zip"
               type="text"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
           <div class="space-y-1.5">
@@ -1047,7 +1047,7 @@ const inputClass =
               v-model="addressForm.country"
               type="text"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
         </div>
@@ -1063,7 +1063,7 @@ const inputClass =
           />
         </div>
         <div
-          class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
+          class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
         >
           <button
             type="button"
@@ -1092,7 +1092,7 @@ const inputClass =
       class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-sm w-full shadow-2xl overflow-hidden"
     >
       <div
-        class="bg-zinc-50 dark:bg-zinc-850 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
+        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <h3
           class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
@@ -1141,7 +1141,7 @@ const inputClass =
             type="text"
             placeholder="напр. ROMAN SHEVCHENKO"
             required
-            class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
           />
         </div>
         <div class="space-y-1.5">
@@ -1154,7 +1154,7 @@ const inputClass =
             type="text"
             placeholder="16-значний номер картки"
             required
-            class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -1168,7 +1168,7 @@ const inputClass =
               type="text"
               placeholder="ММ/РР"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
           <div class="space-y-1.5">
@@ -1182,12 +1182,12 @@ const inputClass =
               maxlength="3"
               placeholder="•••"
               required
-              class="w-full bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
+              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
             />
           </div>
         </div>
         <div
-          class="bg-zinc-50 dark:bg-zinc-850 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
+          class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
         >
           <button
             type="button"

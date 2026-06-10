@@ -90,14 +90,14 @@ const formatDate = (isoString: string) => {
           Сортування:
         </span>
         <div
-          class="flex bg-zinc-100 dark:bg-zinc-850 p-1 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50"
+          class="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg border border-zinc-200/50 dark:border-zinc-800/50"
         >
           <button
             class="px-3 py-1.5 rounded-md text-xs font-extrabold transition-all"
             :class="
               sortBy === 'recent'
-                ? 'bg-white dark:bg-zinc-800 text-[#00a046] shadow-sm'
-                : 'text-zinc-555 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
+                ? 'bg-white dark:bg-zinc-700 text-[#00a046] shadow-sm'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
             "
             type="button"
             @click="sortBy = 'recent'"
@@ -108,8 +108,8 @@ const formatDate = (isoString: string) => {
             class="px-3 py-1.5 rounded-md text-xs font-extrabold transition-all"
             :class="
               sortBy === 'count'
-                ? 'bg-white dark:bg-zinc-800 text-[#00a046] shadow-sm'
-                : 'text-zinc-555 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
+                ? 'bg-white dark:bg-zinc-700 text-[#00a046] shadow-sm'
+                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
             "
             type="button"
             @click="sortBy = 'count'"
@@ -120,7 +120,7 @@ const formatDate = (isoString: string) => {
       </div>
 
       <button
-        class="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-250 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-955/20 text-zinc-555 hover:text-rose-550 dark:text-zinc-400 dark:hover:text-rose-400 text-xs font-bold transition-all self-end sm:self-center"
+        class="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-zinc-500 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-450 text-xs font-bold transition-all self-end sm:self-center"
         type="button"
         @click="clearAll"
       >
@@ -137,11 +137,11 @@ const formatDate = (isoString: string) => {
       <div
         v-for="product in sortedProducts"
         :key="product.id"
-        class="bg-white dark:bg-zinc-900 border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
       >
         <!-- Card Header / Image Section -->
         <div
-          class="p-4 bg-white relative flex justify-center items-center aspect-square border-b border-zinc-150 dark:border-zinc-800"
+          class="p-4 bg-white dark:bg-zinc-800 relative flex justify-center items-center aspect-square border-b border-zinc-200 dark:border-zinc-800"
         >
           <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }" class="w-full h-full flex items-center justify-center">
             <img
@@ -221,18 +221,18 @@ const formatDate = (isoString: string) => {
     <!-- Empty state -->
     <div
       v-else
-      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-150 dark:border-zinc-800 p-12 text-center shadow-sm"
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 text-center shadow-sm"
     >
       <div
         class="w-16 h-16 bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400 dark:text-zinc-500 rounded-full flex items-center justify-center mx-auto mb-4"
       >
         <span class="material-symbols-outlined text-[32px]">history</span>
       </div>
-      <h3 class="font-extrabold text-lg text-zinc-855 dark:text-zinc-150">
+      <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
         Історія переглядів порожня
       </h3>
       <p
-        class="text-xs md:text-sm text-zinc-455 dark:text-zinc-500 max-w-sm mx-auto mt-2"
+        class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-2"
       >
         Ви ще не переглянули жодного товару. Ваша історія переглядів
         відображатиметься тут.
