@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
 const cartStore = useCartStore();
@@ -73,40 +74,40 @@ const handleSubscribe = () => {
           </h4>
           <ul class="space-y-2.5 text-xs">
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/about"
                 class="hover:text-white transition-colors"
-              >Про нас</a>
+              >Про нас</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/terms"
                 class="hover:text-white transition-colors"
-              >Умови використання сайту</a>
+              >Умови використання сайту</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/careers"
                 class="hover:text-white transition-colors"
-              >Вакансії</a>
+              >Вакансії</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/contacts"
                 class="hover:text-white transition-colors"
-              >Контакти</a>
+              >Контакти</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/franchising"
                 class="hover:text-white transition-colors"
-              >Франчайзинг</a>
+              >Франчайзинг</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/promo-rules"
                 class="hover:text-white transition-colors"
-              >Офіційні правила акцій</a>
+              >Офіційні правила акцій</router-link>
             </li>
           </ul>
         </div>
@@ -120,40 +121,40 @@ const handleSubscribe = () => {
           </h4>
           <ul class="space-y-2.5 text-xs">
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/shipping-payment"
                 class="hover:text-white transition-colors"
-              >Доставка та оплата</a>
+              >Доставка та оплата</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/installments"
                 class="hover:text-white transition-colors"
-              >Кредит та оплата частинами</a>
+              >Кредит та оплата частинами</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/warranty-returns"
                 class="hover:text-white transition-colors"
-              >Гарантійні умови</a>
+              >Гарантійні умови</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/warranty-returns"
                 class="hover:text-white transition-colors"
-              >Повернення та обмін товару</a>
+              >Повернення та обмін товару</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/service"
                 class="hover:text-white transition-colors"
-              >Сервісні центри партнери</a>
+              >Сервісні центри партнери</router-link>
             </li>
             <li>
-              <a
-                href="#"
+              <router-link
+                to="/account"
                 class="hover:text-white transition-colors"
-              >Відстежити замовлення</a>
+              >Відстежити замовлення</router-link>
             </li>
           </ul>
         </div>
@@ -373,22 +374,22 @@ const handleSubscribe = () => {
         <div
           class="flex flex-wrap justify-center gap-6 font-semibold uppercase tracking-wider text-[9px]"
         >
-          <a
-            href="#"
+          <router-link
+            to="/privacy"
             class="hover:text-white transition-colors"
-          >Конфіденційність</a>
-          <a
-            href="#"
+          >Конфіденційність</router-link>
+          <router-link
+            to="/oferta"
             class="hover:text-white transition-colors"
-          >Оферта</a>
+          >Оферта</router-link>
           <a
             href="#"
             class="hover:text-white transition-colors"
           >Мапа сайту</a>
-          <a
-            href="#"
+          <router-link
+            to="/cookies"
             class="hover:text-white transition-colors"
-          >Cookies</a>
+          >Cookies</router-link>
         </div>
 
         <!-- Payment Brands -->

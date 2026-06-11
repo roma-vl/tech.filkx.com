@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const props = defineProps({
   platform: {

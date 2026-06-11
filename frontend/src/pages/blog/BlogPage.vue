@@ -197,7 +197,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import api from '@/services/api';
+import api from '@/shared/services/api/apiClient';
 
 const posts = ref([]);
 const categories = ref([]);

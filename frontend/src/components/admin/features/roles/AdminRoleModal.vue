@@ -213,10 +213,10 @@ import {
   UserGroupIcon,
   VideoCameraIcon,
 } from "@heroicons/vue/24/outline";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 
 const { t } = useI18n();
 

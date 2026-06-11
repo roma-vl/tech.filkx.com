@@ -103,7 +103,7 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 const { t } = useI18n();
 const toast = useToast();

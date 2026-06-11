@@ -32,6 +32,8 @@ use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
 use App\Api\V1\Controllers\UserController;
+use App\Api\Admin\Controllers\AdminPageController;
+use App\Api\V1\Controllers\PageController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +75,11 @@ Route::prefix('v1')->group(function () {
         Route::get('posts/{slug}', [BlogController::class, 'show']);
         Route::get('categories', [BlogController::class, 'categories']);
         Route::get('tags', [BlogController::class, 'tags']);
+    });
+
+    // Pages public routes
+    Route::prefix('pages')->group(function () {
+        Route::get('{slug}', [PageController::class, 'show']);
     });
 
     // Cart routes
@@ -310,6 +317,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('blog/tags', [AdminBlogController::class, 'storeTag']);
         Route::put('blog/tags/{id}', [AdminBlogController::class, 'updateTag']);
         Route::delete('blog/tags/{id}', [AdminBlogController::class, 'destroyTag']);
+
+        // Pages Management (CMS)
+        Route::get('pages', [AdminPageController::class, 'index']);
+        Route::get('pages/{id}', [AdminPageController::class, 'show']);
+        Route::post('pages', [AdminPageController::class, 'store']);
+        Route::put('pages/{id}', [AdminPageController::class, 'update']);
+        Route::delete('pages/{id}', [AdminPageController::class, 'destroy']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);

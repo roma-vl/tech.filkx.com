@@ -102,10 +102,10 @@
 import { ArrowPathIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

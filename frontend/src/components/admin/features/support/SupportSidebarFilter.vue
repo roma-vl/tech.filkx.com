@@ -36,7 +36,7 @@
 import { computed } from "vue";
 import { MagnifyingGlassIcon, TagIcon } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
 
 const { t } = useI18n();
 

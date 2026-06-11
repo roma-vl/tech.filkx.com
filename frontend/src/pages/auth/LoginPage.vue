@@ -15,7 +15,7 @@
       </p>
 
       <form class="space-y-6" @submit.prevent="handleSubmit">
-        <AppInput
+        <UiInput
           v-model="form.email"
           :label="$t('auth.login.emailLabel')"
           type="email"
@@ -41,7 +41,7 @@
               {{ $t("auth.login.forgotPassword") }}
             </router-link>
           </div>
-          <AppInput
+          <UiInput
             v-model="form.password"
             type="password"
             :placeholder="$t('auth.login.passwordPlaceholder')"
@@ -52,7 +52,7 @@
         </div>
 
         <div class="pt-2">
-          <AppButton
+          <UiButton
             type="submit"
             variant="primary"
             size="lg"
@@ -60,7 +60,7 @@
             :loading="loading"
           >
             {{ $t("auth.login.submit") }}
-          </AppButton>
+          </UiButton>
         </div>
       </form>
 
@@ -99,8 +99,9 @@ import { useI18n } from "vue-i18n";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Login.json";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import { AppInput, AppButton } from "@/shared/ui";
-import OAuthButtons from "@/components/auth/OAuthButtons.vue";
+import UiButton from "@/shared/ui/UiButton.vue";
+import UiInput from "@/shared/ui/UiInput.vue";
+import OAuthButtons from "@/features/auth/components/OAuthButtons.vue";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
 const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;

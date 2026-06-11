@@ -418,12 +418,12 @@
 
 <script setup>
 import { computed, ref, watch } from "vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
-import AppToggle from "@/components/admin/ui/Form/AppToggle.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppToggle from "@/components/admin/ui/AppToggle.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

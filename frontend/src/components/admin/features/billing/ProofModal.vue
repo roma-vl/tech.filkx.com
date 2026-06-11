@@ -112,8 +112,8 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

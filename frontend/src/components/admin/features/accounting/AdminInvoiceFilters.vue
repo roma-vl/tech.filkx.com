@@ -75,9 +75,9 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

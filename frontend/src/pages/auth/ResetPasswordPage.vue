@@ -11,7 +11,7 @@
       </p>
 
       <form class="space-y-6" @submit.prevent="handleSubmit">
-        <AppInput
+        <UiInput
           v-model="form.email"
           :label="$t('auth.resetPassword.emailLabel')"
           type="email"
@@ -25,7 +25,7 @@
           :disabled="loading"
         />
 
-        <AppInput
+        <UiInput
           v-model="form.password"
           :label="$t('auth.resetPassword.passwordLabel')"
           type="password"
@@ -36,7 +36,7 @@
           :disabled="loading"
         />
 
-        <AppInput
+        <UiInput
           v-model="form.password_confirmation"
           :label="$t('auth.resetPassword.confirmPasswordLabel')"
           type="password"
@@ -48,7 +48,7 @@
         />
 
         <div class="pt-4">
-          <AppButton
+          <UiButton
             type="submit"
             variant="primary"
             size="lg"
@@ -56,7 +56,7 @@
             :loading="loading"
           >
             {{ $t("auth.resetPassword.submit") }}
-          </AppButton>
+          </UiButton>
         </div>
       </form>
     </div>
@@ -70,7 +70,8 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import { AppInput, AppButton } from "@/shared/ui";
+import UiButton from "@/shared/ui/UiButton.vue";
+import UiInput from "@/shared/ui/UiInput.vue";
 
 const router = useRouter();
 const route = useRoute();

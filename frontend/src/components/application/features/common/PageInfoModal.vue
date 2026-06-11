@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import AppModal from "@/components/application/ui/Overlay/AppModal.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
 
 defineProps({
   open: Boolean,

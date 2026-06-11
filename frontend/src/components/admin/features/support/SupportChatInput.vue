@@ -162,7 +162,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 const toast = useToast();

@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import CategoriesTab from "@/components/admin/features/catalog/CategoriesTab.vue";
 
 const isLoading = ref(false);

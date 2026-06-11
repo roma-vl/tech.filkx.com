@@ -90,9 +90,9 @@ import AccountingService from "@/services/AccountingService";
 import { useI18n } from "vue-i18n";
 
 import AdminLedgerFilters from "@/components/admin/features/accounting/AdminLedgerFilters.vue";
-import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import AppStatCard from "@/components/admin/ui/Data/AppStatCard.vue";
+import AdminTable from "@/components/admin/ui/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
+import AppStatCard from "@/components/admin/ui/AppStatCard.vue";
 import {
   BanknotesIcon,
   ArrowUturnLeftIcon,

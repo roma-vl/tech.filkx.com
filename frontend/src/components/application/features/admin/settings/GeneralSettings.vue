@@ -38,8 +38,8 @@
 
 <script setup>
 import { GlobeAltIcon } from "@heroicons/vue/24/outline";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
-import AppToggle from "@/components/application/ui/Form/AppToggle.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppToggle from "@/components/admin/ui/AppToggle.vue";
 
 defineProps({
   modelValue: {

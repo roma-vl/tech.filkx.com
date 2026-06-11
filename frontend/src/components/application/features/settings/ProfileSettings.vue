@@ -183,10 +183,10 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
-import AppSelect from "@/components/application/ui/Form/AppSelect.vue";
-import AppTextarea from "@/components/application/ui/Form/AppTextarea.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import UserIcon from "@/components/Icon/UserIcon.vue";
 import TrashIcon from "@/components/Icon/TrashIcon.vue";
 import ClockIcon from "@/components/Icon/ClockIcon.vue";

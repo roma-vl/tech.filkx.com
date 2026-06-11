@@ -210,8 +210,8 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import {
   CommandLineIcon,
   PencilIcon,
@@ -219,7 +219,7 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

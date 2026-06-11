@@ -133,9 +133,9 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import AdminTable from "@/components/admin/ui/Data/AdminTable.vue";
-import AdminBadge from "@/components/admin/ui/Data/AdminBadge.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AdminTable from "@/components/admin/ui/AdminTable.vue";
+import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import {
   IdentificationIcon,
   NoSymbolIcon,

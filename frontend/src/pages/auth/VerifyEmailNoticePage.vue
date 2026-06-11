@@ -26,7 +26,7 @@
       </p>
 
       <div class="space-y-4 max-w-xs mx-auto">
-        <AppButton
+        <UiButton
           v-if="!sent"
           variant="primary"
           size="lg"
@@ -35,7 +35,7 @@
           @click="resendEmail"
         >
           {{ $t("auth.verifyEmailNotice.resendButton") }}
-        </AppButton>
+        </UiButton>
 
         <div
           v-else
@@ -64,7 +64,7 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import { AppButton } from "@/shared/ui";
+import UiButton from "@/shared/ui/UiButton.vue";
 import lottie from "lottie-web";
 import CheckedAnimation from "@/assets/animation/Checked.json";
 

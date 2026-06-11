@@ -84,11 +84,11 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 // Feature Components
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import AdminRoleFilters from "@/components/admin/features/roles/AdminRoleFilters.vue";
 import AdminRoleCard from "@/components/admin/features/roles/AdminRoleCard.vue";
 import AdminRoleTable from "@/components/admin/features/roles/AdminRoleTable.vue";

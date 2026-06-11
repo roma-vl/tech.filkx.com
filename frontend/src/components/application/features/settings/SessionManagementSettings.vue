@@ -117,7 +117,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 const { t } = useI18n();
 const toast = useToast();

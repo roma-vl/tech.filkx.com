@@ -37,7 +37,7 @@ import { ref, onMounted } from "vue";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 import AnalyticsStatsGrid from "@/components/admin/features/analytics/AnalyticsStatsGrid.vue";
 import AnalyticsTimeSeriesChart from "@/components/admin/features/analytics/AnalyticsTimeSeriesChart.vue";

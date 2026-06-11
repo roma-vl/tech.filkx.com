@@ -39,11 +39,11 @@ import {
   UserIcon,
   VideoCameraIcon,
 } from "@heroicons/vue/24/outline";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 import AdminLogFilters from "@/components/admin/features/logs/AdminLogFilters.vue";
 import AdminLogTimeline from "@/components/admin/features/logs/AdminLogTimeline.vue";
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
 
 const { t } = useI18n();
 

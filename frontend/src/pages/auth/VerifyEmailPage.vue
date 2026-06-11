@@ -45,14 +45,14 @@
         >
           {{ $t("auth.verifyEmail.successSubtitle") }}
         </p>
-        <AppButton
+        <UiButton
           to="/dashboard"
           variant="primary"
           size="lg"
           class="min-w-[200px] !rounded-xl shadow-xl shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300 font-bold"
         >
           {{ $t("auth.verifyEmail.cta") }}
-        </AppButton>
+        </UiButton>
       </div>
       <div v-else class="flex flex-col items-center">
         <div
@@ -80,14 +80,14 @@
         <p class="text-red-500 mb-8 max-w-sm mx-auto font-medium">
           {{ errorMessage }}
         </p>
-        <AppButton
+        <UiButton
           to="/verify-email-notice"
           variant="secondary"
           size="lg"
           class="min-w-[240px] !rounded-xl font-bold"
         >
           {{ $t("auth.verifyEmail.resendButton") }}
-        </AppButton>
+        </UiButton>
       </div>
     </div>
   </AuthLayout>
@@ -99,7 +99,7 @@ import { useRoute } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useI18n } from "vue-i18n";
 import AuthLayout from "@/layouts/auth/AuthLayout.vue";
-import { AppButton } from "@/shared/ui";
+import UiButton from "@/shared/ui/UiButton.vue";
 
 const route = useRoute();
 const store = useAuthStore();

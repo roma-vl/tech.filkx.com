@@ -78,9 +78,9 @@
 <script setup>
 import { ref, computed } from "vue";
 import { VideoIcon, ImageIcon, Trash2Icon } from "lucide-vue-next";
-import AppFileUpload from "@/components/application/ui/Form/AppFileUpload.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
-import api from "@/services/api";
+import AppFileUpload from "@/components/admin/ui/AppFileUpload.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import api from "@/shared/services/api/apiClient";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 

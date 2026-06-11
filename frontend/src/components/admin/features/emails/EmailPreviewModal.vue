@@ -89,7 +89,7 @@ import {
 } from "@headlessui/vue";
 import { EyeIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const { t } = useI18n();
 

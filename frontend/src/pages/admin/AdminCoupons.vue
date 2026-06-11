@@ -46,13 +46,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
 import CouponTable from "@/components/admin/features/marketing/coupons/CouponTable.vue";
 import CouponEditModal from "@/components/admin/features/marketing/coupons/CouponEditModal.vue";
 import CouponDeleteModal from "@/components/admin/features/marketing/coupons/CouponDeleteModal.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();

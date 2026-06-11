@@ -70,8 +70,8 @@
 
 <script setup>
 import { computed } from "vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { NoSymbolIcon } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 

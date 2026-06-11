@@ -61,19 +61,18 @@
             Економія {{ formatPrice(bundleSavings) }}
           </span>
         </div>
-        <button
-          class="w-full bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-3 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2"
-          @click="$emit('add-bundle')"
-        >
-          <span class="material-symbols-outlined text-[17px]">shopping_bag</span>
+        <UiButton class="w-full" @click="$emit('add-bundle')">
+          <template #prefix><span class="material-symbols-outlined text-[17px]">shopping_bag</span></template>
           Додати комплект
-        </button>
+        </UiButton>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { UiButton } from "@/shared/ui";
+
 interface BundleItem {
   id: string;
   name: string;

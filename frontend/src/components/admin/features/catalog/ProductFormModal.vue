@@ -560,11 +560,11 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import apiClient from "@/shared/services/api/apiClient";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
 
 interface VariantErrors {
   sku?: string;

@@ -53,8 +53,8 @@
 </template>
 
 <script setup>
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
-import AppButton from "@/components/application/ui/Button/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import { computed } from "vue";
 import {
   IdentificationIcon,

@@ -30,7 +30,7 @@
 
 <script setup>
 import { CircleStackIcon } from "@heroicons/vue/24/outline";
-import AppInput from "@/components/application/ui/Form/AppInput.vue";
+import AppInput from "@/components/admin/ui/AppInput.vue";
 
 defineProps({
   modelValue: {

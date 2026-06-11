@@ -189,7 +189,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
-import axios from "@/services/api";
+import axios from "@/shared/services/api/apiClient";
 import { useAuthStore } from "@/stores/auth";
 import { debounce } from "lodash";
 

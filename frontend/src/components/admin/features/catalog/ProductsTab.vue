@@ -430,13 +430,13 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import api from "@/services/api";
-import AppInput from "@/components/admin/ui/Form/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/Form/AppTextarea.vue";
-import AppSelect from "@/components/admin/ui/Form/AppSelect.vue";
-import AppCheckbox from "@/components/admin/ui/Form/AppCheckbox.vue";
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
-import AppModal from "@/components/admin/ui/Feedback/AppModal.vue";
+import api from "@/shared/services/api/apiClient";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppCheckbox from "@/components/admin/ui/AppCheckbox.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
 import ProductImportModal from "./ProductImportModal.vue";
 import ProductFormModal from "./ProductFormModal.vue";
 

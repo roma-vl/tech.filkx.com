@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import GeneralSettings from "@/components/application/features/admin/settings/GeneralSettings.vue";

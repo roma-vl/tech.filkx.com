@@ -13,7 +13,7 @@
 
 <script setup>
 import { useI18n } from "vue-i18n";
-import AppStatsCard from "@/components/application/ui/Data/AppStatsCard.vue";
+import AppStatsCard from "@/components/admin/ui/AppStatsCard.vue";
 import {
   TicketIcon,
   CursorArrowRaysIcon,

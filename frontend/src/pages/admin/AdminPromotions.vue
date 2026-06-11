@@ -46,9 +46,9 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { PlusIcon } from "@heroicons/vue/24/outline";
 import { useToast } from "vue-toastification";
-import api from "@/services/api";
+import api from "@/shared/services/api/apiClient";
 
-import AppButton from "@/components/admin/ui/Button/AppButton.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
 import PromotionStats from "@/components/admin/features/marketing/promotions/PromotionStats.vue";
 import PromotionTable from "@/components/admin/features/marketing/promotions/PromotionTable.vue";
 import PromotionEditModal from "@/components/admin/features/marketing/promotions/PromotionEditModal.vue";

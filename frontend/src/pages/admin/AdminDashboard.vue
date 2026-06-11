@@ -22,9 +22,9 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import axios from "@/services/api";
+import axios from "@/shared/services/api/apiClient";
 
-import AppLoadingOverlay from "@/components/admin/ui/Feedback/AppLoadingOverlay.vue";
+import AppLoadingOverlay from "@/components/admin/ui/AppLoadingOverlay.vue";
 import AdminStatsOverview from "@/components/admin/features/dashboard/AdminStatsOverview.vue";
 import AdminRecentUsers from "@/components/admin/features/dashboard/AdminRecentUsers.vue";
 import AdminQuickActions from "@/components/admin/features/dashboard/AdminQuickActions.vue";
