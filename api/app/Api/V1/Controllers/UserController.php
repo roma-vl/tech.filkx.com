@@ -483,7 +483,7 @@ class UserController extends BaseApiController
             $action->execute($user);
 
             // Redirect to frontend dashboard or login with a success message param
-            $frontendUrl = config('app.frontend_url', 'https://live.filkx.com');
+            $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
 
             return redirect()->to($frontendUrl.'/login?status=restored');
         } catch (Exception $e) {
@@ -541,7 +541,7 @@ class UserController extends BaseApiController
         // Double check if email is still available (unlikely but possible race condition)
         if (User::where('email', $newEmail)->exists()) {
             // Ideally redirect with error
-            $frontendUrl = config('app.frontend_url', 'https://live.filkx.com');
+            $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
 
             return redirect()->to($frontendUrl.'/settings?error=email_taken');
         }
@@ -553,7 +553,7 @@ class UserController extends BaseApiController
         // Send verification to NEW email
         $user->sendEmailVerificationNotification();
 
-        $frontendUrl = config('app.frontend_url', 'https://live.filkx.com');
+        $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
 
         return redirect()->to($frontendUrl.'/login?status=email-changed');
     }
