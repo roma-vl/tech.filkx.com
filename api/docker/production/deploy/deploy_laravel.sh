@@ -2,7 +2,7 @@
 set -euo pipefail
 
 COLOR="${1:-}"
-APP_DIR="/var/www/live.filkx.com"
+APP_DIR="/var/www/tech.filkx.com"
 
 TARGET_DIR="$APP_DIR/$COLOR/current"
 TARGET_COMPOSE="$TARGET_DIR/docker-compose-production.yml"
@@ -43,7 +43,7 @@ OPPOSITE_DIR="$APP_DIR/$OPPOSITE/current"
 OPPOSITE_COMPOSE="$OPPOSITE_DIR/docker-compose-production.yml"
 
 
-echo "🚀 Деплой у $COLOR середовище (live.filkx.com)"
+echo "🚀 Деплой у $COLOR середовище (tech.filkx.com)"
 echo "🔁 Opposite → $OPPOSITE"
 
 # -----------------------------
