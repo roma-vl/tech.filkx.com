@@ -5,8 +5,8 @@ services:
       context: frontend/docker
       dockerfile: production/nginx/Dockerfile
       args:
-        - VITE_API_BASE_URL=https://api.tech.filkx.com/api
-        - VITE_UPLOAD_BASE_URL=https://api.tech.filkx.com/api
+        - VITE_API_BASE_URL=https://tech.filkx.com/api
+        - VITE_UPLOAD_BASE_URL=https://tech.filkx.com/api
         - VITE_BASE_URL=https://tech.filkx.com
     restart: always
     volumes:
