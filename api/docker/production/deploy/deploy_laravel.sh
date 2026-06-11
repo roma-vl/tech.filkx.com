@@ -7,8 +7,8 @@ APP_DIR="/var/www/live.filkx.com"
 TARGET_DIR="$APP_DIR/$COLOR/current"
 TARGET_COMPOSE="$TARGET_DIR/docker-compose-production.yml"
 
-LARAVEL_CLI="live-api-php-cli"
-LARAVEL_FPM="live-api-php-fpm"
+LARAVEL_CLI="tech-api-php-cli"
+LARAVEL_FPM="tech-api-php-fpm"
 WORKDIR_IN_CONTAINER="/app"
 
 # -----------------------------
@@ -23,6 +23,12 @@ if [[ ! -f "$TARGET_COMPOSE" ]]; then
   echo "❌ docker-compose не знайдено: $TARGET_COMPOSE"
   exit 1
 fi
+
+# Переходимо в директорію проекту, щоб відносні шляхи в docker-compose.yml резолвилися правильно
+cd "$TARGET_DIR"
+
+# Надаємо права на читання для папки frontend/dist, щоб Nginx всередині контейнера не повертав 403
+chmod -R 755 frontend/dist || true
 
 # -----------------------------
 # Протилежне середовище
@@ -69,7 +75,7 @@ done
 echo "✅ $LARAVEL_CLI is ready"
 
 # -----------------------------
-# Write version info
+# Laravel filesystem & version info
 # -----------------------------
 VERSION=$(git -C "$TARGET_DIR" describe --tags --always || echo "production")
 COMMIT_SHA=$(git -C "$TARGET_DIR" rev-parse --short HEAD || echo "unknown")
@@ -77,11 +83,8 @@ TIMESTAMP=$(date +%s)
 
 echo "ℹ️ Writing version.json → $VERSION / $COMMIT_SHA"
 
-# -----------------------------
-# Права на каталоги Laravel
-# -----------------------------
-docker-compose -f "$TARGET_COMPOSE" run --rm "$LARAVEL_CLI" sh -c "
-mkdir -p /app/storage/app/public/var
+docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
+mkdir -p /app/storage/logs /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache /app/storage/app/public/var
 cat <<EOF > /app/storage/app/public/var/version.json
 {
   \"version\": \"$VERSION\",
@@ -89,16 +92,9 @@ cat <<EOF > /app/storage/app/public/var/version.json
   \"timestamp\": $TIMESTAMP
 }
 EOF
-"
-
-# -----------------------------
-# Laravel filesystem
-# -----------------------------
-docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
-mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/bootstrap/cache
-chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs  /app/storage/media-library /app/bootstrap/cache
-chown -R 1337:1000 /app/storage /app/bootstrap/cache
-chown 1000:1000 /app/storage/oauth-*.key
+chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs /app/storage/media-library /app/bootstrap/cache
+chown -R 1000:1000 /app/storage /app/bootstrap/cache
+chown 1000:1000 /app/storage/oauth-*.key 2>/dev/null || true
 "
 
 
@@ -115,6 +111,14 @@ do
   docker-compose -f "$TARGET_COMPOSE" run --rm -w "$WORKDIR_IN_CONTAINER" "$LARAVEL_CLI" php artisan $cmd
 done
 
-docker-compose -f "$TARGET_COMPOSE" exec -T "$LARAVEL_FPM" php artisan streams:restart-live
+# Generate OAuth keys if they are missing
+docker-compose -f "$TARGET_COMPOSE" run --rm -w "$WORKDIR_IN_CONTAINER" "$LARAVEL_CLI" php artisan passport:keys || true
+
+# Final permissions fix for any generated files
+docker-compose -f "$TARGET_COMPOSE" run --rm -u root "$LARAVEL_CLI" sh -c "
+chmod -R 775 /app/storage/app /app/storage/framework /app/storage/logs /app/storage/media-library /app/bootstrap/cache
+chown -R 1000:1000 /app/storage /app/bootstrap/cache
+chown 1000:1000 /app/storage/oauth-*.key 2>/dev/null || true
+"
 
 echo "🎉 Deploy complete → active = $COLOR"

@@ -1,55 +1,39 @@
 services:
   # ================= FRONTEND (dist + nginx) =================
-  live-frontend:
+  tech-frontend:
     build:
       context: frontend/docker
       dockerfile: production/nginx/Dockerfile
       args:
-        - VITE_API_BASE_URL=https://app.filkx.com/api
-        - VITE_UPLOAD_BASE_URL=https://upload.app.filkx.com/api
-        - VITE_BASE_URL=https://app.filkx.com
+        - VITE_API_BASE_URL=https://api.tech.filkx.com/api
+        - VITE_UPLOAD_BASE_URL=https://api.tech.filkx.com/api
+        - VITE_BASE_URL=https://tech.filkx.com
     restart: always
     volumes:
       - ./frontend/dist:/app/dist:ro
     ports:
-      - "8090:80"
-    networks:
-      - filkx
-
-  landing-ssr:
-    build:
-      context: landing-ssr
-      dockerfile: docker/production/node/Dockerfile
-    restart: always
-    environment:
-      - VITE_API_BASE_URL=https://app.filkx.com/api
-      - VITE_BASE_URL=https://live.filkx.com
-      - VITE_UPLOAD_BASE_URL=https://upload.app.filkx.com/api
-      - VITE_APP_URL=https://app.filkx.com
-      - PORT=3000
-    ports:
-      - "8106:3000"
+      - "8070:80"
     networks:
       - filkx
 
   # ================= API (nginx → php-fpm) =================
-  live-api:
+  tech-api:
     build:
       context: api/docker
       dockerfile: production/nginx/Dockerfile
     restart: always
     depends_on:
-      - live-api-php-fpm
+      - tech-api-php-fpm
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     ports:
-      - "8089:80"
+      - "8071:80"
     networks:
       - filkx
 
   # ================= PHP-FPM =================
-  live-api-php-fpm:
+  tech-api-php-fpm:
     build:
       context: api/docker
       dockerfile: production/php-fpm/Dockerfile
@@ -57,12 +41,12 @@ services:
     user: "1000:1000"
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     networks:
       - filkx
 
   # ================= API CLI =================
-  live-api-php-cli:
+  tech-api-php-cli:
     build:
       context: api/docker
       dockerfile: production/php-cli/Dockerfile
@@ -70,12 +54,12 @@ services:
     user: "1000:1000"
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     networks:
       - filkx
     command: tail -f /dev/null
 
-  live-api-scheduler:
+  tech-api-scheduler:
     build:
       context: api/docker
       dockerfile: production/php-cli/Dockerfile
@@ -83,14 +67,14 @@ services:
     user: "1000:1000"
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     networks:
       - filkx
     command: >
       sh -c "while true; do php artisan schedule:run >> /app/storage/logs/scheduler.log 2>&1; sleep 30; done"
 
   # ================= POSTGRES =================
-  live-api-postgres:
+  tech-api-postgres:
     image: postgres:16-alpine
     restart: always
     environment:
@@ -98,54 +82,17 @@ services:
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
       POSTGRES_DB: '${DB_DATABASE}'
     volumes:
-      - api-postgres:/var/lib/postgresql/data
+      - tech-api-postgres-data:/var/lib/postgresql/data
     ports:
-      - '${FORWARD_DB_PORT:-5432}:5432'
+      - '54321:5432'
     networks:
       - filkx
 
-  # ================= FFMPEG RUNNER =================
-  live-ffmpeg-runner:
-    build:
-      context: ./ffmpeg-runner
-      dockerfile: docker/Dockerfile
-    restart: always
-    user: root
-    ports:
-      - "8098:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/www/live.filkx.com/shared/storage/app/public/streams/videos:/jobs/videos:ro
-      - /var/www/live.filkx.com/shared/storage/app/public/streams/lists:/jobs/lists:ro
-      - /var/www/live.filkx.com/shared/storage/app/public/streams/logs:/jobs/logs
-      - /var/www/live.filkx.com/shared/storage/app/public/streams/watermarks:/jobs/watermarks:ro
-    environment:
-      RUNNER_PORT: "8080"
-      RUNNER_API_TOKEN: ${RUNNER_API_TOKEN:-secret_token_change_in_production}
-      DOCKER_HOST: unix:///var/run/docker.sock
-      DOCKER_API_VERSION: "1.41"
-      CPU_QUOTA: "1000000000" # 1 CPU
-      MEMORY_LIMIT: "536870912" # 512MB
-      VIDEOS_PATH: ${VIDEOS_PATH}
-      LISTS_PATH: ${LISTS_PATH}
-      LOGS_PATH: ${LOGS_PATH}
-      WATERMARKS_PATH: ${WATERMARKS_PATH}
-      FFMPEG_IMAGE: jrottenberg/ffmpeg:7-alpine
-      TZ: Europe/Kyiv
-    networks:
-      - filkx
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  live-redis:
+  tech-redis:
     image: redis:alpine
     restart: always
     volumes:
-      - redis:/data
+      - tech-redis-data:/data
     networks:
       - filkx
     healthcheck:
@@ -153,7 +100,7 @@ services:
       retries: 3
       timeout: 5s
 
-  live-api-queue:
+  tech-api-queue:
     build:
       context: api/docker
       dockerfile: production/php-cli/Dockerfile
@@ -161,35 +108,34 @@ services:
     user: "1000:1000"
     volumes:
       - ./api:/app
-      - /var/www/live.filkx.com/shared/storage:/app/storage
+      - /var/www/tech.filkx.com/shared/storage:/app/storage
     networks:
       - filkx
     depends_on:
-      - live-redis
-      - live-api-postgres
+      - tech-redis
+      - tech-api-postgres
     command: [ "php", "artisan", "queue:work", "--tries=3", "--sleep=3", "--timeout=90" ]
 
-  live-video-transcoder:
-    build:
-      context: video-transcoder
-      dockerfile: Dockerfile
+  # ================= MEILISEARCH =================
+  tech-meilisearch:
+    image: getmeili/meilisearch:v1.7
     restart: always
     ports:
-      - "8100:8080"
+      - "7701:7700"
     environment:
-      - SERVER_PORT=8080
-      - MAX_WORKERS=4
-      - LOG_LEVEL=info
+      - MEILI_ENV=production
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-secret_master_key_change_in_production}
     volumes:
-      - /var/www/live.filkx.com/shared/storage/app/public/streams:/app/storage/app/public/streams
-      - /var/www/live.filkx.com/shared/storage/app/public/streams/watermarks:/app/storage/app/watermarks
+      - tech-meilisearch-data:/meili_data
     networks:
       - filkx
 
 networks:
   filkx:
-    driver: bridge
+    external: true
 
 volumes:
-  api-postgres:
-  redis:
+  tech-api-postgres-data:
+  tech-redis-data:
+  tech-meilisearch-data:

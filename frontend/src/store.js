@@ -1,164 +1,154 @@
-import { reactive } from 'vue';
+import { reactive } from "vue";
+import { useCartStore } from "@/entities/order/model/cartStore";
 
 export const store = reactive({
-  // Navigation state
-  currentPage: 'catalog',
-  selectedProduct: null,
+  get currentPage() {
+    return useCartStore().currentPage;
+  },
+  set currentPage(v) {
+    useCartStore().currentPage = v;
+  },
 
-  // Arrays for items
-  cart: [],
-  wishlist: [],
-  compare: [],
-  toasts: [],
-  
-  // Modals visibility state
-  activeDrawer: null, // 'cart', 'wishlist', 'compare', 'account', or null
-  
-  // Toast notifications counter for unique IDs
-  toastId: 0,
-  
-  // Getters (defined as JS getters on the reactive object)
+  get selectedProduct() {
+    return useCartStore().selectedProduct;
+  },
+  set selectedProduct(v) {
+    useCartStore().selectedProduct = v;
+  },
+
+  get cart() {
+    return useCartStore().cart;
+  },
+  set cart(v) {
+    useCartStore().cart = v;
+  },
+
+  get wishlist() {
+    return useCartStore().wishlist;
+  },
+  set wishlist(v) {
+    useCartStore().wishlist = v;
+  },
+
+  get compare() {
+    return useCartStore().compare;
+  },
+  set compare(v) {
+    useCartStore().compare = v;
+  },
+
+  get toasts() {
+    return useCartStore().toasts;
+  },
+
+  get unreadNotificationsCount() {
+    return useCartStore().unreadNotificationsCount;
+  },
+  set unreadNotificationsCount(v) {
+    useCartStore().unreadNotificationsCount = v;
+  },
+
+  get activeDrawer() {
+    return useCartStore().activeDrawer;
+  },
+  set activeDrawer(v) {
+    useCartStore().activeDrawer = v;
+  },
+
+  // Getters
   get cartCount() {
-    return this.cart.reduce((acc, item) => acc + item.quantity, 0);
+    return useCartStore().cartCount;
   },
-  
+
   get cartTotal() {
-    return this.cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    return useCartStore().cartTotal;
   },
-  
+
   get wishlistCount() {
-    return this.wishlist.length;
+    return useCartStore().wishlistCount;
   },
-  
+
   get compareCount() {
-    return this.compare.length;
+    return useCartStore().compareCount;
   },
-  
+
   // Actions
-  addToast(message, type = 'success') {
-    const id = this.toastId++;
-    this.toasts.push({ id, message, type });
-    setTimeout(() => {
-      this.removeToast(id);
-    }, 3000);
+  addToast(message, type = "success") {
+    useCartStore().addToast(message, type);
   },
-  
+
   removeToast(id) {
-    const index = this.toasts.findIndex(t => t.id === id);
-    if (index !== -1) {
-      this.toasts.splice(index, 1);
-    }
+    useCartStore().removeToast(id);
   },
-  
+
+  fetchCart() {
+    return useCartStore().fetchCart();
+  },
+
+  clearCart() {
+    useCartStore().clearCart();
+  },
+
   addToCart(product) {
-    const existing = this.cart.find(item => item.id === product.id);
-    if (existing) {
-      existing.quantity++;
-      this.addToast(`Updated quantity of ${product.name} to ${existing.quantity} in cart.`);
-    } else {
-      this.cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        category: product.category || 'Electronics',
-        quantity: 1
-      });
-      this.addToast(`Added ${product.name} to cart.`);
-    }
+    return useCartStore().addToCart(product);
   },
-  
+
   removeFromCart(productId) {
-    const index = this.cart.findIndex(item => item.id === productId);
-    if (index !== -1) {
-      const name = this.cart[index].name;
-      this.cart.splice(index, 1);
-      this.addToast(`Removed ${name} from cart.`, 'info');
-    }
+    return useCartStore().removeFromCart(productId);
   },
-  
+
   updateCartQuantity(productId, quantity) {
-    const item = this.cart.find(item => item.id === productId);
-    if (item) {
-      item.quantity = Math.max(1, quantity);
-    }
+    return useCartStore().updateCartQuantity(productId, quantity);
   },
-  
+
   toggleWishlist(product) {
-    const index = this.wishlist.findIndex(item => item.id === product.id);
-    if (index !== -1) {
-      const name = this.wishlist[index].name;
-      this.wishlist.splice(index, 1);
-      this.addToast(`Removed ${name} from wishlist.`, 'info');
-    } else {
-      this.wishlist.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        category: product.category || 'Electronics'
-      });
-      this.addToast(`Added ${product.name} to wishlist.`);
-    }
+    useCartStore().toggleWishlist(product);
   },
-  
+
   isInWishlist(productId) {
-    return this.wishlist.some(item => item.id === productId);
+    return useCartStore().isInWishlist(productId);
   },
-  
+
   toggleCompare(product) {
-    const index = this.compare.findIndex(item => item.id === product.id);
-    if (index !== -1) {
-      const name = this.compare[index].name;
-      this.compare.splice(index, 1);
-      this.addToast(`Removed ${name} from compare.`, 'info');
-    } else {
-      if (this.compare.length >= 3) {
-        this.addToast('You can compare a maximum of 3 items.', 'warning');
-        return;
-      }
-      this.compare.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        category: product.category || 'Electronics',
-        rating: product.rating || 4.5,
-        reviews: product.reviews || 0,
-        description: product.description || 'Premium build quality, ultra-durable, leading technology.'
-      });
-      this.addToast(`Added ${product.name} to compare.`);
-    }
+    useCartStore().toggleCompare(product);
   },
-  
+
   isInCompare(productId) {
-    return this.compare.some(item => item.id === productId);
+    return useCartStore().isInCompare(productId);
   },
-  
+
   removeFromCompare(productId) {
-    const index = this.compare.findIndex(item => item.id === productId);
-    if (index !== -1) {
-      const name = this.compare[index].name;
-      this.compare.splice(index, 1);
-      this.addToast(`Removed ${name} from compare.`, 'info');
-    }
+    useCartStore().removeFromCompare(productId);
   },
-  
+
   openDrawer(drawerName) {
-    this.activeDrawer = drawerName;
+    useCartStore().openDrawer(drawerName);
   },
-  
+
   closeDrawer() {
-    this.activeDrawer = null;
+    useCartStore().closeDrawer();
+  },
+
+  trackProductView(productId) {
+    useCartStore().trackProductView(productId);
   },
 
   viewProduct(product = null) {
-    this.selectedProduct = product;
-    this.currentPage = 'product';
+    return useCartStore().viewProduct(product);
   },
 
-  openCartPage() {
-    this.activeDrawer = null;
-    this.currentPage = 'cart';
-  }
+  fetchUnreadNotificationsCount() {
+    return useCartStore().fetchUnreadNotificationsCount();
+  },
 });
+
+if (typeof window !== "undefined") {
+  // Wait for Pinia/app to mount, then fetch
+  setTimeout(() => {
+    try {
+      useCartStore().fetchCart();
+    } catch (e) {
+      // Ignored if Pinia not ready
+    }
+  }, 100);
+}
