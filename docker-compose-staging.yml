@@ -129,7 +129,9 @@ services:
     volumes:
       - staging-tech-meilisearch-data:/meili_data
     networks:
-      - filkx
+      filkx:
+        aliases:
+          - meilisearch
 
 networks:
   filkx:
