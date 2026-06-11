@@ -3606,60 +3606,62 @@ class ProductsFromSotaSeeder extends Seeder
             ],
         ];
 
-        foreach ($products as $p) {
-            if (Product::where('slug', $p['slug'])->exists()) {
-                continue;
-            }
+        Product::withoutSyncingToSearch(function () use ($products, $brands, $cats, $warehouse) {
+            foreach ($products as $p) {
+                if (Product::where('slug', $p['slug'])->exists()) {
+                    continue;
+                }
 
-            $brand = $p['brand'] ? ($brands[$p['brand']] ?? null) : null;
+                $brand = $p['brand'] ? ($brands[$p['brand']] ?? null) : null;
 
-            $product = Product::create([
-                'brand_id'    => $brand?->id,
-                'slug'        => $p['slug'],
-                'name'        => ['uk' => $p['name_uk'], 'en' => $p['name_uk']],
-                'description' => $p['desc_uk']
-                    ? ['uk' => $p['desc_uk'], 'en' => $p['desc_uk']]
-                    : null,
-                'status'      => 'active',
-            ]);
+                $product = Product::create([
+                    'brand_id'    => $brand?->id,
+                    'slug'        => $p['slug'],
+                    'name'        => ['uk' => $p['name_uk'], 'en' => $p['name_uk']],
+                    'description' => $p['desc_uk']
+                        ? ['uk' => $p['desc_uk'], 'en' => $p['desc_uk']]
+                        : null,
+                    'status'      => 'active',
+                ]);
 
-            $catIds = [];
-            foreach ($p['categories'] as $slug) {
-                if (!empty($cats[$slug])) {
-                    $catIds[] = $cats[$slug]->id;
+                $catIds = [];
+                foreach ($p['categories'] as $slug) {
+                    if (!empty($cats[$slug])) {
+                        $catIds[] = $cats[$slug]->id;
+                    }
+                }
+                if (!empty($catIds)) {
+                    $product->categories()->sync($catIds);
+                }
+
+                $variant = ProductVariant::create([
+                    'product_id' => $product->id,
+                    'sku'        => $p['sku'],
+                    'price'      => $p['price'],
+                    'old_price'  => $p['old_price'],
+                ]);
+
+                Stock::create([
+                    'variant_id'   => $variant->id,
+                    'warehouse_id' => $warehouse->id,
+                    'quantity'     => rand(5, 50),
+                    'reserved'     => 0,
+                ]);
+
+                foreach ($p['reviews'] as $r) {
+                    DB::table('product_reviews')->insert([
+                        'product_id' => $product->id,
+                        'user_id'    => null,
+                        'order_id'   => null,
+                        'rating'     => $r['rating'],
+                        'title'      => $r['title'],
+                        'body'       => $r['body'],
+                        'status'     => 'approved',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
             }
-            if (!empty($catIds)) {
-                $product->categories()->sync($catIds);
-            }
-
-            $variant = ProductVariant::create([
-                'product_id' => $product->id,
-                'sku'        => $p['sku'],
-                'price'      => $p['price'],
-                'old_price'  => $p['old_price'],
-            ]);
-
-            Stock::create([
-                'variant_id'   => $variant->id,
-                'warehouse_id' => $warehouse->id,
-                'quantity'     => rand(5, 50),
-                'reserved'     => 0,
-            ]);
-
-            foreach ($p['reviews'] as $r) {
-                DB::table('product_reviews')->insert([
-                    'product_id' => $product->id,
-                    'user_id'    => null,
-                    'order_id'   => null,
-                    'rating'     => $r['rating'],
-                    'title'      => $r['title'],
-                    'body'       => $r['body'],
-                    'status'     => 'approved',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        }
+        });
     }
 }
