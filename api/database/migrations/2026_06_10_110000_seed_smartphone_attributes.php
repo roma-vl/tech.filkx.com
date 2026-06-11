@@ -48,7 +48,7 @@ return new class extends Migration
 
                 $exists = DB::table('attribute_values')
                     ->where('attribute_id', $attributeId)
-                    ->where('value', $encodedValue)
+                    ->where('value->uk', $val['uk'])
                     ->exists();
 
                 if (! $exists) {

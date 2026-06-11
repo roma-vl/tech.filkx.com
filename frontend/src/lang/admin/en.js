@@ -74,10 +74,15 @@ export default {
     transcoderNodes: "Transcoder Nodes",
     converter: "Converter",
     blog: "Blog",
+    pages: "Static Pages",
   },
   blog: {
     title: "Blog Management",
     description: "Manage blog posts, categories and tags",
+  },
+  pages: {
+    title: "Static Pages",
+    description: "Overview, creation, and editing of static pages (about us, warranty, shipping, etc.)",
   },
   accounting: {
     export: "Export CSV",

@@ -20,6 +20,7 @@ import AdminOrders from "@/pages/admin/AdminOrders.vue";
 import AdminCategories from "@/pages/admin/AdminCategories.vue";
 import AdminBrands from "@/pages/admin/AdminBrands.vue";
 import AdminBlog from "@/pages/admin/AdminBlog.vue";
+import AdminPages from "@/pages/admin/AdminPages.vue";
 
 export default {
   path: "/admin",
@@ -73,6 +74,15 @@ export default {
       meta: {
         titleKey: "admin.blog.title",
         descriptionKey: "admin.blog.description",
+      },
+    },
+    {
+      path: "pages",
+      name: "admin-pages",
+      component: AdminPages,
+      meta: {
+        titleKey: "admin.pages.title",
+        descriptionKey: "admin.pages.description",
       },
     },
 

@@ -294,6 +294,7 @@ import {
   InformationCircleIcon,
   MegaphoneIcon,
   NewspaperIcon,
+  DocumentTextIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   SignalIcon,
@@ -384,6 +385,12 @@ const navItems = shallowRef<NavItem[]>([
     name: t("admin.nav.blog"),
     path: "/admin/blog",
     icon: markRaw(NewspaperIcon),
+  },
+  {
+    key: "pages",
+    name: t("admin.nav.pages"),
+    path: "/admin/pages",
+    icon: markRaw(DocumentTextIcon),
   },
   {
     key: "orders",

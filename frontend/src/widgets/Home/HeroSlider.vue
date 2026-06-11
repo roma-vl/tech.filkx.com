@@ -104,22 +104,15 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 
 <template>
   <section class="max-w-container-max mx-auto px-4 md:px-8 py-5 font-sans">
-    <div 
+    <div
       class="flex items-stretch overflow-hidden shadow-xl rounded-none relative"
       @mouseleave="hoveredCat = null"
     >
 
       <!-- ── Left: dark category sidebar (desktop only) ── -->
       <div class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800">
-
-        <!-- Sidebar header -->
-        <div class="flex items-center gap-2.5 px-4 py-3.5 bg-[#00a046]">
-          <span class="material-symbols-outlined text-white text-[20px]">apps</span>
-          <span class="text-white font-extrabold text-[13px] tracking-wide">Каталог</span>
-        </div>
-
         <!-- Category links -->
-        <nav class="flex-1 overflow-y-auto cat-scroll py-2 bg-[#1c2229]">
+        <nav class="flex-1 overflow-y-auto cat-scroll bg-[#1c2229]">
           <template v-if="mappedCategories.length > 0">
             <button
               v-for="cat in mappedCategories"
@@ -134,19 +127,19 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               @click="router.push({ name: 'catalog', query: { category: cat.slug } })"
             >
               <div class="flex items-center gap-3">
-                <span 
+                <span
                   class="material-symbols-outlined text-[19px] shrink-0 transition-colors"
                   :class="hoveredCat && hoveredCat.id === cat.id ? 'text-white' : 'text-zinc-400 group-hover/cl:text-white'"
                 >
                   {{ cat.icon }}
                 </span>
-                <span 
+                <span
                   class="text-xs font-semibold flex-1 line-clamp-1 transition-colors"
                 >
                   {{ cat.label }}
                 </span>
               </div>
-              <span 
+              <span
                 class="material-symbols-outlined text-[14px] shrink-0 text-zinc-650 group-hover/cl:text-zinc-400 group-hover/cl:translate-x-0.5 transition-all"
               >
                 chevron_right
@@ -157,19 +150,10 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
             <div v-for="i in 11" :key="i" class="mx-4 my-2.5 h-6 bg-white/10 rounded-none animate-pulse" />
           </template>
         </nav>
-
-        <!-- All categories footer -->
-        <button
-          class="flex items-center justify-center gap-1.5 px-4 py-3 border-t border-zinc-800 text-[11.5px] font-bold text-zinc-400 hover:text-white transition-colors bg-[#1c2229]"
-          @click="router.push({ name: 'catalog' })"
-        >
-          Всі категорії
-          <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
-        </button>
       </div>
 
       <!-- ── Right: hero slider ── -->
-      <div 
+      <div
         class="flex-1 min-w-0 relative bg-zinc-950 h-[380px] md:h-[480px] flex items-center group z-10"
         @mouseenter="hoveredCat = null"
       >

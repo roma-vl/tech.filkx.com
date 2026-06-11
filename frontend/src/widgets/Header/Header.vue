@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { productApi } from "@/shared/services/api/productApi";
@@ -310,13 +310,13 @@ onUnmounted(() => {
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4">
         <!-- Left: sota.store style top menu links -->
         <div class="flex items-center gap-5">
-          <a href="/shipping-payment" class="hover:text-white transition-colors">Оплата та доставка</a>
-          <a href="/warranty-returns" class="hover:text-white transition-colors">Гарантія та обмін</a>
-          <a href="/service" class="hover:text-white transition-colors">Сервіс</a>
-          <a href="/services" class="hover:text-white transition-colors">Послуги</a>
-          <a href="/installments" class="hover:text-white transition-colors">Розстрочка</a>
-          <a href="/sota-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">Filkx Обмін</a>
-          <a href="/contacts" class="hover:text-white transition-colors">Контакти</a>
+          <router-link to="/shipping-payment" class="hover:text-white transition-colors">Оплата та доставка</router-link>
+          <router-link to="/warranty-returns" class="hover:text-white transition-colors">Гарантія та обмін</router-link>
+          <router-link to="/service" class="hover:text-white transition-colors">Сервіс</router-link>
+          <router-link to="/services" class="hover:text-white transition-colors">Послуги</router-link>
+          <router-link to="/installments" class="hover:text-white transition-colors">Розстрочка</router-link>
+          <router-link to="/filkx-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">Filkx Обмін</router-link>
+          <router-link to="/contacts" class="hover:text-white transition-colors">Контакти</router-link>
         </div>
 
         <!-- Right: phone, theme toggle, and language switcher -->
