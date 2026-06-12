@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute, RouterLink } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -37,35 +37,78 @@ interface NavItem {
   isGreenBadge?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { name: "Панель керування", icon: "dashboard", query: { tab: "dashboard" } },
-  { name: "Історія замовлень", icon: "shopping_bag", query: { tab: "orders" } },
-  {
-    name: "Моє обране",
-    icon: "favorite",
-    query: { tab: "favorites" },
-    badgeKey: "wishlistCount",
-  },
-  {
-    name: "Порівняння товарів",
-    icon: "compare_arrows",
-    query: { tab: "compare" },
-    badgeKey: "compareCount",
-  },
-  { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
-  {
-    name: "Сповіщення",
-    icon: "notifications",
-    query: { tab: "notifications" },
-    badgeKey: "unreadNotificationsCount",
-    isGreenBadge: true,
-  },
-];
+const navItems = computed<NavItem[]>(() => {
+  const items: NavItem[] = [];
 
-const footerItems: NavItem[] = [
-  { name: "Налаштування", icon: "settings", query: { tab: "settings" } },
-  { name: "Підтримка", icon: "help", query: { tab: "support" } },
-];
+  if (authStore.isAuthenticated) {
+    const allowedRoles = ["admin", "administrator", "support", "owner", "moderator"];
+    const userRoles = authStore.user?.roles || [];
+    const hasAdminAccess = allowedRoles.some((role) => userRoles.includes(role));
+
+    if (hasAdminAccess) {
+      items.push({
+        name: "Адмін панель",
+        icon: "admin_panel_settings",
+        routeName: "admin-dashboard",
+      });
+    }
+
+    items.push(
+      {
+        name: "Панель керування",
+        icon: "dashboard",
+        query: { tab: "dashboard" },
+      },
+      {
+        name: "Історія замовлень",
+        icon: "shopping_bag",
+        query: { tab: "orders" },
+      },
+    );
+  }
+
+  // These work for both guests and authenticated users
+  items.push(
+    {
+      name: "Моє обране",
+      icon: "favorite",
+      query: { tab: "favorites" },
+      badgeKey: "wishlistCount",
+    },
+    {
+      name: "Порівняння товарів",
+      icon: "compare_arrows",
+      query: { tab: "compare" },
+      badgeKey: "compareCount",
+    },
+    { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
+  );
+
+  if (authStore.isAuthenticated) {
+    items.push({
+      name: "Сповіщення",
+      icon: "notifications",
+      query: { tab: "notifications" },
+      badgeKey: "unreadNotificationsCount",
+      isGreenBadge: true,
+    });
+  }
+
+  return items;
+});
+
+const footerItems = computed<NavItem[]>(() => {
+  const items: NavItem[] = [];
+  if (authStore.isAuthenticated) {
+    items.push({
+      name: "Налаштування",
+      icon: "settings",
+      query: { tab: "settings" },
+    });
+  }
+  items.push({ name: "Підтримка", icon: "help", query: { tab: "support" } });
+  return items;
+});
 
 const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 
@@ -80,6 +123,13 @@ const isActive = (item: NavItem) => {
 const handleLogout = async () => {
   await authStore.logout();
   router.push("/login");
+};
+
+const getRouteTo = (item: NavItem) => {
+  if (item.routeName) {
+    return { name: item.routeName };
+  }
+  return { name: "account", query: item.query };
 };
 </script>
 
@@ -151,10 +201,10 @@ const handleLogout = async () => {
 
     <!-- Main nav -->
     <nav class="flex flex-col gap-1.5">
-      <router-link
+      <RouterLink
         v-for="item in navItems"
         :key="item.name"
-        :to="{ name: 'account', query: item.query }"
+        :to="getRouteTo(item)"
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group w-full text-left relative"
         :class="
           isActive(item)
@@ -186,16 +236,16 @@ const handleLogout = async () => {
           class="ml-auto material-symbols-outlined text-[16px]"
           >chevron_right</span
         >
-      </router-link>
+      </RouterLink>
     </nav>
 
     <div
       class="mt-auto flex flex-col gap-1.5 pt-4 border-t border-zinc-200 dark:border-zinc-800"
     >
-      <router-link
+      <RouterLink
         v-for="item in footerItems"
         :key="item.name"
-        :to="{ name: 'account', query: item.query }"
+        :to="getRouteTo(item)"
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left"
         :class="
           isActive(item)
@@ -214,7 +264,7 @@ const handleLogout = async () => {
           class="ml-auto material-symbols-outlined text-[16px]"
           >chevron_right</span
         >
-      </router-link>
+      </RouterLink>
 
       <button
         class="flex items-center gap-3 text-rose-500 hover:bg-rose-500/8 dark:hover:bg-rose-500/12 rounded-xl px-3 py-2.5 transition-all duration-200 mt-2 w-full text-left font-black text-[15px]"

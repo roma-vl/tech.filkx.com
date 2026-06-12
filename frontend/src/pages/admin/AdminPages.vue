@@ -10,10 +10,20 @@
             type="text"
             placeholder="Пошук за назвою або slug..."
             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-          />
+          >
           <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              class="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         </div>
@@ -22,15 +32,21 @@
           v-model="statusFilter"
           class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
         >
-          <option value="">Усі статуси</option>
-          <option value="published">Опубліковано</option>
-          <option value="draft">Чернетки</option>
+          <option value="">
+            Усі статуси
+          </option>
+          <option value="published">
+            Опубліковано
+          </option>
+          <option value="draft">
+            Чернетки
+          </option>
         </select>
       </div>
 
       <button
-        @click="openNewPage"
         class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/20 w-full sm:w-auto justify-center shrink-0"
+        @click="openNewPage"
       >
         <PlusIcon class="w-4 h-4" />
         Створити сторінку
@@ -39,29 +55,56 @@
 
     <!-- Table -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-      <div v-if="loading" class="flex items-center justify-center py-20">
+      <div
+        v-if="loading"
+        class="flex items-center justify-center py-20"
+      >
         <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-emerald-500" />
       </div>
 
-      <div v-else-if="pages.length === 0" class="text-center py-20 text-gray-450 dark:text-gray-500">
+      <div
+        v-else-if="pages.length === 0"
+        class="text-center py-20 text-gray-450 dark:text-gray-500"
+      >
         <DocumentTextIcon class="w-16 h-16 mx-auto mb-4 opacity-30 text-emerald-500" />
-        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Сторінок не знайдено</p>
-        <p class="text-xs mt-1 text-gray-400 dark:text-gray-500">Спробуйте змінити пошуковий запит або створіть нову сторінку</p>
+        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">
+          Сторінок не знайдено
+        </p>
+        <p class="text-xs mt-1 text-gray-400 dark:text-gray-500">
+          Спробуйте змінити пошуковий запит або створіть нову сторінку
+        </p>
       </div>
 
-      <div v-else class="overflow-x-auto">
+      <div
+        v-else
+        class="overflow-x-auto"
+      >
         <table class="w-full text-sm">
           <thead class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-250 dark:border-gray-750">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Назва сторінки (UK / EN)</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Адреса (Slug)</th>
-              <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Статус</th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Оновлено</th>
-              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Дії</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Назва сторінки (UK / EN)
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Адреса (Slug)
+              </th>
+              <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Статус
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Оновлено
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Дії
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-            <tr v-for="page in pages" :key="page.id" class="hover:bg-gray-50/50 dark:hover:bg-gray-700/10 transition-colors">
+            <tr
+              v-for="page in pages"
+              :key="page.id"
+              class="hover:bg-gray-50/50 dark:hover:bg-gray-700/10 transition-colors"
+            >
               <td class="px-6 py-4">
                 <div class="font-semibold text-gray-800 dark:text-gray-100">
                   {{ page.titleUk || 'Без назви' }}
@@ -76,9 +119,9 @@
                     /pages/{{ page.slug }}
                   </span>
                   <button
-                    @click="copyLink(page.slug)"
                     class="p-1 text-gray-400 hover:text-emerald-600 transition-colors"
                     title="Копіювати посилання"
+                    @click="copyLink(page.slug)"
                   >
                     <DocumentDuplicateIcon class="w-3.5 h-3.5" />
                   </button>
@@ -110,16 +153,16 @@
                     <ArrowTopRightOnSquareIcon class="w-4 h-4" />
                   </a>
                   <button
-                    @click="openEditPage(page)"
                     class="p-2 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-500 hover:text-emerald-600 transition-colors"
                     title="Редагувати"
+                    @click="openEditPage(page)"
                   >
                     <PencilIcon class="w-4 h-4" />
                   </button>
                   <button
-                    @click="deletePage(page)"
                     class="p-2 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
                     title="Видалити"
+                    @click="deletePage(page)"
                   >
                     <TrashIcon class="w-4 h-4" />
                   </button>
@@ -131,7 +174,10 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.last_page > 1" class="flex items-center justify-between px-6 py-4 border-t border-gray-150 dark:border-gray-700">
+      <div
+        v-if="pagination.last_page > 1"
+        class="flex items-center justify-between px-6 py-4 border-t border-gray-150 dark:border-gray-700"
+      >
         <span class="text-xs text-gray-550 dark:text-gray-400">
           Всього: <strong>{{ pagination.total }}</strong> сторінок
         </span>
@@ -139,13 +185,13 @@
           <button
             v-for="page in pagination.last_page"
             :key="page"
-            @click="fetchPages(page)"
             :class="[
               'w-8 h-8 rounded-lg text-xs font-semibold transition-all',
               pagination.current_page === page
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-emerald-500'
             ]"
+            @click="fetchPages(page)"
           >
             {{ page }}
           </button>
@@ -156,23 +202,34 @@
     <!-- MODAL EDITOR -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showModal" class="fixed inset-0 z-[9999] flex">
+        <div
+          v-if="showModal"
+          class="fixed inset-0 z-[9999] flex"
+        >
           <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal" />
+          <div
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            @click="closeModal"
+          />
 
           <!-- Editor panel -->
           <div class="relative ml-auto w-full max-w-5xl h-full bg-gray-50 dark:bg-gray-900 flex flex-col shadow-2xl">
             <!-- Header -->
             <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-3">
-                <button @click="closeModal" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <button
+                  class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="closeModal"
+                >
                   <XMarkIcon class="w-5 h-5 text-gray-500" />
                 </button>
                 <div>
                   <h2 class="font-bold text-gray-800 dark:text-white text-lg">
                     {{ editingPage ? 'Редагувати сторінку' : 'Нова сторінка' }}
                   </h2>
-                  <p class="text-xs text-gray-400 dark:text-gray-500">Заповніть контент українською та англійською мовами</p>
+                  <p class="text-xs text-gray-400 dark:text-gray-500">
+                    Заповніть контент українською та англійською мовами
+                  </p>
                 </div>
               </div>
 
@@ -181,13 +238,17 @@
                   v-model="pageForm.status"
                   class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-750 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                 >
-                  <option value="draft">Чернетка</option>
-                  <option value="published">Опублікувати</option>
+                  <option value="draft">
+                    Чернетка
+                  </option>
+                  <option value="published">
+                    Опублікувати
+                  </option>
                 </select>
                 <button
-                  @click="savePage"
                   :disabled="saving"
                   class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-500/10"
+                  @click="savePage"
                 >
                   <span v-if="saving">Збереження...</span>
                   <span v-else>Зберегти</span>
@@ -199,7 +260,9 @@
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
               <!-- Grid for settings (Slug) -->
               <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
-                <h3 class="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-450">Налаштування URL</h3>
+                <h3 class="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-450">
+                  Налаштування URL
+                </h3>
                 <div>
                   <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Адреса сторінки (Slug)</label>
                   <div class="relative rounded-xl shadow-sm">
@@ -211,7 +274,7 @@
                       type="text"
                       placeholder="наприклад: shipping-and-payment"
                       class="block w-full rounded-xl border border-gray-250 dark:border-gray-700 bg-white dark:bg-gray-900 py-3 pl-16 pr-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-gray-800 dark:text-gray-100 font-mono"
-                    />
+                    >
                   </div>
                   <p class="text-xs text-gray-400 mt-1.5 leading-relaxed">
                     Лише латинські літери, цифри та дефіси. Якщо залишити порожнім, буде згенеровано автоматично з англійського заголовка.
@@ -223,29 +286,31 @@
               <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-5">
                 <!-- Language tabs switcher -->
                 <div class="flex items-center justify-between border-b border-gray-155 dark:border-gray-700 pb-3">
-                  <h3 class="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-450">Вміст сторінки</h3>
+                  <h3 class="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-450">
+                    Вміст сторінки
+                  </h3>
                   <div class="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-xl p-1 shrink-0">
                     <button
                       type="button"
-                      @click="langTab = 'uk'"
                       :class="[
                         'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5',
                         langTab === 'uk'
                           ? 'bg-white dark:bg-gray-600 text-gray-850 dark:text-white shadow-sm'
                           : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                       ]"
+                      @click="langTab = 'uk'"
                     >
                       <span>🇺🇦</span> Українська
                     </button>
                     <button
                       type="button"
-                      @click="langTab = 'en'"
                       :class="[
                         'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5',
                         langTab === 'en'
                           ? 'bg-white dark:bg-gray-600 text-gray-855 dark:text-white shadow-sm'
                           : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
                       ]"
+                      @click="langTab = 'en'"
                     >
                       <span>🇬🇧</span> English
                     </button>
@@ -253,7 +318,10 @@
                 </div>
 
                 <!-- UK Tab Content -->
-                <div v-show="langTab === 'uk'" class="space-y-5">
+                <div
+                  v-show="langTab === 'uk'"
+                  class="space-y-5"
+                >
                   <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Заголовок сторінки (Українська)</label>
                     <input
@@ -261,7 +329,7 @@
                       type="text"
                       placeholder="Введіть заголовок..."
                       class="w-full px-4 py-3 rounded-xl border border-gray-250 dark:border-gray-700 bg-white dark:bg-gray-900 text-base font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
+                    >
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Контент сторінки (Українська)</label>
@@ -273,7 +341,10 @@
                 </div>
 
                 <!-- EN Tab Content -->
-                <div v-show="langTab === 'en'" class="space-y-5">
+                <div
+                  v-show="langTab === 'en'"
+                  class="space-y-5"
+                >
                   <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Page Title (English)</label>
                     <input
@@ -281,7 +352,7 @@
                       type="text"
                       placeholder="Enter page title..."
                       class="w-full px-4 py-3 rounded-xl border border-gray-255 dark:border-gray-700 bg-white dark:bg-gray-900 text-base font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
+                    >
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Page Content (English)</label>

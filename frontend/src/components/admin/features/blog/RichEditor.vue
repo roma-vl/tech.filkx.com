@@ -3,19 +3,39 @@
     <!-- Toolbar -->
     <div class="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
       <!-- Text formatting -->
-      <ToolbarButton @click="editor.chain().focus().toggleBold().run()" :active="editor?.isActive('bold')" title="Жирний">
+      <ToolbarButton
+        :active="editor?.isActive('bold')"
+        title="Жирний"
+        @click="editor.chain().focus().toggleBold().run()"
+      >
         <BoldIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleItalic().run()" :active="editor?.isActive('italic')" title="Курсив">
+      <ToolbarButton
+        :active="editor?.isActive('italic')"
+        title="Курсив"
+        @click="editor.chain().focus().toggleItalic().run()"
+      >
         <ItalicIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleUnderline().run()" :active="editor?.isActive('underline')" title="Підкреслений">
+      <ToolbarButton
+        :active="editor?.isActive('underline')"
+        title="Підкреслений"
+        @click="editor.chain().focus().toggleUnderline().run()"
+      >
         <UnderlineIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleStrike().run()" :active="editor?.isActive('strike')" title="Закреслений">
+      <ToolbarButton
+        :active="editor?.isActive('strike')"
+        title="Закреслений"
+        @click="editor.chain().focus().toggleStrike().run()"
+      >
         <StrikeIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleHighlight().run()" :active="editor?.isActive('highlight')" title="Підсвічування">
+      <ToolbarButton
+        :active="editor?.isActive('highlight')"
+        title="Підсвічування"
+        @click="editor.chain().focus().toggleHighlight().run()"
+      >
         <HighlightIcon />
       </ToolbarButton>
 
@@ -25,10 +45,10 @@
       <ToolbarButton
         v-for="level in [1, 2, 3]"
         :key="level"
-        @click="editor.chain().focus().toggleHeading({ level }).run()"
         :active="editor?.isActive('heading', { level })"
         :title="`Заголовок ${level}`"
         class="text-xs font-bold"
+        @click="editor.chain().focus().toggleHeading({ level }).run()"
       >
         H{{ level }}
       </ToolbarButton>
@@ -36,56 +56,105 @@
       <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
 
       <!-- Lists -->
-      <ToolbarButton @click="editor.chain().focus().toggleBulletList().run()" :active="editor?.isActive('bulletList')" title="Маркований список">
+      <ToolbarButton
+        :active="editor?.isActive('bulletList')"
+        title="Маркований список"
+        @click="editor.chain().focus().toggleBulletList().run()"
+      >
         <ListBulletIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleOrderedList().run()" :active="editor?.isActive('orderedList')" title="Нумерований список">
+      <ToolbarButton
+        :active="editor?.isActive('orderedList')"
+        title="Нумерований список"
+        @click="editor.chain().focus().toggleOrderedList().run()"
+      >
         <ListOrderedIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleBlockquote().run()" :active="editor?.isActive('blockquote')" title="Цитата">
+      <ToolbarButton
+        :active="editor?.isActive('blockquote')"
+        title="Цитата"
+        @click="editor.chain().focus().toggleBlockquote().run()"
+      >
         <QuoteIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().toggleCodeBlock().run()" :active="editor?.isActive('codeBlock')" title="Код">
+      <ToolbarButton
+        :active="editor?.isActive('codeBlock')"
+        title="Код"
+        @click="editor.chain().focus().toggleCodeBlock().run()"
+      >
         <CodeIcon />
       </ToolbarButton>
 
       <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
 
       <!-- Alignment -->
-      <ToolbarButton @click="editor.chain().focus().setTextAlign('left').run()" :active="editor?.isActive({ textAlign: 'left' })" title="По лівому">
+      <ToolbarButton
+        :active="editor?.isActive({ textAlign: 'left' })"
+        title="По лівому"
+        @click="editor.chain().focus().setTextAlign('left').run()"
+      >
         <AlignLeftIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().setTextAlign('center').run()" :active="editor?.isActive({ textAlign: 'center' })" title="По центру">
+      <ToolbarButton
+        :active="editor?.isActive({ textAlign: 'center' })"
+        title="По центру"
+        @click="editor.chain().focus().setTextAlign('center').run()"
+      >
         <AlignCenterIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().setTextAlign('right').run()" :active="editor?.isActive({ textAlign: 'right' })" title="По правому">
+      <ToolbarButton
+        :active="editor?.isActive({ textAlign: 'right' })"
+        title="По правому"
+        @click="editor.chain().focus().setTextAlign('right').run()"
+      >
         <AlignRightIcon />
       </ToolbarButton>
 
       <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
 
       <!-- Link -->
-      <ToolbarButton @click="setLink" :active="editor?.isActive('link')" title="Посилання">
+      <ToolbarButton
+        :active="editor?.isActive('link')"
+        title="Посилання"
+        @click="setLink"
+      >
         <LinkIcon />
       </ToolbarButton>
 
       <!-- Image upload -->
-      <label class="toolbar-btn cursor-pointer" title="Вставити зображення">
+      <label
+        class="toolbar-btn cursor-pointer"
+        title="Вставити зображення"
+      >
         <ImageIcon />
-        <input type="file" accept="image/*" class="sr-only" @change="insertImage" />
+        <input
+          type="file"
+          accept="image/*"
+          class="sr-only"
+          @change="insertImage"
+        >
       </label>
 
       <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />
 
       <!-- Undo / Redo -->
-      <ToolbarButton @click="editor.chain().focus().undo().run()" title="Скасувати">
+      <ToolbarButton
+        title="Скасувати"
+        @click="editor.chain().focus().undo().run()"
+      >
         <UndoIcon />
       </ToolbarButton>
-      <ToolbarButton @click="editor.chain().focus().redo().run()" title="Повторити">
+      <ToolbarButton
+        title="Повторити"
+        @click="editor.chain().focus().redo().run()"
+      >
         <RedoIcon />
       </ToolbarButton>
 
-      <ToolbarButton @click="editor.chain().focus().setHorizontalRule().run()" title="Роздільник">
+      <ToolbarButton
+        title="Роздільник"
+        @click="editor.chain().focus().setHorizontalRule().run()"
+      >
         <HrIcon />
       </ToolbarButton>
     </div>

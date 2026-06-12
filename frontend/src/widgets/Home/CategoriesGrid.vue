@@ -52,7 +52,9 @@ const getCategoryStyle = (slug) => {
           Швидкий перехід до потрібних розділів нашого каталогу
         </p>
       </div>
-      <UiSectionLink :to="{ name: 'catalog' }">Усі категорії</UiSectionLink>
+      <UiSectionLink :to="{ name: 'catalog' }">
+        Усі категорії
+      </UiSectionLink>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

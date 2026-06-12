@@ -77,37 +77,49 @@ const handleSubscribe = () => {
               <router-link
                 to="/about"
                 class="hover:text-white transition-colors"
-              >Про нас</router-link>
+              >
+                Про нас
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/terms"
                 class="hover:text-white transition-colors"
-              >Умови використання сайту</router-link>
+              >
+                Умови використання сайту
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/careers"
                 class="hover:text-white transition-colors"
-              >Вакансії</router-link>
+              >
+                Вакансії
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/contacts"
                 class="hover:text-white transition-colors"
-              >Контакти</router-link>
+              >
+                Контакти
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/franchising"
                 class="hover:text-white transition-colors"
-              >Франчайзинг</router-link>
+              >
+                Франчайзинг
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/promo-rules"
                 class="hover:text-white transition-colors"
-              >Офіційні правила акцій</router-link>
+              >
+                Офіційні правила акцій
+              </router-link>
             </li>
           </ul>
         </div>
@@ -124,37 +136,49 @@ const handleSubscribe = () => {
               <router-link
                 to="/shipping-payment"
                 class="hover:text-white transition-colors"
-              >Доставка та оплата</router-link>
+              >
+                Доставка та оплата
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/installments"
                 class="hover:text-white transition-colors"
-              >Кредит та оплата частинами</router-link>
+              >
+                Кредит та оплата частинами
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/warranty-returns"
                 class="hover:text-white transition-colors"
-              >Гарантійні умови</router-link>
+              >
+                Гарантійні умови
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/warranty-returns"
                 class="hover:text-white transition-colors"
-              >Повернення та обмін товару</router-link>
+              >
+                Повернення та обмін товару
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/service"
                 class="hover:text-white transition-colors"
-              >Сервісні центри партнери</router-link>
+              >
+                Сервісні центри партнери
+              </router-link>
             </li>
             <li>
               <router-link
                 to="/account"
                 class="hover:text-white transition-colors"
-              >Відстежити замовлення</router-link>
+              >
+                Відстежити замовлення
+              </router-link>
             </li>
           </ul>
         </div>
@@ -377,11 +401,15 @@ const handleSubscribe = () => {
           <router-link
             to="/privacy"
             class="hover:text-white transition-colors"
-          >Конфіденційність</router-link>
+          >
+            Конфіденційність
+          </router-link>
           <router-link
             to="/oferta"
             class="hover:text-white transition-colors"
-          >Оферта</router-link>
+          >
+            Оферта
+          </router-link>
           <a
             href="#"
             class="hover:text-white transition-colors"
@@ -389,7 +417,9 @@ const handleSubscribe = () => {
           <router-link
             to="/cookies"
             class="hover:text-white transition-colors"
-          >Cookies</router-link>
+          >
+            Cookies
+          </router-link>
         </div>
 
         <!-- Payment Brands -->

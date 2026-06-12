@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
 import { useCartStore } from "@/entities/order/model/cartStore";
@@ -16,21 +16,19 @@ interface Product {
   reviews: number;
 }
 
+const props = defineProps({
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+});
+
 const router = useRouter();
 const cartStore = useCartStore();
 
 const bestsellers = ref<Product[]>([]);
-const selectedSlug = ref("smartphones");
+const selectedSlug = ref("");
 const isLoadingProds = ref(false);
-
-const chips = [
-  { name: "Смартфони, Телефони", slug: "smartphones" },
-  { name: "Навушники", slug: "audio" },
-  { name: "Планшети", slug: "tablets" },
-  { name: "Смарт-годинники", slug: "smart-gadgets" },
-  { name: "Зарядні пристрої", slug: "pc-accessories" },
-  { name: "Ноутбуки", slug: "laptops" }
-];
 
 const mapProduct = (p: any): Product | null => {
   try {
@@ -82,8 +80,22 @@ const selectCategory = async (slug: string) => {
   }
 };
 
+watch(
+  () => props.categories,
+  (newCats) => {
+    if (newCats && newCats.length > 0 && !selectedSlug.value) {
+      const firstCat = newCats[0] as any;
+      selectCategory(firstCat.slug);
+    }
+  },
+  { immediate: true }
+);
+
 onMounted(() => {
-  selectCategory("smartphones");
+  if (props.categories.length > 0 && !selectedSlug.value) {
+    const firstCat = props.categories[0] as any;
+    selectCategory(firstCat.slug);
+  }
 });
 </script>
 
@@ -108,17 +120,17 @@ onMounted(() => {
     <!-- Category Pill Chips -->
     <div class="flex items-center gap-2 overflow-x-auto pb-5 no-scrollbar">
       <button
-        v-for="chip in chips"
-        :key="chip.slug"
+        v-for="cat in (categories as any[])"
+        :key="cat.slug"
         class="px-5 py-2 rounded-full text-xs font-bold transition-all duration-200 border whitespace-nowrap"
         :class="
-          selectedSlug === chip.slug
+          selectedSlug === cat.slug
             ? 'bg-[#00a046] text-white border-transparent shadow-md shadow-[#00a046]/10'
             : 'bg-[#23242e] dark:bg-[#1a1b24] hover:bg-[#2e2f3d] dark:hover:bg-zinc-800/80 text-zinc-300 border-zinc-800'
         "
-        @click="selectCategory(chip.slug)"
+        @click="selectCategory(cat.slug)"
       >
-        {{ chip.name }}
+        {{ cat.name?.uk || cat.name?.en || cat.name }}
       </button>
     </div>
 

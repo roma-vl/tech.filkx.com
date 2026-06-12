@@ -139,27 +139,18 @@ const selectCategory = (cat: any) => {
   activeCat.value = cat;
 };
 
-const handleLinkClick = (link: any) => {
-  isMegaMenuOpen.value = false;
-  if (link.slug) {
-    router.push({
-      name: "catalog",
-      query: { category: link.slug, q: link.name }
-    });
-  } else {
-    router.push({
-      name: "catalog",
-      query: { q: link.name }
-    });
-  }
+const getLinkRoute = (link: any) => {
+  return {
+    name: "catalog",
+    query: { category: link.slug }
+  };
 };
 
-const handleGroupTitleClick = (group: any) => {
-  isMegaMenuOpen.value = false;
-  router.push({
+const getGroupRoute = (group: any) => {
+  return {
     name: "catalog",
-    query: { category: group.showMoreSlug || "phones", q: group.title }
-  });
+    query: { category: group.slug }
+  };
 };
 
 const selectPopularQuery = (query: string) => {
@@ -643,33 +634,37 @@ onUnmounted(() => {
             <li
               v-for="cat in categories"
               :key="cat.id"
-              :class="
-                activeCat && activeCat.id === cat.id
-                  ? 'bg-[#252e37] text-white font-bold'
-                  : 'hover:bg-[#252e37]/75 text-zinc-300 hover:text-white'
-              "
-              class="flex items-center justify-between p-2.5 rounded-none cursor-pointer transition-all duration-150 group/item"
-              @mouseenter="selectCategory(cat)"
-              @click="router.push({ name: 'catalog', query: { category: cat.slug } })"
             >
-              <div class="flex items-center gap-3">
-                <span
-                  class="material-symbols-outlined text-[19px] transition-transform duration-300"
-                  :class="
-                    activeCat && activeCat.id === cat.id
-                      ? 'scale-110 text-white'
-                      : 'group-hover/item:scale-110 text-zinc-400'
-                  "
-                >
-                  {{ cat.icon }}
-                </span>
-                <span class="text-xs font-semibold">{{ cat.label }}</span>
-              </div>
-              <span
-                class="material-symbols-outlined text-[14px] text-zinc-650 transition-transform duration-300 group-hover/item:text-zinc-400 group-hover/item:translate-x-0.5"
+              <RouterLink
+                :to="{ name: 'catalog', query: { category: cat.slug } }"
+                :class="
+                  activeCat && activeCat.id === cat.id
+                    ? 'bg-[#252e37] text-white font-bold'
+                    : 'hover:bg-[#252e37]/75 text-zinc-300 hover:text-white'
+                "
+                class="flex items-center justify-between p-2.5 rounded-none cursor-pointer transition-all duration-150 group/item w-full"
+                @mouseenter="selectCategory(cat)"
+                @click="isMegaMenuOpen = false"
               >
-                chevron_right
-              </span>
+                <div class="flex items-center gap-3">
+                  <span
+                    class="material-symbols-outlined text-[19px] transition-transform duration-300"
+                    :class="
+                      activeCat && activeCat.id === cat.id
+                        ? 'scale-110 text-white'
+                        : 'group-hover/item:scale-110 text-zinc-400'
+                    "
+                  >
+                    {{ cat.icon }}
+                  </span>
+                  <span class="text-xs font-semibold">{{ cat.label }}</span>
+                </div>
+                <span
+                  class="material-symbols-outlined text-[14px] text-zinc-650 transition-transform duration-300 group-hover/item:text-zinc-400 group-hover/item:translate-x-0.5"
+                >
+                  chevron_right
+                </span>
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -692,11 +687,14 @@ onUnmounted(() => {
                 :key="gIdx"
                 class="space-y-2"
               >
-                <h4
-                  class="text-[#3898ec] hover:underline font-extrabold text-[11.5px] uppercase tracking-wider cursor-pointer"
-                  @click="handleGroupTitleClick(group)"
-                >
-                  {{ group.title }}
+                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+                  <RouterLink
+                    :to="getGroupRoute(group)"
+                    class="text-[#3898ec] hover:underline cursor-pointer"
+                    @click="isMegaMenuOpen = false"
+                  >
+                    {{ group.title }}
+                  </RouterLink>
                 </h4>
                 <ul class="space-y-1.5">
                   <li
@@ -704,12 +702,13 @@ onUnmounted(() => {
                     :key="lIdx"
                     class="flex items-center"
                   >
-                    <span
+                    <RouterLink
+                      :to="getLinkRoute(link)"
                       class="text-zinc-300 hover:text-[#3898ec] text-xs cursor-pointer transition-colors leading-relaxed"
-                      @click="handleLinkClick(link)"
+                      @click="isMegaMenuOpen = false"
                     >
                       {{ link.name }}
-                    </span>
+                    </RouterLink>
                     <span
                       v-if="link.badge"
                       class="text-[#ff4b5f] text-[9px] font-black uppercase tracking-wider ml-1"
@@ -718,13 +717,14 @@ onUnmounted(() => {
                     </span>
                   </li>
                 </ul>
-                <div
+                <RouterLink
                   v-if="group.showMoreSlug"
+                  :to="getGroupRoute(group)"
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
-                  @click="handleGroupTitleClick(group)"
+                  @click="isMegaMenuOpen = false"
                 >
                   Дивитися далі →
-                </div>
+                </RouterLink>
               </div>
             </div>
           </div>

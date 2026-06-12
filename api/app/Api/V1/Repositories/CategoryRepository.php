@@ -9,7 +9,7 @@ class CategoryRepository
 {
     public function getParentCategoriesWithChildren(): Collection
     {
-        return Category::with('children')
+        return Category::with('children.children')
             ->whereNull('parent_id')
             ->orderBy('order')
             ->get();
@@ -17,9 +17,12 @@ class CategoryRepository
 
     public function getPopularCategories(int $limit = 8): Collection
     {
-        return Category::withCount(['products' => function ($q) {
+        return Category::whereHas('products', function ($q) {
             $q->where('status', 'active');
-        }])
+        })
+            ->withCount(['products' => function ($q) {
+                $q->where('status', 'active');
+            }])
             ->orderBy('products_count', 'desc')
             ->take($limit)
             ->get();

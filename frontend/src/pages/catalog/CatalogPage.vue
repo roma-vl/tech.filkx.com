@@ -1,6 +1,6 @@
 <template>
   <!-- Breadcrumbs -->
-  <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs font-sans text-zinc-400 dark:text-zinc-500">
+  <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center flex-wrap gap-1.5 text-xs font-sans text-zinc-400 dark:text-zinc-500">
     <router-link
       :to="{ name: 'home' }"
       class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
@@ -12,9 +12,18 @@
     <router-link :to="{ name: 'catalog' }" class="hover:text-[#00a046] transition-colors font-semibold">
       Каталог
     </router-link>
-    <template v-if="route.query.category">
+    <template v-for="(cat, idx) in currentCategoryPath" :key="cat.slug || cat.id">
       <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
-      <span class="text-zinc-800 dark:text-zinc-200 font-bold">{{ currentCategoryName }}</span>
+      <router-link
+        v-if="idx < currentCategoryPath.length - 1"
+        :to="{ name: 'catalog', query: { category: cat.slug } }"
+        class="hover:text-[#00a046] transition-colors font-semibold"
+      >
+        {{ cat.name?.uk || cat.name?.en || cat.name }}
+      </router-link>
+      <span v-else class="text-zinc-800 dark:text-zinc-200 font-bold">
+        {{ cat.name?.uk || cat.name?.en || cat.name }}
+      </span>
     </template>
   </nav>
 
@@ -34,7 +43,7 @@
   <!-- Main Catalog Layout -->
   <main class="max-w-container-max mx-auto px-4 md:px-8 py-5 flex gap-6 font-sans">
     <!-- Sidebar (Desktop) -->
-    <aside class="hidden lg:block w-64 flex-shrink-0">
+    <aside class="hidden lg:block w-80 flex-shrink-0">
       <div class="sticky top-24">
         <CatalogFiltersWidget
           v-model:price-min="priceMin"
@@ -333,6 +342,7 @@ const {
   openQuickView,
   closeQuickView,
   currentCategoryName,
+  currentCategoryPath,
 } = useCatalog();
 
 const sortOptions = [

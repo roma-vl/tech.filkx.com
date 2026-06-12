@@ -2,9 +2,11 @@
   <main class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-10">
     <!-- Breadcrumb & Container -->
     <div class="max-w-4xl mx-auto px-4">
-      
       <!-- Loading state -->
-      <div v-if="loading" class="space-y-6">
+      <div
+        v-if="loading"
+        class="space-y-6"
+      >
         <nav class="flex items-center gap-2 text-xs text-gray-400">
           <div class="h-4 w-12 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
           <span>/</span>
@@ -14,13 +16,21 @@
           <div class="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-2/3 animate-pulse" />
           <div class="h-px bg-zinc-100 dark:bg-zinc-800" />
           <div class="space-y-4 pt-4">
-            <div v-for="i in 8" :key="i" class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" :style="{ width: `${100 - (i % 3) * 10}%` }" />
+            <div
+              v-for="i in 8"
+              :key="i"
+              class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
+              :style="{ width: `${100 - (i % 3) * 10}%` }"
+            />
           </div>
         </div>
       </div>
 
       <!-- 404 Page not found -->
-      <div v-else-if="!page" class="py-24 text-center">
+      <div
+        v-else-if="!page"
+        class="py-24 text-center"
+      >
         <span class="text-6xl mb-6 block">📄</span>
         <h1 class="text-2xl font-extrabold text-gray-800 dark:text-white mb-3">
           {{ locale === 'uk' ? 'Сторінку не знайдено' : 'Page Not Found' }}
@@ -37,10 +47,16 @@
       </div>
 
       <!-- Page content -->
-      <div v-else class="space-y-4">
+      <div
+        v-else
+        class="space-y-4"
+      >
         <!-- Breadcrumbs -->
         <nav class="flex items-center gap-2 text-xs text-gray-450 dark:text-gray-400 px-1">
-          <RouterLink to="/" class="hover:text-emerald-600 dark:hover:text-emerald-450 transition-colors">
+          <RouterLink
+            to="/"
+            class="hover:text-emerald-600 dark:hover:text-emerald-450 transition-colors"
+          >
             {{ locale === 'uk' ? 'Головна' : 'Home' }}
           </RouterLink>
           <span>/</span>
@@ -64,16 +80,15 @@
             </div>
           </header>
 
-          <hr class="border-zinc-100 dark:border-zinc-800 my-6" />
+          <hr class="border-zinc-100 dark:border-zinc-800 my-6">
 
           <!-- Page body -->
           <div
-            v-html="page.content?.[locale] || page.content?.uk || page.content?.en"
             class="page-content prose prose-zinc dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200"
+            v-html="page.content?.[locale] || page.content?.uk || page.content?.en"
           />
         </article>
       </div>
-
     </div>
   </main>
 </template>

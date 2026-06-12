@@ -422,12 +422,33 @@ export function useCatalog() {
     isQuickViewOpen.value = false;
   };
 
+  const getCategoryPath = (categories: any[], slug: string, path: any[] = []): any[] | null => {
+    for (const cat of categories) {
+      const currentPath = [...path, cat];
+      if (cat.slug === slug) {
+        return currentPath;
+      }
+      if (cat.children && cat.children.length > 0) {
+        const result = getCategoryPath(cat.children, slug, currentPath);
+        if (result) return result;
+      }
+    }
+    return null;
+  };
+
+  const currentCategoryPath = computed(() => {
+    if (!route.query.category) return [];
+    return getCategoryPath(categoriesList.value, route.query.category as string) || [];
+  });
+
   const currentCategoryName = computed(() => {
     if (!route.query.category) return "Всі товари";
-    const cat = categoriesList.value.find(
-      (c) => c.slug === route.query.category,
-    );
-    return cat ? cat.name.uk || cat.name.en || cat.name : "Каталог";
+    const path = currentCategoryPath.value;
+    if (path.length > 0) {
+      const last = path[path.length - 1];
+      return last.name?.uk || last.name?.en || last.name;
+    }
+    return "Каталог";
   });
 
   watch(
@@ -495,5 +516,6 @@ export function useCatalog() {
     openQuickView,
     closeQuickView,
     currentCategoryName,
+    currentCategoryPath,
   };
 }

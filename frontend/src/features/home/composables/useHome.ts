@@ -3,6 +3,7 @@ import { productApi } from "@/shared/services/api/productApi";
 
 export function useHome() {
   const categories = ref<any[]>([]);
+  const popularCategories = ref<any[]>([]);
   const flashDeals = ref<any[]>([]);
   const recommended = ref<any[]>([]);
   const loading = ref(true);
@@ -151,20 +152,28 @@ export function useHome() {
         viewedIds = viewed.join(",");
       }
 
-      const response = await productApi.catalogGetHome({
-        wishlist_ids: wishlistIds,
-        viewed_ids: viewedIds,
-      });
+      const [homeRes, catsRes] = await Promise.all([
+        productApi.catalogGetHome({
+          wishlist_ids: wishlistIds,
+          viewed_ids: viewedIds,
+        }),
+        productApi.catalogGetCategories()
+      ]);
 
-      const data = response.data;
+      const data = homeRes.data;
       if (data && (data.success || data.status === "success")) {
-        categories.value = data.data.categories || [];
         flashDeals.value = (data.data.flashDeals || data.data.flash_deals || [])
           .map(mapProduct)
           .filter(Boolean);
         recommended.value = (data.data.recommended || [])
           .map(mapProduct)
           .filter(Boolean);
+        popularCategories.value = data.data.categories || [];
+      }
+
+      const catsData = catsRes.data;
+      if (catsData && (catsData.success || catsData.status === "success")) {
+        categories.value = catsData.data || [];
       }
     } catch (error) {
       console.error("Failed to load homepage data:", error);
@@ -179,6 +188,7 @@ export function useHome() {
 
   return {
     categories,
+    popularCategories,
     flashDeals,
     recommended,
     loading,

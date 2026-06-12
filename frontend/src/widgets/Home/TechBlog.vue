@@ -97,11 +97,16 @@ onMounted(fetchLatestPosts);
           Корисні статті, огляди новинок та поради від експертів FilkxTech
         </p>
       </div>
-      <UiSectionLink :to="{ name: 'blog' }">Читати всі статті</UiSectionLink>
+      <UiSectionLink :to="{ name: 'blog' }">
+        Читати всі статті
+      </UiSectionLink>
     </div>
 
     <!-- Skeleton -->
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div
+      v-if="loading"
+      class="grid grid-cols-1 md:grid-cols-3 gap-6"
+    >
       <div
         v-for="i in 3"
         :key="i"
@@ -117,7 +122,10 @@ onMounted(fetchLatestPosts);
     </div>
 
     <!-- Posts grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div
+      v-else
+      class="grid grid-cols-1 md:grid-cols-3 gap-6"
+    >
       <router-link
         v-for="post in posts"
         :key="post.id"
@@ -131,13 +139,19 @@ onMounted(fetchLatestPosts);
             :src="post.coverImage"
             :alt="getTitle(post)"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <div v-else class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+          >
+          <div
+            v-else
+            class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800"
+          >
             <span class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-600">article</span>
           </div>
 
           <!-- Category badge -->
-          <div v-if="post.category" class="absolute top-3 left-3">
+          <div
+            v-if="post.category"
+            class="absolute top-3 left-3"
+          >
             <span
               class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
             >

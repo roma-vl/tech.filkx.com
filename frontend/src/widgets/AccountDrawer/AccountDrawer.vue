@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute, RouterLink } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -42,6 +42,18 @@ const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
 
   if (authStore.isAuthenticated) {
+    const allowedRoles = ["admin", "administrator", "support", "owner", "moderator"];
+    const userRoles = authStore.user?.roles || [];
+    const hasAdminAccess = allowedRoles.some((role) => userRoles.includes(role));
+
+    if (hasAdminAccess) {
+      items.push({
+        name: "Адмін панель",
+        icon: "admin_panel_settings",
+        routeName: "admin-dashboard",
+      });
+    }
+
     items.push(
       {
         name: "Панель керування",
@@ -129,6 +141,13 @@ const handleLogout = async () => {
 const closeDrawer = () => {
   cartStore.closeDrawer();
 };
+
+const getRouteTo = (item: NavItem) => {
+  if (item.routeName) {
+    return { name: item.routeName };
+  }
+  return { name: "account", query: item.query };
+};
 </script>
 
 <template>
@@ -156,7 +175,7 @@ const closeDrawer = () => {
 
       <!-- User Info Header -->
       <div
-        class="pt-12 pb-6 px-6 border-b border-zinc-150 dark:border-zinc-850 flex flex-col gap-4 bg-zinc-50/50 dark:bg-zinc-950/20"
+        class="pt-12 pb-6 px-6 border-b border-zinc-200 dark:border-zinc-800 flex flex-col gap-4 bg-zinc-50/50 dark:bg-zinc-900/40"
       >
         <div class="flex items-center gap-3">
           <img
@@ -172,7 +191,7 @@ const closeDrawer = () => {
           </div>
           <div class="min-w-0 flex-1">
             <p
-              class="font-black text-zinc-850 dark:text-zinc-150 leading-tight truncate text-sm"
+              class="font-black text-zinc-800 dark:text-zinc-200 leading-tight truncate text-sm"
             >
               {{ userName }}
             </p>
@@ -199,28 +218,24 @@ const closeDrawer = () => {
 
         <!-- Auth Actions for Guests -->
         <div v-if="!authStore.isAuthenticated" class="flex gap-2.5 mt-2">
-          <button
+          <RouterLink
+            to="/login"
             class="flex-1 bg-[#00a046] hover:bg-[#00b050] text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-            @click="
-              closeDrawer();
-              router.push('/login');
-            "
+            @click="closeDrawer()"
           >
             <span class="material-symbols-outlined text-[16px]">login</span>
             Увійти
-          </button>
-          <button
+          </RouterLink>
+          <RouterLink
+            to="/register"
             class="flex-1 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-            @click="
-              closeDrawer();
-              router.push('/register');
-            "
+            @click="closeDrawer()"
           >
             <span class="material-symbols-outlined text-[16px]"
               >person_add</span
             >
             Реєстрація
-          </button>
+          </RouterLink>
         </div>
       </div>
 
@@ -228,16 +243,17 @@ const closeDrawer = () => {
       <nav
         class="flex-grow overflow-y-auto px-4 py-6 flex flex-col gap-1.5 custom-scrollbar"
       >
-        <button
+        <RouterLink
           v-for="item in navItems"
           :key="item.name"
+          :to="getRouteTo(item)"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group w-full text-left relative"
           :class="
             isActive(item)
               ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
-              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white font-extrabold'
           "
-          @click="navigate(item)"
+          @click="closeDrawer"
         >
           <span
             class="material-symbols-outlined text-[20px]"
@@ -265,23 +281,24 @@ const closeDrawer = () => {
             class="ml-auto material-symbols-outlined text-[16px]"
             >chevron_right</span
           >
-        </button>
+        </RouterLink>
       </nav>
 
       <!-- Footer Menu -->
       <div
-        class="mt-auto flex flex-col gap-1.5 p-4 border-t border-zinc-150 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-950/10"
+        class="mt-auto flex flex-col gap-1.5 p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/20"
       >
-        <button
+        <RouterLink
           v-for="item in footerItems"
           :key="item.name"
+          :to="getRouteTo(item)"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 w-full text-left"
           :class="
             isActive(item)
               ? 'bg-[#00a046]/8 dark:bg-[#00a046]/12 text-[#00a046] font-black border-l-4 border-[#00a046] rounded-l-none pl-2.5'
-              : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:text-zinc-900 dark:hover:text-white font-extrabold'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white font-extrabold'
           "
-          @click="navigate(item)"
+          @click="closeDrawer"
         >
           <span
             class="material-symbols-outlined text-[20px]"
@@ -296,7 +313,7 @@ const closeDrawer = () => {
             class="ml-auto material-symbols-outlined text-[16px]"
             >chevron_right</span
           >
-        </button>
+        </RouterLink>
 
         <!-- Logout Action -->
         <button

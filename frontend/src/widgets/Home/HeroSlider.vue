@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import UiButton from "@/shared/ui/UiButton.vue";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
 
@@ -11,7 +11,6 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
 const activeIndex = ref(0);
 const hoveredCat = ref(null);
 let intervalId = null;
@@ -75,27 +74,18 @@ const resetTimer = () => {
   if (intervalId) { clearInterval(intervalId); startTimer(); }
 };
 
-const handleLinkClick = (link) => {
-  hoveredCat.value = null;
-  if (link.slug) {
-    router.push({
-      name: "catalog",
-      query: { category: link.slug, q: link.name }
-    });
-  } else {
-    router.push({
-      name: "catalog",
-      query: { q: link.name }
-    });
-  }
+const getLinkRoute = (link) => {
+  return {
+    name: "catalog",
+    query: { category: link.slug }
+  };
 };
 
-const handleGroupTitleClick = (group) => {
-  hoveredCat.value = null;
-  router.push({
+const getGroupRoute = (group) => {
+  return {
     name: "catalog",
-    query: { category: group.showMoreSlug || "phones", q: group.title }
-  });
+    query: { category: group.slug }
+  };
 };
 
 onMounted(() => { startTimer(); });
@@ -108,15 +98,15 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
       class="flex items-stretch overflow-hidden shadow-xl rounded-none relative"
       @mouseleave="hoveredCat = null"
     >
-
       <!-- ── Left: dark category sidebar (desktop only) ── -->
       <div class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800">
         <!-- Category links -->
         <nav class="flex-1 overflow-y-auto cat-scroll bg-[#1c2229]">
           <template v-if="mappedCategories.length > 0">
-            <button
+            <RouterLink
               v-for="cat in mappedCategories"
               :key="cat.id"
+              :to="{ name: 'catalog', query: { category: cat.slug } }"
               class="w-full flex items-center justify-between px-4 py-2.5 text-left transition-all duration-150 group/cl rounded-none"
               :class="
                 hoveredCat && hoveredCat.id === cat.id
@@ -124,7 +114,7 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                   : 'text-zinc-300 hover:text-white hover:bg-[#252e37]/75'
               "
               @mouseenter="hoveredCat = cat"
-              @click="router.push({ name: 'catalog', query: { category: cat.slug } })"
+              @click="hoveredCat = null"
             >
               <div class="flex items-center gap-3">
                 <span
@@ -144,10 +134,14 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               >
                 chevron_right
               </span>
-            </button>
+            </RouterLink>
           </template>
           <template v-else>
-            <div v-for="i in 11" :key="i" class="mx-4 my-2.5 h-6 bg-white/10 rounded-none animate-pulse" />
+            <div
+              v-for="i in 11"
+              :key="i"
+              class="mx-4 my-2.5 h-6 bg-white/10 rounded-none animate-pulse"
+            />
           </template>
         </nav>
       </div>
@@ -157,7 +151,6 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
         class="flex-1 min-w-0 relative bg-zinc-950 h-[380px] md:h-[480px] flex items-center group z-10"
         @mouseenter="hoveredCat = null"
       >
-
         <!-- Slides -->
         <div
           v-for="(slide, index) in slides"
@@ -169,7 +162,11 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               : 'opacity-0 scale-105 pointer-events-none z-0',
           ]"
         >
-          <img class="absolute inset-0 w-full h-full object-cover opacity-60" :src="slide.image" alt="" />
+          <img
+            class="absolute inset-0 w-full h-full object-cover opacity-60"
+            :src="slide.image"
+            alt=""
+          >
           <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
 
           <div class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center">
@@ -179,14 +176,25 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               </span>
               <span class="text-zinc-300 font-bold text-xs uppercase tracking-widest">• {{ slide.subtitle }}</span>
             </div>
-            <h1 class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white" v-html="slide.title" />
-            <p class="text-sm md:text-[15px] mb-6 text-zinc-300 max-w-lg leading-relaxed">{{ slide.description }}</p>
+            <h1
+              class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
+              v-html="slide.title"
+            />
+            <p class="text-sm md:text-[15px] mb-6 text-zinc-300 max-w-lg leading-relaxed">
+              {{ slide.description }}
+            </p>
             <div class="flex items-center gap-3">
-              <UiButton :to="slide.link" size="md">
+              <UiButton
+                :to="slide.link"
+                size="md"
+              >
                 {{ slide.btnPrimary }}
                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
               </UiButton>
-              <router-link :to="slide.link" class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-4 py-2.5 rounded-none text-sm font-bold transition-colors">
+              <router-link
+                :to="slide.link"
+                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-4 py-2.5 rounded-none text-sm font-bold transition-colors"
+              >
                 {{ slide.btnSecondary }}
               </router-link>
             </div>
@@ -252,11 +260,14 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                 :key="gIdx"
                 class="space-y-2"
               >
-                <h4
-                  class="text-[#3898ec] hover:underline font-extrabold text-[11.5px] uppercase tracking-wider cursor-pointer"
-                  @click="handleGroupTitleClick(group)"
-                >
-                  {{ group.title }}
+                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+                  <RouterLink
+                    :to="getGroupRoute(group)"
+                    class="text-[#3898ec] hover:underline cursor-pointer"
+                    @click="hoveredCat = null"
+                  >
+                    {{ group.title }}
+                  </RouterLink>
                 </h4>
                 <ul class="space-y-1.5">
                   <li
@@ -264,12 +275,13 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                     :key="lIdx"
                     class="flex items-center"
                   >
-                    <span
+                    <RouterLink
+                      :to="getLinkRoute(link)"
                       class="text-zinc-300 hover:text-[#3898ec] text-xs cursor-pointer transition-colors leading-relaxed"
-                      @click="handleLinkClick(link)"
+                      @click="hoveredCat = null"
                     >
                       {{ link.name }}
-                    </span>
+                    </RouterLink>
                     <span
                       v-if="link.badge"
                       class="text-[#ff4b5f] text-[9px] font-black uppercase tracking-wider ml-1"
@@ -278,13 +290,14 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                     </span>
                   </li>
                 </ul>
-                <div
+                <RouterLink
                   v-if="group.showMoreSlug"
+                  :to="getGroupRoute(group)"
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
-                  @click="handleGroupTitleClick(group)"
+                  @click="hoveredCat = null"
                 >
                   Дивитися далі →
-                </div>
+                </RouterLink>
               </div>
             </div>
           </div>
@@ -293,11 +306,12 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
             class="flex-grow flex flex-col items-center justify-center text-zinc-500 py-12"
           >
             <span class="material-symbols-outlined text-4xl mb-2">category</span>
-            <p class="text-xs font-bold">Немає дочірніх розділів.</p>
+            <p class="text-xs font-bold">
+              Немає дочірніх розділів.
+            </p>
           </div>
         </div>
       </Transition>
-
     </div>
   </section>
 </template>

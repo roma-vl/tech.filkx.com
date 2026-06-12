@@ -11,7 +11,7 @@
           📰 Блог FilkxTech
         </span>
         <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-          Новини, огляди<br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">та поради</span>
+          Новини, огляди<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">та поради</span>
         </h1>
         <p class="text-lg text-gray-400 max-w-xl mx-auto">
           Актуальні статті про технології, гаджети та лайфхаки для вашого життя
@@ -30,33 +30,54 @@
               type="text"
               placeholder="Пошук статей..."
               class="flex-1 px-4 py-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-            />
+            >
             <select
               v-model="activeCategory"
               class="px-4 py-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
-              <option value="">Всі категорії</option>
-              <option v-for="cat in categories" :key="cat.slug" :value="cat.slug">
+              <option value="">
+                Всі категорії
+              </option>
+              <option
+                v-for="cat in categories"
+                :key="cat.slug"
+                :value="cat.slug"
+              >
                 {{ cat.name?.uk || cat.name?.en }}
               </option>
             </select>
           </div>
 
           <!-- Loading -->
-          <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div v-for="i in 6" :key="i" class="animate-pulse rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 h-80" />
+          <div
+            v-if="loading"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <div
+              v-for="i in 6"
+              :key="i"
+              class="animate-pulse rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 h-80"
+            />
           </div>
 
           <!-- Empty -->
-          <div v-else-if="posts.length === 0" class="text-center py-24">
+          <div
+            v-else-if="posts.length === 0"
+            class="text-center py-24"
+          >
             <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-4">
               <span class="text-3xl">📝</span>
             </div>
-            <p class="text-gray-500 dark:text-gray-400">Статей не знайдено</p>
+            <p class="text-gray-500 dark:text-gray-400">
+              Статей не знайдено
+            </p>
           </div>
 
           <!-- Posts grid -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            v-else
+            class="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <RouterLink
               v-for="post in posts"
               :key="post.id"
@@ -70,12 +91,18 @@
                   :src="post.coverImage"
                   :alt="post.title?.uk || post.title?.en"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div v-else class="absolute inset-0 flex items-center justify-center">
+                >
+                <div
+                  v-else
+                  class="absolute inset-0 flex items-center justify-center"
+                >
                   <span class="text-5xl">📰</span>
                 </div>
                 <!-- Category badge -->
-                <div v-if="post.category" class="absolute top-4 left-4">
+                <div
+                  v-if="post.category"
+                  class="absolute top-4 left-4"
+                >
                   <span class="px-3 py-1 rounded-full bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-semibold">
                     {{ post.category.name?.uk || post.category.name?.en }}
                   </span>
@@ -117,17 +144,20 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="meta.last_page > 1" class="flex justify-center gap-2 mt-10">
+          <div
+            v-if="meta.last_page > 1"
+            class="flex justify-center gap-2 mt-10"
+          >
             <button
               v-for="page in meta.last_page"
               :key="page"
-              @click="fetchPosts(page)"
               :class="[
                 'w-10 h-10 rounded-xl text-sm font-semibold transition-all',
                 meta.current_page === page
                   ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
                   : 'bg-white dark:bg-zinc-900 text-gray-600 dark:text-gray-400 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-400'
               ]"
+              @click="fetchPosts(page)"
             >
               {{ page }}
             </button>
@@ -138,16 +168,18 @@
         <aside class="w-full lg:w-72 shrink-0 space-y-6">
           <!-- Categories -->
           <div class="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-5">
-            <h3 class="font-bold text-gray-800 dark:text-white mb-4 text-sm uppercase tracking-wider">Категорії</h3>
+            <h3 class="font-bold text-gray-800 dark:text-white mb-4 text-sm uppercase tracking-wider">
+              Категорії
+            </h3>
             <div class="space-y-1">
               <button
-                @click="activeCategory = ''; fetchPosts(1)"
                 :class="[
                   'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all',
                   !activeCategory
                     ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-semibold'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
                 ]"
+                @click="activeCategory = ''; fetchPosts(1)"
               >
                 <span>Всі статті</span>
                 <span class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">{{ meta.total }}</span>
@@ -155,13 +187,13 @@
               <button
                 v-for="cat in categories"
                 :key="cat.slug"
-                @click="activeCategory = cat.slug; fetchPosts(1)"
                 :class="[
                   'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all',
                   activeCategory === cat.slug
                     ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-semibold'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
                 ]"
+                @click="activeCategory = cat.slug; fetchPosts(1)"
               >
                 <span>{{ cat.name?.uk || cat.name?.en }}</span>
                 <span class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">{{ cat.postsCount }}</span>
@@ -171,18 +203,20 @@
 
           <!-- Popular tags -->
           <div class="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-5">
-            <h3 class="font-bold text-gray-800 dark:text-white mb-4 text-sm uppercase tracking-wider">Теги</h3>
+            <h3 class="font-bold text-gray-800 dark:text-white mb-4 text-sm uppercase tracking-wider">
+              Теги
+            </h3>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="tag in tags"
                 :key="tag.slug"
-                @click="activeTag = activeTag === tag.slug ? '' : tag.slug; fetchPosts(1)"
                 :class="[
                   'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all',
                   activeTag === tag.slug
                     ? 'bg-emerald-600 text-white'
                     : 'bg-zinc-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                 ]"
+                @click="activeTag = activeTag === tag.slug ? '' : tag.slug; fetchPosts(1)"
               >
                 #{{ tag.name?.uk || tag.name?.en }}
               </button>
