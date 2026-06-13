@@ -66,8 +66,8 @@ class BlogController extends BaseApiController
 
     public function tags(): JsonResponse
     {
-        $tags = BlogTag::withCount(['posts' => fn ($q) => $q->where('status', 'published')])
-            ->having('posts_count', '>', 0)
+        $tags = BlogTag::whereHas('posts', fn ($q) => $q->where('status', 'published'))
+            ->withCount(['posts' => fn ($q) => $q->where('status', 'published')])
             ->orderByDesc('posts_count')
             ->get()
             ->map(fn ($t) => [
