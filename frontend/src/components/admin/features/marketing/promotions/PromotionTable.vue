@@ -1,29 +1,7 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm relative z-10 transition-all duration-300"
+    class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative z-10 transition-all duration-300"
   >
-    <div
-      class="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gray-50/50 dark:bg-gray-900/20"
-    >
-      <AppInput
-        v-model="internalSearch"
-        :placeholder="t('admin.marketing.promotions.search')"
-        class="flex-1"
-        @input="onSearch"
-      >
-        <template #prepend>
-          <MagnifyingGlassIcon class="h-4 w-4 text-gray-400" />
-        </template>
-      </AppInput>
-
-      <AppSelect
-        v-model="internalStatus"
-        :options="statusOptions"
-        class="sm:w-64"
-        @update:model-value="onFilter"
-      />
-    </div>
-
     <AdminTable
       :headers="headers"
       :items="promotions"
@@ -121,16 +99,12 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   CalendarDaysIcon,
-  MagnifyingGlassIcon,
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
-import AppInput from "@/components/admin/ui/AppInput.vue";
-import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AdminTable from "@/components/admin/ui/AdminTable.vue";
 import AdminBadge from "@/components/admin/ui/AdminBadge.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
@@ -141,60 +115,18 @@ dayjs.extend(relativeTime);
 
 const { t } = useI18n();
 
-const props = defineProps({
+defineProps({
   promotions: { type: Array, required: true },
   loading: { type: Boolean, default: false },
-  search: { type: String, default: "" },
-  statusFilter: { type: String, default: "" },
   pagination: { type: Object, required: true },
 });
 
-const emit = defineEmits([
-  "update:search",
-  "update:statusFilter",
+defineEmits([
   "edit",
   "delete",
   "sort",
   "changePage",
 ]);
-
-const internalSearch = ref(props.search);
-const internalStatus = ref(props.statusFilter);
-
-const statusOptions = computed(() => [
-  {
-    id: "",
-    name: t("admin.marketing.promotions.filters.all") || "All Promotions",
-  },
-  { id: "active", name: t("admin.marketing.promotions.filters.active") },
-  { id: "inactive", name: t("admin.marketing.promotions.filters.inactive") },
-]);
-
-let debounceTimer;
-const onSearch = () => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    emit("update:search", internalSearch.value);
-  }, 500);
-};
-
-const onFilter = (val) => {
-  emit("update:statusFilter", val);
-};
-
-watch(
-  () => props.search,
-  (newVal) => {
-    internalSearch.value = newVal;
-  },
-);
-
-watch(
-  () => props.statusFilter,
-  (newVal) => {
-    internalStatus.value = newVal;
-  },
-);
 
 const headers = [
   {
