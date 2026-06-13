@@ -1434,4 +1434,9 @@ export default {
       finished: "Завершено",
     },
   },
+  pagination: {
+    total: "Всього записів: {total}",
+    prev: "Попередня",
+    next: "Наступна",
+  },
 };

@@ -85,4 +85,9 @@ export default {
       invalidLink: "The verification link is invalid or has expired.",
     },
   },
+  account: {
+    darkMode: "Dark Mode",
+    localeMode: "Language Selector",
+    locale: "Language",
+  },
 };

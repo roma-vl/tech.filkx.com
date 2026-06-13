@@ -1,18 +1,58 @@
 <template>
   <div class="space-y-6">
-    <div
-      class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
-    >
-      <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-        Управління брендами
-      </h2>
-      <AppButton
-        variant="primary"
-        class="flex items-center gap-2"
-        @click="openAddBrandModal"
+    <!-- Top Action Bar -->
+    <div class="space-y-4">
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        Додати бренд
-      </AppButton>
+        <div class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3">
+          <div class="flex-1 max-w-md">
+            <AppInput
+              v-model="brandSearch"
+              placeholder="Пошук брендів за назвою чи slug..."
+            >
+              <template #prepend>
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </template>
+            </AppInput>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <AppButton
+            variant="primary"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+            @click="openAddBrandModal"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Додати бренд
+          </AppButton>
+        </div>
+      </div>
     </div>
 
     <div
@@ -56,7 +96,7 @@
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr
-              v-for="brand in brands"
+              v-for="brand in paginatedBrands"
               :key="brand.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
@@ -118,7 +158,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-red-600 dark:text-red-400"
-                    @click="deleteBrand(brand.id)"
+                    @click="deleteBrand(brand)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -137,16 +177,23 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="brands.length === 0">
+            <tr v-if="filteredBrands.length === 0">
               <td
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Брендів не створено.
+                Брендів не знайдено за вашим запитом.
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+        <AppPagination
+          :pagination="paginationMeta"
+          @page-change="onPageChange"
+        />
       </div>
     </div>
 
@@ -191,22 +238,36 @@
         </AppButton>
         <AppButton
           variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveBrand"
         >
           Зберегти
         </AppButton>
       </template>
     </AppModal>
+
+    <!-- Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteModal"
+      title="Видалення бренду"
+      :message="`Ви впевнені, що хочете видалити бренд &quot;${brandToDelete?.name || ''}&quot;?`"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      :loading="deletingBrand"
+      @confirm="confirmDeleteBrand"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+import AppPagination from "@/components/admin/ui/AppPagination.vue";
 
 const props = defineProps({
   brands: { type: Array, required: true },
@@ -216,6 +277,51 @@ const emit = defineEmits(["refresh"]);
 
 const showBrandModal = ref(false);
 const isEditing = ref(false);
+
+const showDeleteModal = ref(false);
+const brandToDelete = ref(null);
+const deletingBrand = ref(false);
+
+const brandSearch = ref("");
+
+// Pagination logic (15 items per page)
+const currentPage = ref(1);
+const perPage = ref(15);
+
+const filteredBrands = computed(() => {
+  return props.brands.filter((brand) => {
+    const query = (brandSearch.value || "").toLowerCase().trim();
+    return (
+      !query ||
+      (brand.name || "").toLowerCase().includes(query) ||
+      (brand.slug || "").toLowerCase().includes(query) ||
+      (brand.description || "").toLowerCase().includes(query)
+    );
+  });
+});
+
+const paginatedBrands = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value;
+  return filteredBrands.value.slice(start, start + perPage.value);
+});
+
+const paginationMeta = computed(() => ({
+  current_page: currentPage.value,
+  last_page: Math.ceil(filteredBrands.value.length / perPage.value),
+  per_page: perPage.value,
+  total: filteredBrands.value.length,
+}));
+
+const onPageChange = (page) => {
+  currentPage.value = page;
+};
+
+watch(
+  brandSearch,
+  () => {
+    currentPage.value = 1;
+  }
+);
 
 const brandForm = ref({
   id: null,
@@ -255,14 +361,22 @@ const saveBrand = async () => {
   }
 };
 
-const deleteBrand = async (id) => {
-  if (confirm("Ви впевнені, що хочете видалити цей бренд?")) {
-    try {
-      await api.delete(`/admin/brands/${id}`);
-      emit("refresh");
-    } catch (error) {
-      console.error("Failed to delete brand:", error);
-    }
+const deleteBrand = (brand) => {
+  brandToDelete.value = brand;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteBrand = async () => {
+  if (!brandToDelete.value) return;
+  deletingBrand.value = true;
+  try {
+    await api.delete(`/admin/brands/${brandToDelete.value.id}`);
+    emit("refresh");
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete brand:", error);
+  } finally {
+    deletingBrand.value = false;
   }
 };
 </script>

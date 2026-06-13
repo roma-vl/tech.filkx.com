@@ -87,4 +87,9 @@ export default {
       invalidLink: "Посилання для підтвердження недійсне або застаріло.",
     },
   },
+  account: {
+    darkMode: "Темна тема",
+    localeMode: "Мова інтерфейсу",
+    locale: "Мова",
+  },
 };

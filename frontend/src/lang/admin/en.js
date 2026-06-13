@@ -1400,4 +1400,9 @@ export default {
       finished: "Finished At",
     },
   },
+  pagination: {
+    total: "Total records: {total}",
+    prev: "Previous",
+    next: "Next",
+  },
 };

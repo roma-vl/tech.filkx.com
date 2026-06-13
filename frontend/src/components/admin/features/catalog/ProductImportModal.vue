@@ -131,6 +131,7 @@
       </AppButton>
       <AppButton
         variant="primary"
+        class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
         :disabled="!selectedFile || importing"
         @click="processImport"
       >

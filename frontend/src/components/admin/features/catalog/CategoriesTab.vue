@@ -1,18 +1,68 @@
 <template>
   <div class="space-y-6">
-    <div
-      class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
-    >
-      <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-        Управління категоріями
-      </h2>
-      <AppButton
-        variant="primary"
-        class="flex items-center gap-2"
-        @click="openAddCategoryModal"
+    <!-- Top Action Bar -->
+    <div class="space-y-4">
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        Додати категорію
-      </AppButton>
+        <div class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3">
+          <div class="flex-1 max-w-md">
+            <AppInput
+              v-model="categorySearch"
+              placeholder="Пошук категорій за назвою чи slug..."
+            >
+              <template #prepend>
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </template>
+            </AppInput>
+          </div>
+
+          <div class="w-full md:w-64">
+            <AppSelect
+              v-model="parentFilter"
+              placeholder="Усі батьківські категорії"
+              :options="[{ id: '', nameUk: 'Усі батьківські категорії' }, ...categories]"
+              option-value="id"
+              option-label="nameUk"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <AppButton
+            variant="primary"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+            @click="openAddCategoryModal"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Додати категорію
+          </AppButton>
+        </div>
+      </div>
     </div>
 
     <div
@@ -61,7 +111,7 @@
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr
-              v-for="cat in categories"
+              v-for="cat in paginatedCategories"
               :key="cat.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
@@ -157,7 +207,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-red-600 dark:text-red-400"
-                    @click="deleteCategory(cat.id)"
+                    @click="deleteCategory(cat)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -176,16 +226,23 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="categories.length === 0">
+            <tr v-if="filteredCategories.length === 0">
               <td
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Категорій не створено.
+                Категорій не знайдено за вашим запитом.
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+        <AppPagination
+          :pagination="paginationMeta"
+          @page-change="onPageChange"
+        />
       </div>
     </div>
 
@@ -242,12 +299,24 @@
         </AppButton>
         <AppButton
           variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveCategory"
         >
           Зберегти
         </AppButton>
       </template>
     </AppModal>
+
+    <!-- Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteModal"
+      title="Видалення категорії"
+      :message="`Ви впевнені, що хочете видалити категорію &quot;${categoryToDelete?.nameUk || ''}&quot;?`"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      :loading="deletingCategory"
+      @confirm="confirmDeleteCategory"
+    />
 
     <!-- Category Attributes Modal -->
     <CategoryAttributesModal
@@ -261,13 +330,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import CategoryAttributesModal from "./CategoryAttributesModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
 const props = defineProps({
   categories: { type: Array, required: true },
@@ -278,6 +349,53 @@ const emit = defineEmits(["refresh"]);
 
 const showCategoryAttributesModal = ref(false);
 const selectedCategoryForAttributes = ref(null);
+
+const categorySearch = ref("");
+const parentFilter = ref("");
+
+// Pagination logic (15 items per page)
+const currentPage = ref(1);
+const perPage = ref(15);
+
+const filteredCategories = computed(() => {
+  return props.categories.filter((cat) => {
+    const query = (categorySearch.value || "").toLowerCase().trim();
+    const nameMatch =
+      !query ||
+      (cat.nameUk || "").toLowerCase().includes(query) ||
+      (cat.nameEn || "").toLowerCase().includes(query) ||
+      (cat.slug || "").toLowerCase().includes(query);
+
+    const parentMatch =
+      !parentFilter.value ||
+      cat.parentId === parseInt(parentFilter.value);
+
+    return nameMatch && parentMatch;
+  });
+});
+
+const paginatedCategories = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value;
+  return filteredCategories.value.slice(start, start + perPage.value);
+});
+
+const paginationMeta = computed(() => ({
+  current_page: currentPage.value,
+  last_page: Math.ceil(filteredCategories.value.length / perPage.value),
+  per_page: perPage.value,
+  total: filteredCategories.value.length,
+}));
+
+const onPageChange = (page) => {
+  currentPage.value = page;
+};
+
+watch(
+  [categorySearch, parentFilter],
+  () => {
+    currentPage.value = 1;
+  }
+);
 
 const openCategoryAttributesModal = (cat) => {
   selectedCategoryForAttributes.value = cat;
@@ -306,6 +424,10 @@ const getInheritedAttributesCount = (catId) => {
 
 const showCategoryModal = ref(false);
 const isEditing = ref(false);
+
+const showDeleteModal = ref(false);
+const categoryToDelete = ref(null);
+const deletingCategory = ref(false);
 
 const categoryForm = ref({
   id: null,
@@ -356,14 +478,22 @@ const saveCategory = async () => {
   }
 };
 
-const deleteCategory = async (id) => {
-  if (confirm("Ви впевнені, що хочете видалити цю категорію?")) {
-    try {
-      await api.delete(`/admin/categories/${id}`);
-      emit("refresh");
-    } catch (error) {
-      console.error("Failed to delete category:", error);
-    }
+const deleteCategory = (cat) => {
+  categoryToDelete.value = cat;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteCategory = async () => {
+  if (!categoryToDelete.value) return;
+  deletingCategory.value = true;
+  try {
+    await api.delete(`/admin/categories/${categoryToDelete.value.id}`);
+    emit("refresh");
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete category:", error);
+  } finally {
+    deletingCategory.value = false;
   }
 };
 </script>

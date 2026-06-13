@@ -151,7 +151,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-red-600 dark:text-red-400"
-                    @click="deleteAttribute(attr.id)"
+                    @click="deleteAttribute(attr)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -313,12 +313,24 @@
         </AppButton>
         <AppButton
           variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveAttribute"
         >
           Зберегти
         </AppButton>
       </template>
     </AppModal>
+
+    <!-- Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteModal"
+      title="Видалення характеристики"
+      :message="`Ви впевнені, що хочете видалити характеристику &quot;${attributeToDelete?.nameUk || ''}&quot;?`"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      :loading="deletingAttribute"
+      @confirm="confirmDeleteAttribute"
+    />
   </div>
 </template>
 
@@ -329,6 +341,7 @@ import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
 const props = defineProps({
   attributes: { type: Array, required: true },
@@ -340,6 +353,10 @@ const emit = defineEmits(["refresh"]);
 const showAttributeModal = ref(false);
 const isEditing = ref(false);
 const categorySearchQuery = ref("");
+
+const showDeleteModal = ref(false);
+const attributeToDelete = ref(null);
+const deletingAttribute = ref(false);
 
 const attributeForm = ref({
   id: null,
@@ -453,14 +470,22 @@ const saveAttribute = async () => {
   }
 };
 
-const deleteAttribute = async (id) => {
-  if (confirm("Ви впевнені, що хочете видалити цей атрибут?")) {
-    try {
-      await api.delete(`/admin/attributes/${id}`);
-      emit("refresh");
-    } catch (error) {
-      console.error("Failed to delete attribute:", error);
-    }
+const deleteAttribute = (attr) => {
+  attributeToDelete.value = attr;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteAttribute = async () => {
+  if (!attributeToDelete.value) return;
+  deletingAttribute.value = true;
+  try {
+    await api.delete(`/admin/attributes/${attributeToDelete.value.id}`);
+    emit("refresh");
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete attribute:", error);
+  } finally {
+    deletingAttribute.value = false;
   }
 };
 

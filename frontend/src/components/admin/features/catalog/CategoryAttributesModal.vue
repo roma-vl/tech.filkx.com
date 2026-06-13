@@ -39,7 +39,7 @@
           <AppButton
             type="button"
             variant="primary"
-            class="sm:self-end h-[46px]"
+            class="sm:self-end h-[46px] !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
             @click="goToCreate"
           >
             + Створити нову
@@ -190,7 +190,7 @@
                         size="sm"
                         class="!p-1.5 text-red-600 dark:text-red-400"
                         title="Видалити повністю"
-                        @click="deleteAttribute(attr.id)"
+                        @click="deleteAttribute(attr)"
                       >
                         <svg
                           class="w-4 h-4"
@@ -369,6 +369,7 @@
         <AppButton
           v-if="currentView === 'form'"
           variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveAttribute"
         >
           Зберегти характеристику
@@ -376,6 +377,17 @@
       </div>
     </template>
   </AppModal>
+
+  <!-- Delete Confirmation Modal -->
+  <AppConfirmModal
+    v-model="showDeleteModal"
+    title="Видалення характеристики"
+    :message="`Ви впевнені, що хочете остаточно видалити характеристику &quot;${attributeToDelete?.nameUk || ''}&quot; із системи?`"
+    confirm-text="Видалити"
+    cancel-text="Скасувати"
+    :loading="deletingAttribute"
+    @confirm="confirmDeleteAttribute"
+  />
 </template>
 
 <script setup>
@@ -385,6 +397,7 @@ import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -398,6 +411,10 @@ const emit = defineEmits(["update:modelValue", "refresh"]);
 const currentView = ref("list"); // 'list' | 'form'
 const isEditing = ref(false);
 const selectedAttrToBind = ref("");
+
+const showDeleteModal = ref(false);
+const attributeToDelete = ref(null);
+const deletingAttribute = ref(false);
 
 const attributeForm = ref({
   id: null,
@@ -555,14 +572,22 @@ const unbindAttribute = async (attr) => {
   }
 };
 
-const deleteAttribute = async (id) => {
-  if (confirm("Ви впевнені, що хочете остаточно видалити цей атрибут із системи?")) {
-    try {
-      await api.delete(`/admin/attributes/${id}`);
-      emit("refresh");
-    } catch (error) {
-      console.error("Failed to delete attribute:", error);
-    }
+const deleteAttribute = (attr) => {
+  attributeToDelete.value = attr;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteAttribute = async () => {
+  if (!attributeToDelete.value) return;
+  deletingAttribute.value = true;
+  try {
+    await api.delete(`/admin/attributes/${attributeToDelete.value.id}`);
+    emit("refresh");
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete attribute:", error);
+  } finally {
+    deletingAttribute.value = false;
   }
 };
 

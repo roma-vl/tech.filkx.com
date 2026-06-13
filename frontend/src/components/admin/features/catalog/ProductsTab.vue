@@ -65,7 +65,7 @@
         <div class="flex items-center gap-3">
           <AppButton
             variant="secondary"
-            class="flex items-center gap-2 shrink-0 h-[46px]"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0"
             @click="showImportModal = true"
           >
             <svg
@@ -86,7 +86,7 @@
 
           <AppButton
             variant="secondary"
-            class="flex items-center gap-2 shrink-0 h-[46px]"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0"
             @click="exportCsv"
           >
             <svg
@@ -107,7 +107,7 @@
 
           <AppButton
             variant="primary"
-            class="flex items-center gap-2 shrink-0 h-[46px]"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
             @click="openAddProductModal"
           >
             <svg
@@ -266,7 +266,7 @@
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr
-              v-for="product in filteredProducts"
+              v-for="product in paginatedProducts"
               :key="product.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
@@ -375,7 +375,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-red-600 dark:text-red-400"
-                    @click="deleteProduct(product.id)"
+                    @click="deleteProduct(product)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -405,6 +405,13 @@
           </tbody>
         </table>
       </div>
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+        <AppPagination
+          :pagination="paginationMeta"
+          @page-change="onPageChange"
+        />
+      </div>
     </div>
 
     <!-- Product Edit/Create Modal Component -->
@@ -425,20 +432,30 @@
       :brands="brands"
       @refresh="emit('refresh')"
     />
+
+    <!-- Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteModal"
+      title="Видалення товару"
+      :message="`Ви впевнені, що хочете видалити товар &quot;${productToDelete?.nameUk || ''}&quot;?`"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      :loading="deletingProduct"
+      @confirm="confirmDeleteProduct"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
-import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
-import AppCheckbox from "@/components/admin/ui/AppCheckbox.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
-import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import ProductImportModal from "./ProductImportModal.vue";
 import ProductFormModal from "./ProductFormModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
 const props = defineProps({
   products: { type: Array, required: true },
@@ -462,6 +479,45 @@ const showProductModal = ref(false);
 const editingProduct = ref(null);
 
 const showImportModal = ref(false);
+
+const showDeleteModal = ref(false);
+const productToDelete = ref(null);
+const deletingProduct = ref(false);
+
+// Pagination logic (15 items per page)
+const currentPage = ref(1);
+const perPage = ref(15);
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value;
+  return filteredProducts.value.slice(start, start + perPage.value);
+});
+
+const paginationMeta = computed(() => ({
+  current_page: currentPage.value,
+  last_page: Math.ceil(filteredProducts.value.length / perPage.value),
+  per_page: perPage.value,
+  total: filteredProducts.value.length,
+}));
+
+const onPageChange = (page) => {
+  currentPage.value = page;
+};
+
+watch(
+  [
+    productSearch,
+    productCategoryFilter,
+    productBrandFilter,
+    productStatusFilter,
+    productSortFilter,
+    productHotFilter,
+    productRecommendedFilter,
+  ],
+  () => {
+    currentPage.value = 1;
+  }
+);
 
 const activeFiltersCount = computed(() => {
   let count = 0;
@@ -623,14 +679,22 @@ const openEditProductModal = (product) => {
   showProductModal.value = true;
 };
 
-const deleteProduct = async (id) => {
-  if (confirm("Ви впевнені, що хочете видалити цей товар?")) {
-    try {
-      await api.delete(`/admin/products/${id}`);
-      emit("refresh");
-    } catch (error) {
-      console.error("Failed to delete product:", error);
-    }
+const deleteProduct = (product) => {
+  productToDelete.value = product;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteProduct = async () => {
+  if (!productToDelete.value) return;
+  deletingProduct.value = true;
+  try {
+    await api.delete(`/admin/products/${productToDelete.value.id}`);
+    emit("refresh");
+    showDeleteModal.value = false;
+  } catch (error) {
+    console.error("Failed to delete product:", error);
+  } finally {
+    deletingProduct.value = false;
   }
 };
 
