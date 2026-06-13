@@ -1,32 +1,28 @@
 <template>
-  <div class="space-y-6">
-    <!-- Filters Panel Widget -->
-    <OrderFiltersWidget
+  <div class="space-y-6 animate-in fade-in duration-500">
+    <OrdersTab
       v-model:search-query="searchQuery"
       v-model:show-filters="showFilters"
       v-model:status-filter="statusFilter"
       v-model:payment-filter="paymentFilter"
       v-model:delivery-filter="deliveryFilter"
       v-model:sort-filter="sortFilter"
-      :active-filters-count="activeFiltersCount"
-      @reset="resetFilters"
-      @export="exportCsv"
-    />
-
-    <!-- Orders Table Widget -->
-    <OrderTableWidget
       :orders="filteredOrders"
       :is-loading="isLoading"
+      :active-filters-count="activeFiltersCount"
       :format-date="formatDate"
       :format-price="formatPrice"
       :get-status-label="getStatusLabel"
       :get-status-class="getStatusClass"
+      @reset="resetFilters"
+      @export="exportCsv"
       @view="viewOrder"
     />
 
-    <!-- Order Detail Modal Widget -->
+    <!-- Order Detail Modal -->
     <OrderDetailsModal
       v-if="selectedOrder"
+      :model-value="!!selectedOrder"
       :order="selectedOrder"
       :format-date="formatDate"
       :format-price="formatPrice"
@@ -41,9 +37,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useOrders } from "@/features/orders/composables/useOrders";
-import OrderFiltersWidget from "@/widgets/OrderTable/OrderFiltersWidget.vue";
-import OrderTableWidget from "@/widgets/OrderTable/OrderTableWidget.vue";
-import OrderDetailsModal from "@/widgets/OrderTable/OrderDetailsModal.vue";
+import OrdersTab from "@/components/admin/features/orders/OrdersTab.vue";
+import OrderDetailsModal from "@/components/admin/features/orders/OrderDetailsModal.vue";
 
 const {
   isLoading,
@@ -72,3 +67,5 @@ onMounted(() => {
   fetchOrders();
 });
 </script>
+
+<style scoped></style>
