@@ -16,34 +16,36 @@
 
     <GeneralSettings v-model="allSettings.general" />
 
+    <ShopSettings v-model="allSettings.shop" />
+
     <SecuritySettings v-model="allSettings.security" />
 
-    <StorageSettings v-model="allSettings.storage" />
-
-    <TranscodingSettings v-model="allSettings.transcoding" />
-
-    <SaveSettingsButton
-      :saving="saving"
-      @save="saveSettings"
-    />
+    <Transition name="fade">
+      <div
+        v-if="saving"
+        class="fixed bottom-8 right-8 z-30 flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-800 dark:bg-gray-700 text-white text-sm font-medium shadow-xl"
+      >
+        <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        {{ $t("admin.settings.saving") }}
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import api from "@/shared/services/api/apiClient";
 import { useToast } from "vue-toastification";
 import { useI18n } from "vue-i18n";
 import GeneralSettings from "@/components/application/features/admin/settings/GeneralSettings.vue";
+import ShopSettings from "@/components/application/features/admin/settings/ShopSettings.vue";
 import SecuritySettings from "@/components/application/features/admin/settings/SecuritySettings.vue";
-import StorageSettings from "@/components/application/features/admin/settings/StorageSettings.vue";
-import TranscodingSettings from "@/components/application/features/admin/settings/TranscodingSettings.vue";
-import SaveSettingsButton from "@/components/application/features/admin/settings/SaveSettingsButton.vue";
 
 const toast = useToast();
 const { t } = useI18n();
 const loading = ref(true);
 const saving = ref(false);
+let saveTimer = null;
 
 const allSettings = ref({
   general: {
@@ -51,21 +53,19 @@ const allSettings = ref({
     supportEmail: "",
     allowRegistration: true,
   },
+  shop: {
+    currency: "UAH",
+    defaultTaxRate: 20,
+    minOrderAmount: 0,
+    allowGuestCheckout: true,
+    freeShippingThreshold: 0,
+  },
   security: {
-    enforce2fa: false,
     rateLimiting: true,
   },
-  appearance: {
-    darkModeDefault: true,
-  },
-  storage: {
-    cleanupDays: 30,
-  },
-  transcoding: {
-    platformWatermarkUrl: "",
-    platformWatermarkPreview: "",
-  },
 });
+
+const toSnake = (str) => str.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
 
 const fetchSettings = async () => {
   loading.value = true;
@@ -74,26 +74,19 @@ const fetchSettings = async () => {
     const data = response.data.data.settings;
 
     Object.keys(allSettings.value).forEach((group) => {
-      const groupData = data[group] || data;
+      const groupData = data[group];
+      if (!groupData) return;
 
-      if (groupData) {
-        Object.keys(allSettings.value[group]).forEach((key) => {
-          const snakeKey = key.replace(
-            /[A-Z]/g,
-            (letter) => `_${letter.toLowerCase()}`,
-          );
-          const val =
-            groupData[key] !== undefined ? groupData[key] : groupData[snakeKey];
+      Object.keys(allSettings.value[group]).forEach((camelKey) => {
+        const snakeKey = toSnake(camelKey);
+        const val = groupData[snakeKey] ?? groupData[camelKey];
 
-          if (val !== undefined) {
-            if (val === "true" || val === true)
-              allSettings.value[group][key] = true;
-            else if (val === "false" || val === false)
-              allSettings.value[group][key] = false;
-            else allSettings.value[group][key] = val;
-          }
-        });
-      }
+        if (val !== undefined) {
+          if (val === "true" || val === true) allSettings.value[group][camelKey] = true;
+          else if (val === "false" || val === false) allSettings.value[group][camelKey] = false;
+          else allSettings.value[group][camelKey] = val;
+        }
+      });
     });
   } catch (error) {
     console.error(error);
@@ -109,23 +102,42 @@ const saveSettings = async () => {
     const flatSettings = {};
     Object.values(allSettings.value).forEach((group) => {
       Object.entries(group).forEach(([key, value]) => {
-        // Exclude UI-only preview fields
-        if (!key.endsWith("Preview") && !key.startsWith("_")) {
-          flatSettings[key] = value;
-        }
+        flatSettings[toSnake(key)] = value;
       });
     });
 
     await api.post("/admin/settings", { settings: flatSettings });
-    toast.success(t("admin.settings.success"));
   } catch (error) {
+    console.error("Settings save error:", error?.response?.data ?? error);
     toast.error(t("admin.settings.error"));
   } finally {
     saving.value = false;
   }
 };
 
+watch(
+  allSettings,
+  () => {
+    if (loading.value) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveSettings, 800);
+  },
+  { deep: true },
+);
+
 onMounted(() => {
   fetchSettings();
 });
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+</style>

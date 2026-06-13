@@ -1338,34 +1338,24 @@ export default {
     load_error: "Failed to load settings from server",
     general: {
       title: "General Configuration",
-      platform_name: "Platform Name",
+      platform_name: "Shop Name",
       support_email: "Support Email",
       registration: "Public Registration",
       registration_desc: "Allow new users to create accounts without invite",
     },
+    shop: {
+      title: "Shop Settings",
+      currency: "Currency",
+      tax_rate: "Default Tax Rate",
+      min_order: "Minimum Order Amount",
+      free_shipping: "Free Shipping Threshold",
+      guest_checkout: "Guest Checkout",
+      guest_checkout_desc: "Allow customers to place orders without an account",
+    },
     security: {
       title: "Security & Access",
-      two_fa: "Two-Factor Authentication (2FA)",
-      two_fa_desc: "Enforce 2FA for all administrator accounts",
       rate_limiting: "IP Rate Limiting",
       rate_limiting_desc: "Prevent brute-force attacks by limiting requests",
-    },
-    storage: {
-      title: "Storage & Media Policy",
-      cleanup_days: "Auto-Cleanup Policy (Days)",
-      cleanup_desc:
-        "Number of days to keep video records before automatic deletion.",
-    },
-    transcoding: {
-      title: "Transcoding & Watermark",
-      subtitle: "Configure platform transcoding and watermark settings",
-      watermark_label: "Platform Watermark",
-      watermark_hint:
-        "This watermark will be applied to videos during transcoding (useful for trials). PNG recommended for transparency.",
-      upload_title: "Upload Watermark",
-      upload_subtitle: "Drag and drop PNG/JPG or click to browse",
-      upload_success: "Watermark uploaded successfully!",
-      upload_error: "Failed to upload watermark",
     },
   },
   converter: {

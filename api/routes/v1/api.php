@@ -202,7 +202,6 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
 
         Route::get('settings', [AdminSettingsController::class, 'index']);
         Route::post('settings', [AdminSettingsController::class, 'update']);
-        Route::post('settings/watermark', [AdminSettingsController::class, 'uploadWatermark']);
 
         Route::get('support/tickets', [AdminSupportController::class, 'index']);
         Route::get('support/stats', [AdminSupportController::class, 'stats']);
