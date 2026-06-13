@@ -10,19 +10,22 @@ import {
 import VerifyIcon from "@/components/Icon/VerifyIcon.vue";
 import SettingsIcon from "@/components/Icon/SettingsIcon.vue";
 import LogoutIcon from "@/components/Icon/LogoutIcon.vue";
-import HelperCenterIcon from "@/components/Icon/HelperCenterIcon.vue";
 import { useAuthStore } from "@/stores/auth.js";
 import { useRouter } from "vue-router";
 import avatarPlaceholder from "@/assets/images/avatars/info/empty.png";
-import SubscriptionIcon from "@/components/Icon/SubscriptionIcon.vue";
 import ArrowSmallDownIcon from "@/components/Icon/ArrowSmallDownIcon.vue";
 import DarkModeToggle from "@/layouts/topBar/DarkModeToggle.vue";
 import Locale from "@/layouts/topBar/Locale.vue";
+import { UserIcon, HomeIcon } from "@heroicons/vue/24/outline";
 
 const store = useAuthStore();
 const router = useRouter();
 const user = computed(() => store.user);
 const avatar = computed(() => user.value?.avatarUrl || avatarPlaceholder);
+
+const cabinetLabel = computed(() => store.user?.locale === "en" ? "Personal Cabinet" : "Особистий кабінет");
+const settingsLabel = computed(() => store.user?.locale === "en" ? "Cabinet Settings" : "Налаштування кабінету");
+const shopLabel = computed(() => store.user?.locale === "en" ? "Back to Shop" : "Повернутися в магазин");
 
 async function logout() {
   await store.logout();
@@ -89,7 +92,7 @@ async function logout() {
         <div class="p-1.5 space-y-0.5">
           <MenuItem v-slot="{ active }">
             <router-link
-              to="/account/subscription"
+              to="/account"
               :class="[
                 active
                   ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -97,16 +100,16 @@ async function logout() {
                 'group flex items-center px-3 py-2 text-sm rounded-lg transition-colors',
               ]"
             >
-              <SubscriptionIcon
+              <UserIcon
                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
               />
-              {{ $t("navigation.subscription") }}
+              {{ cabinetLabel }}
             </router-link>
           </MenuItem>
 
           <MenuItem v-slot="{ active }">
             <router-link
-              to="/settings"
+              to="/account?tab=settings"
               :class="[
                 active
                   ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -117,13 +120,13 @@ async function logout() {
               <SettingsIcon
                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
               />
-              {{ $t("navigation.settings") }}
+              {{ settingsLabel }}
             </router-link>
           </MenuItem>
 
           <MenuItem v-slot="{ active }">
             <router-link
-              to="/faq"
+              to="/"
               :class="[
                 active
                   ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -131,10 +134,10 @@ async function logout() {
                 'group flex items-center px-3 py-2 text-sm rounded-lg transition-colors',
               ]"
             >
-              <HelperCenterIcon
+              <HomeIcon
                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
               />
-              {{ $t("navigation.helperCenter") }}
+              {{ shopLabel }}
             </router-link>
           </MenuItem>
         </div>
