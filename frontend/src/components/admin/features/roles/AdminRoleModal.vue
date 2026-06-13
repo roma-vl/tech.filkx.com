@@ -12,7 +12,7 @@
     <template #header>
       <div class="flex items-center gap-4">
         <div
-          class="p-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 shadow-sm"
+          class="p-2.5 rounded-xl bg-[#00a046]/10 dark:bg-[#00a046]/20 text-[#00a046] shadow-sm"
         >
           <ShieldCheckIcon class="w-6 h-6" />
         </div>
@@ -42,9 +42,10 @@
             {{ t("admin.roles.modal.role_name") }}
           </label>
           <AppInput
-            v-model="form.name"
+            :model-value="form.name"
             :placeholder="t('admin.roles.modal.role_name_placeholder')"
             class="w-full"
+            @update:model-value="$emit('update:form', { ...form, name: $event })"
           />
         </div>
         <div class="md:col-span-2">
@@ -54,10 +55,11 @@
             {{ t("admin.roles.modal.description") }}
           </label>
           <AppTextarea
-            v-model="form.description"
+            :model-value="form.description"
             rows="3"
             :placeholder="t('admin.roles.modal.description_placeholder')"
             class="w-full"
+            @update:model-value="$emit('update:form', { ...form, description: $event })"
           />
         </div>
       </div>
@@ -75,7 +77,7 @@
             <span class="text-xs font-bold text-gray-400">{{ selectedPermissions.length }}
               {{ t("admin.roles.modal.selected") }}</span>
             <button
-              class="text-xs font-black text-primary-600 uppercase tracking-widest hover:text-primary-700 transition-colors"
+              class="text-xs font-black text-[#00a046] uppercase tracking-widest hover:text-[#00b050] transition-colors"
               @click="$emit('toggle-all')"
             >
               {{
@@ -91,7 +93,7 @@
           <div
             v-for="(group, resource) in groupedPermissions"
             :key="resource"
-            class="bg-gray-50 dark:bg-gray-900/30 p-6 rounded-3xl border border-gray-100 dark:border-gray-700/50 space-y-5"
+            class="bg-gray-50 dark:bg-gray-900/30 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50 space-y-5"
           >
             <div
               class="flex items-center gap-3 font-black text-xs text-gray-900 dark:text-white uppercase tracking-widest"
@@ -101,7 +103,7 @@
               >
                 <component
                   :is="getResourceIcon(resource)"
-                  class="w-4 h-4 text-primary-500"
+                  class="w-4 h-4 text-[#00a046]"
                 />
               </div>
               {{ resource }}
@@ -114,8 +116,8 @@
                 class="flex flex-col p-4 rounded-2xl border transition-all duration-300 cursor-pointer shadow-sm relative overflow-hidden group h-full"
                 :class="
                   selectedPermissions.includes(perm.slug)
-                    ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-200 dark:border-primary-800 shadow-primary-500/5'
-                    : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-800'
+                    ? 'bg-[#00a046]/5 dark:bg-[#00a046]/10 border-[#00a046]/30 dark:border-[#00a046]/20 shadow-emerald-500/5'
+                    : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-[#00a046]/30 dark:hover:border-[#00a046]/20'
                 "
               >
                 <div class="flex items-start gap-3">
@@ -123,7 +125,7 @@
                     class="w-5 h-5 rounded-lg border flex items-center justify-center transition-all shrink-0 mt-0.5"
                     :class="
                       selectedPermissions.includes(perm.slug)
-                        ? 'bg-primary-600 border-primary-600 text-white'
+                        ? 'bg-[#00a046] border-[#00a046] text-white'
                         : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700'
                     "
                   >
@@ -135,7 +137,7 @@
 
                   <div class="flex-1 min-w-0">
                     <p
-                      class="text-[13px] font-black text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors uppercase tracking-tight"
+                      class="text-[13px] font-black text-gray-900 dark:text-white group-hover:text-[#00a046] transition-colors uppercase tracking-tight"
                     >
                       {{ perm.name }}
                     </p>
@@ -182,6 +184,7 @@
         </AppButton>
         <AppButton
           variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none focus:ring-[#00a046]"
           :loading="saving"
           :disabled="saving || !form.name"
           @click="$emit('save')"
@@ -240,6 +243,7 @@ const props = defineProps({
 
 defineEmits([
   "update:modelValue",
+  "update:form",
   "save",
   "toggle-all",
   "update:selectedPermissions",

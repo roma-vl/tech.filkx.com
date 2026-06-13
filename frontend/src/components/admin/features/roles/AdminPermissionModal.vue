@@ -8,7 +8,7 @@
     <template #header>
       <div class="flex items-center gap-4">
         <div
-          class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 shadow-sm"
+          class="p-2.5 rounded-xl bg-[#00a046]/10 dark:bg-[#00a046]/20 text-[#00a046] shadow-sm"
         >
           <ShieldCheckIcon class="w-6 h-6" />
         </div>
@@ -116,6 +116,7 @@
         <AppButton
           :loading="saving"
           :disabled="saving || !form.name || !form.slug"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none focus:ring-[#00a046]"
           @click="$emit('save')"
         >
           {{

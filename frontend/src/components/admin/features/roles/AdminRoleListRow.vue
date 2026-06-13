@@ -4,7 +4,7 @@
   >
     <div class="flex items-center gap-4 flex-1 min-w-0">
       <div
-        class="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 flex-shrink-0"
+        class="w-12 h-12 rounded-xl bg-[#00a046]/10 dark:bg-[#00a046]/20 flex items-center justify-center text-[#00a046] flex-shrink-0"
       >
         <ShieldCheckIcon class="w-6 h-6" />
       </div>
@@ -12,7 +12,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-0.5">
           <h4
-            class="font-bold text-gray-900 dark:text-white truncate group-hover:text-primary-500 transition-colors uppercase"
+            class="font-bold text-gray-900 dark:text-white truncate group-hover:text-[#00a046] transition-colors uppercase"
           >
             {{ role.name }}
           </h4>
@@ -54,7 +54,7 @@
     <div class="flex items-center gap-2 self-end sm:self-auto">
       <AppButton
         variant="ghost"
-        class="!p-2.5 !rounded-xl !text-gray-400 hover:!text-primary-600 !border !border-transparent hover:!border-primary-100 dark:hover:!border-primary-800"
+        class="!p-2.5 !rounded-xl !text-gray-400 hover:!text-[#00a046] !border !border-transparent hover:!border-[#00a046]/20 dark:hover:!border-[#00a046]/30"
         @click="$emit('edit', role)"
       >
         <PencilSquareIcon class="w-5 h-5" />
