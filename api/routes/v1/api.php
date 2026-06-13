@@ -15,6 +15,7 @@ use App\Api\Admin\Controllers\AdminStatsController;
 use App\Api\Admin\Controllers\AdminSupportController;
 use App\Api\Admin\Controllers\AdminSupportSnippetController;
 use App\Api\Admin\Controllers\AdminSystemController;
+use App\Api\Admin\Controllers\AdminTeamController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
@@ -234,6 +235,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::put('roles/{id}', [AdminRoleController::class, 'update']);
         Route::delete('roles/{id}', [AdminRoleController::class, 'destroy']);
         Route::get('permissions', [AdminRoleController::class, 'permissions']);
+        Route::post('permissions', [AdminRoleController::class, 'storePermission']);
+
+        // Team Management
+        Route::get('team', [AdminTeamController::class, 'index']);
+        Route::get('team/roles', [AdminTeamController::class, 'roles']);
+        Route::post('team/invite', [AdminTeamController::class, 'invite']);
+        Route::post('team/{id}/toggle-status', [AdminTeamController::class, 'toggleStatus']);
 
         // Server Logs
         Route::get('server-logs', [AdminServerLogController::class, 'index']);
