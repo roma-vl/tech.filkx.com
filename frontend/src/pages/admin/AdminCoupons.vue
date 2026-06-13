@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8 animate-in fade-in duration-500">
-    <div
-      class="flex flex-col md:flex-row md:items-center justify-between gap-6"
-    >
-      <AppButton @click="openCreateModal">
-        <template #prefix>
-          <PlusIcon class="w-4 h-4 stroke-[3px]" />
-        </template>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <AppButton
+        variant="primary"
+        class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+        @click="openCreateModal"
+      >
+        <PlusIcon class="w-4 h-4 stroke-[2px]" />
         {{ t("admin.marketing.coupons.new") }}
       </AppButton>
     </div>
@@ -32,11 +32,14 @@
       @saved="handleSaved"
     />
 
-    <CouponDeleteModal
-      :is-open="!!couponToDelete"
-      :coupon="couponToDelete"
+    <!-- Global Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteConfirm"
+      :title="t('admin.marketing.coupons.alerts.delete_confirm_title')"
+      :message="deleteConfirmMessage"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
       :loading="deleteLoading"
-      @close="couponToDelete = null"
       @confirm="handleDeleteConfirm"
     />
   </div>
@@ -47,13 +50,13 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
+import { PlusIcon } from "@heroicons/vue/24/outline";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
 import CouponTable from "@/components/admin/features/marketing/coupons/CouponTable.vue";
 import CouponEditModal from "@/components/admin/features/marketing/coupons/CouponEditModal.vue";
-import CouponDeleteModal from "@/components/admin/features/marketing/coupons/CouponDeleteModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
-import { PlusIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -74,6 +77,20 @@ const pagination = ref({
 const isEditModalOpen = ref(false);
 const editingCoupon = ref(null);
 const couponToDelete = ref(null);
+
+const showDeleteConfirm = computed({
+  get: () => !!couponToDelete.value,
+  set: (val) => {
+    if (!val) couponToDelete.value = null;
+  }
+});
+
+const deleteConfirmMessage = computed(() => {
+  if (!couponToDelete.value) return "";
+  return t("admin.marketing.coupons.alerts.delete_confirm", {
+    code: couponToDelete.value.code,
+  });
+});
 
 const statsData = computed(() => {
   return {
@@ -143,14 +160,15 @@ const openDeleteModal = (coupon) => {
   couponToDelete.value = coupon;
 };
 
-const handleDeleteConfirm = async (coupon) => {
+const handleDeleteConfirm = async () => {
+  if (!couponToDelete.value) return;
   deleteLoading.value = true;
   try {
-    await api.delete(`/admin/marketing/coupons/${coupon.id}`);
+    await api.delete(`/admin/marketing/coupons/${couponToDelete.value.id}`);
     toast.success(t("admin.marketing.coupons.alerts.deleteSuccess"));
     couponToDelete.value = null;
     fetchCoupons(pagination.value.currentPage);
-  } catch (e) {
+  } catch {
     toast.error(t("admin.marketing.coupons.alerts.deleteError"));
   } finally {
     deleteLoading.value = false;
@@ -183,3 +201,5 @@ onMounted(() => {
   fetchCoupons();
 });
 </script>
+
+<style scoped></style>

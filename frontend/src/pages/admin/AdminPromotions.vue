@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8 animate-in fade-in duration-500">
-    <div
-      class="flex flex-col md:flex-row md:items-center justify-between gap-6"
-    >
-      <AppButton @click="openCreateModal">
-        <template #prefix>
-          <PlusIcon class="w-4 h-4 stroke-[3px]" />
-        </template>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <AppButton
+        variant="primary"
+        class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+        @click="openCreateModal"
+      >
+        <PlusIcon class="w-4 h-4 stroke-[2px]" />
         {{ t("admin.marketing.promotions.new") }}
       </AppButton>
     </div>
@@ -31,11 +31,14 @@
       @saved="handleSaved"
     />
 
-    <PromotionDeleteModal
-      :is-open="!!promotionToDelete"
-      :promotion="promotionToDelete"
+    <!-- Global Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteConfirm"
+      :title="t('admin.marketing.promotions.alerts.delete_confirm_title')"
+      :message="deleteConfirmMessage"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
       :loading="deleteLoading"
-      @close="promotionToDelete = null"
       @confirm="handleDeleteConfirm"
     />
   </div>
@@ -49,10 +52,10 @@ import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
 
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 import PromotionStats from "@/components/admin/features/marketing/promotions/PromotionStats.vue";
 import PromotionTable from "@/components/admin/features/marketing/promotions/PromotionTable.vue";
 import PromotionEditModal from "@/components/admin/features/marketing/promotions/PromotionEditModal.vue";
-import PromotionDeleteModal from "@/components/admin/features/marketing/promotions/PromotionDeleteModal.vue";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -65,13 +68,27 @@ const sortBy = ref("created_at");
 const sortDir = ref("desc");
 
 const pagination = ref({
-  current_page: 1,
-  last_page: 1,
+  currentPage: 1,
+  lastPage: 1,
 });
 
 const isEditModalOpen = ref(false);
 const editingPromotion = ref(null);
 const promotionToDelete = ref(null);
+
+const showDeleteConfirm = computed({
+  get: () => !!promotionToDelete.value,
+  set: (val) => {
+    if (!val) promotionToDelete.value = null;
+  }
+});
+
+const deleteConfirmMessage = computed(() => {
+  if (!promotionToDelete.value) return "";
+  return t("admin.marketing.promotions.alerts.delete_confirm", {
+    name: promotionToDelete.value.name,
+  });
+});
 
 const statsData = computed(() => {
   const activeList = (promotions.value || []).filter((p) => p.isActive);
@@ -138,14 +155,15 @@ const openDeleteModal = (promotion) => {
   promotionToDelete.value = promotion;
 };
 
-const handleDeleteConfirm = async (promotion) => {
+const handleDeleteConfirm = async () => {
+  if (!promotionToDelete.value) return;
   deleteLoading.value = true;
   try {
-    await api.delete(`/admin/marketing/promotions/${promotion.id}`);
+    await api.delete(`/admin/marketing/promotions/${promotionToDelete.value.id}`);
     toast.success(t("admin.marketing.promotions.alerts.deleteSuccess"));
     promotionToDelete.value = null;
     fetchPromotions(pagination.value.currentPage);
-  } catch (e) {
+  } catch {
     toast.error(t("admin.marketing.promotions.alerts.deleteError"));
   } finally {
     deleteLoading.value = false;
@@ -178,3 +196,5 @@ onMounted(() => {
   fetchPromotions();
 });
 </script>
+
+<style scoped></style>
