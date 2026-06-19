@@ -39,7 +39,7 @@ const handleSubscribe = () => {
               >sentiment_very_satisfied</span>
             </div>
             <span class="font-extrabold text-lg tracking-tight text-white">
-              FilkxTech
+              TechNova
             </span>
           </a>
           <p class="text-xs leading-relaxed text-zinc-400">
@@ -329,7 +329,7 @@ const handleSubscribe = () => {
           <h5
             class="text-xs font-bold text-white uppercase tracking-wider mb-1"
           >
-            Мобільні додатки FilkxTech
+            Мобільні додатки TechNova
           </h5>
           <p class="text-[11px] text-zinc-550">
             Завантажуйте наш безкоштовний додаток для швидких та зручних покупок
@@ -387,7 +387,7 @@ const handleSubscribe = () => {
       >
         <!-- Trademark / Copyright -->
         <div class="space-y-1 text-center md:text-left">
-          <p>© 2026 ТОВ «ФілксТех Преміум». Всі права захищені.</p>
+          <p>© 2026 ТОВ «TechNova Преміум». Всі права захищені.</p>
           <p class="text-[10px] text-zinc-600">
             Інформація про ціни, характеристики та наявність товарів може бути
             змінена без попередження.
