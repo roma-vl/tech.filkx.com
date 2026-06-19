@@ -319,8 +319,8 @@ onUnmounted(() => {
           </a>
 
           <!-- Theme Toggle Button -->
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
             @click="toggleDarkMode"
             :title="isDark ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'"
@@ -348,13 +348,13 @@ onUnmounted(() => {
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
               :class="
-                currentLang === 'RU'
+                currentLang === 'EN'
                   ? 'bg-[#00a046] text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               "
-              @click="setLanguage('RU')"
+              @click="setLanguage('EN')"
             >
-              RU
+                EN
             </button>
           </div>
         </div>
@@ -390,7 +390,7 @@ onUnmounted(() => {
           <span
             class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block"
           >
-            FilkxTech
+            TechNova
           </span>
         </a>
       </div>
