@@ -24,7 +24,9 @@ use App\Api\V1\Requests\User\UpdateUserProfileRequest;
 use App\Api\V1\Requests\User\UploadAvatarRequest;
 use App\Api\V1\Resources\User\UserResource;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
+use App\Services\WishlistService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -566,18 +568,28 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData($products);
     }
 
-    public function toggleFavorite(Request $request, ProductRepository $productRepository): JsonResponse
+    public function toggleFavorite(Request $request, ProductRepository $productRepository, WishlistService $wishlistService): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
 
-        $user = $request->user();
-        $user->favorites()->toggle($productId);
+        $user    = $request->user();
+        $product = Product::find($productId);
+
+        if (! $product) {
+            return self::errorResponse('Product not found.', 404);
+        }
+
+        if ($user->favorites()->where('product_id', $productId)->exists()) {
+            $wishlistService->remove($user, $product);
+        } else {
+            $wishlistService->add($user, $product);
+        }
 
         $productIds = $user->favorites()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+        $products   = $productRepository->queryActive()->whereIn('id', $productIds)->get();
 
         return self::successfulResponseWithData($products);
     }

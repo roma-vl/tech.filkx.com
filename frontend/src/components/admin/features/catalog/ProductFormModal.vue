@@ -246,6 +246,20 @@
               >
                 {{ variantErrors[vIdx].price }}
               </p>
+              <template v-if="isEditing && getPriceChange(v) !== null && getPriceChange(v) !== 0">
+                <p
+                  v-if="getPriceChange(v)! > 0"
+                  class="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400"
+                >
+                  ↓ −{{ getPriceChange(v) }}% від початкової
+                </p>
+                <p
+                  v-else
+                  class="mt-1 text-[11px] font-bold text-orange-500 dark:text-orange-400"
+                >
+                  ↑ +{{ Math.abs(getPriceChange(v)!) }}% від початкової
+                </p>
+              </template>
             </div>
             <AppInput
               :model-value="v.oldPrice ?? undefined"
@@ -543,20 +557,55 @@
     </form>
 
     <template #footer>
-      <AppButton
-        variant="secondary"
-        class="mr-2"
-        @click="$emit('update:modelValue', false)"
-      >
-        Скасувати
-      </AppButton>
-      <AppButton
-        variant="primary"
-        class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
-        @click="saveProduct"
-      >
-        Зберегти товар
-      </AppButton>
+      <div class="flex items-center justify-between w-full gap-4">
+        <!-- Notify wishlist subscribers (edit mode only) -->
+        <label
+          v-if="isEditing"
+          :class="[
+            'flex items-center gap-2.5 cursor-pointer select-none min-w-0 rounded-xl px-3 py-2 transition-colors',
+            hasAnyPriceDrop
+              ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
+              : 'border border-transparent',
+          ]"
+          title="Якщо ціна хоча б одного варіанту знизилась більш ніж на 5%, клієнти з вішліста отримають email"
+        >
+          <input
+            v-model="notifyWishlistNow"
+            type="checkbox"
+            class="w-4 h-4 shrink-0 accent-emerald-600 rounded"
+          />
+          <span
+            :class="[
+              'text-sm font-medium leading-tight',
+              hasAnyPriceDrop
+                ? 'text-emerald-700 dark:text-emerald-400'
+                : 'text-gray-700 dark:text-gray-300',
+            ]"
+          >
+            Сповістити клієнтів вішліста
+          </span>
+          <span class="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+            (при зниженні &gt;5%)
+          </span>
+        </label>
+        <span v-else />
+
+        <div class="flex items-center gap-2 shrink-0">
+          <AppButton
+            variant="secondary"
+            @click="$emit('update:modelValue', false)"
+          >
+            Скасувати
+          </AppButton>
+          <AppButton
+            variant="primary"
+            class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+            @click="saveProduct"
+          >
+            Зберегти товар
+          </AppButton>
+        </div>
+      </div>
     </template>
   </AppModal>
 </template>
@@ -600,6 +649,9 @@ const emit = defineEmits<{
 const errors = ref<FormErrors>({});
 const variantErrors = ref<VariantErrors[]>([]);
 const globalError = ref<string | null>(null);
+
+const notifyWishlistNow = ref(false);
+const originalPrices = ref<Record<number, number>>({});
 
 // availableAttributes and attributes watcher are moved down below productForm initialization to prevent ReferenceError
 
@@ -711,19 +763,37 @@ const availableAttributes = computed(() => {
   });
 });
 
+const getPriceChange = (v: ProductVariantForm): number | null => {
+  if (!isEditing.value || !(v as any).id) return null;
+  const orig = originalPrices.value[(v as any).id];
+  if (!orig) return null;
+  const curr = v.price !== null ? Number(v.price) : null;
+  if (!curr || curr <= 0) return null;
+  const pct = ((orig - curr) / orig) * 100;
+  return Math.round(pct * 10) / 10;
+};
+
+const hasAnyPriceDrop = computed(() =>
+  isEditing.value &&
+  productForm.value.variants.some((v) => {
+    const ch = getPriceChange(v);
+    return ch !== null && ch > 0;
+  })
+);
+
 watch(
   [() => productForm.value.categoryId, availableAttributes],
   () => {
     if (!productForm.value.variants) return;
-    
+
     productForm.value.variants.forEach((v: any) => {
       if (!v.attributes) {
         v.attributes = [];
       }
-      
+
       const currentAttrs = [...v.attributes];
       const syncedAttrs: any[] = [];
-      
+
       availableAttributes.value.forEach((avail: any) => {
         const existing = currentAttrs.find(a => Number(a.attributeId) === Number(avail.id));
         if (existing) {
@@ -736,7 +806,7 @@ watch(
           });
         }
       });
-      
+
       v.attributes = syncedAttrs;
     });
   },
@@ -754,6 +824,8 @@ watch(
 
 const initForm = () => {
   clearErrors();
+  notifyWishlistNow.value = false;
+  originalPrices.value = {};
   if (props.product) {
     isEditing.value = true;
     const product = props.product;
@@ -786,6 +858,12 @@ const initForm = () => {
         attributes: attributesMapped,
       };
     });
+
+    const origPrices: Record<number, number> = {};
+    variantsCloned.forEach((v: any) => {
+      if (v.id && v.price !== null) origPrices[v.id] = Number(v.price);
+    });
+    originalPrices.value = origPrices;
 
     productForm.value = {
       id: product.id,
@@ -846,6 +924,7 @@ const initForm = () => {
 const buildPayload = () => {
   const f = productForm.value;
   return {
+    notify_wishlist: notifyWishlistNow.value,
     nameUk: f.nameUk,
     nameEn: f.nameEn,
     descriptionUk: f.descriptionUk || null,
