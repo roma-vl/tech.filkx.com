@@ -120,7 +120,7 @@ services:
     networks:
       - filkx
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U live -d live" ]
+      test: [ "CMD-SHELL", "pg_isready -U tech -d tech" ]
       interval: 5s
       timeout: 5s
       retries: 5

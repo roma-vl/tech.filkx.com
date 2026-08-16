@@ -53,7 +53,7 @@
           />
         </div>
         <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">
-          Filkx Stream Studio — Powered by DeepMind
+          Tech Filkx
         </p>
       </div>
     </div>

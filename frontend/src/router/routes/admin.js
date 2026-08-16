@@ -28,7 +28,6 @@ export default {
   meta: {
     auth: true,
     verified: true,
-    requiresSubscription: true,
   },
   children: [
     {

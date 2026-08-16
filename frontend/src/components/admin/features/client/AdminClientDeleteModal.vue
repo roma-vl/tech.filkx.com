@@ -23,11 +23,6 @@
         <div
           class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30 text-left"
         >
-          <p
-            class="text-[11px] font-black text-amber-800 dark:text-amber-500 uppercase tracking-wider mb-1.5"
-          >
-            {{ t("admin.videos.delete.clientVideoWarning") }}
-          </p>
           <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
             {{ t("admin.users.deleteModal.warning") }}
           </p>
@@ -78,7 +73,7 @@ const { t } = useI18n();
 
 const closeModal = () => {
   emit("close");
-};1
+};
 
 const submit = () => {
   emit("confirm");

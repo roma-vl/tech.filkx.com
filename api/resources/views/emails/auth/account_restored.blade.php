@@ -5,7 +5,7 @@
 
     <p>Your account at <strong>{{ config('app.name') }}</strong> has been successfully restored.</p>
 
-    <p>All your data, streams, and settings have been preserved exactly as you left them.</p>
+    <p>All your data, orders, and settings have been preserved exactly as you left them.</p>
 
     <p>You can now log in to your account and resume your activities:</p>
 
