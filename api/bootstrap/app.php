@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
+
+        // App runs behind a reverse proxy (nginx/Traefik) that terminates TLS;
+        // without this, Laravel sees plain HTTP and url()/asset()/isSecure() are wrong.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
