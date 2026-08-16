@@ -2,11 +2,13 @@
 
 use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
+use App\Api\Admin\Controllers\AdminBlogController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
 use App\Api\Admin\Controllers\AdminMarketingController;
 use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
+use App\Api\Admin\Controllers\AdminPageController;
 use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
 use App\Api\Admin\Controllers\AdminServerLogController;
@@ -19,23 +21,22 @@ use App\Api\Admin\Controllers\AdminTeamController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
-use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\Auth\OAuthController;
+use App\Api\V1\Controllers\Auth\TwoFactorAuthenticationController;
+use App\Api\V1\Controllers\BlogController;
 use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\CheckoutController;
 use App\Api\V1\Controllers\CouponController;
-use App\Api\Admin\Controllers\AdminBlogController;
-use App\Api\V1\Controllers\BlogController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
+use App\Api\V1\Controllers\PageController;
 use App\Api\V1\Controllers\PaymentController;
+use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
 use App\Api\V1\Controllers\UserController;
-use App\Api\Admin\Controllers\AdminPageController;
-use App\Api\V1\Controllers\PageController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
 
@@ -44,12 +45,19 @@ Route::get('/system/status', [SystemController::class, 'status']);
 Route::prefix('v1')->group(function () {
     // Public auth routes
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register'])
+            ->middleware('throttle:10,1');
+        Route::post('/login', [AuthController::class, 'login'])
+            ->middleware('throttle:5,1');
+        Route::post('/2fa/verify', [AuthController::class, 'verifyTwoFactor'])
+            ->middleware('throttle:5,1');
         Route::get('/verify-email', [AuthController::class, 'verifyEmailByParams']);
-        Route::post('/email/resend', [AuthController::class, 'resendVerification']);
-        Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
-        Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+        Route::post('/email/resend', [AuthController::class, 'resendVerification'])
+            ->middleware('throttle:3,1');
+        Route::post('/password/forgot', [AuthController::class, 'forgotPassword'])
+            ->middleware('throttle:5,1');
+        Route::post('/password/reset', [AuthController::class, 'resetPassword'])
+            ->middleware('throttle:3,1');
 
         // Protected auth routes
         Route::middleware('auth:api')->group(function () {
@@ -133,6 +141,15 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
 
     // Password management for OAuth users
     Route::post('/user/password/set', [UserController::class, 'setPassword']);
+
+    // Two-factor authentication management
+    Route::post('/user/2fa/enable', [TwoFactorAuthenticationController::class, 'enable']);
+    Route::post('/user/2fa/confirm', [TwoFactorAuthenticationController::class, 'confirm'])
+        ->middleware('throttle:10,1');
+    Route::post('/user/2fa/disable', [TwoFactorAuthenticationController::class, 'disable'])
+        ->middleware('throttle:10,1');
+    Route::post('/user/2fa/recovery-codes/regenerate', [TwoFactorAuthenticationController::class, 'regenerateRecoveryCodes'])
+        ->middleware('throttle:10,1');
 
     // Avatar management
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);

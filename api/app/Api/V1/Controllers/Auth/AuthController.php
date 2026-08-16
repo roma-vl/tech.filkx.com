@@ -12,6 +12,7 @@ use App\Api\V1\Requests\Auth\LoginRequest;
 use App\Api\V1\Requests\Auth\RegisterRequest;
 use App\Api\V1\Requests\Auth\ResendVerificationRequest;
 use App\Api\V1\Requests\Auth\ResetPasswordRequest;
+use App\Api\V1\Requests\Auth\VerifyTwoFactorRequest;
 use App\Api\V1\Resources\User\UserResource;
 use App\Api\V1\Services\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -119,6 +120,42 @@ class AuthController extends BaseApiController
         );
 
         $result = $this->service->login($dto);
+
+        return self::successfulResponseWithData($result);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/2fa/verify",
+     *     summary="Complete a login that was paused for two-factor verification",
+     *     tags={"Auth"},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/VerifyTwoFactorRequest")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="token", ref="#/components/schemas/AuthToken"),
+     *             @OA\Property(property="user", ref="#/components/schemas/UserResource")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(response=422, description="Invalid or expired challenge, or invalid code")
+     * )
+     */
+    public function verifyTwoFactor(VerifyTwoFactorRequest $request): JsonResponse
+    {
+        $result = $this->service->verifyTwoFactorChallenge(
+            $request->string('challenge_token')->toString(),
+            $request->string('code')->toString()
+        );
 
         return self::successfulResponseWithData($result);
     }

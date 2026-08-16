@@ -27,6 +27,7 @@ class UserResource extends JsonResource
      * @OA\Property(property="description", type="string", nullable=true, example="User bio")
      * @OA\Property(property="status", type="string", example="active")
      * @OA\Property(property="createdAt", type="string", format="date-time")
+     * @OA\Property(property="twoFactorEnabled", type="boolean", example=false)
      * @OA\Property(
      *     property="roles",
      *     type="array",
@@ -75,6 +76,7 @@ class UserResource extends JsonResource
             'description' => $this->getDescriptionAttribute() ?? null,
             'status' => $this->status,
             'createdAt' => $this->created_at->toIso8601String(),
+            'twoFactorEnabled' => $this->hasTwoFactorEnabled(),
             'roles' => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
             'permissions' => $this->getPermissions(),
             'addresses' => $this->settings['addresses'] ?? [],

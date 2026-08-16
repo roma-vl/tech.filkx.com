@@ -134,7 +134,12 @@ export const useAuthStore = defineStore("auth", {
     async login(credentials: LoginDto) {
       try {
         const response = await authApi.login(credentials);
-        const { token, user } = response.data.data;
+        const { twoFactorRequired, challengeToken, token, user } =
+          response.data.data;
+
+        if (twoFactorRequired) {
+          return { ok: true, twoFactorRequired: true, challengeToken };
+        }
 
         this.setToken(token.accessToken, token.expiresIn);
         this.user = user;
@@ -155,6 +160,80 @@ export const useAuthStore = defineStore("auth", {
           this.failedAttempts.toString(),
         );
 
+        return this._handleError(error);
+      }
+    },
+
+    /**
+     * Completes a login that was paused for two-factor verification.
+     */
+    async verifyTwoFactor(challengeToken: string, code: string) {
+      try {
+        const response = await authApi.verifyTwoFactor(challengeToken, code);
+        const { token, user } = response.data.data;
+
+        this.setToken(token.accessToken, token.expiresIn);
+        this.user = user;
+        this._syncLocale(user.locale);
+
+        this.failedAttempts = 0;
+        localStorage.removeItem("failed_login_attempts");
+
+        const cartStore = useCartStore();
+        await cartStore.fetchCart();
+        await cartStore.syncUserLists();
+
+        return { ok: true };
+      } catch (error) {
+        return this._handleError(error);
+      }
+    },
+
+    /**
+     * Two-factor authentication management (Account settings)
+     */
+    async enableTwoFactor() {
+      try {
+        const { data } = await authApi.enableTwoFactor();
+        return {
+          ok: true,
+          secret: data.data.secret,
+          qrCodeUrl: data.data.qrCodeUrl,
+        };
+      } catch (error) {
+        return this._handleError(error);
+      }
+    },
+
+    async confirmTwoFactor(code: string) {
+      try {
+        const { data } = await authApi.confirmTwoFactor(code);
+        if (this.user) {
+          this.user.twoFactorEnabled = true;
+        }
+        return { ok: true, recoveryCodes: data.data.recoveryCodes };
+      } catch (error) {
+        return this._handleError(error);
+      }
+    },
+
+    async disableTwoFactor(password: string) {
+      try {
+        await authApi.disableTwoFactor(password);
+        if (this.user) {
+          this.user.twoFactorEnabled = false;
+        }
+        return { ok: true };
+      } catch (error) {
+        return this._handleError(error);
+      }
+    },
+
+    async regenerateTwoFactorRecoveryCodes(code: string) {
+      try {
+        const { data } = await authApi.regenerateTwoFactorRecoveryCodes(code);
+        return { ok: true, recoveryCodes: data.data.recoveryCodes };
+      } catch (error) {
         return this._handleError(error);
       }
     },
