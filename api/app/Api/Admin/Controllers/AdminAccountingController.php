@@ -4,6 +4,7 @@ namespace App\Api\Admin\Controllers;
 
 use App\Api\Admin\Actions\Accounting\ConfirmAccountingPaymentAction;
 use App\Api\Admin\Actions\Accounting\ExportLedgerCsvAction;
+use App\Api\Admin\Actions\Accounting\GenerateInvoicePdfAction;
 use App\Api\Admin\Actions\Accounting\GetAccountingStatsAction;
 use App\Api\Admin\Actions\Accounting\GetBillingStatsAction;
 use App\Api\Admin\Actions\Accounting\GetInvoicesAction;
@@ -17,7 +18,9 @@ use App\Api\Admin\Requests\LedgerFilterRequest;
 use App\Api\Admin\Resources\InvoiceResource;
 use App\Api\Admin\Resources\LedgerResource;
 use App\Api\Admin\Resources\PendingPaymentResource;
+use App\Api\V1\Repositories\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminAccountingController extends BaseApiController
@@ -50,6 +53,17 @@ class AdminAccountingController extends BaseApiController
                 'total' => $paginator->total(),
             ],
         ]);
+    }
+
+    public function downloadInvoice(int $id, OrderRepositoryInterface $orderRepository, GenerateInvoicePdfAction $action): HttpResponse
+    {
+        $order = $orderRepository->find($id);
+
+        if (! $order) {
+            return self::errorResponse('Замовлення не знайдено', HttpResponse::HTTP_NOT_FOUND);
+        }
+
+        return $action->execute($order)->download("invoice-{$order->order_number}.pdf");
     }
 
     public function accountingStats(GetAccountingStatsAction $action): JsonResponse

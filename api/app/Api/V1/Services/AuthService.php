@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Jenssegers\Agent\Agent;
 
 class AuthService
 {
@@ -331,31 +332,11 @@ class AuthService
 
     private function parseDeviceName(string $ua): string
     {
-        // Simple UA-based device name without external packages
-        $browser = 'Unknown Browser';
-        $platform = 'Unknown OS';
+        $agent = new Agent;
+        $agent->setUserAgent($ua);
 
-        if (str_contains($ua, 'Firefox')) {
-            $browser = 'Firefox';
-        } elseif (str_contains($ua, 'Edg')) {
-            $browser = 'Edge';
-        } elseif (str_contains($ua, 'Chrome')) {
-            $browser = 'Chrome';
-        } elseif (str_contains($ua, 'Safari')) {
-            $browser = 'Safari';
-        }
-
-        if (str_contains($ua, 'Windows')) {
-            $platform = 'Windows';
-        } elseif (str_contains($ua, 'Macintosh')) {
-            $platform = 'macOS';
-        } elseif (str_contains($ua, 'Linux')) {
-            $platform = 'Linux';
-        } elseif (str_contains($ua, 'iPhone') || str_contains($ua, 'iPad')) {
-            $platform = 'iOS';
-        } elseif (str_contains($ua, 'Android')) {
-            $platform = 'Android';
-        }
+        $browser = $agent->browser() ?: 'Unknown Browser';
+        $platform = $agent->platform() ?: 'Unknown OS';
 
         return "{$browser} on {$platform}";
     }

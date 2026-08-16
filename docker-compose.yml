@@ -51,6 +51,7 @@ services:
       - ./frontend:/app
     networks:
       - filkx
+    command: tail -f /dev/null
 
   tech-api-php-fpm:
     container_name: tech-api-php-fpm

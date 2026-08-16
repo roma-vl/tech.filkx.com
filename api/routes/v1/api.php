@@ -163,6 +163,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     // User orders endpoint
     Route::get('/user/orders', [UserController::class, 'getOrders']);
     Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
+    Route::get('/user/orders/{id}/invoice', [UserController::class, 'downloadInvoice']);
 
     // Product reviews (auth required to submit/edit)
     Route::post('v1/catalog/products/{slug}/reviews', [ReviewController::class, 'store']);
@@ -307,6 +308,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         // Accounting Module
         Route::get('accounting/ledger', [AdminAccountingController::class, 'ledger']);
         Route::get('accounting/invoices', [AdminAccountingController::class, 'invoices']);
+        Route::get('accounting/invoices/{id}/pdf', [AdminAccountingController::class, 'downloadInvoice']);
         Route::get('accounting/stats', [AdminAccountingController::class, 'accountingStats']);
         Route::get('accounting/export', [AdminAccountingController::class, 'export']);
 

@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Controllers;
 
+use App\Api\Admin\Actions\Accounting\GenerateInvoicePdfAction;
 use App\Api\Admin\Actions\Order\UpdateAdminOrderStatusAction;
 use App\Api\Admin\Dto\UpdateOrderStatusDto;
 use App\Api\V1\Actions\User\DeleteUserAvatarAction;
@@ -736,6 +737,22 @@ class UserController extends BaseApiController
         return self::successfulResponse('Viewed products history cleared.');
     }
 
+    public function downloadInvoice(Request $request, int $id, GenerateInvoicePdfAction $action): mixed
+    {
+        $user = $request->user();
+        $order = Order::with('items')->find($id);
+
+        if (! $order) {
+            return self::errorResponse('Замовлення не знайдено', 404);
+        }
+
+        if ($order->user_id !== $user->id && $order->customer_email !== $user->email) {
+            return self::errorResponse('У вас немає доступу до цього замовлення', 403);
+        }
+
+        return $action->execute($order)->download("invoice-{$order->order_number}.pdf");
+    }
+
     public function getOrders(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -947,20 +964,20 @@ class UserController extends BaseApiController
         $order = Order::find($id);
 
         if (! $order) {
-            return self::failedResponse('Замовлення не знайдено', 404);
+            return self::errorResponse('Замовлення не знайдено', 404);
         }
 
         if ($order->user_id !== $user->id && $order->customer_email !== $user->email) {
-            return self::failedResponse('У вас немає доступу до цього замовлення', 403);
+            return self::errorResponse('У вас немає доступу до цього замовлення', 403);
         }
 
         // Cancellable statuses: pending_payment, paid, processing, packed, pending
         if (in_array($order->status, ['shipped', 'delivered', 'completed', 'refunded'])) {
-            return self::failedResponse('Це замовлення вже відправлено або виконано і його не можна скасувати.', 422);
+            return self::errorResponse('Це замовлення вже відправлено або виконано і його не можна скасувати.', 422);
         }
 
         if ($order->status === 'cancelled') {
-            return self::failedResponse('Це замовлення вже скасовано.', 400);
+            return self::errorResponse('Це замовлення вже скасовано.', 400);
         }
 
         $action->execute($id, new UpdateOrderStatusDto(
