@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
@@ -35,6 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {
@@ -116,12 +118,12 @@ const decrementQty = () => {
       <!-- Section Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div class="space-y-2">
-          <span class="text-rose-600 font-extrabold text-xs uppercase tracking-widest">Супер Знижки</span>
+          <span class="text-rose-600 font-extrabold text-xs uppercase tracking-widest">{{ t("home.flashDeals.badge") }}</span>
           <div class="flex flex-wrap items-center gap-4">
             <h2
               class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight"
             >
-              Гарячі пропозиції дня
+              {{ t("home.flashDeals.title") }}
             </h2>
             <!-- Countdown timer -->
             <div
@@ -134,7 +136,7 @@ const decrementQty = () => {
             </div>
           </div>
         </div>
-        <UiSectionLink :to="{ name: 'catalog' }">Всі акційні товари</UiSectionLink>
+        <UiSectionLink :to="{ name: 'catalog' }">{{ t("home.flashDeals.allDeals") }}</UiSectionLink>
       </div>
 
       <!-- Products Grid -->
@@ -212,7 +214,7 @@ const decrementQty = () => {
           <!-- Low stock notice (only shown for real, low remaining quantity) -->
           <div v-if="prod.leftCount != null && prod.leftCount > 0 && prod.leftCount <= 10" class="px-4 md:px-5 pb-3">
             <p class="text-[11px] font-extrabold text-rose-600 uppercase tracking-wider">
-              Залишилось: {{ prod.leftCount }} шт
+              {{ t("home.flashDeals.lowStock", { count: prod.leftCount }) }}
             </p>
           </div>
 
@@ -222,7 +224,7 @@ const decrementQty = () => {
               class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-lg text-sm font-extrabold shadow-sm transition-colors flex items-center justify-center gap-2"
               @click="cartStore.addToCart(prod as any)"
             >
-              В кошик
+              {{ t("common.addToCart") }}
               <span class="material-symbols-outlined text-[17px]">shopping_cart</span>
             </button>
             <div class="grid grid-cols-4 gap-2">
@@ -230,12 +232,12 @@ const decrementQty = () => {
                 class="col-span-3 py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-xs"
                 @click="openQuickView(prod)"
               >
-                Швидкий огляд
+                {{ t("home.flashDeals.quickView") }}
               </button>
               <button
                 class="col-span-1 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
                 :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': cartStore.isInCompare(prod.id as any) }"
-                title="Порівняти"
+                :title="t('common.compare')"
                 @click="cartStore.toggleCompare(prod)"
               >
                 <span
@@ -285,17 +287,17 @@ const decrementQty = () => {
               </div>
 
               <div class="space-y-2 bg-zinc-50 dark:bg-zinc-850 p-4 rounded-lg">
-                <h4 class="font-extrabold text-xs text-zinc-400 uppercase tracking-wider mb-2">Характеристики</h4>
+                <h4 class="font-extrabold text-xs text-zinc-400 uppercase tracking-wider mb-2">{{ t("home.flashDeals.modal.specifications") }}</h4>
                 <div class="flex justify-between text-sm py-1 border-b border-zinc-200/50 dark:border-zinc-800">
-                  <span class="text-zinc-500">Бренд</span>
+                  <span class="text-zinc-500">{{ t("home.flashDeals.modal.brand") }}</span>
                   <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ activeProduct.specs?.brand }}</span>
                 </div>
                 <div class="flex justify-between text-sm py-1 border-b border-zinc-200/50 dark:border-zinc-800">
-                  <span class="text-zinc-500">Артикул</span>
+                  <span class="text-zinc-500">{{ t("home.flashDeals.modal.sku") }}</span>
                   <span class="font-bold text-zinc-800 dark:text-zinc-200 font-mono text-xs">{{ activeProduct.specs?.sku }}</span>
                 </div>
                 <div class="flex justify-between text-sm py-1">
-                  <span class="text-zinc-500">Гарантія</span>
+                  <span class="text-zinc-500">{{ t("home.flashDeals.modal.warranty") }}</span>
                   <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ activeProduct.specs?.warranty }}</span>
                 </div>
               </div>
@@ -319,7 +321,7 @@ const decrementQty = () => {
                         :style="star <= Math.round(activeProduct.rating) ? 'font-variation-settings: &quot;FILL&quot; 1' : ''"
                       >star</span>
                     </div>
-                    <span class="text-zinc-500 text-xs font-bold">({{ activeProduct.reviews }} відгуків)</span>
+                    <span class="text-zinc-500 text-xs font-bold">({{ t("home.flashDeals.modal.reviewsCount", { count: activeProduct.reviews }) }})</span>
                   </div>
                 </div>
 
@@ -336,7 +338,7 @@ const decrementQty = () => {
 
                 <!-- Color selector -->
                 <div v-if="activeProduct.specs?.colors" class="space-y-1.5">
-                  <span class="text-xs font-bold text-zinc-500">Колір:</span>
+                  <span class="text-xs font-bold text-zinc-500">{{ t("home.flashDeals.modal.color") }}</span>
                   <div class="flex gap-2">
                     <button
                       v-for="(color, index) in activeProduct.specs.colors"
@@ -352,7 +354,7 @@ const decrementQty = () => {
 
                 <!-- Features -->
                 <div v-if="activeProduct.features && activeProduct.features.length > 0" class="space-y-1.5">
-                  <span class="text-xs font-bold text-zinc-500">Особливості:</span>
+                  <span class="text-xs font-bold text-zinc-500">{{ t("home.flashDeals.modal.features") }}</span>
                   <ul class="space-y-1">
                     <li
                       v-for="(feat, fIdx) in activeProduct.features"
@@ -369,7 +371,7 @@ const decrementQty = () => {
               <!-- Buy Actions -->
               <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-5 flex flex-col gap-4">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-bold text-zinc-500">Кількість:</span>
+                  <span class="text-sm font-bold text-zinc-500">{{ t("home.flashDeals.modal.quantity") }}</span>
                   <div class="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-zinc-50 dark:bg-zinc-850">
                     <button
                       class="w-9 h-9 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -391,7 +393,7 @@ const decrementQty = () => {
                   class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3 rounded-lg text-sm font-extrabold transition-all flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/10"
                   @click="cartStore.addToCart(activeProduct as any); closeModal();"
                 >
-                  Додати в кошик
+                  {{ t("home.flashDeals.modal.addToCart") }}
                   <span class="material-symbols-outlined text-[19px]">shopping_cart</span>
                 </button>
               </div>

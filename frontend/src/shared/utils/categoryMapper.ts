@@ -19,41 +19,53 @@ export const getCategoryIcon = (slug: string): string => {
   return mapping[s] || "grid_view";
 };
 
-export const mapDbCategoriesToMenu = (dbCats: any[]): any[] => {
+/**
+ * Multi-language DB fields are stored as `{ uk: "...", en: "..." }`. Prefers the
+ * active locale, falling back to the other language rather than always defaulting
+ * to Ukrainian regardless of what the visitor has selected.
+ */
+const pickLocalized = (value: any, locale: string): string => {
+  if (value && typeof value === "object") {
+    return value[locale] || value.uk || value.en || "";
+  }
+  return value || "";
+};
+
+export const mapDbCategoriesToMenu = (dbCats: any[], locale: string = "uk"): any[] => {
   if (!dbCats || dbCats.length === 0) return [];
   return dbCats.map((cat: any) => {
-    const label = cat.name?.uk || cat.name?.en || cat.name || "";
+    const label = pickLocalized(cat.name, locale);
     const icon = getCategoryIcon(cat.slug);
     const slug = cat.slug;
     const children = cat.children || [];
     const columns: any[][] = [[], [], [], []];
-    
+
     const itemsPerCol = Math.ceil(children.length / 4) || 1;
     children.forEach((child: any, idx: number) => {
       const colIdx = Math.floor(idx / itemsPerCol);
       if (colIdx < 4) {
         const subchildren = child.children || [];
         const hasSubchildren = subchildren.length > 0;
-        
+
         let links: any[] = [];
         let showMoreSlug: string | undefined = undefined;
-        
+
         if (hasSubchildren) {
           links = subchildren.slice(0, 3).map((sub: any) => ({
-            name: sub.name?.uk || sub.name?.en || sub.name || "",
+            name: pickLocalized(sub.name, locale),
             slug: sub.slug
           }));
         }
-        
+
         columns[colIdx].push({
-          title: child.name?.uk || child.name?.en || child.name || "",
+          title: pickLocalized(child.name, locale),
           slug: child.slug,
           showMoreSlug: subchildren.length > 3 ? child.slug : undefined,
           links
         });
       }
     });
-    
+
     return {
       id: cat.slug || cat.id,
       slug: cat.slug,

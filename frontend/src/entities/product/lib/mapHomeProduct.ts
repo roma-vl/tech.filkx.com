@@ -1,4 +1,5 @@
 import productPlaceholder from "@/assets/images/product-placeholder.svg";
+import { i18n } from "@/i18n";
 
 export interface HomeProduct {
   id: number | string;
@@ -23,19 +24,28 @@ export interface HomeProduct {
   features: string[];
 }
 
+const pickLocalized = (value: any, locale: string): string => {
+  if (value && typeof value === "object") {
+    return value[locale] || value.uk || value.en || "";
+  }
+  return value || "";
+};
+
 /**
  * Maps a raw API product (as returned by /v1/catalog/home and /v1/catalog/products)
  * into the shape used by the homepage product cards. Only surfaces data that actually
  * exists on the product — no invented discounts, ratings or scarcity indicators.
+ *
+ * `locale` defaults to the app's current locale so callers that don't map on every
+ * locale switch (e.g. data fetched once and cached) still show the right language
+ * as of when they were mapped.
  */
-export function mapHomeProduct(p: any): HomeProduct | null {
+export function mapHomeProduct(p: any, locale: string = i18n.global.locale.value): HomeProduct | null {
   try {
-    const name = p.name?.uk || p.name?.en || p.name || "";
+    const { t } = i18n.global;
+    const name = pickLocalized(p.name, locale);
     const category =
-      p.categories?.[0]?.name?.uk ||
-      p.categories?.[0]?.name?.en ||
-      p.categories?.[0]?.name ||
-      "Товар";
+      pickLocalized(p.categories?.[0]?.name, locale) || t("home.productDefaults.category");
 
     const firstVariant = p.variants?.[0] || {};
     const price = parseFloat(firstVariant.price) || 0;
@@ -73,16 +83,10 @@ export function mapHomeProduct(p: any): HomeProduct | null {
     const features: string[] = [];
     const prodAttrVals = p.attributeValues || p.attribute_values || [];
     prodAttrVals.slice(0, 4).forEach((av: any) => {
-      const label =
-        av.attribute?.name?.uk || av.attribute?.name?.en || av.attribute?.name || "";
+      const label = pickLocalized(av.attribute?.name, locale);
       const attrValObj = av.attributeValue || av.attribute_value;
       const val =
-        attrValObj?.value?.uk ||
-        attrValObj?.value?.en ||
-        attrValObj?.value ||
-        av.customValue ||
-        av.custom_value ||
-        "";
+        pickLocalized(attrValObj?.value, locale) || av.customValue || av.custom_value || "";
       if (label && val) {
         features.push(`${label}: ${val}`);
       }
@@ -90,9 +94,9 @@ export function mapHomeProduct(p: any): HomeProduct | null {
 
     const specs = {
       brand: p.brand?.name || "",
-      warranty: "12 місяців",
+      warranty: t("home.productDefaults.warranty"),
       sku: firstVariant.sku || "",
-      availability: "В наявності",
+      availability: t("home.productDefaults.availability"),
       colors: colors.length > 0 ? colors : ["#09090b"],
     };
 
@@ -125,7 +129,7 @@ export function mapHomeProduct(p: any): HomeProduct | null {
       reviews: p.approvedReviewsCount != null ? Number(p.approvedReviewsCount) : 0,
       leftCount: totalStock,
       image,
-      description: p.description?.uk || p.description?.en || p.description || "",
+      description: pickLocalized(p.description, locale),
       specs,
       features,
     };

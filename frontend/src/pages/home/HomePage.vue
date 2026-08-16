@@ -109,7 +109,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useHead } from "@vueuse/head";
+import { useI18n } from "vue-i18n";
 import { useHome } from "@/features/home/composables/useHome";
 import HeroSlider from "@/widgets/Home/HeroSlider.vue";
 import UspGrid from "@/widgets/Home/UspGrid.vue";
@@ -129,15 +131,14 @@ const {
   loadHomeData,
 } = useHome();
 
-const description =
-  "FilkxTech — каталог електроніки з офіційною гарантією, швидкою доставкою по Україні та підтримкою клієнтів. Смартфони, ноутбуки, аудіотехніка та розумні гаджети.";
+const { t } = useI18n();
 
 useHead({
-  title: "FilkxTech — Інтернет-магазин електроніки",
-  meta: [
-    { name: "description", content: description },
-    { property: "og:title", content: "FilkxTech — Інтернет-магазин електроніки" },
-    { property: "og:description", content: description },
-  ],
+  title: computed(() => t("meta.homeTitle")),
+  meta: computed(() => [
+    { name: "description", content: t("meta.homeDescription") },
+    { property: "og:title", content: t("meta.homeTitle") },
+    { property: "og:description", content: t("meta.homeDescription") },
+  ]),
 });
 </script>

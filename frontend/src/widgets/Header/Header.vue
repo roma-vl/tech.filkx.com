@@ -119,12 +119,19 @@ watch(searchQuery, (newQuery) => {
   }, 300);
 });
 
-// Using dynamic database categories mapped to columns layout
-const categories = ref<any[]>([]);
-const activeCat = ref<any>(null);
+// Using dynamic database categories mapped to columns layout.
+// Raw categories are kept separate from the locale-picked labels so the mega
+// menu re-translates immediately when the visitor switches language, without
+// needing to refetch from the API.
+const rawCategories = ref<any[]>([]);
+const categories = computed(() => mapDbCategoriesToMenu(rawCategories.value, locale.value));
+const activeCatId = ref<string | number | null>(null);
+const activeCat = computed(
+  () => categories.value.find((c: any) => c.id === activeCatId.value) || categories.value[0] || null,
+);
 
 const selectCategory = (cat: any) => {
-  activeCat.value = cat;
+  activeCatId.value = cat.id;
 };
 
 const getLinkRoute = (link: any) => {
@@ -261,10 +268,9 @@ onMounted(async () => {
       responseData &&
       (responseData.success || responseData.status === "success")
     ) {
-      const dbCats = responseData.data || [];
-      categories.value = mapDbCategoriesToMenu(dbCats);
+      rawCategories.value = responseData.data || [];
       if (categories.value.length > 0) {
-        activeCat.value = categories.value[0];
+        activeCatId.value = categories.value[0].id;
       }
     }
   } catch (error) {

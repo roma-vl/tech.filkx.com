@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
 import { newsletterApi } from "@/shared/services/api/newsletterApi";
 
 const cartStore = useCartStore();
+const { t, locale } = useI18n();
 const email = ref("");
 const isSubscribing = ref(false);
 
@@ -31,11 +33,11 @@ const handleSubscribe = async () => {
   isSubscribing.value = true;
   try {
     await newsletterApi.subscribe(trimmedEmail);
-    cartStore.addToast("Дякуємо за підписку!", "success");
+    cartStore.addToast(t("footer.newsletter.success"), "success");
     email.value = "";
   } catch (error) {
     console.error("Newsletter subscribe failed:", error);
-    cartStore.addToast("Не вдалося оформити підписку. Спробуйте пізніше.", "error");
+    cartStore.addToast(t("footer.newsletter.error"), "error");
   } finally {
     isSubscribing.value = false;
   }
@@ -68,8 +70,7 @@ const handleSubscribe = async () => {
             </span>
           </a>
           <p class="text-xs leading-relaxed text-zinc-400">
-            Інтернет-магазин техніки та електроніки в Україні. Офіційна
-            гарантія та швидка доставка.
+            {{ t("footer.description") }}
           </p>
           <div class="space-y-2 pt-2">
             <div class="flex items-center gap-2">
@@ -80,11 +81,11 @@ const handleSubscribe = async () => {
               >0 800 300 100</a>
             </div>
             <p class="text-[10px] text-zinc-500 leading-none pl-7">
-              (Безкоштовно по всій Україні)
+              {{ t("footer.freeCall") }}
             </p>
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-zinc-500 text-lg">schedule</span>
-              <span class="text-xs text-zinc-400">Пн-Нд: 08:00 - 22:00</span>
+              <span class="text-xs text-zinc-400">{{ t("footer.workingHours") }}</span>
             </div>
           </div>
         </div>
@@ -94,7 +95,7 @@ const handleSubscribe = async () => {
           <h4
             class="text-xs font-black uppercase text-white tracking-widest mb-4"
           >
-            Компанія
+            {{ t("footer.company.heading") }}
           </h4>
           <ul class="space-y-2.5 text-xs">
             <li>
@@ -102,7 +103,7 @@ const handleSubscribe = async () => {
                 to="/about"
                 class="hover:text-white transition-colors"
               >
-                Про нас
+                {{ t("footer.company.about") }}
               </router-link>
             </li>
             <li>
@@ -110,7 +111,7 @@ const handleSubscribe = async () => {
                 to="/terms"
                 class="hover:text-white transition-colors"
               >
-                Умови використання сайту
+                {{ t("footer.company.terms") }}
               </router-link>
             </li>
             <li>
@@ -118,7 +119,7 @@ const handleSubscribe = async () => {
                 to="/careers"
                 class="hover:text-white transition-colors"
               >
-                Вакансії
+                {{ t("footer.company.careers") }}
               </router-link>
             </li>
             <li>
@@ -126,7 +127,7 @@ const handleSubscribe = async () => {
                 to="/contacts"
                 class="hover:text-white transition-colors"
               >
-                Контакти
+                {{ t("footer.company.contacts") }}
               </router-link>
             </li>
             <li>
@@ -134,7 +135,7 @@ const handleSubscribe = async () => {
                 to="/franchising"
                 class="hover:text-white transition-colors"
               >
-                Франчайзинг
+                {{ t("footer.company.franchising") }}
               </router-link>
             </li>
             <li>
@@ -142,7 +143,7 @@ const handleSubscribe = async () => {
                 to="/promo-rules"
                 class="hover:text-white transition-colors"
               >
-                Офіційні правила акцій
+                {{ t("footer.company.promoRules") }}
               </router-link>
             </li>
           </ul>
@@ -153,7 +154,7 @@ const handleSubscribe = async () => {
           <h4
             class="text-xs font-black uppercase text-white tracking-widest mb-4"
           >
-            Допомога
+            {{ t("footer.help.heading") }}
           </h4>
           <ul class="space-y-2.5 text-xs">
             <li>
@@ -161,7 +162,7 @@ const handleSubscribe = async () => {
                 to="/shipping-payment"
                 class="hover:text-white transition-colors"
               >
-                Доставка та оплата
+                {{ t("footer.help.shippingPayment") }}
               </router-link>
             </li>
             <li>
@@ -169,7 +170,7 @@ const handleSubscribe = async () => {
                 to="/installments"
                 class="hover:text-white transition-colors"
               >
-                Кредит та оплата частинами
+                {{ t("footer.help.installments") }}
               </router-link>
             </li>
             <li>
@@ -177,7 +178,7 @@ const handleSubscribe = async () => {
                 to="/warranty-returns"
                 class="hover:text-white transition-colors"
               >
-                Гарантійні умови
+                {{ t("footer.help.warrantyTerms") }}
               </router-link>
             </li>
             <li>
@@ -185,7 +186,7 @@ const handleSubscribe = async () => {
                 to="/warranty-returns"
                 class="hover:text-white transition-colors"
               >
-                Повернення та обмін товару
+                {{ t("footer.help.returnsExchange") }}
               </router-link>
             </li>
             <li>
@@ -193,7 +194,7 @@ const handleSubscribe = async () => {
                 to="/service"
                 class="hover:text-white transition-colors"
               >
-                Сервісні центри партнери
+                {{ t("footer.help.serviceCenters") }}
               </router-link>
             </li>
             <li>
@@ -201,7 +202,7 @@ const handleSubscribe = async () => {
                 to="/account"
                 class="hover:text-white transition-colors"
               >
-                Відстежити замовлення
+                {{ t("footer.help.trackOrder") }}
               </router-link>
             </li>
           </ul>
@@ -212,7 +213,7 @@ const handleSubscribe = async () => {
           <h4
             class="text-xs font-black uppercase text-white tracking-widest mb-4"
           >
-            Популярні товари
+            {{ t("footer.categoriesHeading") }}
           </h4>
           <ul class="space-y-2.5 text-xs">
             <li
@@ -222,7 +223,7 @@ const handleSubscribe = async () => {
               <router-link
                 :to="{ name: 'catalog', query: { category: category.slug } }"
                 class="hover:text-white transition-colors"
-              >{{ category.name?.uk || category.name?.en || category.name }}</router-link>
+              >{{ category.name?.[locale] || category.name?.uk || category.name?.en || category.name }}</router-link>
             </li>
           </ul>
         </div>
@@ -232,11 +233,10 @@ const handleSubscribe = async () => {
           <h4
             class="text-xs font-black uppercase text-white tracking-widest mb-2"
           >
-            Спецпропозиції та новини
+            {{ t("footer.newsletter.heading") }}
           </h4>
           <p class="text-xs text-zinc-400 leading-relaxed">
-            Підпишіться, щоб першими дізнаватися про знижки, розіграші та
-            надходження нових преміум товарів.
+            {{ t("footer.newsletter.description") }}
           </p>
           <form
             class="flex gap-1.5"
@@ -245,7 +245,7 @@ const handleSubscribe = async () => {
             <input
               v-model="email"
               class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-lg text-xs flex-grow focus:outline-none focus:ring-1 focus:ring-zinc-600 focus:bg-zinc-850 text-white transition-all"
-              placeholder="Введіть ваш email"
+              :placeholder="t('footer.newsletter.emailPlaceholder')"
               type="email"
               required
             >
@@ -253,7 +253,7 @@ const handleSubscribe = async () => {
               class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 disabled:opacity-50"
               :disabled="isSubscribing"
             >
-              OK
+              {{ t("footer.newsletter.submit") }}
             </button>
           </form>
 
@@ -326,10 +326,9 @@ const handleSubscribe = async () => {
       >
         <!-- Trademark / Copyright -->
         <div class="space-y-1 text-center md:text-left">
-          <p>© 2026 FilkxTech. Всі права захищені.</p>
+          <p>{{ t("footer.legal.copyright") }}</p>
           <p class="text-[10px] text-zinc-600">
-            Інформація про ціни, характеристики та наявність товарів може бути
-            змінена без попередження.
+            {{ t("footer.legal.disclaimer") }}
           </p>
         </div>
 
@@ -341,23 +340,23 @@ const handleSubscribe = async () => {
             to="/privacy"
             class="hover:text-white transition-colors"
           >
-            Конфіденційність
+            {{ t("footer.legal.privacy") }}
           </router-link>
           <router-link
             to="/oferta"
             class="hover:text-white transition-colors"
           >
-            Оферта
+            {{ t("footer.legal.oferta") }}
           </router-link>
           <a
             href="#"
             class="hover:text-white transition-colors"
-          >Мапа сайту</a>
+          >{{ t("footer.legal.sitemap") }}</a>
           <router-link
             to="/cookies"
             class="hover:text-white transition-colors"
           >
-            Cookies
+            {{ t("footer.legal.cookies") }}
           </router-link>
         </div>
 

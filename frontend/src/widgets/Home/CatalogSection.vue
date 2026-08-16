@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { productApi } from "@/shared/services/api/productApi";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { mapHomeProduct, type HomeProduct } from "@/entities/product/lib/mapHomeProduct";
@@ -14,12 +15,19 @@ const props = defineProps({
 
 const router = useRouter();
 const cartStore = useCartStore();
+const { locale, t } = useI18n();
 
-const bestsellers = ref<HomeProduct[]>([]);
+// Kept raw so the grid re-translates immediately on language switch, without refetching.
+const rawBestsellers = ref<any[]>([]);
+const bestsellers = computed(
+  () => rawBestsellers.value.map((p) => mapHomeProduct(p, locale.value)).filter(Boolean) as HomeProduct[],
+);
 const selectedSlug = ref("");
 const isLoadingProds = ref(false);
 const page = ref(1);
 const lastPage = ref(1);
+
+const categoryName = (cat: any) => cat.name?.[locale.value] || cat.name?.uk || cat.name?.en || cat.name || "";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("uk-UA", { style: "currency", currency: "UAH", maximumFractionDigits: 0 }).format(price);
@@ -34,8 +42,7 @@ const fetchProducts = async () => {
       page: page.value,
     });
     if (res.data?.success || res.data?.status === "success") {
-      const list = res.data?.data?.data || res.data?.data || [];
-      bestsellers.value = list.map(mapHomeProduct).filter(Boolean) as HomeProduct[];
+      rawBestsellers.value = res.data?.data?.data || res.data?.data || [];
       lastPage.value = res.data?.data?.lastPage || 1;
     }
   } catch (e) {
@@ -49,7 +56,7 @@ const selectCategory = (slug: string) => {
   if (isLoadingProds.value || slug === selectedSlug.value) return;
   selectedSlug.value = slug;
   page.value = 1;
-  bestsellers.value = [];
+  rawBestsellers.value = [];
   fetchProducts();
 };
 
@@ -90,13 +97,13 @@ onMounted(() => {
     <!-- Header -->
     <div class="flex items-center justify-between mb-5">
       <h2 class="font-extrabold text-2xl text-zinc-900 dark:text-white tracking-tight">
-        Лідери продажу
+        {{ t("home.catalogSection.title") }}
       </h2>
       <div class="flex items-center gap-2">
         <button
           class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
           :disabled="page <= 1 || isLoadingProds"
-          aria-label="Попередня сторінка"
+          :aria-label="t('home.catalogSection.prevPage')"
           @click="prevPage"
         >
           <span class="material-symbols-outlined text-sm">chevron_left</span>
@@ -104,7 +111,7 @@ onMounted(() => {
         <button
           class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
           :disabled="page >= lastPage || isLoadingProds"
-          aria-label="Наступна сторінка"
+          :aria-label="t('home.catalogSection.nextPage')"
           @click="nextPage"
         >
           <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -125,7 +132,7 @@ onMounted(() => {
         "
         @click="selectCategory(cat.slug)"
       >
-        {{ cat.name?.uk || cat.name?.en || cat.name }}
+        {{ categoryName(cat) }}
       </button>
     </div>
 
@@ -215,13 +222,13 @@ onMounted(() => {
               class="flex-grow bg-[#00a046] hover:bg-[#00b050] text-white py-2 rounded-lg text-xs font-extrabold shadow-sm transition-colors flex items-center justify-center gap-1.5"
               @click.stop="cartStore.addToCart(prod as any)"
             >
-              <span>В кошик</span>
+              <span>{{ t("common.addToCart") }}</span>
               <span class="material-symbols-outlined text-[14px]">shopping_cart</span>
             </button>
             <button
               class="w-8 h-8 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center shrink-0"
               :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': cartStore.isInCompare(prod.id as any) }"
-              title="Порівняти"
+              :title="t('common.compare')"
               @click.stop.prevent="cartStore.toggleCompare(prod as any)"
             >
               <span
@@ -237,7 +244,7 @@ onMounted(() => {
     <!-- Empty State -->
     <div v-else class="flex flex-col items-center justify-center py-16 text-zinc-500 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
       <span class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650">inventory_2</span>
-      <p class="text-sm font-bold">У цій категорії поки що немає лідерів продажу</p>
+      <p class="text-sm font-bold">{{ t("home.catalogSection.empty") }}</p>
     </div>
 
   </section>

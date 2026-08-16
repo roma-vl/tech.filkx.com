@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
 const router = useRouter();
+const { t, locale } = useI18n();
 const posts = ref([]);
 const loading = ref(true);
 
@@ -25,7 +27,7 @@ const fetchLatestPosts = async () => {
 
 const formatDate = (d) => {
   if (!d) return "";
-  return new Date(d).toLocaleDateString("uk-UA", {
+  return new Date(d).toLocaleDateString(locale.value === "uk" ? "uk-UA" : "en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -33,10 +35,10 @@ const formatDate = (d) => {
 };
 
 const getTitle = (post) =>
-  post.title?.uk || post.title?.en || post.title || "";
+  post.title?.[locale.value] || post.title?.uk || post.title?.en || post.title || "";
 
 const getExcerpt = (post) =>
-  post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
+  post.excerpt?.[locale.value] || post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
 
 onMounted(fetchLatestPosts);
 </script>
@@ -46,18 +48,18 @@ onMounted(fetchLatestPosts);
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
       <div class="space-y-2">
-        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">Журнал</span>
+        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">{{ t("home.blog.label") }}</span>
         <h2
           class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
         >
-          Блог та огляди техніки
+          {{ t("home.blog.title") }}
         </h2>
         <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md">
-          Корисні статті, огляди новинок та поради від експертів FilkxTech
+          {{ t("home.blog.description") }}
         </p>
       </div>
       <UiSectionLink :to="{ name: 'blog' }">
-        Читати всі статті
+        {{ t("home.blog.readAll") }}
       </UiSectionLink>
     </div>
 
@@ -87,7 +89,7 @@ onMounted(fetchLatestPosts);
     >
       <span class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650">article</span>
       <p class="text-sm font-bold">
-        {{ loadFailed ? "Не вдалося завантажити статті. Спробуйте пізніше." : "Статей поки немає." }}
+        {{ loadFailed ? t("home.blog.loadFailed") : t("home.blog.empty") }}
       </p>
     </div>
 
@@ -125,7 +127,7 @@ onMounted(fetchLatestPosts);
             <span
               class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
             >
-              {{ post.category.name?.uk || post.category.name?.en }}
+              {{ post.category.name?.[locale] || post.category.name?.uk || post.category.name?.en }}
             </span>
           </div>
         </div>
@@ -136,7 +138,7 @@ onMounted(fetchLatestPosts);
           <div class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
             <span>{{ formatDate(post.publishedAt) }}</span>
             <span>·</span>
-            <span>{{ post.readTime || (post.views ? post.views + " переглядів" : "5 хв") }}</span>
+            <span>{{ post.readTime || (post.views ? t("home.blog.viewsCount", { count: post.views }) : t("home.blog.defaultReadTime")) }}</span>
           </div>
 
           <!-- Title -->
@@ -158,7 +160,7 @@ onMounted(fetchLatestPosts);
             <span
               class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1.5"
             >
-              Читати статтю
+              {{ t("home.blog.readArticle") }}
               <span
                 class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
               >arrow_forward</span>

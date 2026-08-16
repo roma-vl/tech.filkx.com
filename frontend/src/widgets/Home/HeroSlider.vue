@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import UiButton from "@/shared/ui/UiButton.vue";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
 
@@ -15,11 +16,13 @@ const props = defineProps({
   },
 });
 
+const { locale, t } = useI18n();
+
 const activeIndex = ref(0);
 const hoveredCat = ref(null);
 let intervalId = null;
 
-const mappedCategories = computed(() => mapDbCategoriesToMenu(props.categories));
+const mappedCategories = computed(() => mapDbCategoriesToMenu(props.categories, locale.value));
 
 const getBannerLink = (banner) => {
   switch (banner.linkType) {
@@ -45,7 +48,7 @@ const slides = computed(() => {
       title: banner.title,
       description: banner.description,
       image: banner.imageUrl,
-      buttonLabel: banner.buttonLabel || "Переглянути",
+      buttonLabel: banner.buttonLabel || t("home.hero.viewButton"),
       link: getBannerLink(banner),
     }));
   }
@@ -56,10 +59,10 @@ const slides = computed(() => {
     {
       badge: "",
       subtitle: "",
-      title: "Ласкаво просимо до FilkxTech",
-      description: "Широкий вибір електроніки з офіційною гарантією та швидкою доставкою по Україні.",
+      title: t("home.hero.welcomeTitle"),
+      description: t("home.hero.welcomeDescription"),
       image: null,
-      buttonLabel: "Перейти до каталогу",
+      buttonLabel: t("home.hero.goToCatalog"),
       link: { name: "catalog" },
     },
   ];
@@ -246,7 +249,7 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               v-for="(_, index) in slides"
               :key="index"
               :class="['h-1.5 rounded-full transition-all duration-500', activeIndex === index ? 'w-12 bg-[#00a046]' : 'w-6 bg-white/30 hover:bg-white/50']"
-              :aria-label="`Слайд ${index + 1}`"
+              :aria-label="t('home.hero.slideAriaLabel', { n: index + 1 })"
               @click="setSlide(index)"
             />
           </div>
@@ -317,7 +320,7 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
                   @click="hoveredCat = null"
                 >
-                  Дивитися далі →
+                  {{ t("header.search.viewMore") }}
                 </RouterLink>
               </div>
             </div>
@@ -328,7 +331,7 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
           >
             <span class="material-symbols-outlined text-4xl mb-2">category</span>
             <p class="text-xs font-bold">
-              Немає дочірніх розділів.
+              {{ t("header.megaMenu.noSubcategories") }}
             </p>
           </div>
         </div>
