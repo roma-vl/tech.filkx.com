@@ -143,14 +143,16 @@
         @close="closeQuickView"
       />
 
-      <!-- Payment Simulator Modal -->
-      <PaymentSimulatorModal
-        v-if="isPaymentSimulatorOpen && pendingSuccessData"
-        :order-data="pendingSuccessData"
-        :format-price="formatPrice"
-        @success="confirmSimulatedPayment"
-        @close="isPaymentSimulatorOpen = false"
-      />
+      <!-- Redirecting to LiqPay -->
+      <div
+        v-if="isRedirectingToPayment"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-sm"
+      >
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white" />
+        <p class="text-white font-semibold">
+          Перенаправлення на сторінку оплати...
+        </p>
+      </div>
     </div>
   </main>
 </template>
@@ -163,7 +165,6 @@ import CartItemsList from "@/widgets/ShoppingCart/CartItemsList.vue";
 import CartSummary from "@/widgets/ShoppingCart/CartSummary.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
-import PaymentSimulatorModal from "@/widgets/ShoppingCart/PaymentSimulatorModal.vue";
 
 const {
   router,
@@ -187,9 +188,7 @@ const {
   quickViewProduct,
   openQuickView,
   closeQuickView,
-  isPaymentSimulatorOpen,
-  pendingSuccessData,
-  confirmSimulatedPayment,
+  isRedirectingToPayment,
   formatPrice,
   applyPromo,
   addRecommended,

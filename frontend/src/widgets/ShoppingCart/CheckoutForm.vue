@@ -125,7 +125,7 @@
           "
         >
           <option value="cod">Оплата при отриманні (післяплата)</option>
-          <option value="card">Онлайн-оплата (Visa/Mastercard, Monobank)</option>
+          <option value="card">Онлайн-оплата карткою (Visa/Mastercard)</option>
           <option value="bank">Банківський переказ (на рахунок IBAN)</option>
         </select>
       </div>

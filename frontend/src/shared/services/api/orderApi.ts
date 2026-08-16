@@ -43,6 +43,15 @@ export const orderApi = {
     });
   },
 
+  // Payment API
+  initiateLiqPayPayment(orderNumber: string) {
+    return apiClient.post(`/v1/payments/orders/${orderNumber}/liqpay`);
+  },
+
+  getOrderStatus(orderNumber: string) {
+    return apiClient.get(`/v1/payments/orders/${orderNumber}/status`);
+  },
+
   // Admin Orders Management APIs
   adminGetOrders(params?: Record<string, any>) {
     return apiClient.get("/admin/orders", { params });

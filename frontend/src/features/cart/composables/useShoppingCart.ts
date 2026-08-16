@@ -1,5 +1,5 @@
 import { ref, computed, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { orderApi } from "@/shared/services/api/orderApi";
@@ -7,6 +7,7 @@ import { productApi } from "@/shared/services/api/productApi";
 
 export function useShoppingCart() {
   const router = useRouter();
+  const route = useRoute();
   const cartStore = useCartStore();
   const authStore = useAuthStore();
 
@@ -115,8 +116,34 @@ export function useShoppingCart() {
     }
   };
 
+  const checkPaymentReturn = async () => {
+    const orderNumber = route.query.order;
+    if (route.query.payment !== "liqpay" || !orderNumber) return;
+
+    try {
+      const res = await orderApi.getOrderStatus(String(orderNumber));
+      if (res.data && res.data.status === "success") {
+        orderSuccessData.value = res.data.data;
+        isSuccessMode.value = true;
+        cartStore.cart = [];
+
+        if (res.data.data.paymentStatus !== "paid") {
+          cartStore.addToast(
+            "Оплату не підтверджено. Якщо кошти було списано, статус оновиться протягом кількох хвилин.",
+            "warning",
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch order status after payment", e);
+    } finally {
+      router.replace({ query: {} });
+    }
+  };
+
   onMounted(() => {
     fetchRecommended();
+    checkPaymentReturn();
   });
 
   const moveToCart = async (product: any) => {
@@ -193,14 +220,27 @@ export function useShoppingCart() {
     cartStore.addToCart(product);
   };
 
-  const isPaymentSimulatorOpen = ref(false);
-  const pendingSuccessData = ref<any>(null);
+  const isRedirectingToPayment = ref(false);
 
-  const confirmSimulatedPayment = () => {
-    isPaymentSimulatorOpen.value = false;
-    orderSuccessData.value = pendingSuccessData.value;
-    pendingSuccessData.value = null;
-    isSuccessMode.value = true;
+  // Submits a hidden form to LiqPay's hosted checkout - we never touch card data,
+  // LiqPay collects it on their own PCI DSS-compliant page and calls our
+  // server-to-server callback once the payment is resolved.
+  const redirectToLiqPay = (data: string, signature: string, checkoutUrl: string) => {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = checkoutUrl;
+    form.style.display = "none";
+
+    for (const [name, value] of [["data", data], ["signature", signature]]) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
   };
 
   const handlePlaceOrder = async () => {
@@ -230,16 +270,28 @@ export function useShoppingCart() {
       });
 
       if (response.data && response.data.status === "success") {
-        cartStore.addToast("Замовлення успішно створено!", "success");
-        cartStore.cart = [];
-        
+        const order = response.data.data;
+
         if (checkoutForm.value.paymentMethod === "card") {
-          pendingSuccessData.value = response.data.data;
-          isPaymentSimulatorOpen.value = true;
+          const payRes = await orderApi.initiateLiqPayPayment(order.orderNumber);
+          if (payRes.data && payRes.data.status === "success") {
+            isRedirectingToPayment.value = true;
+            const { data, signature, checkoutUrl } = payRes.data.data;
+            redirectToLiqPay(data, signature, checkoutUrl);
+            return; // browser is navigating to LiqPay, nothing left to do here
+          }
+
+          cartStore.addToast(
+            payRes.data?.message || "Онлайн-оплата тимчасово недоступна. Замовлення створено, зверніться до підтримки для оплати.",
+            "error",
+          );
         } else {
-          orderSuccessData.value = response.data.data;
-          isSuccessMode.value = true;
+          cartStore.addToast("Замовлення успішно створено!", "success");
         }
+
+        cartStore.cart = [];
+        orderSuccessData.value = order;
+        isSuccessMode.value = true;
       }
     } catch (error: any) {
       console.error("Checkout failed:", error);
@@ -274,9 +326,7 @@ export function useShoppingCart() {
     quickViewProduct,
     openQuickView,
     closeQuickView,
-    isPaymentSimulatorOpen,
-    pendingSuccessData,
-    confirmSimulatedPayment,
+    isRedirectingToPayment,
     formatPrice,
     applyPromo,
     addRecommended,

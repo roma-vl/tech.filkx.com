@@ -30,6 +30,7 @@ use App\Api\V1\Controllers\BlogController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NotificationController;
+use App\Api\V1\Controllers\PaymentController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
 use App\Api\V1\Controllers\UserController;
@@ -95,6 +96,13 @@ Route::prefix('v1')->group(function () {
     // Checkout route
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
     Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder']);
+
+    // Payment routes
+    Route::prefix('payments')->group(function () {
+        Route::post('/orders/{orderNumber}/liqpay', [PaymentController::class, 'initiateLiqPay']);
+        Route::get('/orders/{orderNumber}/status', [PaymentController::class, 'orderStatus']);
+        Route::post('/liqpay/callback', [PaymentController::class, 'liqPayCallback']);
+    });
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
 });
 

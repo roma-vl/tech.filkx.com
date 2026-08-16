@@ -161,7 +161,7 @@ const copyToClipboard = (text: string, field: string) => {
 function getPaymentMethodLabel(method?: string) {
   if (!method) return "";
   if (method === "cod") return "Оплата при отриманні (післяплата)";
-  if (method === "card") return "Онлайн-оплата (Visa/Mastercard, Monobank)";
+  if (method === "card") return "Онлайн-оплата карткою (Visa/Mastercard)";
   return "Банківський переказ (IBAN)";
 }
 </script>

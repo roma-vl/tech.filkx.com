@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  * @OA\Info(
  *     title="Filkx API",
  *     version="1.0.0",
- *     description="API documentation for Filkx Video Streaming Platform",
+ *     description="API documentation for the Tech Filkx e-commerce platform",
  *
  *     @OA\Contact(
  *         email="admin@filkx.com"
