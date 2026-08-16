@@ -64,6 +64,7 @@ export default {
     accountingInvoices: "Рахунки",
     blog: "Блог",
     pages: "Статичні сторінки",
+    homeBanners: "Банери головної",
   },
   blog: {
     title: "Керування блогом",
@@ -72,6 +73,10 @@ export default {
   pages: {
     title: "Статичні сторінки",
     description: "Керування та наповнення статичних сторінок сайту (про нас, гарантія, доставка тощо)",
+  },
+  homeBanners: {
+    title: "Банери головної сторінки",
+    description: "Керування слайдами hero-блоку на головній сторінці магазину",
   },
   accounting: {
     export: "Експорт CSV",

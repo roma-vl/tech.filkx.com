@@ -4,6 +4,7 @@ namespace App\Api\Admin\Actions\Settings;
 
 use App\Models\AuditLog;
 use App\Models\Setting;
+use Illuminate\Support\Str;
 
 class UpdateSystemSettingsAction
 {
@@ -28,11 +29,11 @@ class UpdateSystemSettingsAction
         }
 
         AuditLog::create([
-            'id' => \Illuminate\Support\Str::uuid(),
+            'id' => Str::uuid(),
             'user_id' => auth()->id(),
             'action' => 'settings.updated',
             'domain' => 'admin',
-            'message' => 'System settings updated: ' . implode(', ', array_keys($settings)),
+            'message' => 'System settings updated: '.implode(', ', array_keys($settings)),
             'payload' => array_keys($settings),
             'ip_address' => $ip,
             'user_agent' => $userAgent,

@@ -86,7 +86,10 @@
     </template>
 
     <template v-else>
-      <HeroSlider :categories="categories" />
+      <HeroSlider
+        :categories="categories"
+        :banners="banners"
+      />
       <UspGrid />
       <CatalogSection :categories="popularCategories" />
       <FlashDeals
@@ -106,6 +109,7 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from "@vueuse/head";
 import { useHome } from "@/features/home/composables/useHome";
 import HeroSlider from "@/widgets/Home/HeroSlider.vue";
 import UspGrid from "@/widgets/Home/UspGrid.vue";
@@ -115,5 +119,17 @@ import RecommendedProducts from "@/widgets/Home/RecommendedProducts.vue";
 import TechBlog from "@/widgets/Home/TechBlog.vue";
 import BrandPartners from "@/widgets/Home/BrandPartners.vue";
 
-const { categories, popularCategories, flashDeals, recommended, loading, loadHomeData } = useHome();
+const { banners, categories, popularCategories, flashDeals, recommended, loading, loadHomeData } = useHome();
+
+const description =
+  "FilkxTech — каталог електроніки з офіційною гарантією, швидкою доставкою по Україні та підтримкою клієнтів. Смартфони, ноутбуки, аудіотехніка та розумні гаджети.";
+
+useHead({
+  title: "FilkxTech — Інтернет-магазин електроніки",
+  meta: [
+    { name: "description", content: description },
+    { property: "og:title", content: "FilkxTech — Інтернет-магазин електроніки" },
+    { property: "og:description", content: description },
+  ],
+});
 </script>

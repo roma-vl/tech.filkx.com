@@ -23,7 +23,7 @@ class AdminBlogController extends BaseApiController
             ->when($request->filled('category_id'), fn ($q) => $q->where('blog_category_id', $request->category_id))
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q2) use ($request) {
                 $q2->whereRaw("title->>'uk' ILIKE ?", ['%'.$request->search.'%'])
-                   ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$request->search.'%']);
+                    ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$request->search.'%']);
             }))
             ->orderByDesc('created_at');
 
@@ -43,6 +43,7 @@ class AdminBlogController extends BaseApiController
     public function showPost(int $id): JsonResponse
     {
         $post = BlogPost::with(['category', 'author', 'tags'])->findOrFail($id);
+
         return self::successfulResponseWithData($this->formatPost($post, true));
     }
 
@@ -86,6 +87,7 @@ class AdminBlogController extends BaseApiController
         }
 
         $post->load(['category', 'author', 'tags']);
+
         return self::successfulResponseWithData($this->formatPost($post, true), Response::HTTP_CREATED);
     }
 
@@ -130,6 +132,7 @@ class AdminBlogController extends BaseApiController
     {
         $post = BlogPost::findOrFail($id);
         $post->delete();
+
         return self::successfulResponse();
     }
 
@@ -151,6 +154,7 @@ class AdminBlogController extends BaseApiController
     {
         $cats = BlogCategory::withCount('posts')->orderBy('order')->get()
             ->map(fn ($c) => $this->formatCategory($c));
+
         return self::successfulResponseWithData($cats);
     }
 
@@ -205,6 +209,7 @@ class AdminBlogController extends BaseApiController
     {
         $cat = BlogCategory::findOrFail($id);
         $cat->delete();
+
         return self::successfulResponse();
     }
 
@@ -214,6 +219,7 @@ class AdminBlogController extends BaseApiController
     {
         $tags = BlogTag::withCount('posts')->orderBy('id', 'desc')->get()
             ->map(fn ($t) => $this->formatTag($t));
+
         return self::successfulResponseWithData($tags);
     }
 
@@ -258,6 +264,7 @@ class AdminBlogController extends BaseApiController
     {
         $tag = BlogTag::findOrFail($id);
         $tag->delete();
+
         return self::successfulResponse();
     }
 

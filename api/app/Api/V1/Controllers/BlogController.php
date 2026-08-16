@@ -2,12 +2,12 @@
 
 namespace App\Api\V1\Controllers;
 
+use App\Api\Admin\Controllers\BaseApiController;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Api\Admin\Controllers\BaseApiController;
 
 class BlogController extends BaseApiController
 {
@@ -19,7 +19,7 @@ class BlogController extends BaseApiController
             ->when($request->filled('tag'), fn ($q) => $q->whereHas('tags', fn ($t) => $t->where('slug', $request->tag)))
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q2) use ($request) {
                 $q2->whereRaw("title->>'uk' ILIKE ?", ['%'.$request->search.'%'])
-                   ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$request->search.'%']);
+                    ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$request->search.'%']);
             }))
             ->orderByDesc('published_at');
 

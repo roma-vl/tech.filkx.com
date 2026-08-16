@@ -29,7 +29,7 @@ class NotifyProductWishlistsJob implements ShouldQueue
             return;
         }
 
-        $threshold    = config('wishlist.price_drop_threshold', 5.0);
+        $threshold = config('wishlist.price_drop_threshold', 5.0);
         $currentPrice = $wishlistService->getMinPrice($product);
 
         if ($currentPrice === null) {
@@ -41,7 +41,7 @@ class NotifyProductWishlistsJob implements ShouldQueue
             ->where('notify_on_drop', true)
             ->get();
 
-        $notified  = 0;
+        $notified = 0;
         $backfilled = 0;
 
         foreach ($subscriptions as $item) {
@@ -51,6 +51,7 @@ class NotifyProductWishlistsJob implements ShouldQueue
                     'price_at_add' => $currentPrice,
                 ]);
                 $backfilled++;
+
                 continue;
             }
 
@@ -59,7 +60,7 @@ class NotifyProductWishlistsJob implements ShouldQueue
             }
 
             $item->user->notify(new PriceDropNotification(
-                product:  $product,
+                product: $product,
                 oldPrice: (float) $item->price_at_add,
                 newPrice: $currentPrice,
             ));

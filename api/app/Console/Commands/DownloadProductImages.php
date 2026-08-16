@@ -21,6 +21,7 @@ class DownloadProductImages extends Command
 
         if (! file_exists($source)) {
             $this->error("File not found: {$source}");
+
             return self::FAILURE;
         }
 
@@ -49,18 +50,21 @@ class DownloadProductImages extends Command
 
                 if (empty($imageUrls) || empty($slug)) {
                     $skipped++;
+
                     continue;
                 }
 
                 $product = Product::where('slug', $slug)->with('variants')->first();
                 if (! $product) {
                     $skipped++;
+
                     continue;
                 }
 
                 $variant = $product->variants->first();
                 if (! $variant) {
                     $skipped++;
+
                     continue;
                 }
 
@@ -70,6 +74,7 @@ class DownloadProductImages extends Command
                 // Skip if already has local images and not forcing
                 if (! $force && ! empty($existingImages)) {
                     $skipped++;
+
                     continue;
                 }
 
@@ -79,6 +84,7 @@ class DownloadProductImages extends Command
                 foreach ($imageUrls as $url) {
                     if ($this->isPaymentImage($url)) {
                         $filtered++;
+
                         continue;
                     }
                     $localPath = $this->downloadImage($url, $slug);
@@ -119,6 +125,7 @@ class DownloadProductImages extends Command
                 return true;
             }
         }
+
         return false;
     }
 
@@ -147,9 +154,9 @@ class DownloadProductImages extends Command
             foreach (array_unique($urls) as $tryUrl) {
                 $response = Http::timeout(15)
                     ->withHeaders([
-                        'User-Agent'  => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-                        'Referer'     => 'https://sota.store/',
-                        'Accept'      => 'image/webp,image/*,*/*',
+                        'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+                        'Referer' => 'https://sota.store/',
+                        'Accept' => 'image/webp,image/*,*/*',
                     ])
                     ->get($tryUrl);
 
@@ -163,6 +170,7 @@ class DownloadProductImages extends Command
                 }
 
                 Storage::disk('public')->put($storagePath, $response->body());
+
                 return $storagePath;
             }
 
@@ -170,6 +178,7 @@ class DownloadProductImages extends Command
 
         } catch (\Throwable $e) {
             $this->warn(" Error {$slug}: {$e->getMessage()}");
+
             return null;
         }
     }

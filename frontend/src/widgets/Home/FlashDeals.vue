@@ -14,7 +14,6 @@ interface FlashProduct {
   oldPrice?: number;
   image: string;
   discount: string;
-  soldPercent?: number;
   leftCount?: number;
   description?: string;
   features?: string[];
@@ -210,17 +209,11 @@ const decrementQty = () => {
             </div>
           </div>
 
-          <!-- Inventory Progress Bar -->
-          <div v-if="prod.soldPercent" class="px-4 md:px-5 pb-3">
-            <div class="w-full bg-zinc-100 dark:bg-zinc-800 h-1.5 rounded-full mb-1 overflow-hidden">
-              <div class="bg-rose-600 h-full rounded-full" :style="{ width: prod.soldPercent + '%' }" />
-            </div>
-            <div class="flex justify-between items-center text-[11px]">
-              <p class="font-extrabold text-rose-600 uppercase tracking-wider">
-                Залишилось: {{ prod.leftCount }} шт
-              </p>
-              <p class="font-bold text-zinc-400">{{ prod.soldPercent }}% Розпродано</p>
-            </div>
+          <!-- Low stock notice (only shown for real, low remaining quantity) -->
+          <div v-if="prod.leftCount != null && prod.leftCount > 0 && prod.leftCount <= 10" class="px-4 md:px-5 pb-3">
+            <p class="text-[11px] font-extrabold text-rose-600 uppercase tracking-wider">
+              Залишилось: {{ prod.leftCount }} шт
+            </p>
           </div>
 
           <!-- Action Buttons -->
@@ -358,7 +351,7 @@ const decrementQty = () => {
                 </div>
 
                 <!-- Features -->
-                <div v-if="activeProduct.features" class="space-y-1.5">
+                <div v-if="activeProduct.features && activeProduct.features.length > 0" class="space-y-1.5">
                   <span class="text-xs font-bold text-zinc-500">Особливості:</span>
                   <ul class="space-y-1">
                     <li

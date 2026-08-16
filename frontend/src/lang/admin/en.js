@@ -63,6 +63,7 @@ export default {
     accountingInvoices: "Invoices",
     blog: "Blog",
     pages: "Static Pages",
+    homeBanners: "Homepage Banners",
   },
   blog: {
     title: "Blog Management",
@@ -71,6 +72,10 @@ export default {
   pages: {
     title: "Static Pages",
     description: "Overview, creation, and editing of static pages (about us, warranty, shipping, etc.)",
+  },
+  homeBanners: {
+    title: "Homepage Banners",
+    description: "Manage the hero slider slides shown on the storefront homepage",
   },
   accounting: {
     export: "Export CSV",

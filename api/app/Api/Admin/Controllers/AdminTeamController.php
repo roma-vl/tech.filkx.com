@@ -10,7 +10,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * @OA\Tag(name="Admin Team", description="Admin team management")
@@ -33,12 +33,12 @@ class AdminTeamController extends BaseApiController
             ->get();
 
         $stats = [
-            'total'  => $team->count(),
+            'total' => $team->count(),
             'owners' => $team->filter(fn ($u) => $u->roles->contains('name', 'owner'))->count(),
         ];
 
         return self::successfulResponseWithData([
-            'team'  => AdminUserResource::collection($team),
+            'team' => AdminUserResource::collection($team),
             'stats' => $stats,
         ]);
     }
@@ -68,16 +68,16 @@ class AdminTeamController extends BaseApiController
         AssignUserRoleAction $assignRoleAction
     ): JsonResponse {
         $data = $request->validate([
-            'name'   => ['required', 'string', 'max:255'],
-            'email'  => ['required', 'email', 'unique:users,email'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'roleId' => ['required', 'exists:roles,id'],
         ]);
 
-        $password = \Illuminate\Support\Str::random(12);
+        $password = Str::random(12);
 
         $user = $createAction->execute([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => $password,
         ], $request->ip(), $request->userAgent());
 
@@ -100,7 +100,7 @@ class AdminTeamController extends BaseApiController
         $user->save();
 
         return self::successfulResponseWithData([
-            'status'  => $user->status,
+            'status' => $user->status,
             'message' => $user->status === 'active'
                 ? 'Team member activated successfully.'
                 : 'Team member suspended successfully.',

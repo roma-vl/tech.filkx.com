@@ -5,7 +5,10 @@
     max-width="sm"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <form class="space-y-4" @submit.prevent="saveTag">
+    <form
+      class="space-y-4"
+      @submit.prevent="saveTag"
+    >
       <AppInput
         v-model="tagForm.nameUk"
         label="Назва (УК) *"

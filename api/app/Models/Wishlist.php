@@ -17,7 +17,7 @@ class Wishlist extends Pivot
     ];
 
     protected $casts = [
-        'price_at_add'   => 'decimal:2',
+        'price_at_add' => 'decimal:2',
         'notify_on_drop' => 'boolean',
     ];
 

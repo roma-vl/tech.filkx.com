@@ -3,6 +3,7 @@
 namespace App\Api\V1\Actions;
 
 use App\Api\V1\Repositories\CategoryRepository;
+use App\Api\V1\Repositories\HomeBannerRepositoryInterface;
 use App\Api\V1\Repositories\ProductRepository;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ class GetHomeDataAction
 {
     public function __construct(
         protected CategoryRepository $categoryRepository,
-        protected ProductRepository $productRepository
+        protected ProductRepository $productRepository,
+        protected HomeBannerRepositoryInterface $homeBannerRepository
     ) {}
 
     public function execute(Request $request): array
@@ -118,6 +120,7 @@ class GetHomeDataAction
         }
 
         return [
+            'banners' => $this->homeBannerRepository->getActiveOrdered(),
             'categories' => $categories,
             'flash_deals' => $flashDeals,
             'recommended' => $recommended->values(),

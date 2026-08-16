@@ -575,7 +575,7 @@ class UserController extends BaseApiController
             return self::errorResponse('Product ID is required.', 400);
         }
 
-        $user    = $request->user();
+        $user = $request->user();
         $product = Product::find($productId);
 
         if (! $product) {
@@ -589,7 +589,7 @@ class UserController extends BaseApiController
         }
 
         $productIds = $user->favorites()->pluck('product_id')->toArray();
-        $products   = $productRepository->queryActive()->whereIn('id', $productIds)->get();
+        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
 
         return self::successfulResponseWithData($products);
     }

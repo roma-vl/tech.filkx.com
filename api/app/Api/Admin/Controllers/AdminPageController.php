@@ -16,8 +16,8 @@ class AdminPageController extends BaseApiController
             ->when($request->filled('search'), function ($q) use ($request) {
                 $search = $request->search;
                 $q->where('slug', 'like', "%{$search}%")
-                  ->orWhereRaw("title->>'uk' ILIKE ?", ['%'.$search.'%'])
-                  ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$search.'%']);
+                    ->orWhereRaw("title->>'uk' ILIKE ?", ['%'.$search.'%'])
+                    ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$search.'%']);
             })
             ->orderBy('id', 'desc');
 
@@ -37,6 +37,7 @@ class AdminPageController extends BaseApiController
     public function show(int $id): JsonResponse
     {
         $page = Page::findOrFail($id);
+
         return self::successfulResponseWithData($this->formatPage($page, true));
     }
 
@@ -52,8 +53,8 @@ class AdminPageController extends BaseApiController
         ]);
 
         $slug = $request->input('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('titleEn'));
-        if (!$slug) {
-            $slug = 'page-' . time();
+        if (! $slug) {
+            $slug = 'page-'.time();
         }
 
         // Ensure uniqueness
@@ -122,6 +123,7 @@ class AdminPageController extends BaseApiController
     {
         $page = Page::findOrFail($id);
         $page->delete();
+
         return self::successfulResponse();
     }
 

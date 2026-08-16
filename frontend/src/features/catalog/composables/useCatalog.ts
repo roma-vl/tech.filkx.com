@@ -12,7 +12,9 @@ export function useCatalog() {
   const initialPriceMax = ref(200000);
   const priceMin = ref(0);
   const priceMax = ref(200000);
-  const selectedBrands = ref<string[]>([]);
+  const selectedBrands = ref<string[]>(
+    route.query.brand ? (route.query.brand as string).split(",") : [],
+  );
   const selectedAttrs = ref<Record<string, string>>({});
   const selectedRating = ref("");
   const onlyDiscounts = ref(false);

@@ -8,6 +8,8 @@ const router = useRouter();
 const posts = ref([]);
 const loading = ref(true);
 
+const loadFailed = ref(false);
+
 const fetchLatestPosts = async () => {
   try {
     const { data } = await api.get("/v1/blog/posts", {
@@ -15,8 +17,7 @@ const fetchLatestPosts = async () => {
     });
     posts.value = data.data.data || [];
   } catch {
-    // fallback to static articles if API is unavailable
-    posts.value = staticArticles;
+    loadFailed.value = true;
   } finally {
     loading.value = false;
   }
@@ -36,48 +37,6 @@ const getTitle = (post) =>
 
 const getExcerpt = (post) =>
   post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
-
-const staticArticles = [
-  {
-    id: 1,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBJQNj0EC0emUkDyzp90oAj9LJPzpKPXT6LWZapnUxdjLR5TAEy9kuHaJr94uG2PzVeehWJTvry4Ee2usgri_YrTONN_qiozc1qDVA0IvjUJcjmfX4tlyXbG7cS55CYK0qdtU_5nNwNG1cvHRVWZ4RDHp1qQpcIlcPkq0kc54-dRRkNH3kiZOkglgTPglzSvbgSmBPllFt0kRkaUl6e5wMCrocXFoM-7JxcSFJb9mOT7tc5df8zDbGD5gV5FgaFM7ihaGDzCu-bE7Q",
-    title: { uk: "Як вибрати ідеальний ноутбук для розробника в 2026 році" },
-    excerpt: {
-      uk: "Аналіз актуальних процесорів, обсягу оперативної пам'яті та дисплеїв для комфортного кодингу.",
-    },
-    publishedAt: "2026-05-28",
-    readTime: "5 хв",
-    category: { name: { uk: "Ноутбуки" } },
-  },
-  {
-    id: 2,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBiUjsdg3UEZ3Invqr34vCkdhNreoHpan9Pb-BGKmaVy0RU0uSQyzTsKkbXAwFc883Y5jTxMbVRUKZoDSaTo3FbaT7XaZnss_re9YT00JhaTBlC6yvueGFeJfKhhh6JIjDtiTNIfRdJjC8ZyTTSHtYB81L85eJ1STBcLutY96W12sDqOctNxTwyq1m0MT7_6PTUKAE858poN7UqRe7nE46hjcjRrp_larxv7sHMDVCn7iT7817fw1OcxPdOG2sWfInGcMEAEIPakTE",
-    title: { uk: "Порівняння ANC навушників: Obsidian X проти конкурентів" },
-    excerpt: {
-      uk: "Детальний звуковий тест та вимірювання ефективності активного шумозаглушення в міському середовищі.",
-    },
-    publishedAt: "2026-05-24",
-    readTime: "7 хв",
-    category: { name: { uk: "Аудіо" } },
-  },
-  {
-    id: 3,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAG1j0OkwUBTuRJYlZq12iTWSfCx0hTSkVryqbF-FYIDY0p2IODoLkQCjdBzvMUE28jinrTZ-Yhx8ATbKeWyMq2bSKQehQZ5dUfTVBStqMLuWl_dnxdhw_-eZMoiP9_egaelvQQU7gzfXiv-g6KH0W1d7n6iYmoObJXDCEXbrnLagqWXZxOIyeHX_fQAyS84ZvkaGDv8Ld75VMMB-p3JQk_MupRVz9V0REcSykJQllrCavETBkPh8j054bmRUv5No-7faKEr_uRPp0",
-    title: { uk: "Екосистема розумного дому: з чого розпочати побудову" },
-    excerpt: {
-      uk: "Покрокове керівництво з підбору датчиків, розумних колонок та хабів автоматизації для квартири.",
-    },
-    publishedAt: "2026-05-18",
-    readTime: "6 хв",
-    category: { name: { uk: "Смарт Дім" } },
-  },
-];
 
 onMounted(fetchLatestPosts);
 </script>
@@ -119,6 +78,17 @@ onMounted(fetchLatestPosts);
           <div class="h-4 w-5/6 bg-zinc-200 dark:bg-zinc-700 rounded" />
         </div>
       </div>
+    </div>
+
+    <!-- Empty / failed state -->
+    <div
+      v-else-if="posts.length === 0"
+      class="flex flex-col items-center justify-center py-16 text-zinc-500 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800"
+    >
+      <span class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650">article</span>
+      <p class="text-sm font-bold">
+        {{ loadFailed ? "Не вдалося завантажити статті. Спробуйте пізніше." : "Статей поки немає." }}
+      </p>
     </div>
 
     <!-- Posts grid -->

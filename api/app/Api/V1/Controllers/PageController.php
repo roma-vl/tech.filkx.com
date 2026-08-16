@@ -2,9 +2,9 @@
 
 namespace App\Api\V1\Controllers;
 
+use App\Api\Admin\Controllers\BaseApiController;
 use App\Models\Page;
 use Illuminate\Http\JsonResponse;
-use App\Api\Admin\Controllers\BaseApiController;
 
 class PageController extends BaseApiController
 {

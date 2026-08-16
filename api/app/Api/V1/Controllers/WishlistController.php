@@ -27,12 +27,12 @@ class WishlistController extends BaseApiController
     public function add(Request $request, Product $product): JsonResponse
     {
         $notify = $request->boolean('notify_on_drop', true);
-        $item   = $this->wishlistService->add($request->user(), $product, $notify);
+        $item = $this->wishlistService->add($request->user(), $product, $notify);
 
         return response()->json([
-            'message'      => 'Товар додано до списку бажань',
+            'message' => 'Товар додано до списку бажань',
             'price_at_add' => $item->price_at_add,
-            'notify'       => $item->notify_on_drop,
+            'notify' => $item->notify_on_drop,
         ]);
     }
 
@@ -49,7 +49,7 @@ class WishlistController extends BaseApiController
 
         return response()->json([
             'notify_on_drop' => $newState,
-            'message'        => $newState ? 'Сповіщення увімкнено' : 'Сповіщення вимкнено',
+            'message' => $newState ? 'Сповіщення увімкнено' : 'Сповіщення вимкнено',
         ]);
     }
 }

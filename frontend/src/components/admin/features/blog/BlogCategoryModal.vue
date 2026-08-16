@@ -5,7 +5,10 @@
     max-width="md"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <form class="space-y-4" @submit.prevent="saveCategory">
+    <form
+      class="space-y-4"
+      @submit.prevent="saveCategory"
+    >
       <AppInput
         v-model="categoryForm.nameUk"
         label="Назва (УК) *"

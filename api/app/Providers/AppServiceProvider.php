@@ -10,6 +10,8 @@ use App\Api\V1\Repositories\CartRepository;
 use App\Api\V1\Repositories\CartRepositoryInterface;
 use App\Api\V1\Repositories\CouponRepository;
 use App\Api\V1\Repositories\CouponRepositoryInterface;
+use App\Api\V1\Repositories\HomeBannerRepository;
+use App\Api\V1\Repositories\HomeBannerRepositoryInterface;
 use App\Api\V1\Repositories\NotificationRepository;
 use App\Api\V1\Repositories\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\OrderRepository;
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
+        $this->app->bind(HomeBannerRepositoryInterface::class, HomeBannerRepository::class);
     }
 
     /**

@@ -3,18 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
 import { useCartStore } from "@/entities/order/model/cartStore";
-
-interface Product {
-  id: string | number;
-  slug: string;
-  name: string;
-  price: number;
-  oldPrice?: number;
-  image: string;
-  category: string;
-  rating: number;
-  reviews: number;
-}
+import { mapHomeProduct, type HomeProduct } from "@/entities/product/lib/mapHomeProduct";
 
 const props = defineProps({
   categories: {
@@ -26,38 +15,9 @@ const props = defineProps({
 const router = useRouter();
 const cartStore = useCartStore();
 
-const bestsellers = ref<Product[]>([]);
+const bestsellers = ref<HomeProduct[]>([]);
 const selectedSlug = ref("");
 const isLoadingProds = ref(false);
-
-const mapProduct = (p: any): Product | null => {
-  try {
-    const name = p.name?.uk || p.name?.en || p.name || "";
-    const category =
-      p.categories?.[0]?.name?.uk || p.categories?.[0]?.name?.en || p.categories?.[0]?.name || "Товар";
-    const firstVariant = p.variants?.[0] || {};
-    const price = parseFloat(firstVariant.price) || 0;
-    const oldPriceRaw = firstVariant.oldPrice || firstVariant.old_price;
-    const oldPrice =
-      oldPriceRaw && parseFloat(oldPriceRaw) > price ? parseFloat(oldPriceRaw) : undefined;
-
-    let image = "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-    const images = firstVariant.dimensions?.images || [];
-    if (images.length > 0) {
-      const primary = images.find((img: any) => img.isPrimary || img.is_primary) || images[0];
-      if (primary?.url) image = primary.url;
-    } else if (firstVariant.dimensions?.image) {
-      image = firstVariant.dimensions.image;
-    }
-
-    const rating = p.approvedReviewsAvgRating != null ? parseFloat(p.approvedReviewsAvgRating) : (4.5 + (p.id % 6) * 0.1);
-    const reviews = p.approvedReviewsCount != null ? Number(p.approvedReviewsCount) : (3 + (p.id % 8));
-
-    return { id: p.id, slug: p.slug, name, category, price, oldPrice, image, rating, reviews };
-  } catch {
-    return null;
-  }
-};
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("uk-UA", { style: "currency", currency: "UAH", maximumFractionDigits: 0 }).format(price);
@@ -71,7 +31,7 @@ const selectCategory = async (slug: string) => {
     const res = await productApi.catalogGetProducts({ category: slug, per_page: 10 });
     if (res.data?.success || res.data?.status === "success") {
       const list = res.data?.data?.data || res.data?.data || [];
-      bestsellers.value = list.map(mapProduct).filter(Boolean) as Product[];
+      bestsellers.value = list.map(mapHomeProduct).filter(Boolean) as HomeProduct[];
     }
   } catch (e) {
     console.error("CatalogSection: load products failed:", e);

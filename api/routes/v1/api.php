@@ -5,6 +5,7 @@ use App\Api\Admin\Controllers\AdminAttributeController;
 use App\Api\Admin\Controllers\AdminBlogController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
+use App\Api\Admin\Controllers\AdminHomeBannerController;
 use App\Api\Admin\Controllers\AdminMarketingController;
 use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
@@ -356,6 +357,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('pages', [AdminPageController::class, 'store']);
         Route::put('pages/{id}', [AdminPageController::class, 'update']);
         Route::delete('pages/{id}', [AdminPageController::class, 'destroy']);
+
+        // Home Banners (storefront hero slider CMS)
+        Route::get('home-banners', [AdminHomeBannerController::class, 'index']);
+        Route::post('home-banners', [AdminHomeBannerController::class, 'store']);
+        Route::put('home-banners/{id}', [AdminHomeBannerController::class, 'update']);
+        Route::delete('home-banners/{id}', [AdminHomeBannerController::class, 'destroy']);
+        Route::post('home-banners/upload', [AdminHomeBannerController::class, 'uploadImage']);
     });
 
     Route::get('/version', [SystemController::class, 'status']);
