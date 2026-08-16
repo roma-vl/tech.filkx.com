@@ -45,28 +45,6 @@
     <div
       class="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar bg-gray-50/20 dark:bg-gray-900/10"
     >
-      <!-- Plan Info -->
-      <section>
-        <h4
-          class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2"
-        >
-          <StarIcon class="w-3 h-3 text-amber-500" />
-          {{ t("admin.support.user.subscription") }}
-        </h4>
-        <div
-          class="p-3.5 rounded-xl bg-primary-50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-900/20"
-        >
-          <div class="flex items-center justify-between">
-            <span
-              class="text-xs font-bold text-primary-700 dark:text-primary-400"
-            >{{ user?.subscription?.plan_name || "Free Plan" }}</span>
-            <span
-              class="px-2 py-0.5 rounded-md bg-green-100 text-[#15803d] text-[8px] font-black uppercase"
-            >{{ user?.subscription?.status || "Active" }}</span>
-          </div>
-        </div>
-      </section>
-
       <!-- Account Info -->
       <section class="space-y-3">
         <h4
@@ -177,7 +155,6 @@ import axios from "@/shared/services/api/apiClient";
 import {
   ClockIcon as HistoryIcon,
   InformationCircleIcon as InfoIcon,
-  StarIcon,
 } from "@heroicons/vue/24/outline";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 
