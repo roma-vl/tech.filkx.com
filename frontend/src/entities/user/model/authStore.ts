@@ -99,14 +99,19 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async updateLocale(locale: string) {
-      try {
-        await authApi.updateLocale(locale);
-      } catch (e) {
-        console.error("Failed to update locale on server", e);
-      }
+      // Guests have no token, so /user/locale (auth:api-guarded) would 401 and
+      // trigger the apiClient interceptor's refresh-then-redirect-to-login flow.
+      // Persist locally only until the visitor actually signs in.
+      if (this.token) {
+        try {
+          await authApi.updateLocale(locale);
+        } catch (e) {
+          console.error("Failed to update locale on server", e);
+        }
 
-      if (this.user) {
-        this.user.locale = locale;
+        if (this.user) {
+          this.user.locale = locale;
+        }
       }
 
       this._syncLocale(locale);
