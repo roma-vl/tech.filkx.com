@@ -104,16 +104,22 @@ Route::prefix('v1')->group(function () {
     });
 
     // Checkout route
-    Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
-    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder']);
+    Route::post('/checkout', [CheckoutController::class, 'placeOrder'])
+        ->middleware('throttle:10,1');
+    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder'])
+        ->middleware('throttle:10,1');
 
     // Payment routes
     Route::prefix('payments')->group(function () {
-        Route::post('/orders/{orderNumber}/liqpay', [PaymentController::class, 'initiateLiqPay']);
+        Route::post('/orders/{orderNumber}/liqpay', [PaymentController::class, 'initiateLiqPay'])
+            ->middleware('throttle:10,1');
         Route::get('/orders/{orderNumber}/status', [PaymentController::class, 'orderStatus']);
+        // No throttle here: LiqPay calls this server-to-server and retries until it gets a 200;
+        // authenticity is enforced by signature verification inside the handler, not by rate limiting.
         Route::post('/liqpay/callback', [PaymentController::class, 'liqPayCallback']);
     });
-    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon'])
+        ->middleware('throttle:20,1');
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
         ->middleware('throttle:5,1');
 });
