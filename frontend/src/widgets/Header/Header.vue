@@ -19,7 +19,7 @@ interface SearchProduct {
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
-const { locale, t } = useI18n();
+const { locale, t, tm } = useI18n();
 
 const isDark = ref(false);
 
@@ -44,7 +44,7 @@ const searchQuery = ref("");
 const showDropdown = ref(false);
 const isMegaMenuOpen = ref(false);
 
-const popularQueries = computed(() => t("header.search.popular"));
+const popularQueries = computed(() => tm("header.search.popular") as string[]);
 
 const searchResults = ref<SearchProduct[]>([]);
 const isSearching = ref(false);
