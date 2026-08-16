@@ -8,6 +8,7 @@ export function useHome() {
   const popularCategories = ref<any[]>([]);
   const flashDeals = ref<any[]>([]);
   const recommended = ref<any[]>([]);
+  const isRecommendedPersonalized = ref(false);
   const loading = ref(true);
 
   const loadHomeData = async () => {
@@ -24,6 +25,8 @@ export function useHome() {
         );
         viewedIds = viewed.join(",");
       }
+
+      isRecommendedPersonalized.value = Boolean(wishlistIds || viewedIds);
 
       const [homeRes, catsRes] = await Promise.all([
         productApi.catalogGetHome({
@@ -66,6 +69,7 @@ export function useHome() {
     popularCategories,
     flashDeals,
     recommended,
+    isRecommendedPersonalized,
     loading,
     loadHomeData,
   };

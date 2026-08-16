@@ -31,6 +31,7 @@ use App\Api\V1\Controllers\CheckoutController;
 use App\Api\V1\Controllers\CouponController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
+use App\Api\V1\Controllers\NewsletterController;
 use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\PageController;
 use App\Api\V1\Controllers\PaymentController;
@@ -113,6 +114,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/liqpay/callback', [PaymentController::class, 'liqPayCallback']);
     });
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+    Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+        ->middleware('throttle:5,1');
 });
 
 // OAuth routes

@@ -100,11 +100,11 @@
       <RecommendedProducts
         v-if="recommended.length > 0"
         :products="recommended"
+        :personalized="isRecommendedPersonalized"
       />
     </template>
 
     <TechBlog />
-    <BrandPartners />
   </main>
 </template>
 
@@ -117,9 +117,17 @@ import CatalogSection from "@/widgets/Home/CatalogSection.vue";
 import FlashDeals from "@/widgets/Home/FlashDeals.vue";
 import RecommendedProducts from "@/widgets/Home/RecommendedProducts.vue";
 import TechBlog from "@/widgets/Home/TechBlog.vue";
-import BrandPartners from "@/widgets/Home/BrandPartners.vue";
 
-const { banners, categories, popularCategories, flashDeals, recommended, loading, loadHomeData } = useHome();
+const {
+  banners,
+  categories,
+  popularCategories,
+  flashDeals,
+  recommended,
+  isRecommendedPersonalized,
+  loading,
+  loadHomeData,
+} = useHome();
 
 const description =
   "FilkxTech — каталог електроніки з офіційною гарантією, швидкою доставкою по Україні та підтримкою клієнтів. Смартфони, ноутбуки, аудіотехніка та розумні гаджети.";

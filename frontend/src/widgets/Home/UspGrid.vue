@@ -3,7 +3,7 @@ const items = [
   {
     icon: "local_shipping",
     title: "Безкоштовна доставка",
-    description: "Для всіх замовлень від 2000 ₴ по всій Україні.",
+    description: "По всій Україні для будь-якого замовлення.",
     accent: "text-blue-500",
     bg: "bg-blue-500/10 dark:bg-blue-500/5",
   },

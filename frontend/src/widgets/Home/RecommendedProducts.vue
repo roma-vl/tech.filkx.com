@@ -16,6 +16,7 @@ interface Product {
 
 const props = defineProps<{
   products: Product[];
+  personalized?: boolean;
 }>();
 
 const cartStore = useCartStore();
@@ -42,14 +43,16 @@ const formatPrice = (price: number) => {
     <!-- Section Header -->
     <div class="flex items-center justify-between mb-8">
       <div class="space-y-1.5">
-        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">Персональна підбірка</span>
+        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">
+          {{ personalized ? "Персональна підбірка" : "Може вас зацікавити" }}
+        </span>
         <h2
           class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight"
         >
-          Рекомендовано для вас
+          {{ personalized ? "Рекомендовано для вас" : "Популярні товари" }}
         </h2>
         <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400">
-          На основі ваших інтересів та історії переглядів
+          {{ personalized ? "На основі ваших інтересів та історії переглядів" : "Товари, які обирають інші покупці" }}
         </p>
       </div>
 

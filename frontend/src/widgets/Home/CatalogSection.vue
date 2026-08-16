@@ -18,26 +18,51 @@ const cartStore = useCartStore();
 const bestsellers = ref<HomeProduct[]>([]);
 const selectedSlug = ref("");
 const isLoadingProds = ref(false);
+const page = ref(1);
+const lastPage = ref(1);
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("uk-UA", { style: "currency", currency: "UAH", maximumFractionDigits: 0 }).format(price);
 
-const selectCategory = async (slug: string) => {
-  if (isLoadingProds.value) return;
-  selectedSlug.value = slug;
+const fetchProducts = async () => {
+  if (!selectedSlug.value) return;
   isLoadingProds.value = true;
-  bestsellers.value = [];
   try {
-    const res = await productApi.catalogGetProducts({ category: slug, per_page: 10 });
+    const res = await productApi.catalogGetProducts({
+      category: selectedSlug.value,
+      per_page: 10,
+      page: page.value,
+    });
     if (res.data?.success || res.data?.status === "success") {
       const list = res.data?.data?.data || res.data?.data || [];
       bestsellers.value = list.map(mapHomeProduct).filter(Boolean) as HomeProduct[];
+      lastPage.value = res.data?.data?.lastPage || 1;
     }
   } catch (e) {
     console.error("CatalogSection: load products failed:", e);
   } finally {
     isLoadingProds.value = false;
   }
+};
+
+const selectCategory = (slug: string) => {
+  if (isLoadingProds.value || slug === selectedSlug.value) return;
+  selectedSlug.value = slug;
+  page.value = 1;
+  bestsellers.value = [];
+  fetchProducts();
+};
+
+const prevPage = () => {
+  if (isLoadingProds.value || page.value <= 1) return;
+  page.value -= 1;
+  fetchProducts();
+};
+
+const nextPage = () => {
+  if (isLoadingProds.value || page.value >= lastPage.value) return;
+  page.value += 1;
+  fetchProducts();
 };
 
 watch(
@@ -68,10 +93,20 @@ onMounted(() => {
         Лідери продажу
       </h2>
       <div class="flex items-center gap-2">
-        <button class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <button
+          class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+          :disabled="page <= 1 || isLoadingProds"
+          aria-label="Попередня сторінка"
+          @click="prevPage"
+        >
           <span class="material-symbols-outlined text-sm">chevron_left</span>
         </button>
-        <button class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <button
+          class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+          :disabled="page >= lastPage || isLoadingProds"
+          aria-label="Наступна сторінка"
+          @click="nextPage"
+        >
           <span class="material-symbols-outlined text-sm">chevron_right</span>
         </button>
       </div>

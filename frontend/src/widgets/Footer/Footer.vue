@@ -1,18 +1,43 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { productApi } from "@/shared/services/api/productApi";
+import { newsletterApi } from "@/shared/services/api/newsletterApi";
 
 const cartStore = useCartStore();
 const email = ref("");
+const isSubscribing = ref(false);
 
-const handleSubscribe = () => {
-  if (email.value.trim()) {
-    cartStore.addToast(
-      `Дякуємо за підписку! На вказану адресу ${email.value} надіслано лист.`,
-      "success",
-    );
+const footerCategories = ref<any[]>([]);
+
+const fetchFooterCategories = async () => {
+  try {
+    const { data } = await productApi.catalogGetCategories();
+    if (data && (data.success || data.status === "success")) {
+      footerCategories.value = (data.data || []).slice(0, 6);
+    }
+  } catch (error) {
+    console.error("Failed to load footer categories:", error);
+  }
+};
+
+onMounted(fetchFooterCategories);
+
+const handleSubscribe = async () => {
+  const trimmedEmail = email.value.trim();
+  if (!trimmedEmail || isSubscribing.value) return;
+
+  isSubscribing.value = true;
+  try {
+    await newsletterApi.subscribe(trimmedEmail);
+    cartStore.addToast("Дякуємо за підписку!", "success");
     email.value = "";
+  } catch (error) {
+    console.error("Newsletter subscribe failed:", error);
+    cartStore.addToast("Не вдалося оформити підписку. Спробуйте пізніше.", "error");
+  } finally {
+    isSubscribing.value = false;
   }
 };
 </script>
@@ -39,13 +64,12 @@ const handleSubscribe = () => {
               >sentiment_very_satisfied</span>
             </div>
             <span class="font-extrabold text-lg tracking-tight text-white">
-              TechNova
+              FilkxTech
             </span>
           </a>
           <p class="text-xs leading-relaxed text-zinc-400">
-            Найбільший інтернет-магазин преміальної техніки та електроніки в
-            Україні. Надійна якість, офіційна гарантія та швидка доставка з 2010
-            року.
+            Інтернет-магазин техніки та електроніки в Україні. Офіційна
+            гарантія та швидка доставка.
           </p>
           <div class="space-y-2 pt-2">
             <div class="flex items-center gap-2">
@@ -191,41 +215,14 @@ const handleSubscribe = () => {
             Популярні товари
           </h4>
           <ul class="space-y-2.5 text-xs">
-            <li>
-              <a
-                href="#"
+            <li
+              v-for="category in footerCategories"
+              :key="category.slug"
+            >
+              <router-link
+                :to="{ name: 'catalog', query: { category: category.slug } }"
                 class="hover:text-white transition-colors"
-              >Смартфони та аксесуари</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="hover:text-white transition-colors"
-              >Ноутбуки та комп'ютери</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="hover:text-white transition-colors"
-              >Геймінг та консолі</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="hover:text-white transition-colors"
-              >Аудіо системи та навушники</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="hover:text-white transition-colors"
-              >Wearable смарт-годинники</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="hover:text-white transition-colors"
-              >Розумний будинок</a>
+              >{{ category.name?.uk || category.name?.en || category.name }}</router-link>
             </li>
           </ul>
         </div>
@@ -253,7 +250,8 @@ const handleSubscribe = () => {
               required
             >
             <button
-              class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0"
+              class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 disabled:opacity-50"
+              :disabled="isSubscribing"
             >
               OK
             </button>
@@ -321,65 +319,6 @@ const handleSubscribe = () => {
         </div>
       </div>
 
-      <!-- Middle Section: Download App Badges -->
-      <div
-        class="flex flex-col sm:flex-row items-center justify-between border-t border-b border-zinc-800 py-6 my-8 gap-4"
-      >
-        <div>
-          <h5
-            class="text-xs font-bold text-white uppercase tracking-wider mb-1"
-          >
-            Мобільні додатки TechNova
-          </h5>
-          <p class="text-[11px] text-zinc-550">
-            Завантажуйте наш безкоштовний додаток для швидких та зручних покупок
-            на ходу.
-          </p>
-        </div>
-        <div class="flex items-center gap-3">
-          <!-- App Store Badge -->
-          <a
-            href="#"
-            class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white"
-          >
-            <svg
-              class="w-5 h-5 text-white fill-current"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.51-.64.74-1.2 1.88-1.05 3 .96.08 2.11-.53 2.76-1.32z"
-              />
-            </svg>
-            <div class="text-left leading-none">
-              <span
-                class="text-[8px] block text-zinc-500 uppercase tracking-wide"
-              >Download on the</span>
-              <span class="text-[11px] font-black font-sans tracking-tight">App Store</span>
-            </div>
-          </a>
-
-          <!-- Google Play Badge -->
-          <a
-            href="#"
-            class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 rounded-lg transition-colors text-white"
-          >
-            <svg
-              class="w-5 h-5 text-white fill-current"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M3 5.27v13.46c0 .82.68 1.42 1.47 1.26l11.14-6.43L4.47 4.01C3.68 3.85 3 4.45 3 5.27zm13.14 6.73L5.68 6.09l9.31 5.37c.36.21.36.73 0 .94l-9.31 5.37 10.46-5.77z"
-              />
-            </svg>
-            <div class="text-left leading-none">
-              <span
-                class="text-[8px] block text-zinc-500 uppercase tracking-wide"
-              >Get it on</span>
-              <span class="text-[11px] font-black font-sans tracking-tight">Google Play</span>
-            </div>
-          </a>
-        </div>
-      </div>
 
       <!-- Bottom Section: Legal & Payments -->
       <div
@@ -387,7 +326,7 @@ const handleSubscribe = () => {
       >
         <!-- Trademark / Copyright -->
         <div class="space-y-1 text-center md:text-left">
-          <p>© 2026 ТОВ «TechNova Преміум». Всі права захищені.</p>
+          <p>© 2026 FilkxTech. Всі права захищені.</p>
           <p class="text-[10px] text-zinc-600">
             Інформація про ціни, характеристики та наявність товарів може бути
             змінена без попередження.

@@ -4,3 +4,4 @@ export { default as productApi } from "./productApi";
 export { default as orderApi } from "./orderApi";
 export { default as billingApi } from "./billingApi";
 export { default as accountingApi } from "./accountingApi";
+export { default as newsletterApi } from "./newsletterApi";

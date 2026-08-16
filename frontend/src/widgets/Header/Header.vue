@@ -390,7 +390,7 @@ onUnmounted(() => {
           <span
             class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block"
           >
-            TechNova
+            FilkxTech
           </span>
         </a>
       </div>
