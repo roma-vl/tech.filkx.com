@@ -1,27 +1,27 @@
 <template>
   <div
-    class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant space-y-6"
+    class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-6"
   >
     <h2
-      class="font-title-lg text-title-lg text-zinc-900 dark:text-white border-b border-outline-variant pb-3 flex items-center gap-2 font-bold text-lg"
+      class="text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pb-3 flex items-center gap-2 font-bold text-lg"
     >
       <span class="material-symbols-outlined text-primary">contact_mail</span>
-      Контактна інформація
+      {{ t("cart.form.contactInfo") }}
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="customer_name"
-          >ПІБ / Повне ім'я *</label
+          >{{ t("cart.form.fullName") }}</label
         >
         <input
           id="customer_name"
           :value="modelValue.customerName"
           type="text"
-          placeholder="Іванов Іван"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
+          :placeholder="t('cart.form.fullNamePlaceholder')"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           required
           @input="
             updateField(
@@ -33,16 +33,16 @@
       </div>
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="customer_phone"
-          >Номер телефону *</label
+          >{{ t("cart.form.phone") }}</label
         >
         <input
           id="customer_phone"
           :value="modelValue.customerPhone"
           type="tel"
           placeholder="+380991234567"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           required
           @input="
             updateField(
@@ -56,16 +56,16 @@
 
     <div class="flex flex-col gap-1.5">
       <label
-        class="font-label-md text-on-surface-variant text-sm font-semibold"
+        class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
         for="customer_email"
-        >Електронна пошта *</label
+        >{{ t("cart.form.email") }}</label
       >
       <input
         id="customer_email"
         :value="modelValue.customerEmail"
         type="email"
         placeholder="ivan@example.com"
-        class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
         required
         @input="
           updateField(
@@ -77,23 +77,23 @@
     </div>
 
     <h2
-      class="font-title-lg text-title-lg text-zinc-900 dark:text-white border-b border-outline-variant pt-4 pb-3 flex items-center gap-2 font-bold text-lg"
+      class="text-zinc-900 dark:text-white border-b border-zinc-200 dark:border-zinc-800 pt-4 pb-3 flex items-center gap-2 font-bold text-lg"
     >
       <span class="material-symbols-outlined text-primary">local_shipping</span>
-      Деталі доставки та оплати
+      {{ t("cart.form.deliveryPaymentDetails") }}
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="delivery_method"
-          >Спосіб доставки *</label
+          >{{ t("cart.form.deliveryMethod") }}</label
         >
         <select
           id="delivery_method"
           :value="modelValue.deliveryMethod"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary dark:text-white"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           @change="
             updateField(
               'deliveryMethod',
@@ -101,22 +101,22 @@
             )
           "
         >
-          <option value="nova_poshta">Нова Пошта (у відділення)</option>
-          <option value="ukr_poshta">Укрпошта (у відділення)</option>
-          <option value="courier">Адресна доставка кур'єром</option>
-          <option value="pickup">Самовивіз із магазину</option>
+          <option value="nova_poshta">{{ t("cart.form.novaPoshta") }}</option>
+          <option value="ukr_poshta">{{ t("cart.form.ukrPoshta") }}</option>
+          <option value="courier">{{ t("cart.form.courier") }}</option>
+          <option value="pickup">{{ t("cart.form.pickup") }}</option>
         </select>
       </div>
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="payment_method"
-          >Спосіб оплати *</label
+          >{{ t("cart.form.paymentMethod") }}</label
         >
         <select
           id="payment_method"
           :value="modelValue.paymentMethod"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary dark:text-white"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           @change="
             updateField(
               'paymentMethod',
@@ -124,9 +124,9 @@
             )
           "
         >
-          <option value="cod">Оплата при отриманні (післяплата)</option>
-          <option value="card">Онлайн-оплата карткою (Visa/Mastercard)</option>
-          <option value="bank">Банківський переказ (на рахунок IBAN)</option>
+          <option value="cod">{{ t("cart.paymentMethods.cod") }}</option>
+          <option value="card">{{ t("cart.paymentMethods.card") }}</option>
+          <option value="bank">{{ t("cart.paymentMethods.bank") }}</option>
         </select>
       </div>
     </div>
@@ -134,16 +134,16 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="shipping_city"
-          >Місто *</label
+          >{{ t("cart.form.city") }}</label
         >
         <input
           id="shipping_city"
           :value="modelValue.shippingCity"
           type="text"
-          placeholder="Київ"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
+          :placeholder="t('cart.form.cityPlaceholder')"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           required
           @input="
             updateField(
@@ -155,16 +155,16 @@
       </div>
       <div class="flex flex-col gap-1.5">
         <label
-          class="font-label-md text-on-surface-variant text-sm font-semibold"
+          class="text-zinc-600 dark:text-zinc-400 text-sm font-semibold"
           for="shipping_address"
-          >Адреса або номер відділення *</label
+          >{{ t("cart.form.address") }}</label
         >
         <input
           id="shipping_address"
           :value="modelValue.shippingAddress"
           type="text"
-          placeholder="Відділення №14"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
+          :placeholder="t('cart.form.addressPlaceholder')"
+          class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
           required
           @input="
             updateField(
@@ -179,6 +179,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const props = defineProps<{
   modelValue: {
     customerName: string;
