@@ -130,16 +130,28 @@ the model layer. (Whether the index is populated/kept in sync in practice — e.
 in `app/Console/Commands`.)
 
 ### Testing (backend)
-As of 2026-08-16 (commit `ca5ef97` + Feature tests added alongside the 2FA/newsletter/home-banner
-work), `api/tests/` has real coverage — the Laravel-generated stubs are gone. `Unit/`:
+As of 2026-08-17 (commit `ca5ef97` + Feature tests added alongside the 2FA/newsletter/home-banner
+work, plus a follow-up pass adding cart/checkout/catalog/admin-order coverage), `api/tests/` has
+real coverage — the Laravel-generated stubs are gone. `Unit/`:
 `Services/Auth/AuthServiceTest.php` (29 tests), `Services/Auth/TwoFactorAuthenticationServiceTest.php`,
 `Actions/User/TwoFactor/{Enable,Confirm,Disable,RegenerateRecoveryCodes}ActionTest.php`,
-`Http/Middleware/RoleMiddlewareTest.php`. `Feature/`: `Auth/AuthControllerTest.php`,
+`Http/Middleware/RoleMiddlewareTest.php`, `Services/Pricing/PriceCalculationServiceTest.php`,
+`Actions/Coupon/ValidateCouponActionTest.php`. `Feature/`: `Auth/AuthControllerTest.php`,
 `Auth/TwoFactorAuthenticationControllerTest.php`, `Home/HomeControllerTest.php`,
-`Newsletter/NewsletterControllerTest.php`, `Admin/AdminHomeBannerControllerTest.php`. This is real,
-substantial coverage of auth/RBAC/2FA — but still narrow: checkout, orders, cart, catalog, and
-coupons remain untested. Run via `make test-backend` — but note the Makefile bug below, which means
-this suite can't actually be run through the documented command today.
+`Newsletter/NewsletterControllerTest.php`, `Admin/AdminHomeBannerControllerTest.php`,
+`Delivery/DeliveryControllerTest.php`, `Cart/CartControllerTest.php` (18 tests — the real `/v1/cart`
+endpoints, `RefreshDatabase`-backed so migrations actually run; this is the suite that would have
+caught the promotion-table migration-drift outage described in §"Known technical debt"),
+`Checkout/CheckoutControllerTest.php` (17 tests — both `placeOrder` and `quickOrder`, stock
+reservation/locking, coupon application), `Catalog/CatalogControllerTest.php` (category/brand/
+price-range/discount/in-stock filters), `Admin/AdminOrderControllerTest.php` (status transitions
+and their stock-adjustment side effects, role-gating). This is real, substantial coverage of
+auth/RBAC/2FA plus the core commerce flows (cart, checkout, catalog filtering, admin order
+management) — still untested: coupon validation via the live `/v1/coupons/validate` endpoint (the
+underlying `ValidateCouponAction`/`PriceCalculationService` are unit-tested), and the
+Meilisearch-search-keyword path in `ListProductsAction` (deliberately out of scope — see the
+Feature test file's `setUp()` for why). Run via `make test-backend` — but note the Makefile bug
+below, which means this suite can't actually be run through the documented command today.
 
 ---
 
@@ -258,8 +270,9 @@ where those commits changed the picture)
 3. **Frontend has zero test infrastructure** despite `test:unit`/`test:e2e` scripts existing. Still
    true, unchanged.
 4. ~~Backend has zero real test coverage~~ **No longer true** (commit `ca5ef97` + Feature tests
-   added alongside 2FA/newsletter/home-banner work) — see "Testing (backend)" above for what's
-   covered; still missing coverage on checkout/orders/cart/catalog/coupons.
+   added alongside 2FA/newsletter/home-banner work, plus a follow-up pass covering cart/checkout/
+   catalog/admin-orders) — see "Testing (backend)" above for what's covered; still missing coverage
+   on the live coupon-validation endpoint and admin marketing (coupon/promotion) CRUD.
 5. **Dead code from a different project** ("Filkx Live", a video-streaming SaaS — the actual
    previous identity of the stale root `CLAUDE.md`):
    - ~~`frontend/src/stores/admin/runnerNodesStore.js`, `runnerTranscodersStore.js`,

@@ -140,14 +140,27 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 - **Action**: minimally, add a GitHub Actions workflow running `pint --test`, frontend `lint`, and
   (once fixed) `test-backend`/`test-frontend` on every PR.
 - 🟡 **Backend test coverage — no longer near-zero** (done 2026-08-16, commit `ca5ef97`, plus
-  Feature tests added alongside the 2FA/newsletter/home-banner work). Beyond the framework stub,
-  there's now real coverage of the security-critical paths: `AuthServiceTest` (29 tests — register,
-  login incl. the 2FA-challenge path, logout, refresh-token, verify-email, forgot/reset password,
-  OAuth login, new-device notification), unit tests for all four 2FA actions, `RoleMiddlewareTest`
-  (the RBAC/authorization layer, previously untested anywhere), plus Feature tests for
-  `AuthController`, `TwoFactorAuthenticationController`, `HomeController`, `NewsletterController`,
-  and `AdminHomeBannerController`. Still 🟡 not ✅: this is auth/RBAC/home/newsletter coverage —
-  checkout, orders, cart, catalog, and coupons remain untested.
+  Feature tests added alongside the 2FA/newsletter/home-banner work; extended 2026-08-17 with cart/
+  checkout/catalog/admin-order coverage). Beyond the framework stub, there's now real coverage of
+  the security-critical paths: `AuthServiceTest` (29 tests — register, login incl. the
+  2FA-challenge path, logout, refresh-token, verify-email, forgot/reset password, OAuth login,
+  new-device notification), unit tests for all four 2FA actions, `RoleMiddlewareTest` (the
+  RBAC/authorization layer, previously untested anywhere), plus Feature tests for `AuthController`,
+  `TwoFactorAuthenticationController`, `HomeController`, `NewsletterController`, and
+  `AdminHomeBannerController`. It also now covers the core commerce flows: `CartControllerTest`
+  (the real `/v1/cart` endpoints — empty cart, add/update/remove, stock clamping, out-of-stock/
+  inactive-product cleanup, guest-session identity via header vs. body, promotion discounts —
+  `RefreshDatabase`-backed, so it actually runs migrations and would have caught the promotion-table
+  migration-drift outage noted in `PROJECT_MAP.md` §"Known technical debt"), `CheckoutControllerTest`
+  (`placeOrder` and `quickOrder` — stock reservation/locking, validation failures, coupon
+  application, payment-method handling), `CatalogControllerTest` (category/brand/price-range/
+  discount/in-stock filtering), and `AdminOrderControllerTest` (status transitions and their
+  stock-adjustment side effects, admin role-gating). Still 🟡 not ✅: the live
+  `POST /coupons/validate` endpoint and admin marketing (coupon/promotion) CRUD remain untested at
+  the Feature level (the underlying `ValidateCouponAction`/`PriceCalculationService` are
+  unit-tested), and the Meilisearch-search-keyword branch of `ListProductsAction` has no test
+  coverage (deliberately out of scope — no test-driver convention exists yet for Scout in this
+  codebase; see the new Feature test's `setUp()`).
 - ❌ **Frontend test infrastructure still doesn't exist** — no `vitest.config.*`, no `.spec.ts`/
   `.test.ts` files anywhere in `frontend/`, despite `test:unit`/`test:e2e` npm scripts. Unchanged
   from the original audit.
@@ -345,6 +358,7 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
    image storage strategy (confirm local-disk is acceptable or move to S3/R2), promotions engine
    hardening, shipping API integration if not already automated.
 4. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
-   test coverage beyond auth/RBAC/home/newsletter to checkout/orders/cart/catalog/coupons, build
-   frontend test infrastructure from scratch (still literally zero), external analytics, load
+   test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
+   Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
+   build frontend test infrastructure from scratch (still literally zero), external analytics, load
    testing, multi-currency if expanding beyond Ukraine.
