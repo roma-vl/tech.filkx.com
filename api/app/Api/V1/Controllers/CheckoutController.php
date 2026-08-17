@@ -40,6 +40,7 @@ class CheckoutController extends BaseApiController
             'customerName' => 'required|string|max:255',
             'customerPhone' => 'required|string|max:50',
             'variantId' => 'required|integer|exists:product_variants,id',
+            'paymentMethod' => 'sometimes|string|in:cod,card',
         ]);
 
         try {
@@ -84,7 +85,7 @@ class CheckoutController extends BaseApiController
                     'shipping_city' => 'Київ',
                     'shipping_address' => 'Швидке замовлення (передзвонити для уточнення деталей)',
                     'delivery_method' => 'nova_poshta',
-                    'payment_method' => 'cod',
+                    'payment_method' => $validated['paymentMethod'] ?? 'cod',
                     'payment_status' => 'pending',
                     'status' => 'pending_payment',
                     'total_price' => $price,

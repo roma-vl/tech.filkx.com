@@ -130,6 +130,40 @@
                 class="w-full h-10 px-3.5 border border-zinc-200 dark:border-zinc-700 rounded-md bg-zinc-50 dark:bg-zinc-800 text-xs font-bold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
               />
             </div>
+
+            <div class="space-y-1.5">
+              <label
+                class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+              >
+                Оплата
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  class="h-10 rounded-md border text-xs font-bold transition-colors"
+                  :class="
+                    paymentMethod === 'cod'
+                      ? 'border-[#00a046] bg-[#00a046]/10 text-[#00a046]'
+                      : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-[#00a046]/40'
+                  "
+                  @click="paymentMethod = 'cod'"
+                >
+                  Післяплата
+                </button>
+                <button
+                  type="button"
+                  class="h-10 rounded-md border text-xs font-bold transition-colors"
+                  :class="
+                    paymentMethod === 'card'
+                      ? 'border-[#00a046] bg-[#00a046]/10 text-[#00a046]'
+                      : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-[#00a046]/40'
+                  "
+                  @click="paymentMethod = 'card'"
+                >
+                  Карткою онлайн
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Submit Button -->
@@ -143,7 +177,11 @@
               class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
             />
             <span>{{
-              isSubmitting ? "Надсилання..." : "Оформити замовлення"
+              isRedirectingToPayment
+                ? "Перенаправлення на оплату..."
+                : isSubmitting
+                  ? "Надсилання..."
+                  : "Оформити замовлення"
             }}</span>
           </button>
         </form>
@@ -156,6 +194,7 @@
 import { ref, watch } from "vue";
 import { orderApi } from "@/shared/services/api/orderApi";
 import { useAuthStore } from "@/entities/user/model/authStore";
+import { redirectToLiqPay } from "@/shared/utils/liqpay";
 
 const props = defineProps<{
   isOpen: boolean;
@@ -168,7 +207,9 @@ const authStore = useAuthStore();
 
 const name = ref("");
 const phone = ref("");
+const paymentMethod = ref<"cod" | "card">("cod");
 const isSubmitting = ref(false);
+const isRedirectingToPayment = ref(false);
 const isSuccess = ref(false);
 const orderNumber = ref("");
 const errorMsg = ref("");
@@ -180,7 +221,9 @@ watch(
     if (open) {
       name.value = authStore.user?.name || "";
       phone.value = authStore.user?.phone || "";
+      paymentMethod.value = "cod";
       isSubmitting.value = false;
+      isRedirectingToPayment.value = false;
       isSuccess.value = false;
       orderNumber.value = "";
       errorMsg.value = "";
@@ -214,15 +257,30 @@ const handleSubmit = async () => {
       name.value.trim(),
       phone.value.trim(),
       props.product.id,
+      paymentMethod.value,
     );
 
     if (response.data && response.data.status === "success") {
+      const order = response.data.data;
+      const number = order?.orderNumber || order?.order_number || "";
+
+      if (paymentMethod.value === "card") {
+        const payRes = await orderApi.initiateLiqPayPayment(number);
+        if (payRes.data && payRes.data.status === "success") {
+          isRedirectingToPayment.value = true;
+          const { data, signature, checkoutUrl } = payRes.data.data;
+          redirectToLiqPay(data, signature, checkoutUrl);
+          return; // browser is navigating to LiqPay, nothing left to do here
+        }
+
+        errorMsg.value =
+          payRes.data?.message ||
+          "Онлайн-оплата тимчасово недоступна. Замовлення створено, наш менеджер зв'яжеться з вами для оплати.";
+      }
+
       isSuccess.value = true;
-      orderNumber.value =
-        response.data.data?.orderNumber ||
-        response.data.data?.order_number ||
-        "";
-      emit("success", response.data.data);
+      orderNumber.value = number;
+      emit("success", order);
     }
   } catch (error: any) {
     console.error("Quick order failed:", error);

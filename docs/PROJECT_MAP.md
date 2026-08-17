@@ -265,10 +265,9 @@ where those commits changed the picture)
    - ~~`frontend/src/stores/admin/runnerNodesStore.js`, `runnerTranscodersStore.js`,
      `components/admin/ui/OptimizeVideoModal.vue`~~ — **already removed** (deleted in commit
      `cb887b2`, the same commit that originally wrote this doc — the doc just hadn't caught up).
-   - Still present: `frontend/src/components/admin/ui/ContentRestrictionBanner.vue`,
-     `FeatureLockOverlay.vue`, `TrialActivationBanner.vue` — SaaS-plan/video-feature-gating
-     components, unreferenced except in a stale code comment in `router/index.js`
-     (`// Removed featureKey guard to allow access to locked features with FeatureLockOverlay`).
+   - ~~`frontend/src/components/admin/ui/ContentRestrictionBanner.vue`, `FeatureLockOverlay.vue`,
+     `TrialActivationBanner.vue`~~ — **already removed** (working tree, 2026-08-17), along with the
+     stale `router/index.js` comment that referenced `FeatureLockOverlay`.
    - ~~`docker-compose.yml`'s `tech-api-postgres` healthcheck uses `pg_isready -U live -d live`~~ —
      **already fixed**, now reads `pg_isready -U tech -d tech` (`docker-compose.yml:124`), matching
      the actual configured user/db.

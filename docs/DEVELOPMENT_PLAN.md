@@ -238,13 +238,33 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   `ShoppingCart.vue`, `CartItemsList.vue`, `AccountSidebar.vue`, `AccountDrawer.vue`).
 
 ### 2.7 Performance
-- ✅ Meilisearch is genuinely integrated (Scout `Searchable` on `Product`) — not just a provisioned,
-  unused container. Confirm the index is populated in each environment (no scheduled
-  `scout:import`/re-index command exists in `app/Console/Commands` — reindexing after bulk
-  seeding/import currently appears to be a manual step).
-- ❓ Caching strategy (`CACHE_STORE`) defaults to `database` in `.env.example` — fine for low
-  traffic, should move to Redis (`tech-redis` is already provisioned and used for queues) for a
-  "big site" target; not verified whether response/query caching is used anywhere in controllers.
+- ✅ Meilisearch is genuinely integrated (Scout `Searchable` on `Product`), but **only for the
+  free-text `search` keyword** (`ListProductsAction`, with a graceful SQL `LIKE` fallback if
+  Meilisearch is unreachable) — category, brand, price range, discount/in-stock flags, and EAV
+  attribute filters are all plain Eloquent `whereHas`/`where`, not Meilisearch facets. That's a
+  reasonable, correct architecture at the current catalog size (~186 products per the sitemap
+  generator's count as of 2026-08-17) — converting attribute/category filtering to Meilisearch
+  facets would need real facet-distribution config and reindexing work, not justified without a
+  measured performance problem (YAGNI). Revisit if catalog size grows substantially. Confirm the
+  index is populated in each environment (no scheduled `scout:import`/re-index command exists in
+  `app/Console/Commands` — reindexing after bulk seeding/import currently appears to be a manual
+  step).
+- ✅ **Caching now actually on Redis** (working tree, 2026-08-17). `CACHE_STORE` defaulted to
+  `database` in both `api/.env` and `api/.env.example` despite Redis being provisioned — flipped to
+  `redis` in both. Found and fixed two things that would have made that silently fail: (1)
+  `REDIS_HOST` was `127.0.0.1`, meaningless from inside a container on the `filkx` network — changed
+  to the actual service name `tech-redis`; (2) `REDIS_CLIENT=phpredis` selects the PHP `redis`
+  C-extension, which isn't installed in `tech-api-php-cli`'s image (`php -m` confirms) — switched to
+  `REDIS_CLIENT=predis` (the pure-PHP client, already a `composer.json` dependency, no extension
+  needed). Verified via `php artisan tinker` inside the container: `Cache::put`/`Cache::get`
+  round-trips through Redis, `config('cache.default')` reports `redis`.
+  **Related, found but not fixed** (bigger blast radius, out of scope for this pass):
+  `QUEUE_CONNECTION` is still `database`, not `redis`, even though `tech-api-queue`'s
+  `docker-compose.yml` service `depends_on: tech-redis` — the dependency ordering exists but the
+  queue driver itself doesn't use Redis. Flipping it would need draining/checking the `jobs` table
+  first so in-flight jobs aren't orphaned (low risk today — only one queued Job exists,
+  `NotifyProductWishlistsJob` — but still a deliberate follow-up, not a silent side effect of a cache
+  config change).
 - ❌ No image optimization/CDN pipeline (see §2.5 — local disk, no WebP/AVIF conversion observed
   in the upload actions inspected).
 
@@ -311,12 +331,10 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 
 ## 4. Suggested phase order (summary)
 
-1. **Fix what's broken today** (cheap, unblocks everything else): `Makefile` `test-backend` target
-   (real tests now exist — see §2.4 — but the target itself still can't run them); decide
-   sitemap/SSR direction rather than leaving dangling npm scripts; remove the still-present dead
-   `ContentRestrictionBanner`/`FeatureLockOverlay`/`TrialActivationBanner` leftovers (see
-   `PROJECT_MAP.md` §"Known technical debt" — the `runnerNodesStore`/`runnerTranscodersStore`/
-   video-modal ones this used to also list are already gone).
+1. ~~Fix what's broken today~~ **Done** (working tree, 2026-08-17): `Makefile` `test-backend` now
+   runs `php artisan test`; sitemap/SSR direction decided (static prerendering, see §2.6) and
+   implemented; the dead `ContentRestrictionBanner`/`FeatureLockOverlay`/`TrialActivationBanner`
+   leftovers are removed (see `PROJECT_MAP.md` §"Known technical debt").
 2. **Launch blockers — mostly done now**: ~~payment gateway~~ ✅, ~~rate limiting~~ ✅,
    ~~Postgres backups~~ ✅, ~~Terms/Privacy content~~ ✅ (drafts, needs lawyer review),
    ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything). Still open:
