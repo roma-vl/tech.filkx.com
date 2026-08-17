@@ -163,6 +163,8 @@ class ListProductsAction
             $query->orderBy('products.views_count', 'desc');
         }
 
-        return $query->paginate(10);
+        // 24 divides evenly into the catalog grid's 4- and 5-column breakpoints, and keeps
+        // a page tall enough that the sticky filter sidebar doesn't dwarf a short results list.
+        return $query->paginate(24);
     }
 }

@@ -77,7 +77,7 @@
         </span>
 
         <!-- View Toggle -->
-        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 gap-0.5">
+        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5">
           <button
             :class="viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
             class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
@@ -116,11 +116,11 @@
       </div>
 
       <!-- Active Filters Chips -->
-      <div v-if="activeFilters.length" class="flex flex-wrap gap-2 items-center mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800">
+      <div v-if="activeFilters.length" class="flex flex-wrap gap-2 items-center mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800">
         <button
           v-for="filter in activeFilters"
           :key="`${filter.type}-${filter.label}`"
-          class="flex items-center gap-1 bg-white dark:bg-zinc-800 border border-[#00a046]/20 text-[#00a046] px-2.5 py-1 rounded-full text-xs font-bold hover:bg-[#00a046]/5 transition-all"
+          class="flex items-center gap-1 bg-white dark:bg-zinc-800 border border-[#00a046]/20 text-[#00a046] px-2.5 py-1 rounded-md text-xs font-bold hover:bg-[#00a046]/5 transition-all"
           @click="removeFilter(filter)"
         >
           {{ filter.label }}
@@ -140,12 +140,13 @@
       <!-- Loading Skeleton -->
       <div
         v-if="isLoading"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800' : 'flex flex-col gap-4'"
       >
         <div
           v-for="i in 9"
           :key="i"
-          class="animate-pulse bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden"
+          :class="viewMode === 'grid' ? 'border-r border-b border-zinc-200 dark:border-zinc-800' : 'rounded-md border border-zinc-100 dark:border-zinc-800'"
+          class="animate-pulse bg-white dark:bg-zinc-900 overflow-hidden"
         >
           <div class="aspect-[1.15/1] bg-zinc-100 dark:bg-zinc-800" />
           <div class="p-5 space-y-3">
@@ -171,7 +172,7 @@
       <!-- Products Grid / List -->
       <div
         v-else-if="filteredProducts.length"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800' : 'flex flex-col gap-4'"
       >
         <ProductCard
           v-for="product in filteredProducts"
@@ -185,7 +186,7 @@
       <!-- Empty State -->
       <div
         v-else
-        class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 p-16 text-center"
+        class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center"
       >
         <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
           <span class="material-symbols-outlined text-[32px] text-zinc-300 dark:text-zinc-600">search_off</span>
@@ -207,7 +208,7 @@
         <button
           :disabled="pagination.page === 1"
           :class="pagination.page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'"
-          class="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
+          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
           @click="changePage(pagination.page - 1)"
         >
           <span class="material-symbols-outlined text-[18px]">chevron_left</span>
@@ -221,7 +222,7 @@
           <button
             v-else
             :class="pagination.page === p ? 'bg-[#00a046] text-white border-[#00a046] shadow-sm' : 'text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600'"
-            class="w-9 h-9 flex items-center justify-center rounded-lg border font-bold text-sm transition-all"
+            class="w-9 h-9 flex items-center justify-center rounded-md border font-bold text-sm transition-all"
             @click="changePage(p as number)"
           >{{ p }}</button>
         </template>
@@ -229,7 +230,7 @@
         <button
           :disabled="pagination.page === pagination.lastPage"
           :class="pagination.page === pagination.lastPage ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'"
-          class="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
+          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
           @click="changePage(pagination.page + 1)"
         >
           <span class="material-symbols-outlined text-[18px]">chevron_right</span>

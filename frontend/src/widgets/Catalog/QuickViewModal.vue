@@ -66,6 +66,7 @@
             </h4>
             <div class="flex items-center gap-3 mt-2.5">
               <span
+                v-if="product.brand"
                 class="text-xs font-black text-[#00a046] bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded"
                 >{{ product.brand }}</span
               >
@@ -121,7 +122,7 @@
           </div>
 
           <!-- Tech Specs Table -->
-          <div class="space-y-2">
+          <div v-if="hasAnySpecs" class="space-y-2">
             <span
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
               >Основні параметри</span
@@ -129,41 +130,40 @@
             <div
               class="border border-zinc-100 dark:border-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800 text-xs"
             >
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
+              <div v-if="product.specs?.processor" class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
                 <span class="w-1/3 text-zinc-400 font-bold">Процесор</span
                 ><span
                   class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold"
-                  >{{ product.specs?.processor || "" }}</span
+                  >{{ product.specs.processor }}</span
                 >
               </div>
-              <div class="flex p-2.5">
+              <div v-if="product.specs?.screen" class="flex p-2.5">
                 <span class="w-1/3 text-zinc-400 font-bold">Екран</span
                 ><span
                   class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold"
-                  >{{ product.specs?.screen || "" }}</span
+                  >{{ product.specs.screen }}</span
                 >
               </div>
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
+              <div v-if="memoryText" class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
                 <span class="w-1/3 text-zinc-400 font-bold">Пам'ять</span
                 ><span
                   class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold"
-                  >{{ product.ram }} RAM /
-                  {{ product.specs?.storage || "" }}</span
+                  >{{ memoryText }}</span
                 >
               </div>
-              <div class="flex p-2.5">
+              <div v-if="product.specs?.os" class="flex p-2.5">
                 <span class="w-1/3 text-zinc-400 font-bold"
                   >Операційна система</span
                 ><span
                   class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold"
-                  >{{ product.specs?.os || "" }}</span
+                  >{{ product.specs.os }}</span
                 >
               </div>
-              <div class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
+              <div v-if="product.specs?.weight" class="flex p-2.5 bg-zinc-50/50 dark:bg-zinc-850/50">
                 <span class="w-1/3 text-zinc-400 font-bold">Вага</span
                 ><span
                   class="w-2/3 text-zinc-800 dark:text-zinc-200 font-extrabold"
-                  >{{ product.specs?.weight || "" }}</span
+                  >{{ product.specs.weight }}</span
                 >
               </div>
             </div>
@@ -208,9 +208,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
-defineProps<{
+const props = defineProps<{
   isOpen: boolean;
   product: any;
 }>();
@@ -218,6 +219,27 @@ defineProps<{
 const emit = defineEmits(["close"]);
 
 const cartStore = useCartStore();
+
+const memoryText = computed(() => {
+  const product = props.product;
+  if (!product) return "";
+  const parts = [];
+  if (product.ram) parts.push(`${product.ram} RAM`);
+  if (product.specs?.storage) parts.push(product.specs.storage);
+  return parts.join(" / ");
+});
+
+const hasAnySpecs = computed(() => {
+  const product = props.product;
+  if (!product) return false;
+  return Boolean(
+    product.specs?.processor ||
+      product.specs?.screen ||
+      memoryText.value ||
+      product.specs?.os ||
+      product.specs?.weight,
+  );
+});
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {

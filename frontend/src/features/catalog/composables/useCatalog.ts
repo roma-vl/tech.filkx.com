@@ -148,30 +148,30 @@ export function useCatalog() {
       id: apiProduct.id,
       slug: apiProduct.slug,
       name: name,
-      brand: apiProduct.brand ? apiProduct.brand.name : "Unknown",
-      ram: getAttrValue("ram") || "16GB",
+      brand: apiProduct.brand ? apiProduct.brand.name : null,
+      ram: getAttrValue("ram"),
+      // Not rendered anywhere the mapped product currently feeds
+      // (ProductCard.vue, QuickViewModal.vue) — kept for parity with the
+      // API shape rather than for any actual UI use.
       category:
         apiProduct.categories && apiProduct.categories[0]
           ? apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en
-          : "Laptops",
+          : null,
       price: price,
       oldPrice: oldPrice,
       rating: apiProduct.approvedReviewsAvgRating != null ? parseFloat(apiProduct.approvedReviewsAvgRating) : 0,
       reviews: apiProduct.approvedReviewsCount != null ? Number(apiProduct.approvedReviewsCount) : 0,
-      badge: oldPrice ? "Акція" : null,
+      badge: oldPrice ? `-${Math.round((1 - price / oldPrice) * 100)}%` : null,
       badgeClass: oldPrice ? "bg-rose-600" : "",
       inStock: totalStock > 0,
       image: image,
       description: description,
       specs: {
-        processor: getAttrValue("processor") || "Apple Silicon / Intel Core",
-        screen: getAttrValue("screen_size") || '14" IPS',
-        storage: getAttrValue("storage") || "512GB SSD",
-        os: getAttrValue("os") || "Windows 11 / macOS",
-        weight:
-          mainVariant && mainVariant.weight
-            ? `${mainVariant.weight} кг`
-            : "1.5 кг",
+        processor: getAttrValue("processor"),
+        screen: getAttrValue("screen_size"),
+        storage: getAttrValue("storage"),
+        os: getAttrValue("os"),
+        weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : "",
       },
     };
   }

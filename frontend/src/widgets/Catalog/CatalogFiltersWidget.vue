@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200/80 dark:border-zinc-800 overflow-hidden">
+  <div class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-200/80 dark:border-zinc-800 overflow-hidden">
 
     <!-- Categories -->
     <UiFilterSection v-if="showCategories" title="Категорія">
@@ -146,7 +146,7 @@
     <!-- Clear All -->
     <div class="p-4">
       <button
-        class="w-full py-2 text-xs font-bold text-zinc-500 hover:text-rose-500 border border-zinc-200 dark:border-zinc-700 hover:border-rose-300 dark:hover:border-rose-700 rounded-lg transition-all flex items-center justify-center gap-1.5"
+        class="w-full py-2 text-xs font-bold text-zinc-500 hover:text-rose-500 border border-zinc-200 dark:border-zinc-700 hover:border-rose-300 dark:hover:border-rose-700 rounded-md transition-all flex items-center justify-center gap-1.5"
         @click="emit('clear-filters')"
       >
         <span class="material-symbols-outlined text-[15px]">filter_list_off</span>
