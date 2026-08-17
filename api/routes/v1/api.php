@@ -29,6 +29,7 @@ use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\CheckoutController;
 use App\Api\V1\Controllers\CouponController;
+use App\Api\V1\Controllers\DeliveryController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
 use App\Api\V1\Controllers\NewsletterController;
@@ -120,6 +121,15 @@ Route::prefix('v1')->group(function () {
     });
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon'])
         ->middleware('throttle:20,1');
+
+    // Delivery routes (Nova Poshta city/warehouse autocomplete) - public, guest-friendly
+    Route::prefix('delivery')->group(function () {
+        Route::get('/availability', [DeliveryController::class, 'availability']);
+        Route::get('/cities', [DeliveryController::class, 'cities'])
+            ->middleware('throttle:30,1');
+        Route::get('/warehouses', [DeliveryController::class, 'warehouses'])
+            ->middleware('throttle:30,1');
+    });
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
         ->middleware('throttle:5,1');
 });

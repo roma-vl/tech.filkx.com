@@ -45,4 +45,8 @@ return [
         'sandbox' => env('LIQPAY_SANDBOX', true),
     ],
 
+    'nova_poshta' => [
+        'api_key' => env('NOVA_POSHTA_API_KEY'),
+    ],
+
 ];

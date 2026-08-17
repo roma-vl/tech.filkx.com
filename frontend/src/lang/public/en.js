@@ -183,7 +183,8 @@ export default {
       },
       officialWarranty: {
         title: "Official warranty",
-        description: "100% genuine products with manufacturer warranty service.",
+        description:
+          "100% genuine products with manufacturer warranty service.",
       },
       returns: {
         title: "14-day returns",
@@ -196,7 +197,8 @@ export default {
     },
     hero: {
       welcomeTitle: "Welcome to FilkxTech",
-      welcomeDescription: "A wide range of electronics with official warranty and fast delivery across Ukraine.",
+      welcomeDescription:
+        "A wide range of electronics with official warranty and fast delivery across Ukraine.",
       goToCatalog: "Go to catalog",
       viewButton: "View",
       slideAriaLabel: "Slide {n}",
@@ -238,7 +240,8 @@ export default {
     blog: {
       label: "Journal",
       title: "Tech blog & reviews",
-      description: "Useful articles, product reviews and tips from the FilkxTech team",
+      description:
+        "Useful articles, product reviews and tips from the FilkxTech team",
       readAll: "Read all articles",
       readArticle: "Read article",
       loadFailed: "Failed to load articles. Please try again later.",
@@ -254,14 +257,18 @@ export default {
   },
   meta: {
     homeTitle: "FilkxTech — Electronics Store",
-    homeDescription: "FilkxTech — an electronics catalog with official warranty, fast delivery across Ukraine, and customer support. Smartphones, laptops, audio equipment, and smart gadgets.",
+    homeDescription:
+      "FilkxTech — an electronics catalog with official warranty, fast delivery across Ukraine, and customer support. Smartphones, laptops, audio equipment, and smart gadgets.",
     catalogTitle: "Catalog — FilkxTech",
-    catalogDescription: "Browse the full FilkxTech catalog: smartphones, laptops, audio equipment, and smart gadgets with official warranty and fast delivery across Ukraine.",
+    catalogDescription:
+      "Browse the full FilkxTech catalog: smartphones, laptops, audio equipment, and smart gadgets with official warranty and fast delivery across Ukraine.",
     blogTitle: "Blog — FilkxTech",
-    blogDescription: "Tech news, reviews, and buying guides from the FilkxTech team.",
+    blogDescription:
+      "Tech news, reviews, and buying guides from the FilkxTech team.",
   },
   footer: {
-    description: "An electronics and appliances store in Ukraine. Official warranty and fast delivery.",
+    description:
+      "An electronics and appliances store in Ukraine. Official warranty and fast delivery.",
     freeCall: "(Free call across Ukraine)",
     workingHours: "Mon-Sun: 08:00 - 22:00",
     company: {
@@ -285,7 +292,8 @@ export default {
     categoriesHeading: "Popular products",
     newsletter: {
       heading: "Deals & news",
-      description: "Subscribe to be the first to know about discounts, giveaways, and new premium arrivals.",
+      description:
+        "Subscribe to be the first to know about discounts, giveaways, and new premium arrivals.",
       emailPlaceholder: "Enter your email",
       submit: "OK",
       success: "Thanks for subscribing!",
@@ -293,7 +301,8 @@ export default {
     },
     legal: {
       copyright: "© 2026 FilkxTech. All rights reserved.",
-      disclaimer: "Pricing, specifications, and availability are subject to change without notice.",
+      disclaimer:
+        "Pricing, specifications, and availability are subject to change without notice.",
       privacy: "Privacy",
       oferta: "Public offer",
       sitemap: "Sitemap",
@@ -303,7 +312,8 @@ export default {
   cart: {
     checkoutTitle: "Secure Checkout",
     title: "Your Shopping Cart",
-    checkoutSubtitle: "Please fill in your delivery details to finalize the order.",
+    checkoutSubtitle:
+      "Please fill in your delivery details to finalize the order.",
     itemsReady: "{count} items ready for secure checkout.",
     backToCart: "Back to Cart",
     continueShopping: "Continue Shopping",
@@ -341,6 +351,13 @@ export default {
       cityPlaceholder: "Kyiv",
       address: "Address or branch number *",
       addressPlaceholder: "Branch No. 14",
+      warehouse: "Nova Poshta branch *",
+      novaPoshtaCitySearchPlaceholder: "Start typing a city name...",
+      novaPoshtaWarehouseSearchPlaceholder:
+        "Search by branch number or street...",
+      selectCityFirst: "Select a city first",
+      searching: "Searching...",
+      noResults: "No results found",
     },
     items: {
       remove: "Remove",
