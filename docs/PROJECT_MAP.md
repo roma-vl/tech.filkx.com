@@ -201,14 +201,39 @@ singleton `src/services/AccountingService.js` also exists outside the `shared/se
 `src/lang/{public,admin}/{en,uk}.js`, wired through `src/lang/index.js` (vue-i18n). Two locale
 namespaces (public storefront vs admin) rather than one flat catalog.
 
-### SSR — verified NOT actually implemented
-`package.json` defines `"serve:ssr": "node server.js"` and the Makefile's `frontend-ssr` target
-runs it, but **`frontend/server.js` does not exist**, and there is no `vite.config.js` SSR build
-config, no `entry-server`/`entry-client` split, and no `frontend/scripts/` directory at all despite
-`package.json` also defining `"sitemap": "node scripts/generate-sitemap.cjs"`. Both the SSR path
-and the sitemap-generation script are **dangling references to files that were never committed (or
-were removed)** — the app currently runs as a pure client-side SPA. Correct any assumption in prior
-docs/memory that SSR or sitemap generation are working; see DEVELOPMENT_PLAN.md.
+### SSR — still not implemented; static prerendering + sitemap generation now exist instead
+The `"serve:ssr": "node server.js"` npm script and the Makefile's `frontend-ssr` target are still
+dangling — **`frontend/server.js` does not exist**, there is no live Node SSR process, and none was
+added. That was a deliberate choice (static prerendering over full SSR), not an oversight — see
+below. `docker-compose-production.yml` still serves the frontend as `tech-frontend` (nginx + static
+`dist/`), unchanged.
+
+What now exists (working tree, uncommitted as of 2026-08-17 on `add-new-logic`):
+- `frontend/src/entry-server.ts`: a minimal SSR-capable entry, separate from `main.js`. It mirrors
+  only what's needed to *render* a page (pinia, its own router instance, i18n, `@vueuse/head`) and
+  deliberately skips Sentry/reCAPTCHA/vue-toastification (client-interactivity concerns; the latter
+  is also a CJS module Vite's SSR module runner can't import as named exports). It also uses its own
+  route table — a subset of `@/router/routes` (home/catalog/product-detail/blog/blog-post only) —
+  rather than the full app route table, so it doesn't pull in admin/auth pages and their
+  browser-only dependencies.
+- `frontend/scripts/prerender.mjs`: run as a `postbuild` npm script (`package.json`). Boots a Vite
+  dev server in middleware mode (`ssrLoadModule`, no bundling, no headless browser), fetches a
+  representative set of real routes from the public API (`productApi`, `apiClient`), renders each
+  with `@vue/server-renderer`'s `renderToString()`, and writes `dist/<route>/index.html`. Verified
+  end-to-end (see DEVELOPMENT_PLAN.md §2.6) to produce real content — product name/price/JSON-LD,
+  blog post title/body, catalog product grid, home page sections — not empty shells, for `/`,
+  `/catalog`, every prerendered `/product/:id`, `/blog`, and every prerendered `/blog/:slug`.
+- `frontend/scripts/generate-sitemap.cjs`: also run as part of `postbuild`. Plain CJS + axios (no
+  Vite/Vue involved), paginates the real `/v1/catalog/categories`, `/v1/catalog/products`, and
+  `/v1/blog/posts` endpoints and writes `dist/sitemap.xml`. Not a dangling reference anymore.
+- To make prerendering actually produce populated (not loading-skeleton) HTML, the composables/pages
+  that fetch their data in `onMounted` (which never fires under SSR — there's no DOM) also register
+  the same fetch via `onServerPrefetch`, which `renderToString()` awaits before serializing:
+  `features/catalog/composables/useCatalog.ts`, `features/product/composables/useProductDetail.ts`,
+  `features/home/composables/useHome.ts`, `pages/blog/BlogPage.vue`, `pages/blog/BlogPostPage.vue`,
+  `widgets/Home/TechBlog.vue`, `widgets/Home/CatalogSection.vue`, `widgets/Header/Header.vue` (mega
+  menu categories), `widgets/Footer/Footer.vue` (footer categories). This has no effect on client
+  behavior — `onServerPrefetch` hooks are simply never invoked outside SSR.
 
 ### Testing (frontend)
 `package.json` defines `test:unit` (vitest) and `test:e2e` (playwright), but there is **no
@@ -225,9 +250,11 @@ where those commits changed the picture)
    — missing the `test` argument, so it runs `php artisan` (prints command list) instead of the test
    suite. (`Makefile:27-28`) **Still broken** — and now higher-priority to fix, since a real test
    suite exists to run (see "Testing (backend)" above) and currently can't be reached this way.
-2. **SSR and sitemap generation are dangling references**, not working features — see above
-   (`frontend/package.json` scripts `serve:ssr`, `sitemap`; missing `server.js` and `scripts/`).
-   Still true, unchanged.
+2. **SSR is still a dangling reference** (`serve:ssr` script, no `server.js` — by design, static
+   prerendering was chosen instead, see "SSR" above). **Sitemap generation is no longer dangling**:
+   `frontend/scripts/generate-sitemap.cjs` and `frontend/scripts/prerender.mjs` now exist and are
+   wired into `postbuild`, verified working end-to-end (uncommitted working-tree state as of
+   2026-08-17 — see DEVELOPMENT_PLAN.md §2.6 for verification detail).
 3. **Frontend has zero test infrastructure** despite `test:unit`/`test:e2e` scripts existing. Still
    true, unchanged.
 4. ~~Backend has zero real test coverage~~ **No longer true** (commit `ca5ef97` + Feature tests

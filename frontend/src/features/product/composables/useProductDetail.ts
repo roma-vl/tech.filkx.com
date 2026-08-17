@@ -1,4 +1,11 @@
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  onServerPrefetch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
@@ -596,6 +603,10 @@ export function useProductDetail() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
   });
+
+  // No DOM/onMounted during prerendering — fetch the same data here so the
+  // static build captures the real product.
+  onServerPrefetch(() => fetchProductDetails());
 
   // Re-fetch when navigating between products (Vue Router reuses the component instance)
   watch(

@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
 
@@ -485,6 +485,21 @@ export function useCatalog() {
     fetchFilterSchema();
     pagination.value.page = parseInt(route.query.page as string) || 1;
     fetchProducts();
+  });
+
+  // Prerendering runs no onMounted hooks (there is no DOM) — mirror the same
+  // fetches here so the static build captures real catalog content.
+  //
+  // fetchFilterSchema() is deliberately left out: it writes the fetched
+  // price range into priceMin/priceMax, which the watch() above reacts to
+  // by firing its own untracked fetchProducts() call — a race that could
+  // flip isLoading back to true after this hook's own fetchProducts() has
+  // already resolved and Vue has moved on to serializing the page. The
+  // filter sidebar isn't SEO content, so it's fine for it to render with
+  // its client-side defaults until onMounted runs in the browser.
+  onServerPrefetch(async () => {
+    pagination.value.page = parseInt(route.query.page as string) || 1;
+    await Promise.all([fetchCategories(), fetchBrands(), fetchProducts()]);
   });
 
   return {

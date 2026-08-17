@@ -27,7 +27,7 @@ api-composer-install:
 test: test-backend
 
 test-backend:
-	docker compose run --rm tech-api-php-cli php artisan
+	docker compose run --rm tech-api-php-cli php artisan test
 
 test-frontend:
 	docker compose run --rm tech-frontend-node-cli npm run test:unit

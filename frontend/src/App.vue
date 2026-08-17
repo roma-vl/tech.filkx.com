@@ -2,6 +2,7 @@
 import CartDrawer from "@/widgets/CartDrawer/CartDrawer.vue";
 import AccountDrawer from "@/widgets/AccountDrawer/AccountDrawer.vue";
 import ToastNotification from "@/shared/ui/ToastNotification.vue";
+import CookieConsent from "@/widgets/CookieConsent/CookieConsent.vue";
 </script>
 
 <template>
@@ -14,5 +15,6 @@ import ToastNotification from "@/shared/ui/ToastNotification.vue";
     <CartDrawer />
     <AccountDrawer />
     <ToastNotification />
+    <CookieConsent />
   </div>
 </template>

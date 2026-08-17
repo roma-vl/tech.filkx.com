@@ -305,12 +305,25 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";
+
+const { t } = useI18n();
+
+useHead({
+  title: computed(() => t("meta.catalogTitle")),
+  meta: computed(() => [
+    { name: "description", content: t("meta.catalogDescription") },
+    { property: "og:title", content: t("meta.catalogTitle") },
+    { property: "og:description", content: t("meta.catalogDescription") },
+  ]),
+});
 
 const {
   route,

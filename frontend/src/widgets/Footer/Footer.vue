@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onServerPrefetch } from "vue";
 import { RouterLink } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
@@ -25,6 +25,9 @@ const fetchFooterCategories = async () => {
 };
 
 onMounted(fetchFooterCategories);
+// Prerendering has no DOM, so onMounted never runs — fetch here so every
+// static page ships a real footer.
+onServerPrefetch(fetchFooterCategories);
 
 const handleSubscribe = async () => {
   const trimmedEmail = email.value.trim();

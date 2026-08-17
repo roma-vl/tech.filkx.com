@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onServerPrefetch,
+  computed,
+  watch,
+} from "vue";
 import { useRouter, RouterLink } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
@@ -246,21 +253,7 @@ watch(
   },
 );
 
-onMounted(async () => {
-  window.addEventListener("keydown", handleKeydown);
-  document.addEventListener("click", handleClickOutside);
-  fetchUnreadCount();
-
-  // Load saved theme
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-    isDark.value = true;
-    document.documentElement.classList.add("dark");
-  } else {
-    isDark.value = false;
-    document.documentElement.classList.remove("dark");
-  }
-
+const fetchMegaMenuCategories = async () => {
   try {
     const response = await productApi.catalogGetCategories();
     const responseData = response.data;
@@ -276,7 +269,29 @@ onMounted(async () => {
   } catch (error) {
     console.error("Failed to load mega menu categories:", error);
   }
+};
+
+onMounted(async () => {
+  window.addEventListener("keydown", handleKeydown);
+  document.addEventListener("click", handleClickOutside);
+  fetchUnreadCount();
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    isDark.value = true;
+    document.documentElement.classList.add("dark");
+  } else {
+    isDark.value = false;
+    document.documentElement.classList.remove("dark");
+  }
+
+  fetchMegaMenuCategories();
 });
+
+// Prerendering has no DOM, so onMounted never runs — fetch the mega-menu
+// categories here so every static page ships real nav content.
+onServerPrefetch(fetchMegaMenuCategories);
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeydown);

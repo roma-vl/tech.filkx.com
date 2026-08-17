@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onServerPrefetch, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { productApi } from "@/shared/services/api/productApi";
@@ -87,6 +87,23 @@ onMounted(() => {
   if (props.categories.length > 0 && !selectedSlug.value) {
     const firstCat = props.categories[0] as any;
     selectCategory(firstCat.slug);
+  }
+});
+
+// Prerendering has no DOM, so onMounted never runs — fetch the first
+// category's bestsellers here so the static build captures real content.
+// The immediate watch() above already fires synchronously during setup
+// (props.categories is populated by the time this component is created,
+// since the parent's own onServerPrefetch resolves before Vue descends
+// into its subtree) and kicks off an untracked fetchProducts() call — so
+// selectedSlug may already be set here. Fetch again regardless and await
+// it directly, rather than relying on that untracked call, since only a
+// promise awaited from inside onServerPrefetch is guaranteed to finish
+// before the page is serialized.
+onServerPrefetch(async () => {
+  if (props.categories.length > 0) {
+    if (!selectedSlug.value) selectedSlug.value = (props.categories[0] as any).slug;
+    await fetchProducts();
   }
 });
 </script>

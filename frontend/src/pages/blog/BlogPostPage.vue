@@ -162,13 +162,52 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onServerPrefetch, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
+import { useHead } from '@vueuse/head';
 import api from '@/shared/services/api/apiClient';
 
 const route = useRoute();
 const post = ref(null);
 const loading = ref(true);
+
+const postTitle = computed(() => post.value?.title?.uk || post.value?.title?.en || '');
+const postDescription = computed(() => post.value?.excerpt?.uk || post.value?.excerpt?.en || '');
+
+useHead({
+  title: computed(() => (postTitle.value ? `${postTitle.value} — FilkxTech Blog` : 'FilkxTech Blog')),
+  meta: computed(() =>
+    post.value
+      ? [
+          { name: 'description', content: postDescription.value },
+          { property: 'og:type', content: 'article' },
+          { property: 'og:title', content: postTitle.value },
+          { property: 'og:description', content: postDescription.value },
+          ...(post.value.coverImage ? [{ property: 'og:image', content: post.value.coverImage }] : []),
+        ]
+      : [],
+  ),
+  script: computed(() =>
+    post.value
+      ? [
+          {
+            type: 'application/ld+json',
+            children: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Article',
+              headline: postTitle.value,
+              description: postDescription.value || undefined,
+              image: post.value.coverImage || undefined,
+              datePublished: post.value.publishedAt || undefined,
+              author: post.value.author?.name
+                ? { '@type': 'Person', name: post.value.author.name }
+                : undefined,
+            }),
+          },
+        ]
+      : [],
+  ),
+});
 
 const fetchPost = async () => {
   loading.value = true;
@@ -190,6 +229,9 @@ const formatDate = (d) => {
 
 watch(() => route.params.slug, fetchPost);
 onMounted(fetchPost);
+// No onMounted during prerendering (no DOM) — fetch the same post here so
+// the static build captures real article content.
+onServerPrefetch(fetchPost);
 </script>
 
 <style>

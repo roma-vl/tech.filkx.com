@@ -194,6 +194,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useHead } from "@vueuse/head";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
@@ -239,4 +241,68 @@ const {
   openQuickOrder,
   closeQuickOrder,
 } = useProductDetail();
+
+const metaDescription = computed(() =>
+  product.value?.description
+    ? String(product.value.description).replace(/\s+/g, " ").slice(0, 160)
+    : "",
+);
+
+useHead({
+  title: computed(() =>
+    product.value ? `${product.value.name} — FilkxTech` : "FilkxTech",
+  ),
+  meta: computed(() =>
+    product.value
+      ? [
+          { name: "description", content: metaDescription.value },
+          { property: "og:type", content: "product" },
+          { property: "og:title", content: product.value.name },
+          { property: "og:description", content: metaDescription.value },
+          { property: "og:image", content: product.value.image },
+        ]
+      : [],
+  ),
+  // Product/Offer schema.org structured data so search engines can render
+  // rich results (price, availability, rating) directly in listings.
+  script: computed(() =>
+    product.value
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.value.name,
+              image: product.value.image ? [product.value.image] : undefined,
+              description: metaDescription.value || undefined,
+              category: product.value.category || undefined,
+              sku: String(product.value.id),
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "UAH",
+                price: product.value.price,
+                availability: product.value.inStock
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+                url:
+                  typeof window !== "undefined"
+                    ? window.location.href
+                    : undefined,
+              },
+              ...(product.value.reviews > 0
+                ? {
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: product.value.rating,
+                      reviewCount: product.value.reviews,
+                    },
+                  }
+                : {}),
+            }),
+          },
+        ]
+      : [],
+  ),
+});
 </script>

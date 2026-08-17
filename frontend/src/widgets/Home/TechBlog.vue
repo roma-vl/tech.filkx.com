@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onServerPrefetch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
@@ -41,6 +41,9 @@ const getExcerpt = (post) =>
   post.excerpt?.[locale.value] || post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
 
 onMounted(fetchLatestPosts);
+// Prerendering has no DOM, so onMounted never runs — fetch here so the
+// static build captures real teaser content.
+onServerPrefetch(fetchLatestPosts);
 </script>
 
 <template>

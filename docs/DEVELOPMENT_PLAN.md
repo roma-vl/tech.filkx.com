@@ -176,18 +176,66 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   needs S3/R2 first; confirm the backup destination itself is off-host, not just off-database.
 
 ### 2.6 SEO / SSR correctness
-- ❌ **SSR is not implemented**, despite the `serve:ssr` npm script and `frontend-ssr` Makefile
-  target implying it exists: `frontend/server.js` is missing, there's no Vite SSR build config, no
-  `entry-server`/`entry-client` split. The app is a pure client-rendered SPA today. This matters
-  for SEO (product/category/blog pages need to be crawlable and fast on first paint) — this is a
-  **real gap for a public storefront**, not a documentation error to just fix in prose.
-- ❌ **Sitemap generation is not wired up**: `package.json` references
-  `scripts/generate-sitemap.cjs`, but `frontend/scripts/` does not exist in the repo at all. If a
-  sitemap script existed previously it's gone; there is currently no automated sitemap.
-- **Action** (in priority order for organic traffic): (1) decide SSR vs. prerendering vs.
-  Meilisearch-fed static generation for product/category pages, (2) rebuild the sitemap generator
-  and wire it into the build/deploy pipeline, (3) verify meta tags / structured data
-  (Product/Offer schema.org) are present on rendered product pages — not checked this pass.
+- ✅ **Meta tags / structured data**: `useHead()` (already-installed `@vueuse/head`) with
+  Product/Offer and Article JSON-LD is wired into `BlogPage.vue`, `CatalogPage.vue`,
+  `BlogPostPage.vue`, `ProductDetailPage.vue`.
+- ⚠️ **SSR is still not implemented, by deliberate choice, not oversight**: the user was asked and
+  chose static prerendering over full SSR, specifically to avoid a live Node process in production
+  (`docker-compose-production.yml` serves the frontend as `tech-frontend`, nginx + static `dist/` —
+  that stays unchanged). `serve:ssr`/`frontend-ssr` remain dangling references; no `server.js` was
+  added and none should be.
+- ✅ **Static prerendering exists instead** (working tree, uncommitted as of 2026-08-17 on
+  `add-new-logic` — see `docs/PROJECT_MAP.md` "SSR" for the file-by-file breakdown):
+  `frontend/src/entry-server.ts` + `frontend/scripts/prerender.mjs`, wired as a `postbuild` npm
+  script. Uses `@vue/server-renderer`'s `renderToString()` directly (no headless browser — plain
+  server-side Vue rendering) against a Vite dev-server-in-middleware-mode module graph (no separate
+  SSR bundle build needed). Pages that fetch data in `onMounted` (which never fires without a DOM)
+  were given an equivalent `onServerPrefetch` hook so `renderToString()` actually waits for real
+  data before serializing — see `docs/PROJECT_MAP.md` for the full list of touched
+  composables/pages.
+  - **Verified with real prerendered HTML for**: `/` (home — hero banners, categories, flash deals,
+    recommended products, blog teaser, header mega-menu, footer categories all populated), `/catalog`
+    (real product grid), `/blog` (real post list), every prerendered `/product/:id` (real name,
+    price, description, Product/Offer JSON-LD), every prerendered `/blog/:slug` (real title, body,
+    Article JSON-LD). Verified by building to a clean output directory
+    (`npx vite build --mode production --outDir <clean dir>` — see EACCES note below), running
+    `node scripts/prerender.mjs` against it (`PRERENDER_MODE=development` to reach the sandbox's
+    reachable dev API; `PRERENDER_MODE=production`/unset is the real default and matches what
+    `vite build`'s default mode bakes into the client bundle), and grepping the output HTML for
+    real product/post names, prices, and JSON-LD — not just checking the script exits 0.
+  - **Descoped**: distinct category-listing pages. The app has no separate route per category —
+    `CatalogPage.vue` filters via a `?category=` query string on the single `/catalog` path — so
+    there's no distinct clean URL to prerender a file for. The sitemap (below) still lists
+    `/catalog?category=<slug>` for every real category as a crawlable, if not statically
+    prerendered, URL.
+  - **Known caveat found during verification, not fixed (out of scope — backend data ordering, not
+    a frontend bug)**: the public products-listing endpoint's default order doesn't appear fully
+    stable across separate paginated requests — sequential `page=1,2,3…` calls can return a
+    genuinely different row on one page between requests, causing a naive "fetch every page and
+    concatenate" pagination helper to see the same product twice (or miss one). Both
+    `generate-sitemap.cjs` and `prerender.mjs`'s route collection tolerate this (dedup by id;
+    prerendering only ever needs a capped, representative subset), but a backend fix (a stable
+    `ORDER BY` on that endpoint) would be worth adding before relying on exhaustive pagination
+    elsewhere.
+- ✅ **Sitemap generation rebuilt**: `frontend/scripts/generate-sitemap.cjs` (plain CJS + axios, no
+  Vite/Vue) now exists and runs as part of `postbuild`. Paginates the real
+  `/v1/catalog/categories`, `/v1/catalog/products`, `/v1/blog/posts` endpoints and writes
+  `dist/sitemap.xml` — verified: ran it against the real API, parsed the output with
+  `xml.etree.ElementTree`, confirmed well-formed XML, zero duplicate/placeholder URLs, and real
+  `https://tech.filkx.com/...` product/category/post/static-page URLs (325 total in the run that
+  produced this note: 3 top-level + 15 static content pages + 112 categories + 185 products + 10
+  blog posts).
+- ⚠️ **Pre-existing environment issue, not caused by this work**: this sandbox's `frontend/dist/`
+  has root-owned leftover files (`dist/assets/`, and separately `node_modules/.vite/deps/`) from an
+  earlier Docker-run build/dev-server, owned by `root` and not writable by the non-root user this
+  session runs as — `npm run build`'s final asset-write step (and, separately, Vite's dependency
+  pre-bundling step) fails with `EACCES` on those specific pre-existing files regardless of this
+  change. Confirmed unrelated to this work by building to a clean `--outDir` instead, where the full
+  `vite build` (client) completes with no errors, and prerendering/sitemap generation against that
+  clean output both succeed end-to-end as described above. `vue-tsc --noEmit` is also clean for
+  every file this task touched (pre-existing, unrelated type errors remain in a handful of other
+  files already modified elsewhere on this branch — `OrdersTab.vue`, `useShoppingCart.ts`,
+  `ShoppingCart.vue`, `CartItemsList.vue`, `AccountSidebar.vue`, `AccountDrawer.vue`).
 
 ### 2.7 Performance
 - ✅ Meilisearch is genuinely integrated (Scout `Searchable` on `Product`) — not just a provisioned,
@@ -274,7 +322,8 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
    ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything). Still open:
    CI running lint+tests, a cookie-consent banner if legally required, lawyer review of the legal
    pages, creating the Sentry project.
-3. **Launch-quality**: SSR or prerendering + real sitemap generation for SEO, Redis-backed caching,
+3. **Launch-quality**: ~~SSR or prerendering + real sitemap generation for SEO~~ ✅ prerendering +
+   sitemap generation now exist (see §2.6 — uncommitted working-tree state), Redis-backed caching,
    image storage strategy (confirm local-disk is acceptable or move to S3/R2), promotions engine
    hardening, shipping API integration if not already automated.
 4. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend

@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onServerPrefetch } from "vue";
 import { useI18n } from "vue-i18n";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapHomeProduct } from "@/entities/product/lib/mapHomeProduct";
@@ -71,6 +71,10 @@ export function useHome() {
   onMounted(() => {
     loadHomeData();
   });
+
+  // Prerendering has no DOM, so onMounted never runs — fetch here so the
+  // static build captures real homepage content.
+  onServerPrefetch(loadHomeData);
 
   return {
     banners,
