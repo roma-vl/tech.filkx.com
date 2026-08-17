@@ -67,6 +67,12 @@
         />
       </div>
 
+      <DiscountTargetingFields
+        v-model="targeting"
+        :categories="categories"
+        :products="products"
+      />
+
       <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-xl border border-gray-205 dark:border-zinc-800">
         <div>
           <span class="text-sm font-semibold text-gray-905 dark:text-white block">
@@ -132,6 +138,7 @@ import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import DiscountTargetingFields from "@/components/admin/features/marketing/DiscountTargetingFields.vue";
 import {
   ExclamationCircleIcon,
   CheckBadgeIcon,
@@ -142,6 +149,14 @@ const props = defineProps({
   coupon: {
     type: Object,
     default: null
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  products: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -157,6 +172,16 @@ const form = ref({
   usageLimit: null,
   expiresAt: null,
   isActive: true,
+  categoryIds: [],
+  productIds: [],
+});
+
+const targeting = computed({
+  get: () => ({ categoryIds: form.value.categoryIds, productIds: form.value.productIds }),
+  set: (val) => {
+    form.value.categoryIds = val.categoryIds;
+    form.value.productIds = val.productIds;
+  },
 });
 
 const loading = ref(false);
@@ -175,6 +200,8 @@ watch(
         expiresAt: newVal.expiresAt
           ? new Date(newVal.expiresAt).toISOString().split("T")[0]
           : null,
+        categoryIds: newVal.categoryIds || [],
+        productIds: newVal.productIds || [],
       };
     } else {
       form.value = {
@@ -184,6 +211,8 @@ watch(
         usageLimit: null,
         expiresAt: null,
         isActive: true,
+        categoryIds: [],
+        productIds: [],
       };
     }
   },

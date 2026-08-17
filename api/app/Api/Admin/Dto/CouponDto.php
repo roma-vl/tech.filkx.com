@@ -4,13 +4,19 @@ namespace App\Api\Admin\Dto;
 
 class CouponDto
 {
+    /**
+     * @param  array<int, int>  $categoryIds
+     * @param  array<int, int>  $productIds
+     */
     public function __construct(
         public readonly string $code,
         public readonly string $type,
         public readonly float $amount,
         public readonly ?int $usageLimit,
         public readonly ?string $expiresAt,
-        public readonly bool $isActive
+        public readonly bool $isActive,
+        public readonly array $categoryIds = [],
+        public readonly array $productIds = []
     ) {}
 
     public static function fromRequest($request): self
@@ -21,7 +27,9 @@ class CouponDto
             amount: (float) $request->input('amount'),
             usageLimit: $request->input('usageLimit') ? (int) $request->input('usageLimit') : null,
             expiresAt: $request->input('expiresAt'),
-            isActive: (bool) $request->input('isActive', true)
+            isActive: (bool) $request->input('isActive', true),
+            categoryIds: $request->input('categoryIds', []),
+            productIds: $request->input('productIds', [])
         );
     }
 

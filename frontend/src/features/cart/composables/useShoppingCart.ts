@@ -4,6 +4,7 @@ import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { orderApi } from "@/shared/services/api/orderApi";
 import { productApi } from "@/shared/services/api/productApi";
+import { redirectToLiqPay } from "@/shared/utils/liqpay";
 
 export function useShoppingCart() {
   const router = useRouter();
@@ -189,7 +190,7 @@ export function useShoppingCart() {
     if (!promoCode.value.trim()) return;
     const code = promoCode.value.trim().toUpperCase();
     try {
-      const response = await orderApi.validateCoupon(code, cartStore.cartTotal);
+      const response = await orderApi.validateCoupon(code);
       if (response.data && response.data.status === "success") {
         appliedPromo.value = code;
         promoDiscountAmount.value = response.data.data.discount;
@@ -221,27 +222,6 @@ export function useShoppingCart() {
   };
 
   const isRedirectingToPayment = ref(false);
-
-  // Submits a hidden form to LiqPay's hosted checkout - we never touch card data,
-  // LiqPay collects it on their own PCI DSS-compliant page and calls our
-  // server-to-server callback once the payment is resolved.
-  const redirectToLiqPay = (data: string, signature: string, checkoutUrl: string) => {
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = checkoutUrl;
-    form.style.display = "none";
-
-    for (const [name, value] of [["data", data], ["signature", signature]]) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-  };
 
   const handlePlaceOrder = async () => {
     if (

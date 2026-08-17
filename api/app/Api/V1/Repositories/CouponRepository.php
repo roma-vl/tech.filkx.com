@@ -9,7 +9,7 @@ class CouponRepository implements CouponRepositoryInterface
 {
     public function paginate(array $filters, int $perPage): LengthAwarePaginator
     {
-        $query = Coupon::query();
+        $query = Coupon::with(['categories', 'products']);
 
         if (! empty($filters['search'])) {
             $query->where('code', 'like', "%{$filters['search']}%");
@@ -44,7 +44,7 @@ class CouponRepository implements CouponRepositoryInterface
 
     public function findByCode(string $code): ?Coupon
     {
-        return Coupon::where('code', strtoupper($code))->first();
+        return Coupon::with(['categories', 'products'])->where('code', strtoupper($code))->first();
     }
 
     public function create(array $data): Coupon

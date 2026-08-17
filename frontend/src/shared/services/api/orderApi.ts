@@ -23,8 +23,8 @@ export const orderApi = {
   },
 
   // Checkout API
-  validateCoupon(code: string, cartTotal: number) {
-    return apiClient.post("/v1/coupons/validate", { code, cartTotal });
+  validateCoupon(code: string) {
+    return apiClient.post("/v1/coupons/validate", { code });
   },
 
   placeOrder(checkoutForm: Record<string, any>) {
@@ -35,11 +35,13 @@ export const orderApi = {
     customerName: string,
     customerPhone: string,
     variantId: number | string,
+    paymentMethod: "cod" | "card" = "cod",
   ) {
     return apiClient.post("/v1/checkout/quick", {
       customerName,
       customerPhone,
       variantId,
+      paymentMethod,
     });
   },
 

@@ -13,6 +13,8 @@ class CartResource extends JsonResource
             'sessionId' => $this->sessionId,
             'items' => CartItemResource::collection($this->items),
             'total' => (float) $this->total,
+            'promotionDiscount' => (float) $this->promotionDiscount,
+            'discountedTotal' => (float) $this->discountedTotal,
         ];
     }
 }
