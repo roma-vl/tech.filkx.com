@@ -281,7 +281,6 @@ const props = defineProps<{
   product: any;
   galleryImages: Array<{ label: string; src: string }>;
   qualityGuarantees: QualityGuarantee[];
-  reviews: any[]; // legacy prop kept for compatibility
 }>();
 
 defineEmits<{ (e: "change-tab", tabId: string): void }>();

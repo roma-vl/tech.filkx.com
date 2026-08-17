@@ -79,6 +79,7 @@ Route::prefix('v1')->group(function () {
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/random', [CatalogController::class, 'randomProducts']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
+        Route::get('products/{slug}/related', [CatalogController::class, 'relatedProducts']);
         Route::get('products/{slug}/reviews', [ReviewController::class, 'index']);
     });
 

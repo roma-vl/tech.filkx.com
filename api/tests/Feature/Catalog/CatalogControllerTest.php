@@ -159,4 +159,82 @@ class CatalogControllerTest extends TestCase
         $this->assertContains($inStock->slug, $slugs);
         $this->assertNotContains($outOfStock->slug, $slugs);
     }
+
+    public function test_related_products_prefers_the_same_category(): void
+    {
+        $category = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+        $otherCategory = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'B', 'en' => 'B'], 'order' => 0]);
+
+        $product = $this->makeProduct();
+        $product->categories()->attach($category->id);
+        $this->makeVariant($product, 100);
+
+        $sameCategory = $this->makeProduct();
+        $sameCategory->categories()->attach($category->id);
+        $this->makeVariant($sameCategory, 100);
+
+        $otherCategoryProduct = $this->makeProduct();
+        $otherCategoryProduct->categories()->attach($otherCategory->id);
+        $this->makeVariant($otherCategoryProduct, 100);
+
+        $response = $this->getJson("/api/v1/catalog/products/{$product->slug}/related");
+
+        $response->assertOk();
+        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        $this->assertContains($sameCategory->slug, $slugs);
+        $this->assertNotContains($product->slug, $slugs);
+    }
+
+    public function test_related_products_tops_up_with_other_active_products_when_category_is_short(): void
+    {
+        $category = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+
+        $product = $this->makeProduct();
+        $product->categories()->attach($category->id);
+        $this->makeVariant($product, 100);
+
+        $uncategorized = $this->makeProduct();
+        $this->makeVariant($uncategorized, 100);
+
+        $response = $this->getJson("/api/v1/catalog/products/{$product->slug}/related");
+
+        $response->assertOk();
+        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        $this->assertContains($uncategorized->slug, $slugs);
+    }
+
+    public function test_related_products_excludes_inactive_products(): void
+    {
+        $category = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+
+        $product = $this->makeProduct();
+        $product->categories()->attach($category->id);
+        $this->makeVariant($product, 100);
+
+        $inactiveSameCategory = $this->makeProduct('inactive');
+        $inactiveSameCategory->categories()->attach($category->id);
+        $this->makeVariant($inactiveSameCategory, 100);
+
+        $response = $this->getJson("/api/v1/catalog/products/{$product->slug}/related");
+
+        $response->assertOk();
+        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        $this->assertNotContains($inactiveSameCategory->slug, $slugs);
+    }
+
+    public function test_related_products_returns_404_for_an_unknown_slug(): void
+    {
+        $response = $this->getJson('/api/v1/catalog/products/does-not-exist/related');
+
+        $response->assertNotFound();
+    }
+
+    public function test_related_products_returns_404_for_an_inactive_product(): void
+    {
+        $inactive = $this->makeProduct('inactive');
+
+        $response = $this->getJson("/api/v1/catalog/products/{$inactive->slug}/related");
+
+        $response->assertNotFound();
+    }
 }

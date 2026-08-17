@@ -31,6 +31,10 @@ export const productApi = {
     return apiClient.get("/v1/catalog/products/random");
   },
 
+  catalogGetRelatedProducts(slug: string) {
+    return apiClient.get(`/v1/catalog/products/${slug}/related`);
+  },
+
   catalogGetCategories() {
     return apiClient.get("/v1/catalog/categories");
   },

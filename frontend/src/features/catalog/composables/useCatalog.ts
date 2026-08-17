@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
+import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 export function useCatalog() {
   const route = useRoute();
@@ -48,135 +49,7 @@ export function useCatalog() {
     });
   });
 
-  function mapProduct(apiProduct: any) {
-    if (!apiProduct) return null;
-    const mainVariant =
-      apiProduct.variants && apiProduct.variants[0]
-        ? apiProduct.variants[0]
-        : null;
-    const price = mainVariant ? parseFloat(mainVariant.price) : 0;
-    const oldPrice =
-      mainVariant && mainVariant.old_price
-        ? parseFloat(mainVariant.old_price)
-        : mainVariant && mainVariant.oldPrice
-          ? parseFloat(mainVariant.oldPrice)
-          : null;
-    const totalStock = mainVariant
-      ? (mainVariant.stocks || []).reduce(
-          (acc: number, s: any) =>
-            acc + (parseInt(s.quantity) - parseInt(s.reserved)),
-          0,
-        )
-      : 0;
-
-    // Try to get primary image from variant's dimensions.images
-    let image = "";
-    if (
-      mainVariant &&
-      mainVariant.dimensions &&
-      mainVariant.dimensions.images
-    ) {
-      const primary =
-        mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-        mainVariant.dimensions.images[0];
-      if (primary && primary.url) {
-        image = primary.url;
-      }
-    }
-
-    // Fallback to legacy static images if no dynamic images exist
-    if (!image) {
-      image =
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-      if (apiProduct.slug === "iphone-15-pro-max") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-      } else if (apiProduct.slug === "samsung-galaxy-s24-ultra") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw";
-      } else if (apiProduct.slug === "lenovo-legion-5-pro") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E";
-      } else if (apiProduct.slug === "sony-wh-1000xm5-black") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA";
-      } else if (apiProduct.slug === "apple-airpods-pro-2") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ";
-      }
-    }
-
-    const name =
-      typeof apiProduct.name === "object"
-        ? apiProduct.name.uk || apiProduct.name.en
-        : apiProduct.name;
-    const description =
-      typeof apiProduct.description === "object"
-        ? apiProduct.description.uk || apiProduct.description.en
-        : apiProduct.description;
-
-    const getAttrValue = (code: string) => {
-      const checkList: any[] = [];
-      if (mainVariant) {
-        if (mainVariant.attribute_values)
-          checkList.push(...mainVariant.attribute_values);
-        if (mainVariant.attributeValues)
-          checkList.push(...mainVariant.attributeValues);
-      }
-      if (apiProduct) {
-        if (apiProduct.attribute_values)
-          checkList.push(...apiProduct.attribute_values);
-        if (apiProduct.attributeValues)
-          checkList.push(...apiProduct.attributeValues);
-      }
-
-      const match = checkList.find(
-        (av) => av.attribute && av.attribute.code === code,
-      );
-      if (match) {
-        const valObj = match.attribute_value || match.attributeValue;
-        if (valObj && valObj.value) {
-          if (typeof valObj.value === "object") {
-            return valObj.value.uk || valObj.value.en || "";
-          }
-          return valObj.value;
-        }
-        return match.custom_value || match.customValue || "";
-      }
-      return "";
-    };
-
-    return {
-      id: apiProduct.id,
-      slug: apiProduct.slug,
-      name: name,
-      brand: apiProduct.brand ? apiProduct.brand.name : null,
-      ram: getAttrValue("ram"),
-      // Not rendered anywhere the mapped product currently feeds
-      // (ProductCard.vue) — kept for parity with the API shape rather
-      // than for any actual UI use.
-      category:
-        apiProduct.categories && apiProduct.categories[0]
-          ? apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en
-          : null,
-      price: price,
-      oldPrice: oldPrice,
-      rating: apiProduct.approvedReviewsAvgRating != null ? parseFloat(apiProduct.approvedReviewsAvgRating) : 0,
-      reviews: apiProduct.approvedReviewsCount != null ? Number(apiProduct.approvedReviewsCount) : 0,
-      badge: oldPrice ? `-${Math.round((1 - price / oldPrice) * 100)}%` : null,
-      badgeClass: oldPrice ? "bg-rose-600" : "",
-      inStock: totalStock > 0,
-      image: image,
-      description: description,
-      specs: {
-        processor: getAttrValue("processor"),
-        screen: getAttrValue("screen_size"),
-        storage: getAttrValue("storage"),
-        os: getAttrValue("os"),
-        weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : "",
-      },
-    };
-  }
+  const mapProduct = mapCatalogProduct;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("uk-UA", {

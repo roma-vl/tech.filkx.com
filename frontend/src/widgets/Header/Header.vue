@@ -13,6 +13,7 @@ import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
+import { resolveProductImage } from "@/entities/product/lib/resolveProductImage";
 
 interface SearchProduct {
   id: string | number;
@@ -60,20 +61,7 @@ const mapApiProduct = (prod: any): SearchProduct => {
   const mainVariant = prod.variants?.[0] || null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
 
-  let image = "";
-  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-    const primary =
-      mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-      mainVariant.dimensions.images[0];
-    if (primary && primary.url) {
-      image = primary.url;
-    }
-  }
-
-  if (!image) {
-    image =
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-  }
+  const image = resolveProductImage(mainVariant, prod.variants);
 
   const name =
     typeof prod.name === "object" ? prod.name.uk || prod.name.en : prod.name;

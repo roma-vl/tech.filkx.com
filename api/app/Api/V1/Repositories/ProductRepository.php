@@ -119,6 +119,46 @@ class ProductRepository implements ProductRepositoryInterface
             ->get();
     }
 
+    public function getRelated(Product $product, int $limit = 8): Collection
+    {
+        $categoryIds = $product->categories->pluck('id');
+
+        $related = Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'attributeValues.attribute',
+            'attributeValues.attributeValue',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue',
+        ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
+            ->where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->when(
+                $categoryIds->isNotEmpty(),
+                fn (Builder $q) => $q->whereHas(
+                    'categories',
+                    fn (Builder $catQuery) => $catQuery->whereIn('categories.id', $categoryIds)
+                )
+            )
+            ->inRandomOrder()
+            ->take($limit)
+            ->get();
+
+        // Same category didn't have enough products - top up with random
+        // active products rather than showing a half-empty section.
+        if ($related->count() < $limit) {
+            $excludeIds = $related->pluck('id')->push($product->id)->all();
+            $related = $related->concat(
+                $this->getRandomFallback($excludeIds, $limit - $related->count())
+            );
+        }
+
+        return $related;
+    }
+
     public function getRandomFallback(array $excludeIds, int $limit): Collection
     {
         return Product::with([

@@ -4,6 +4,7 @@ namespace App\Api\V1\Controllers;
 
 use App\Api\V1\Actions\GetCatalogFiltersAction;
 use App\Api\V1\Actions\GetProductDetailsAction;
+use App\Api\V1\Actions\GetRelatedProductsAction;
 use App\Api\V1\Actions\ListBrandsAction;
 use App\Api\V1\Actions\ListCategoriesAction;
 use App\Api\V1\Actions\ListProductsAction;
@@ -46,5 +47,10 @@ class CatalogController extends BaseApiController
             ->get();
 
         return self::successfulResponseWithData($products);
+    }
+
+    public function relatedProducts(string $slug, GetRelatedProductsAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData($action->execute($slug));
     }
 }

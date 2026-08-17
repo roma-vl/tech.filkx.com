@@ -17,5 +17,12 @@ export default defineConfig({
     globals: true,
     css: false,
     include: ["src/**/*.{test,spec}.{js,ts}"],
+    coverage: {
+      provider: "v8",
+      all: true,
+      include: ["src/**/*.{js,ts,vue}"],
+      exclude: ["src/**/*.{test,spec}.{js,ts}"],
+      reporter: ["text", "html"],
+    },
   },
 });

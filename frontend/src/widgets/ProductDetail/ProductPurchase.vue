@@ -2,9 +2,13 @@
   <div class="flex flex-col gap-5 text-left">
     <!-- Top row: category + actions -->
     <div class="flex items-center justify-between gap-3">
-      <span class="text-xs font-bold text-[#00a046] bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/30 px-2.5 py-1 rounded uppercase tracking-wider">
+      <span
+        v-if="product.category"
+        class="text-xs font-bold text-[#00a046] bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/30 px-2.5 py-1 rounded uppercase tracking-wider"
+      >
         {{ product.category }}
       </span>
+      <div v-else />
       <div class="flex gap-1.5">
         <button
           class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-rose-500 hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
@@ -33,7 +37,7 @@
       <h1 class="text-2xl md:text-[28px] font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
         {{ product.name }}
       </h1>
-      <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ product.subtitle }}</p>
+      <p v-if="product.subtitle" class="text-sm text-zinc-500 dark:text-zinc-400">{{ product.subtitle }}</p>
     </div>
 
     <!-- Rating + SKU -->

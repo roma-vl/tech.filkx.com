@@ -61,15 +61,14 @@ class DownloadProductImages extends Command
                     continue;
                 }
 
-                $variant = $product->variants->first();
-                if (! $variant) {
+                if ($product->variants->isEmpty()) {
                     $skipped++;
 
                     continue;
                 }
 
-                $dims = $variant->dimensions ?? [];
-                $existingImages = $dims['images'] ?? [];
+                $firstVariant = $product->variants->first();
+                $existingImages = $firstVariant->dimensions['images'] ?? [];
 
                 // Skip if already has local images and not forcing
                 if (! $force && ! empty($existingImages)) {
@@ -101,9 +100,16 @@ class DownloadProductImages extends Command
                 }
 
                 if (! empty($localImages)) {
-                    $dims['images'] = $localImages;
-                    $variant->dimensions = $dims;
-                    $variant->save();
+                    // Every variant of a product is the same physical device in a
+                    // different config (RAM/storage/color) - they share one photoshoot,
+                    // so attach the same images to all of them rather than just the
+                    // first, or unphotographed variants would show no gallery at all.
+                    foreach ($product->variants as $variant) {
+                        $dims = $variant->dimensions ?? [];
+                        $dims['images'] = $localImages;
+                        $variant->dimensions = $dims;
+                        $variant->save();
+                    }
                 }
             }
         }
