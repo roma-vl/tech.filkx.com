@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-200/80 dark:border-zinc-800 overflow-hidden">
+  <div>
 
     <!-- Categories -->
     <UiFilterSection v-if="showCategories" title="Категорія">

@@ -165,19 +165,6 @@ export function useShoppingCart() {
     return cartStore.cart.some(item => item.stock !== undefined && item.stock <= 0);
   });
 
-  const isQuickViewOpen = ref(false);
-  const quickViewProduct = ref<any>(null);
-
-  const openQuickView = (product: any) => {
-    quickViewProduct.value = product;
-    isQuickViewOpen.value = true;
-  };
-
-  const closeQuickView = () => {
-    isQuickViewOpen.value = false;
-    quickViewProduct.value = null;
-  };
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("uk-UA", {
       style: "currency",
@@ -302,10 +289,6 @@ export function useShoppingCart() {
     moveToCart,
     removePromo,
     hasOutOfStockItems,
-    isQuickViewOpen,
-    quickViewProduct,
-    openQuickView,
-    closeQuickView,
     isRedirectingToPayment,
     formatPrice,
     applyPromo,

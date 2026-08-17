@@ -33,12 +33,64 @@
       <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">
         {{ currentCategoryName }}
       </h1>
-      <p class="text-sm text-zinc-400 dark:text-zinc-500 mt-1">
-        <template v-if="isLoading">Завантаження...</template>
-        <template v-else>{{ pagination.total }} товарів</template>
-      </p>
     </div>
   </header>
+
+  <!-- Toolbar -->
+  <div class="max-w-container-max mx-auto px-4 md:px-8 pb-4 flex items-center gap-3 flex-wrap font-sans">
+    <!-- Products count -->
+    <span class="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mr-auto hidden sm:block">
+      <template v-if="!isLoading">
+        Знайдено {{ pagination.total }} товарів
+      </template>
+    </span>
+
+    <!-- View Toggle: 4-per-row grid / 5-per-row grid / list -->
+    <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5">
+      <button
+        :class="viewMode === 'grid' && gridDensity === 4 ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="4 товари в рядок"
+        @click="viewMode = 'grid'; gridDensity = 4"
+      >
+        <span class="material-symbols-outlined text-[18px]">view_comfy</span>
+      </button>
+      <button
+        :class="viewMode === 'grid' && gridDensity === 5 ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="5 товарів в рядок"
+        @click="viewMode = 'grid'; gridDensity = 5"
+      >
+        <span class="material-symbols-outlined text-[18px]">grid_on</span>
+      </button>
+      <button
+        :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="Список"
+        @click="viewMode = 'list'"
+      >
+        <span class="material-symbols-outlined text-[18px]">view_list</span>
+      </button>
+    </div>
+
+    <!-- Sort -->
+    <UiDropdown v-model="sortBy" :options="sortOptions" align-right />
+
+    <!-- Mobile Filter Button -->
+    <UiButton
+      variant="secondary"
+      size="sm"
+      class="lg:hidden relative"
+      @click="isMobileFilterOpen = true"
+    >
+      <span class="material-symbols-outlined text-[18px]">tune</span>
+      Фільтри
+      <span
+        v-if="activeFilters.length"
+        class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
+      >{{ activeFilters.length }}</span>
+    </UiButton>
+  </div>
 
   <!-- Main Catalog Layout -->
   <main class="max-w-container-max mx-auto px-4 md:px-8 py-5 flex gap-6 font-sans">
@@ -67,54 +119,6 @@
     <!-- Products Workspace -->
     <section class="flex-1 min-w-0">
 
-      <!-- Toolbar -->
-      <div class="flex items-center gap-3 mb-4 flex-wrap">
-        <!-- Products count -->
-        <span class="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mr-auto hidden sm:block">
-          <template v-if="!isLoading">
-            Показано {{ filteredProducts.length }} з {{ pagination.total }}
-          </template>
-        </span>
-
-        <!-- View Toggle -->
-        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5">
-          <button
-            :class="viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
-            class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-            title="Сітка"
-            @click="viewMode = 'grid'"
-          >
-            <span class="material-symbols-outlined text-[18px]">grid_view</span>
-          </button>
-          <button
-            :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
-            class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-            title="Список"
-            @click="viewMode = 'list'"
-          >
-            <span class="material-symbols-outlined text-[18px]">view_list</span>
-          </button>
-        </div>
-
-        <!-- Sort -->
-        <UiDropdown v-model="sortBy" :options="sortOptions" align-right />
-
-        <!-- Mobile Filter Button -->
-        <UiButton
-          variant="secondary"
-          size="sm"
-          class="lg:hidden relative"
-          @click="isMobileFilterOpen = true"
-        >
-          <span class="material-symbols-outlined text-[18px]">tune</span>
-          Фільтри
-          <span
-            v-if="activeFilters.length"
-            class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
-          >{{ activeFilters.length }}</span>
-        </UiButton>
-      </div>
-
       <!-- Active Filters Chips -->
       <div v-if="activeFilters.length" class="flex flex-wrap gap-2 items-center mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800">
         <button
@@ -140,7 +144,7 @@
       <!-- Loading Skeleton -->
       <div
         v-if="isLoading"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? gridClass : 'flex flex-col gap-4'"
       >
         <div
           v-for="i in 9"
@@ -172,14 +176,13 @@
       <!-- Products Grid / List -->
       <div
         v-else-if="filteredProducts.length"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? gridClass : 'flex flex-col gap-4'"
       >
         <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
           :product="product"
           :view-mode="viewMode"
-          @quick-view="openQuickView"
         />
       </div>
 
@@ -295,13 +298,6 @@
       </div>
     </div>
   </Teleport>
-
-  <!-- Quick View Modal -->
-  <QuickViewModal
-    :is-open="isQuickViewOpen"
-    :product="selectedProductForQuickView"
-    @close="closeQuickView"
-  />
 </template>
 
 <script setup lang="ts">
@@ -311,7 +307,6 @@ import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
-import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
@@ -330,6 +325,7 @@ const {
   route,
   router,
   viewMode,
+  gridDensity,
   sortBy,
   priceMin,
   priceMax,
@@ -339,8 +335,6 @@ const {
   onlyDiscounts,
   onlyInStock,
   isMobileFilterOpen,
-  selectedProductForQuickView,
-  isQuickViewOpen,
   isLoading,
   rawProducts,
   categoriesList,
@@ -353,11 +347,23 @@ const {
   activeFilters,
   removeFilter,
   clearFilters,
-  openQuickView,
-  closeQuickView,
   currentCategoryName,
   currentCategoryPath,
 } = useCatalog();
+
+// Tailwind's build-time scanner needs each class written out literally
+// somewhere in the source, so the column count can't be interpolated
+// directly into the class string (e.g. `lg:grid-cols-${n}`) - this lookup
+// keeps every combination as a real string the scanner can find.
+const densityColumnsClass: Record<number, string> = {
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5",
+};
+
+const gridClass = computed(
+  () =>
+    `grid grid-cols-1 sm:grid-cols-2 ${densityColumnsClass[gridDensity.value]} border-t border-l border-zinc-200 dark:border-zinc-800`,
+);
 
 const sortOptions = [
   { value: "popularity", label: "За популярністю" },

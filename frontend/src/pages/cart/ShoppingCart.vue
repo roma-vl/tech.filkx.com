@@ -131,17 +131,9 @@
             :key="product.id"
             :product="product"
             view-mode="grid"
-            @quick-view="openQuickView"
           />
         </div>
       </section>
-
-      <!-- Quick View Modal -->
-      <QuickViewModal
-        v-if="isQuickViewOpen && quickViewProduct"
-        :product="quickViewProduct"
-        @close="closeQuickView"
-      />
 
       <!-- Redirecting to LiqPay -->
       <div
@@ -165,7 +157,6 @@ import CheckoutForm from "@/widgets/ShoppingCart/CheckoutForm.vue";
 import CartItemsList from "@/widgets/ShoppingCart/CartItemsList.vue";
 import CartSummary from "@/widgets/ShoppingCart/CartSummary.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
-import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 
 const { t } = useI18n();
 
@@ -187,10 +178,6 @@ const {
   moveToCart,
   removePromo,
   hasOutOfStockItems,
-  isQuickViewOpen,
-  quickViewProduct,
-  openQuickView,
-  closeQuickView,
   isRedirectingToPayment,
   formatPrice,
   applyPromo,

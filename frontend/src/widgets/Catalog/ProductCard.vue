@@ -1,9 +1,9 @@
 <template>
   <article
     :class="viewMode === 'grid'
-      ? 'flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:z-10 hover:bg-zinc-50 dark:hover:bg-zinc-900/60'
+      ? 'flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:border hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10]'
       : 'flex-col sm:flex-row rounded-md border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 hover:-translate-y-0.5'"
-    class="group flex relative hover:shadow-lg transition-all duration-200 overflow-hidden"
+    class="group flex relative hover:shadow-2xl transition-all duration-200"
   >
     <!-- Image Section -->
     <div
@@ -14,11 +14,11 @@
     >
       <router-link
         :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
-        class="w-full h-full flex items-center justify-center p-3"
+        class="w-full h-full flex items-center justify-center"
       >
         <img
           :alt="product.name"
-          class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          class="w-full h-full object-contain"
           :src="product.image"
         />
       </router-link>
@@ -41,15 +41,6 @@
           :class="{ 'text-rose-500': cartStore.isInWishlist(product.id) }"
           :style="cartStore.isInWishlist(product.id) ? 'font-variation-settings: \'FILL\' 1;' : ''"
         >favorite</span>
-      </button>
-
-      <!-- Quick View (hover) -->
-      <button
-        class="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200 bg-zinc-900/85 hover:bg-zinc-950 text-white font-bold text-[11px] px-4 py-2 rounded-md flex items-center gap-1.5 shadow-lg backdrop-blur-sm whitespace-nowrap"
-        @click.stop="emit('quick-view', product)"
-      >
-        <span class="material-symbols-outlined text-[14px]">visibility</span>
-        Швидкий перегляд
       </button>
     </div>
 
@@ -181,20 +172,53 @@
           </div>
         </div>
       </div>
+
+      <!-- Extra parameters (grid mode, revealed on hover) -->
+      <!-- Absolutely positioned so it never adds to the card's own document-flow
+           height - a Grid row auto-sizes to its tallest cell, so if this sat in
+           normal flow, hovering one card would grow the whole row and shove
+           every card in it around instead of only the hovered one. -->
+      <div
+        v-if="viewMode === 'grid' && hasExtraSpecs"
+        class="absolute left-0 right-0 top-full px-4 py-3 opacity-0 -translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 bg-[#fcfcfd] dark:bg-[#0b0c10] border-x border-b border-zinc-200 dark:border-zinc-800"
+      >
+        <dl class="space-y-1 text-xs">
+          <div v-if="product.specs?.processor" class="flex justify-between gap-3">
+            <dt class="text-zinc-400">Процесор</dt>
+            <dd class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate">{{ product.specs.processor }}</dd>
+          </div>
+          <div v-if="product.specs?.os" class="flex justify-between gap-3">
+            <dt class="text-zinc-400">ОС</dt>
+            <dd class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate">{{ product.specs.os }}</dd>
+          </div>
+          <div v-if="product.specs?.weight" class="flex justify-between gap-3">
+            <dt class="text-zinc-400">Вага</dt>
+            <dd class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate">{{ product.specs.weight }}</dd>
+          </div>
+        </dl>
+      </div>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
-defineProps<{
+const props = defineProps<{
   product: any;
   viewMode?: string;
 }>();
 
-const emit = defineEmits(["quick-view"]);
 const cartStore = useCartStore();
+
+const hasExtraSpecs = computed(() =>
+  Boolean(
+    props.product?.specs?.processor ||
+      props.product?.specs?.os ||
+      props.product?.specs?.weight,
+  ),
+);
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("uk-UA", {

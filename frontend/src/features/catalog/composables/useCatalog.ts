@@ -7,6 +7,10 @@ export function useCatalog() {
   const router = useRouter();
 
   const viewMode = ref("grid");
+  // How many product cards per row from the lg breakpoint up - 4 is the default,
+  // 5 is the denser option. Smaller breakpoints below lg still scale down to 1/2
+  // columns responsively regardless of this setting.
+  const gridDensity = ref<4 | 5>(4);
   const sortBy = ref("popularity");
   const initialPriceMin = ref(0);
   const initialPriceMax = ref(200000);
@@ -21,8 +25,6 @@ export function useCatalog() {
   const onlyInStock = ref(false);
 
   const isMobileFilterOpen = ref(false);
-  const selectedProductForQuickView = ref<any>(null);
-  const isQuickViewOpen = ref(false);
 
   const isLoading = ref(false);
   const rawProducts = ref<any[]>([]);
@@ -151,8 +153,8 @@ export function useCatalog() {
       brand: apiProduct.brand ? apiProduct.brand.name : null,
       ram: getAttrValue("ram"),
       // Not rendered anywhere the mapped product currently feeds
-      // (ProductCard.vue, QuickViewModal.vue) — kept for parity with the
-      // API shape rather than for any actual UI use.
+      // (ProductCard.vue) — kept for parity with the API shape rather
+      // than for any actual UI use.
       category:
         apiProduct.categories && apiProduct.categories[0]
           ? apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en
@@ -414,16 +416,6 @@ export function useCatalog() {
     onlyInStock.value = false;
   };
 
-  const openQuickView = (product: any) => {
-    selectedProductForQuickView.value = product;
-    isQuickViewOpen.value = true;
-  };
-
-  const closeQuickView = () => {
-    selectedProductForQuickView.value = null;
-    isQuickViewOpen.value = false;
-  };
-
   const getCategoryPath = (categories: any[], slug: string, path: any[] = []): any[] | null => {
     for (const cat of categories) {
       const currentPath = [...path, cat];
@@ -506,6 +498,7 @@ export function useCatalog() {
     route,
     router,
     viewMode,
+    gridDensity,
     sortBy,
     priceMin,
     priceMax,
@@ -515,8 +508,6 @@ export function useCatalog() {
     onlyDiscounts,
     onlyInStock,
     isMobileFilterOpen,
-    selectedProductForQuickView,
-    isQuickViewOpen,
     isLoading,
     rawProducts,
     categoriesList,
@@ -530,8 +521,6 @@ export function useCatalog() {
     activeFilters,
     removeFilter,
     clearFilters,
-    openQuickView,
-    closeQuickView,
     currentCategoryName,
     currentCategoryPath,
   };
