@@ -29,7 +29,15 @@ export default {
         "on-secondary": "#ffffff",
         "surface-dim": "#e4e4e7",
         secondary: "#52525b",
-        primary: "#09090b",
+        // Brand accent (#00a046) as a full 50-950 scale, not the M3 "primary"
+        // token's original flat black — `primary-NNN` shade classes used across
+        // the admin UI generated no CSS at all under the old flat definition.
+        primary: {
+          ...colors.green,
+          500: "#00b050",
+          600: "#00a046",
+          DEFAULT: "#00a046",
+        },
         "on-primary-fixed-variant": "#09090b",
         "primary-fixed": "#e4e4e7",
         "surface-container": "#f4f4f5",

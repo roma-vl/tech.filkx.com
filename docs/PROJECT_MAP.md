@@ -90,8 +90,10 @@ Real, not aspirational: `Role`, `Permission` models with `roles`↔`permissions`
   order placement is implemented in `CheckoutController`/`PlaceOrderAction` (see below), not just
   schema.
 - **Cart/Order**: `Cart`/`CartItem` (guest via `session_id` or `user_id`), `Order`/`OrderItem`
-  (order_number formatted `FKX-YYYYMMDD-XXXXXX`, `payment_method`/`payment_status`/`status` string
-  fields — no payment-gateway integration model/enum backing them, see DEVELOPMENT_PLAN).
+  (order_number formatted `FKX-YYYYMMDD-XXXXXX`, `payment_method`/`payment_status`/`status` still
+  plain string fields, no gateway enum). LiqPay is integrated on top as of commit `1fd50e8`
+  (`LiqPayService`, `PaymentController`, `orders.payment_reference`/`paid_at`) — see
+  DEVELOPMENT_PLAN §2.1 for what's wired vs. still pending (real merchant keys).
 - **Marketing**: `Coupon` (code, type, amount, usage_limit/used_count, expires_at), `Promotion`
   (type, amount, start/end date) — flat, no rule-engine/target-scoping tables yet.
   Actual coupon *validation* logic lives in `App\Api\V1\Actions\Coupon`.
@@ -128,9 +130,16 @@ the model layer. (Whether the index is populated/kept in sync in practice — e.
 in `app/Console/Commands`.)
 
 ### Testing (backend)
-`api/tests/` has only the Laravel-generated stubs: `Feature/ExampleTest.php`, `Unit/ExampleTest.php`,
-`TestCase.php`. **No real backend test coverage exists.** Run via `make test-backend` — but note
-the Makefile bug below.
+As of 2026-08-16 (commit `ca5ef97` + Feature tests added alongside the 2FA/newsletter/home-banner
+work), `api/tests/` has real coverage — the Laravel-generated stubs are gone. `Unit/`:
+`Services/Auth/AuthServiceTest.php` (29 tests), `Services/Auth/TwoFactorAuthenticationServiceTest.php`,
+`Actions/User/TwoFactor/{Enable,Confirm,Disable,RegenerateRecoveryCodes}ActionTest.php`,
+`Http/Middleware/RoleMiddlewareTest.php`. `Feature/`: `Auth/AuthControllerTest.php`,
+`Auth/TwoFactorAuthenticationControllerTest.php`, `Home/HomeControllerTest.php`,
+`Newsletter/NewsletterControllerTest.php`, `Admin/AdminHomeBannerControllerTest.php`. This is real,
+substantial coverage of auth/RBAC/2FA — but still narrow: checkout, orders, cart, catalog, and
+coupons remain untested. Run via `make test-backend` — but note the Makefile bug below, which means
+this suite can't actually be run through the documented command today.
 
 ---
 
@@ -139,8 +148,9 @@ the Makefile bug below.
 ### Routing
 `src/router/index.js` composes `src/router/routes.js` + `src/router/routes/{public,auth,admin,application,billing}.js`.
 `public.js` includes `terms`/`privacy` static-page routes (rendered via `pages/static/StaticPage.vue`,
-which presumably fetches from `/v1/pages/{slug}` — but no seeder populates the `pages` table with
-actual Terms/Privacy content, see DEVELOPMENT_PLAN).
+fetching from `/v1/pages/{slug}`). As of commit `75517a9`, the `pages` table has real
+terms/privacy/oferta/cookies content (not placeholder text) — still explicitly labeled as
+lawyer-unreviewed drafts, see DEVELOPMENT_PLAN §2.8.
 
 ### State management (Pinia)
 Real stores live under FSD-style locations, with `src/stores/*.js` reduced to **re-export shims**
@@ -152,8 +162,8 @@ Real stores live under FSD-style locations, with `src/stores/*.js` reduced to **
 - `src/shared/model/uiStore.ts` — re-exported by `src/stores/ui.js`.
 - `src/entities/user/model/systemStore.ts`, `subscriptionStore.ts` — re-exported by
   `src/stores/system.js` / `subscription.js`.
-- `src/stores/admin/runnerNodesStore.js` and `runnerTranscodersStore.js` — **dead leftover code**
-  from a different project (see "Known issues" below). Not re-exports, not referenced anywhere.
+- `src/stores/admin/runnerNodesStore.js` and `runnerTranscodersStore.js`, previously noted here as
+  dead leftover code from a different project, are **gone** (removed in commit `cb887b2`).
 
 ### FSD-like layering — partially, not fully, consistent
 `entities/`, `features/`, `widgets/`, `shared/`, `pages/` are all populated and are where current
@@ -207,37 +217,50 @@ docs/memory that SSR or sitemap generation are working; see DEVELOPMENT_PLAN.md.
 
 ---
 
-## Known technical debt / inconsistencies (all verified 2026-08-16)
+## Known technical debt / inconsistencies (verified 2026-08-16, re-checked 2026-08-17 against
+`add-new-logic`, which has diverged from `master` by 14 commits since — items below are corrected
+where those commits changed the picture)
 
 1. **`Makefile` `test-backend` target is broken**: `docker compose run --rm tech-api-php-cli php artisan`
    — missing the `test` argument, so it runs `php artisan` (prints command list) instead of the test
-   suite. (`Makefile:27-28`)
+   suite. (`Makefile:27-28`) **Still broken** — and now higher-priority to fix, since a real test
+   suite exists to run (see "Testing (backend)" above) and currently can't be reached this way.
 2. **SSR and sitemap generation are dangling references**, not working features — see above
    (`frontend/package.json` scripts `serve:ssr`, `sitemap`; missing `server.js` and `scripts/`).
-3. **Frontend has zero test infrastructure** despite `test:unit`/`test:e2e` scripts existing.
-4. **Backend has zero real test coverage** beyond framework stubs.
+   Still true, unchanged.
+3. **Frontend has zero test infrastructure** despite `test:unit`/`test:e2e` scripts existing. Still
+   true, unchanged.
+4. ~~Backend has zero real test coverage~~ **No longer true** (commit `ca5ef97` + Feature tests
+   added alongside 2FA/newsletter/home-banner work) — see "Testing (backend)" above for what's
+   covered; still missing coverage on checkout/orders/cart/catalog/coupons.
 5. **Dead code from a different project** ("Filkx Live", a video-streaming SaaS — the actual
-   previous identity of the stale root `CLAUDE.md`) still present:
-   - `frontend/src/stores/admin/runnerNodesStore.js` and `runnerTranscodersStore.js` (call
-     nonexistent `/admin/runner-nodes`, `/admin/transcoder-nodes` endpoints — no matching backend
-     routes exist; zero importers found in the codebase).
-   - `frontend/src/components/admin/ui/OptimizeVideoModal.vue`, `ContentRestrictionBanner.vue`,
+   previous identity of the stale root `CLAUDE.md`):
+   - ~~`frontend/src/stores/admin/runnerNodesStore.js`, `runnerTranscodersStore.js`,
+     `components/admin/ui/OptimizeVideoModal.vue`~~ — **already removed** (deleted in commit
+     `cb887b2`, the same commit that originally wrote this doc — the doc just hadn't caught up).
+   - Still present: `frontend/src/components/admin/ui/ContentRestrictionBanner.vue`,
      `FeatureLockOverlay.vue`, `TrialActivationBanner.vue` — SaaS-plan/video-feature-gating
-     components, unreferenced except in a stale code comment in `router/index.js`.
-   - `docker-compose.yml`'s `tech-api-postgres` healthcheck uses `pg_isready -U live -d live`
-     (`docker-compose.yml:123`) while the actual configured user/db is `tech`/`tech`
-     (`docker-compose.yml:113-115`) — copy-pasted from the other project and never updated.
-   - Leftover Ukrainian-language i18n strings referencing transcoder/runner concepts in
-     `frontend/src/lang/admin/{en,uk}.js`.
+     components, unreferenced except in a stale code comment in `router/index.js`
+     (`// Removed featureKey guard to allow access to locked features with FeatureLockOverlay`).
+   - ~~`docker-compose.yml`'s `tech-api-postgres` healthcheck uses `pg_isready -U live -d live`~~ —
+     **already fixed**, now reads `pg_isready -U tech -d tech` (`docker-compose.yml:124`), matching
+     the actual configured user/db.
+   - ~~Leftover Ukrainian-language i18n strings referencing transcoder/runner concepts~~ — **already
+     gone** from `frontend/src/lang/admin/{en,uk}.js` (no `runner`/`transcoder` matches remain).
 6. **Empty scaffolded directories**: `api/app/Api/Admin/Policies/`, `api/app/Api/Admin/Repositories/`,
    `api/app/Api/V1/Middleware/` exist but contain no files — planned structure that was never used.
-7. **No payment gateway integration**: `Order.payment_method`/`payment_status` are free-text string
-   columns with no gateway enum/model backing them; `quickOrder()` in `CheckoutController` hardcodes
-   `payment_method => 'cod'` (cash on delivery). No Monobank/LiqPay/Stripe SDK in `composer.json`.
-8. **No rate limiting** (`throttle:`) applied anywhere in `api/routes/v1/api.php`.
+   Still true, unchanged.
+7. ~~No payment gateway integration~~ **Done** (commit `1fd50e8`) — LiqPay hosted checkout, see
+   `DEVELOPMENT_PLAN.md` §2.1. `quickOrder()`'s one-click "buy now" path still hardcodes
+   `payment_method => 'cod'`, unlike the main cart checkout flow.
+8. ~~No rate limiting~~ **Done** (commits `970661c`, `75517a9`, `eaafd44`) — `throttle:` now covers
+   auth, checkout/payment, coupon validation, and newsletter subscribe. See `DEVELOPMENT_PLAN.md`
+   §2.2 for the full list.
 9. **No CI**: no `.github/` directory anywhere in the repo — no GitHub Actions workflows exist.
-10. **Largest Vue files** (candidates for splitting): `widgets/Account/tabs/AccountSettingsTab.vue`
-    (1225 lines), `components/admin/features/catalog/ProductFormModal.vue` (1145 lines),
-    `widgets/Account/tabs/AccountOrdersTab.vue` (869 lines), `widgets/Header/Header.vue` (753
-    lines), `components/admin/features/catalog/ProductsTab.vue` (724 lines). Frontend `src/` totals
-    ~43,700 lines across all `.vue` files.
+   Still true, unchanged.
+10. **Largest Vue files** (candidates for splitting, not re-measured this pass — line counts may
+    have shifted slightly with the homepage/header/cart rewrites, but the same files are still the
+    largest): `widgets/Account/tabs/AccountSettingsTab.vue` (1225 lines),
+    `components/admin/features/catalog/ProductFormModal.vue` (1145 lines),
+    `widgets/Account/tabs/AccountOrdersTab.vue` (869 lines), `widgets/Header/Header.vue` (~750+
+    lines), `components/admin/features/catalog/ProductsTab.vue` (724 lines).

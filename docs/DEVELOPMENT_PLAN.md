@@ -1,9 +1,13 @@
 # Development Plan — tech.filkx.com (FilkxTech)
 
-Production-readiness and growth plan. Audited against actual code on 2026-08-16 (branch `master`,
-clean tree). Companion to `docs/PROJECT_MAP.md` (navigation) and supersedes the stale
-`implementation_roadmap.md` (written 2026-06-11, before ~20 subsequent "fix" commits) for status
-purposes — that file's checkboxes are corrected below, item by item.
+Production-readiness and growth plan. Originally audited against actual code on 2026-08-16 (branch
+`master`, clean tree); **re-audited 2026-08-17 against branch `add-new-logic`**, which has since
+diverged from `master` by 14 commits (payment gateway, rate limiting, Sentry, backups, 2FA, legal
+page content, backend unit tests, homepage/header/footer i18n, cart dark-mode/i18n, homepage banner
+CMS, newsletter) — several items below flipped status as a result; each corrected line says so.
+Companion to `docs/PROJECT_MAP.md` (navigation) and supersedes the stale `implementation_roadmap.md`
+(written 2026-06-11, before ~20 subsequent "fix" commits) for status purposes — that file's
+checkboxes are corrected below, item by item.
 
 Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-missing** — **❓ unverified/assumed**
 
@@ -45,9 +49,9 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 ### Frontend, "integration absent, demo data" — **corrected: mostly resolved**
 | Claim (June: `[ ]`) | Actual status now | Evidence |
 |---|---|---|
-| Home components wired to real API instead of demo data | ✅ done | `features/home/composables/useHome.ts` calls `productApi` (real HTTP), maps live product/variant/attribute payloads — not a static array. (One `// mock discount` fallback remains for computing a display discount % when no real `old_price` is present — cosmetic, not data-source-level demo data.) |
+| Home components wired to real API instead of demo data | ✅ done | `features/home/composables/useHome.ts` calls `productApi` (real HTTP), maps live product/variant/attribute payloads — not a static array. As of commit `cf9d503`, homepage hero/promo content itself is now admin-manageable (`home_banners` table, `AdminHomeBannerController`) rather than hardcoded arrays in `HeroSlider`/`FlashDeals`/`BrandPartners`/`CatalogSection`/`TechBlog`. |
 | Cart/wishlist persistence (LocalStorage + sync) | ✅ done | `cartStore.ts` persists wishlist/compare/viewed to `localStorage`, and dedicated sync endpoints exist backend-side (`/user/favorites/sync`, `/user/compares/sync`, `/user/viewed-products/sync`) |
-| Full checkout process | ✅ done (functionally) | `CheckoutController`, wired through `entities/order` + checkout pages — but **no real payment gateway behind it** (see §2.4) |
+| Full checkout process | ✅ done | `CheckoutController`, wired through `entities/order` + checkout pages; LiqPay now provides real online card payment behind the main cart flow (see §2.1) |
 
 **Bottom line: the "e-commerce core absent, frontend on demo data" framing of `implementation_roadmap.md` is obsolete.** Catalog, cart, checkout, orders, coupons, reviews, wishlist, and blog are all real, API-backed, and reasonably wired end to end. The roadmap's Stage 1 and most of Stage 2/3 are functionally done; remaining gaps are narrower and listed below.
 
@@ -56,14 +60,18 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 ## 2. Path to production launch (prioritized)
 
 ### 2.1 E-commerce fundamentals — remaining gaps
-- ❌ **Payment gateway integration.** `Order.payment_method` is a free string (`'cod'` hardcoded in
-  `quickOrder`); no Monobank/LiqPay/Stripe SDK in `api/composer.json`, no webhook handler, no
-  `Transaction`/`Payment` model. This blocks real online payment — currently the only supported
-  flow is effectively manual/offline (cash on delivery, or admin manually confirming a bank
-  transfer via `AdminAccountingController::confirmPayment` + `viewProof`, which exist but are a
-  billing/subscription-style manual-proof flow, not checkout-integrated card payment).
-  **Action**: pick one gateway (LiqPay or Monobank Acquiring are the standard choices for a UA
-  storefront), add `Transaction` model + webhook endpoint + idempotent status reconciliation.
+- ✅ **Payment gateway integration** (done 2026-08-16, commit `1fd50e8`). LiqPay hosted-checkout is
+  wired end to end: `LiqPayService` builds/signs the checkout payload and verifies callback
+  signatures; `PaymentController` exposes `POST /payments/orders/{orderNumber}/liqpay` (initiate),
+  `POST /payments/liqpay/callback` (public, signature-verified, idempotent), and
+  `GET /payments/orders/{orderNumber}/status` (frontend polling after redirect back). Card data
+  never touches the app's servers. `orders.payment_reference`/`orders.paid_at` columns added.
+  The fake "type your card number into our form" modal that always reported success was removed.
+  **Remaining caveat**: `LIQPAY_PUBLIC_KEY`/`LIQPAY_PRIVATE_KEY` are empty placeholders in
+  `api/.env.example` — the initiate endpoint fails closed with a clear message until a real LiqPay
+  merchant account is registered and the keys are set. Also note the separate one-click
+  `CheckoutController::quickOrder` "buy now" path still hardcodes `payment_method => 'cod'` — only
+  the main cart checkout flow goes through LiqPay today.
 - 🟡 **Promotions/pricing engine.** Flat `Promotion`/`Coupon` models work for simple % / fixed-amount
   discounts but have no per-category/per-product targeting, stacking rules, or a
   `PriceCalculationService` to centralize "what does this variant cost right now" logic (currently
@@ -78,45 +86,71 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   verify before shipping a high-traffic sale.
 
 ### 2.2 Security hardening
-- ❌ **No rate limiting** anywhere in `api/routes/v1/api.php` — no `throttle:` middleware on login,
-  register, password-reset, coupon-validate, or checkout endpoints. These are the classic
-  brute-force/abuse targets for a public storefront. **Action**: add `throttle:` groups before
-  launch, at minimum on `/auth/login`, `/auth/register`, `/auth/password/*`, `/checkout*`,
-  `/coupons/validate`.
-- ✅ RBAC is real and enforced via `role:` middleware on the entire `/admin` group.
+- ✅ **Rate limiting** (done 2026-08-16, commits `970661c` + `75517a9` + `eaafd44`). `throttle:`
+  now covers auth (login/register/2FA), `POST /checkout` + `/checkout/quick` (10/min),
+  `POST /payments/orders/{n}/liqpay` (10/min), `POST /coupons/validate` (20/min — loose enough for
+  real retries, tight enough to slow brute-forcing), and `POST /newsletter/subscribe` (5/min). The
+  LiqPay server-to-server callback is intentionally left unthrottled (it's a webhook LiqPay retries
+  until it gets a 200, and authenticity comes from signature verification, not rate limiting).
+- ✅ **TOTP two-factor authentication** (new, commit `970661c`), opt-in per user. `users.two_factor_*`
+  columns (secret/recovery codes encrypted), `TwoFactorAuthenticationService` wraps
+  `pragmarx/google2fa`; login returns a short-lived single-use challenge token instead of an access
+  token when 2FA is enabled, exchanged via `AuthController::verifyTwoFactor()`. Every action
+  (enable/confirm/disable/regenerate recovery codes) is audit-logged via the existing
+  `AuditEvent`/`AuditLogDto` pattern.
+- ✅ RBAC is real and enforced via `role:` middleware on the entire `/admin` group; `RoleMiddleware`
+  now has direct unit coverage (`RoleMiddlewareTest`, commit `ca5ef97`) — unauthenticated,
+  wrong-role, matching-role, and pipe-separated OR-semantics cases.
 - ✅ File upload validation exists and is reasonable: `image|max:10240` (product images, 10MB),
   `image|max:5120` (blog images, 5MB) — both use Laravel's `image` rule (MIME+extension check).
 - ✅ Eloquent/parameterized queries used throughout the sampled controllers — no raw string-interpolated SQL found.
 - ❓ **`IdentifyImpersonation` middleware** exists and is applied broadly (including to all
   authenticated + admin routes) — audit exactly what it allows before launch; impersonation
   middleware is a common source of privilege-escalation bugs if not scoped tightly to holders of a
-  specific permission.
+  specific permission. (`AuthServiceTest`, commit `ca5ef97`, does lock in a regression fix for an
+  `impersonator_id isset()` guard in `refreshToken`, but that's narrower than a full audit of what
+  the middleware allows.)
 - 🟡 Passport tokens: standard OAuth2 grant tables in place; verify token TTLs / refresh-token
   rotation are configured appropriately for a public storefront (not verified this pass).
 - reCAPTCHA v3 is wired on login/register (`VITE_RECAPTCHA_SITE_KEY` in `frontend/.env*`,
   used in `main.js`, `LoginPage.vue`, `RegisterPage.vue`) — ✅ good baseline bot mitigation.
 
 ### 2.3 Observability
-- ❌ **No error tracking** (Sentry or equivalent) — no such dependency in `api/composer.json` or
-  `frontend/package.json`, no DSN in any `.env*` file.
+- 🟡 **Error tracking wired but inert** (done 2026-08-16, commit `f0de4e4`). `sentry/sentry-laravel`
+  is in the exception handler (`bootstrap/app.php`) and `@sentry/vue` in `main.js`, with
+  `SENTRY_LARAVEL_DSN`/`VITE_SENTRY_DSN` placeholders added to `api/.env(.example)` and all three
+  frontend env files. Both stay fully inert until a DSN is actually set — **no Sentry account
+  exists yet**, so nothing is currently being reported anywhere. **Action**: create the Sentry
+  project and set the DSNs before launch; the code-side integration itself is done.
 - 🟡 **Logging**: standard Laravel `LOG_CHANNEL=stack` only; `AdminServerLogController` gives
   admins a UI to view/clear log files, which is a reasonable stop-gap but not a substitute for
   centralized/aggregated logging in production.
 - ✅ **Health check**: default Laravel `/up` endpoint is registered (`bootstrap/app.php`,
   `health: '/up'`) — usable by uptime monitors / load balancer health checks as-is.
 - ❌ No APM/metrics collection found.
-- **Action**: add Sentry (both `api/` via `sentry/sentry-laravel` and `frontend/` via
-  `@sentry/vue`) before launch — this is cheap to add and high-value for a new public site.
 
 ### 2.4 CI/CD
 - ❌ **No CI at all.** No `.github/` directory exists anywhere in the repo. `pint` (PHP lint),
   `format` (frontend prettier+eslint), and `test-backend`/`test-frontend` all exist as Makefile
   targets but nothing runs them automatically on push/PR.
-- ⚠️ Also note: `test-backend` itself is currently **broken** (`Makefile:27-28` — missing `test`
+- ⚠️ Also note: `test-backend` itself is still **broken** (`Makefile:27-28` — missing `test`
   argument to `php artisan`), so even a naive CI job that calls `make test-backend` would not
-  actually run tests today. Fix this before wiring CI.
+  actually run tests today. This is now more worth fixing than before: real backend test coverage
+  exists to run (see below), it's just not reachable through the Makefile target.
 - **Action**: minimally, add a GitHub Actions workflow running `pint --test`, frontend `lint`, and
   (once fixed) `test-backend`/`test-frontend` on every PR.
+- 🟡 **Backend test coverage — no longer near-zero** (done 2026-08-16, commit `ca5ef97`, plus
+  Feature tests added alongside the 2FA/newsletter/home-banner work). Beyond the framework stub,
+  there's now real coverage of the security-critical paths: `AuthServiceTest` (29 tests — register,
+  login incl. the 2FA-challenge path, logout, refresh-token, verify-email, forgot/reset password,
+  OAuth login, new-device notification), unit tests for all four 2FA actions, `RoleMiddlewareTest`
+  (the RBAC/authorization layer, previously untested anywhere), plus Feature tests for
+  `AuthController`, `TwoFactorAuthenticationController`, `HomeController`, `NewsletterController`,
+  and `AdminHomeBannerController`. Still 🟡 not ✅: this is auth/RBAC/home/newsletter coverage —
+  checkout, orders, cart, catalog, and coupons remain untested.
+- ❌ **Frontend test infrastructure still doesn't exist** — no `vitest.config.*`, no `.spec.ts`/
+  `.test.ts` files anywhere in `frontend/`, despite `test:unit`/`test:e2e` npm scripts. Unchanged
+  from the original audit.
 
 ### 2.5 Environment / secrets / backups
 - `docker-compose-production.yml` bakes `VITE_API_BASE_URL`/`VITE_UPLOAD_BASE_URL`/`VITE_BASE_URL`
@@ -126,17 +160,20 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   (verify `.gitignore` covers `api/.env`, `frontend/.env.production` with real secrets — the
   repo's tracked `frontend/.env`/`.env.production`/`.env.staging` currently only contain a public
   reCAPTCHA **site** key, which is meant to be public, so that's fine).
-- ❌ **No backup strategy found** for the `tech-api-postgres-data` volume — no backup script,
-  cron, or documented process in the repo. For a store handling real orders/customer PII, this is
-  a launch blocker, not a nice-to-have.
+- ✅ **Automated Postgres backups** (done 2026-08-16, commit `f0de4e4`). `spatie/laravel-backup`
+  is installed and configured (DB connection from `DB_CONNECTION=pgsql`, local disk); scheduled
+  `backup:clean` → `backup:run` → `backup:monitor` daily in `routes/console.php`. Along the way,
+  `postgresql-client` (needed for `pg_dump`) was found missing from all three php-cli Docker images
+  (dev/staging/production) and added — a real backup (DB dump + files, ~28MB) was verified
+  end-to-end on the dev container. Off-host replication of the backup destination itself is not
+  separately verified in this pass.
 - `FILESYSTEM_DISK=local` in `api/.env.example`, `AWS_*` vars present but blank — object storage
   (S3/R2) is scaffolded (env vars exist, `league/flysystem-aws-s3-v3`-style setup is standard in
   Laravel) but not actually configured/used. Product/blog images currently save to local disk
   (`$request->file('image')->store('blog', 'public')` pattern) — fine for a single-server deploy,
   a scaling risk if the app ever runs multi-instance without shared storage.
-- **Action**: stand up automated Postgres backups (e.g. `pg_dump` cron to off-host storage) before
-  launch; decide whether local disk storage is acceptable for the initial deploy topology or needs
-  S3/R2 first.
+- **Action**: decide whether local disk storage is acceptable for the initial deploy topology or
+  needs S3/R2 first; confirm the backup destination itself is off-host, not just off-database.
 
 ### 2.6 SEO / SSR correctness
 - ❌ **SSR is not implemented**, despite the `serve:ssr` npm script and `frontend-ssr` Makefile
@@ -164,16 +201,21 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   in the upload actions inspected).
 
 ### 2.8 Legal / compliance
-- 🟡 Routes exist (`terms`, `privacy` in `frontend/src/router/routes/public.js`, rendered via
-  `pages/static/StaticPage.vue`, presumably backed by the `Page` model /
-  `GET /v1/pages/{slug}`) — but **no seeder populates actual Terms/Privacy content** in the `Page`
-  table (checked `api/database/seeders/` — only `CatalogSeeder`, `ProductsFromSotaSeeder`,
-  `BlogPostsFromSotaSeeder` are registered in `DatabaseSeeder`). The CMS mechanism is real; the
-  content is not yet there. **Action**: write and seed actual Terms of Service / Privacy Policy
-  copy via the existing `AdminPageController` CRUD before public launch — this is a legal
-  requirement for any storefront collecting customer/payment data, not just a content task.
-- ❌ No cookie-consent banner found in this pass (not exhaustively searched — verify before EU/UA
-  traffic if legally required).
+- ✅ **Terms/Privacy/Oferta/Cookies content written** (done 2026-08-16, commit `75517a9`). The
+  original seed migration only had thin 2-paragraph placeholders with inconsistent business
+  identity (two different legal entity names, a fabricated address, fabricated hotline number,
+  fabricated physical stores, an installment partnership that was never integrated). A new
+  migration standardizes the entity name to ТОВ «FilksTech» everywhere and expands
+  terms/privacy/oferta/cookies to full documents: legal entity identification, what data is
+  collected (naming the real processors — LiqPay for payments, Nova Poshta/Ukrposhta for delivery),
+  user rights, the 14-day return law reference, force majeure, governing law, dispute resolution.
+  **These are explicitly labeled drafts (with a last-updated date on each page) and have not been
+  reviewed by a lawyer** — facts the business must still supply are left as bracketed placeholders
+  ([ЮРИДИЧНА АДРЕСА], [ЄДРПОУ], etc.). **Action before launch**: have a lawyer review, and fill in
+  the remaining bracketed placeholders with real values.
+- ❌ No cookie-consent banner found — Footer only links to the `/cookies` policy page, there's no
+  actual consent UI (banner/popup). Unchanged from the original audit; verify before EU/UA traffic
+  if legally required.
 
 ---
 
@@ -204,8 +246,16 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   as complete in the June doc.
 - **i18n/multi-currency**: `name`/`description` fields are JSON multi-language (`uk`/`en` observed)
   at the data layer, and the frontend has separate `lang/public` and `lang/admin` locale files —
-  solid foundation for UA/EN. No multi-currency support observed (prices are plain decimals with
-  no currency column) — add if international expansion is planned.
+  solid foundation for UA/EN. As of 2026-08-16/17, most of the previously-hardcoded storefront
+  surface has actually been localized rather than just scaffolded: `Header.vue` (commit `789a1d3`,
+  incl. fixing a `t()`-on-array bug that rendered popular-search tags one character at a time —
+  `b352b89`), the mega menu / homepage / footer (commit `af58fcd`, which also fixed category and
+  product names always showing the `uk` field regardless of active locale), and the shopping
+  cart/checkout/drawer (dark-mode + i18n pass, commit `7d4c6ab`). Remaining hardcoded-string
+  surface hasn't been swept exhaustively past those areas. No multi-currency support observed
+  (prices are plain decimals with no currency column) — add if international expansion is planned.
+- **Newsletter subscription** (new, commit `eaafd44`): `newsletter_subscribers` table,
+  `POST /v1/newsletter/subscribe` (rate-limited 5/min), wired into Footer and Header.
 - **Load/scale testing**: none observed (no k6/Locust/Artillery config in the repo) — worth doing
   once payment + SSR + backups are in place, before any real marketing push.
 
@@ -213,15 +263,21 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 
 ## 4. Suggested phase order (summary)
 
-1. **Fix what's broken today** (cheap, unblocks everything else): `Makefile` `test-backend` target;
-   decide sitemap/SSR direction rather than leaving dangling npm scripts; remove or intentionally
-   keep the dead `runnerNodesStore`/`runnerTranscodersStore`/video-modal leftovers (see
-   `PROJECT_MAP.md` §"Known technical debt").
-2. **Launch blockers**: payment gateway, rate limiting, Postgres backups, Terms/Privacy content,
-   basic error tracking (Sentry), CI running lint+tests.
+1. **Fix what's broken today** (cheap, unblocks everything else): `Makefile` `test-backend` target
+   (real tests now exist — see §2.4 — but the target itself still can't run them); decide
+   sitemap/SSR direction rather than leaving dangling npm scripts; remove the still-present dead
+   `ContentRestrictionBanner`/`FeatureLockOverlay`/`TrialActivationBanner` leftovers (see
+   `PROJECT_MAP.md` §"Known technical debt" — the `runnerNodesStore`/`runnerTranscodersStore`/
+   video-modal ones this used to also list are already gone).
+2. **Launch blockers — mostly done now**: ~~payment gateway~~ ✅, ~~rate limiting~~ ✅,
+   ~~Postgres backups~~ ✅, ~~Terms/Privacy content~~ ✅ (drafts, needs lawyer review),
+   ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything). Still open:
+   CI running lint+tests, a cookie-consent banner if legally required, lawyer review of the legal
+   pages, creating the Sentry project.
 3. **Launch-quality**: SSR or prerendering + real sitemap generation for SEO, Redis-backed caching,
    image storage strategy (confirm local-disk is acceptable or move to S3/R2), promotions engine
    hardening, shipping API integration if not already automated.
-4. **Growth**: Meilisearch-backed faceted search on the frontend if not already, real test suites
-   (backend + frontend, currently both empty), external analytics, load testing, multi-currency if
-   expanding beyond Ukraine.
+4. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
+   test coverage beyond auth/RBAC/home/newsletter to checkout/orders/cart/catalog/coupons, build
+   frontend test infrastructure from scratch (still literally zero), external analytics, load
+   testing, multi-currency if expanding beyond Ukraine.
