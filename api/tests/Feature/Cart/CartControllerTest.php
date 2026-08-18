@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cart;
 
+use App\Api\V1\Actions\Cart\MergeCartsAction;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Promotion;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class CartControllerTest extends TestCase
@@ -335,5 +337,23 @@ class CartControllerTest extends TestCase
             ->assertJsonPath('data.items.0.quantity', 2);
 
         $this->assertDatabaseMissing('carts', ['session_id' => $guestSession]);
+    }
+
+    public function test_merge_returns_the_actions_error_message_and_status_when_it_fails(): void
+    {
+        $user = User::factory()->create();
+
+        $this->mock(MergeCartsAction::class, function ($mock) {
+            $mock->shouldReceive('execute')
+                ->once()
+                ->andThrow(new \RuntimeException('Guest cart not found', Response::HTTP_UNPROCESSABLE_ENTITY));
+        });
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->postJson('/api/v1/cart/merge', ['sessionId' => 'session-'.uniqid()]);
+
+        $response->assertStatus(422)
+            ->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'Guest cart not found');
     }
 }

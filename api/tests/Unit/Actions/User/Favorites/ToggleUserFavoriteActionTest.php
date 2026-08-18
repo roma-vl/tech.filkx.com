@@ -1,0 +1,56 @@
+<?php
+
+namespace Tests\Unit\Actions\User\Favorites;
+
+use App\Api\V1\Actions\User\Favorites\ToggleUserFavoriteAction;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class ToggleUserFavoriteActionTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private ToggleUserFavoriteAction $action;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->action = app(ToggleUserFavoriteAction::class);
+    }
+
+    private function makeProduct(): Product
+    {
+        return Product::create([
+            'slug' => 'product-'.uniqid(),
+            'name' => ['uk' => 'Товар', 'en' => 'Product'],
+            'description' => ['uk' => '', 'en' => ''],
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_execute_adds_the_product_when_not_already_favorited(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->makeProduct();
+
+        $result = $this->action->execute($user, $product);
+
+        $this->assertDatabaseHas('favorites', ['user_id' => $user->id, 'product_id' => $product->id]);
+        $this->assertCount(1, $result);
+    }
+
+    public function test_execute_removes_the_product_when_already_favorited(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->makeProduct();
+        $user->favorites()->attach($product->id);
+
+        $result = $this->action->execute($user, $product);
+
+        $this->assertDatabaseMissing('favorites', ['user_id' => $user->id, 'product_id' => $product->id]);
+        $this->assertCount(0, $result);
+    }
+}

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Catalog;
 
+use App\Models\Attribute;
+use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -236,5 +238,118 @@ class CatalogControllerTest extends TestCase
         $response = $this->getJson("/api/v1/catalog/products/{$inactive->slug}/related");
 
         $response->assertNotFound();
+    }
+
+    public function test_categories_returns_parent_categories_with_their_children(): void
+    {
+        $parent = Category::create(['slug' => 'parent-'.uniqid(), 'name' => ['uk' => 'P', 'en' => 'P'], 'order' => 0]);
+        $child = Category::create(['slug' => 'child-'.uniqid(), 'name' => ['uk' => 'C', 'en' => 'C'], 'order' => 0, 'parent_id' => $parent->id]);
+
+        $response = $this->getJson('/api/v1/catalog/categories');
+
+        $response->assertOk();
+        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        $this->assertContains($parent->slug, $slugs);
+        $this->assertNotContains($child->slug, $slugs);
+
+        $parentPayload = collect($response->json('data'))->firstWhere('slug', $parent->slug);
+        $this->assertSame($child->slug, $parentPayload['children'][0]['slug']);
+    }
+
+    public function test_brands_returns_brands_with_their_active_product_count(): void
+    {
+        $brand = Brand::create(['name' => 'Brand A', 'slug' => 'brand-'.uniqid()]);
+        $activeProduct = $this->makeProduct('active', $brand);
+        $this->makeVariant($activeProduct, 100);
+        $inactiveProduct = $this->makeProduct('inactive', $brand);
+        $this->makeVariant($inactiveProduct, 100);
+
+        $response = $this->getJson('/api/v1/catalog/brands');
+
+        $response->assertOk();
+        $payload = collect($response->json('data'))->firstWhere('slug', $brand->slug);
+        $this->assertSame(1, $payload['productsCount']);
+    }
+
+    public function test_filters_returns_the_price_range_and_attributes_with_values(): void
+    {
+        $product = $this->makeProduct();
+        $this->makeVariant($product, 50);
+        $this->makeVariant($product, 500);
+
+        $attribute = Attribute::create(['code' => 'color', 'name' => ['uk' => 'Колір', 'en' => 'Color'], 'type' => 'select']);
+        AttributeValue::create(['attribute_id' => $attribute->id, 'value' => ['uk' => 'Червоний', 'en' => 'Red']]);
+
+        $response = $this->getJson('/api/v1/catalog/filters');
+
+        $response->assertOk()
+            ->assertJsonPath('data.price.min', 50)
+            ->assertJsonPath('data.price.max', 500);
+        $codes = collect($response->json('data.attributes'))->pluck('code')->all();
+        $this->assertContains('color', $codes);
+    }
+
+    public function test_product_returns_an_active_products_details_by_slug(): void
+    {
+        $product = $this->makeProduct();
+        $this->makeVariant($product, 100);
+
+        $response = $this->getJson("/api/v1/catalog/products/{$product->slug}");
+
+        $response->assertOk()->assertJsonPath('data.slug', $product->slug);
+    }
+
+    public function test_product_increments_the_views_count(): void
+    {
+        $product = $this->makeProduct();
+        $this->makeVariant($product, 100);
+
+        $this->getJson("/api/v1/catalog/products/{$product->slug}")->assertOk();
+
+        $this->assertSame(1, $product->fresh()->views_count);
+    }
+
+    public function test_product_returns_404_for_an_unknown_slug(): void
+    {
+        $response = $this->getJson('/api/v1/catalog/products/does-not-exist');
+
+        $response->assertNotFound();
+    }
+
+    public function test_product_returns_404_for_an_inactive_product(): void
+    {
+        $inactive = $this->makeProduct('inactive');
+
+        $response = $this->getJson("/api/v1/catalog/products/{$inactive->slug}");
+
+        $response->assertNotFound();
+    }
+
+    public function test_random_products_only_returns_active_products(): void
+    {
+        $active = $this->makeProduct('active');
+        $this->makeVariant($active, 100);
+        $inactive = $this->makeProduct('inactive');
+        $this->makeVariant($inactive, 100);
+
+        $response = $this->getJson('/api/v1/catalog/products/random');
+
+        $response->assertOk();
+        $slugs = collect($response->json('data'))->pluck('slug')->all();
+        $this->assertContains($active->slug, $slugs);
+        $this->assertNotContains($inactive->slug, $slugs);
+    }
+
+    public function test_random_products_returns_at_most_five_products(): void
+    {
+        for ($i = 0; $i < 7; $i++) {
+            $product = $this->makeProduct();
+            $this->makeVariant($product, 100);
+        }
+
+        $response = $this->getJson('/api/v1/catalog/products/random');
+
+        $response->assertOk();
+        $this->assertCount(5, $response->json('data'));
     }
 }

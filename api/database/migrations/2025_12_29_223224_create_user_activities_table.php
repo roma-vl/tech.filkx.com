@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
-            // Activity type (e.g., 'video.created', 'playlist.updated', 'stream.started')
+            // Activity type (e.g., 'order.placed', 'review.created', 'product.viewed')
             $table->string('activity_type');
 
-            // Polymorphic relation to the subject (Video, Playlist, StreamSession)
+            // Polymorphic relation to the subject (Order, ProductReview, Product, ...)
             $table->string('subject_type');
             $table->unsignedBigInteger('subject_id');
 

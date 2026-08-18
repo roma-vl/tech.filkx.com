@@ -388,6 +388,4 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('home-banners/upload', [AdminHomeBannerController::class, 'uploadImage']);
     });
 
-    Route::get('/version', [SystemController::class, 'status']);
-
 });
