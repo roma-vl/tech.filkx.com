@@ -97,6 +97,7 @@ class ProductRepository implements ProductRepositoryInterface
                             ->whereRaw('old_price > price');
                     });
             })
+            ->take($limit)
             ->get();
     }
 
