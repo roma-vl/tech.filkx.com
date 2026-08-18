@@ -31,7 +31,9 @@ class OAuthController extends BaseApiController
         try {
             $result = $this->service->handleCallback($provider, $request);
 
-            $token = $result['token']['access_token'];
+            // AuthTokenDto::toArray() keys are camelCase ('accessToken'), not the snake_case
+            // 'access_token' used elsewhere for the JSON API response.
+            $token = $result['token']['accessToken'];
 
             // Pick the best frontend URL from the allowed list based on request origin or default to first
             $origins = explode(',', config('app.frontend_url', 'http://localhost:3000'));
