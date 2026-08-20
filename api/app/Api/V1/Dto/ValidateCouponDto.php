@@ -6,14 +6,14 @@ class ValidateCouponDto
 {
     public function __construct(
         public readonly string $code,
-        public readonly float $cartTotal
+        public readonly CartSessionDto $cartSession
     ) {}
 
     public static function fromRequest($request): self
     {
         return new self(
             code: $request->input('code'),
-            cartTotal: (float) ($request->input('cartTotal') ?? $request->input('cart_total') ?? 0)
+            cartSession: CartSessionDto::fromRequest($request)
         );
     }
 }

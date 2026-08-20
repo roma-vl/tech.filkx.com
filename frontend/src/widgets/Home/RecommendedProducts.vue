@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
 interface Product {
@@ -16,9 +17,11 @@ interface Product {
 
 const props = defineProps<{
   products: Product[];
+  personalized?: boolean;
 }>();
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 const carouselRef = ref<HTMLElement | null>(null);
 
 const scrollCarousel = (direction: "left" | "right") => {
@@ -42,14 +45,16 @@ const formatPrice = (price: number) => {
     <!-- Section Header -->
     <div class="flex items-center justify-between mb-8">
       <div class="space-y-1.5">
-        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">Персональна підбірка</span>
+        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">
+          {{ personalized ? t("home.recommended.personalizedBadge") : t("home.recommended.genericBadge") }}
+        </span>
         <h2
           class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight"
         >
-          Рекомендовано для вас
+          {{ personalized ? t("home.recommended.personalizedTitle") : t("home.recommended.genericTitle") }}
         </h2>
         <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400">
-          На основі ваших інтересів та історії переглядів
+          {{ personalized ? t("home.recommended.personalizedSubtitle") : t("home.recommended.genericSubtitle") }}
         </p>
       </div>
 
@@ -57,14 +62,14 @@ const formatPrice = (price: number) => {
       <div class="flex gap-2 shrink-0">
         <button
           class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm"
-          aria-label="Прокрутити ліворуч"
+          :aria-label="t('home.recommended.scrollLeft')"
           @click="scrollCarousel('left')"
         >
           <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_left</span>
         </button>
         <button
           class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm"
-          aria-label="Прокрутити праворуч"
+          :aria-label="t('home.recommended.scrollRight')"
           @click="scrollCarousel('right')"
         >
           <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_right</span>
@@ -143,13 +148,13 @@ const formatPrice = (price: number) => {
               class="flex-grow bg-[#00a046] hover:bg-[#00b050] text-white py-2 rounded-lg text-xs font-extrabold shadow-sm transition-colors flex items-center justify-center gap-1.5"
               @click.stop="cartStore.addToCart(prod as any)"
             >
-              <span>В кошик</span>
+              <span>{{ t("common.addToCart") }}</span>
               <span class="material-symbols-outlined text-[14px]">shopping_cart</span>
             </button>
             <button
               class="w-8 h-8 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center shrink-0"
               :class="{ 'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]': cartStore.isInCompare(prod.id as any) }"
-              title="Порівняти"
+              :title="t('common.compare')"
               @click.stop="cartStore.toggleCompare(prod as any)"
             >
               <span

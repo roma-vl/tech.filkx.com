@@ -15,7 +15,7 @@ class WishlistService
 
         $user->favorites()->syncWithoutDetaching([
             $product->id => [
-                'price_at_add'   => $currentPrice,
+                'price_at_add' => $currentPrice,
                 'notify_on_drop' => $notify,
             ],
         ]);

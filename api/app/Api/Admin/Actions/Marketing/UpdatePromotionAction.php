@@ -21,6 +21,11 @@ class UpdatePromotionAction
             throw new PromotionNotFoundException;
         }
 
-        return $this->promotionRepository->update($promotion, $dto->toArray());
+        $promotion = $this->promotionRepository->update($promotion, $dto->toArray());
+
+        $promotion->categories()->sync($dto->categoryIds);
+        $promotion->products()->sync($dto->productIds);
+
+        return $promotion;
     }
 }

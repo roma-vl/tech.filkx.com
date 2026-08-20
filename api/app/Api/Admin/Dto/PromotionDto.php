@@ -4,6 +4,10 @@ namespace App\Api\Admin\Dto;
 
 class PromotionDto
 {
+    /**
+     * @param  array<int, int>  $categoryIds
+     * @param  array<int, int>  $productIds
+     */
     public function __construct(
         public readonly string $name,
         public readonly ?string $description,
@@ -11,7 +15,9 @@ class PromotionDto
         public readonly float $amount,
         public readonly ?string $startDate,
         public readonly ?string $endDate,
-        public readonly bool $isActive
+        public readonly bool $isActive,
+        public readonly array $categoryIds = [],
+        public readonly array $productIds = []
     ) {}
 
     public static function fromRequest($request): self
@@ -23,7 +29,9 @@ class PromotionDto
             amount: (float) $request->input('amount'),
             startDate: $request->input('startDate'),
             endDate: $request->input('endDate'),
-            isActive: (bool) $request->input('isActive', true)
+            isActive: (bool) $request->input('isActive', true),
+            categoryIds: $request->input('categoryIds', []),
+            productIds: $request->input('productIds', [])
         );
     }
 

@@ -2,102 +2,145 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\Category;
+use App\Api\Admin\Actions\Category\CreateCategoryAction;
+use App\Api\Admin\Actions\Category\DeleteCategoryAction;
+use App\Api\Admin\Actions\Category\ListCategoriesAction;
+use App\Api\Admin\Actions\Category\UpdateCategoryAction;
+use App\Api\Admin\Dto\CategoryDto;
+use App\Api\Admin\Requests\StoreCategoryRequest;
+use App\Api\Admin\Requests\UpdateCategoryRequest;
+use App\Api\Admin\Resources\AdminCategoryResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminCategoryController extends BaseApiController
 {
-    public function index(Request $request): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/categories',
+        summary: 'List catalog categories',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Categories'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/AdminCategory'),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function index(ListCategoriesAction $action): JsonResponse
     {
-        $categories = Category::with('parent')->get()->map(function ($cat) {
-            return [
-                'id' => $cat->id,
-                'parentId' => $cat->parent_id,
-                'parentName' => $cat->parent ? ($cat->parent->name['uk'] ?? $cat->parent->name['en'] ?? '') : null,
-                'slug' => $cat->slug,
-                'nameUk' => $cat->name['uk'] ?? '',
-                'nameEn' => $cat->name['en'] ?? '',
-                'order' => $cat->order,
-            ];
-        });
+        $categories = $action->execute();
 
-        return self::successfulResponseWithData($categories);
+        return self::successfulResponseWithData(AdminCategoryResource::collection($categories));
     }
 
-    public function store(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/categories',
+        summary: 'Create a catalog category',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                    new OA\Property(property: 'parentId', type: 'integer', nullable: true),
+                    new OA\Property(property: 'order', type: 'integer'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Categories'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Category created successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminCategory'),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function store(StoreCategoryRequest $request, CreateCategoryAction $action): JsonResponse
     {
-        $request->validate([
-            'nameUk' => 'required|string',
-            'nameEn' => 'required|string',
-            'parentId' => 'nullable|exists:categories,id',
-            'order' => 'nullable|integer',
-        ]);
+        $category = $action->execute(CategoryDto::fromRequest($request));
 
-        $slug = Str::slug($request->input('nameEn'));
-
-        // Ensure uniqueness of slug
-        $count = Category::where('slug', 'like', "{$slug}%")->count();
-        if ($count > 0) {
-            $slug = "{$slug}-".($count + 1);
-        }
-
-        $category = Category::create([
-            'name' => [
-                'uk' => $request->input('nameUk'),
-                'en' => $request->input('nameEn'),
-            ],
-            'slug' => $slug,
-            'parent_id' => $request->input('parentId'),
-            'order' => $request->input('order', 0),
-        ]);
-
-        return self::successfulResponseWithData([
-            'id' => $category->id,
-            'parentId' => $category->parent_id,
-            'slug' => $category->slug,
-            'nameUk' => $category->name['uk'] ?? '',
-            'nameEn' => $category->name['en'] ?? '',
-            'order' => $category->order,
-        ], Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new AdminCategoryResource($category), Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    #[OA\Put(
+        path: '/api/admin/categories/{id}',
+        summary: 'Update a catalog category',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                    new OA\Property(property: 'parentId', type: 'integer', nullable: true),
+                    new OA\Property(property: 'order', type: 'integer'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Categories'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Category updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminCategory'),
+            ),
+            new OA\Response(response: 404, description: 'Category not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(UpdateCategoryRequest $request, int $id, UpdateCategoryAction $action): JsonResponse
     {
-        $category = Category::findOrFail($id);
+        $category = $action->execute($id, CategoryDto::fromRequest($request));
 
-        $request->validate([
-            'nameUk' => 'required|string',
-            'nameEn' => 'required|string',
-            'parentId' => 'nullable|exists:categories,id|different:id',
-            'order' => 'nullable|integer',
-        ]);
-
-        $category->update([
-            'name' => [
-                'uk' => $request->input('nameUk'),
-                'en' => $request->input('nameEn'),
-            ],
-            'parent_id' => $request->input('parentId'),
-            'order' => $request->input('order', 0),
-        ]);
-
-        return self::successfulResponseWithData([
-            'id' => $category->id,
-            'parentId' => $category->parent_id,
-            'slug' => $category->slug,
-            'nameUk' => $category->name['uk'] ?? '',
-            'nameEn' => $category->name['en'] ?? '',
-            'order' => $category->order,
-        ]);
+        return self::successfulResponseWithData(new AdminCategoryResource($category));
     }
 
-    public function destroy(int $id): JsonResponse
+    #[OA\Delete(
+        path: '/api/admin/categories/{id}',
+        summary: 'Delete a catalog category',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Categories'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Category deleted successfully'),
+            new OA\Response(response: 404, description: 'Category not found'),
+        ],
+    )]
+    public function destroy(int $id, DeleteCategoryAction $action): JsonResponse
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
+        $action->execute($id);
 
         return self::successfulResponse();
     }

@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -62,8 +62,8 @@ return new class extends Migration
       <li><strong>Bank Invoice Transfer:</strong> Payment via invoice details (IBAN) for legal entities and individuals.</li>
     </ul>
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'warranty-returns',
@@ -104,8 +104,8 @@ return new class extends Migration
       <li>Sales receipt, check, or invoice documentation is provided.</li>
     </ul>
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'service',
@@ -148,8 +148,8 @@ return new class extends Migration
     <h4 class="font-bold text-zinc-900 dark:text-white mb-2">Repair Warranty</h4>
     <p class="text-xs text-zinc-500">Enjoy up to 6 months of additional warranty on replaced components.</p>
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'services',
@@ -180,8 +180,8 @@ return new class extends Migration
   <li class="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-150 dark:border-zinc-800">
     <strong>Data Migration:</strong> Complete and safe migration of contacts, documents, multimedia files, and configurations from your old device to the new one.
   </li>
-</ul>'
-                ]
+</ul>',
+                ],
             ],
             [
                 'slug' => 'installments',
@@ -228,8 +228,8 @@ return new class extends Migration
       <li>The first payment is charged on the purchase day.</li>
     </ul>
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'filkx-exchange',
@@ -260,8 +260,8 @@ return new class extends Migration
   <div class="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-150 dark:border-zinc-800">
     <strong>Step 3. Purchase:</strong> Choose any new product on the catalog shelf and pay only the difference.
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'contacts',
@@ -304,8 +304,8 @@ return new class extends Migration
       <li><strong>Retail stores:</strong> daily 10:00 - 21:00</li>
     </ul>
   </div>
-</div>'
-                ]
+</div>',
+                ],
             ],
             [
                 'slug' => 'about',
@@ -316,8 +316,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">Ми віримо, що технології повинні полегшувати життя та робити його яскравішим. Саме тому ми відбираємо тільки перевірені бренди, забезпечуємо повну офіційну гарантію, організовуємо надшвидку логістику та власну кваліфіковану службу підтримки клієнтів.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">About FilkxTech</h2>
 <p class="text-base text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">Founded in 2010, FilkxTech grew from a small startup online e-store into one of the leading consumer electronics retailers in Ukraine. Our ultimate mission is supplying premium authentic technology combined with unmatched support.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">We believe that technology should empower people and make life more exciting. This is why we partner with premium manufacturers, provide extensive guarantees, organize super-fast shipping, and run our own customer care hotline.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">We believe that technology should empower people and make life more exciting. This is why we partner with premium manufacturers, provide extensive guarantees, organize super-fast shipping, and run our own customer care hotline.</p>',
+                ],
             ],
             [
                 'slug' => 'terms',
@@ -328,8 +328,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Ми залишаємо за собою право в будь-який час вносити зміни до цін, асортименту та контенту нашого магазину без попереднього повідомлення. Всі опубліковані матеріали захищені законами про інтелектуальну власність.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Terms & Conditions of Website Usage</h2>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">This User Agreement defines the conditions for browsing and utilizing the FilkxTech e-commerce website. By navigating this site, you accept these terms in full.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">We reserve the right to amend catalog prices, stock availability details, and textual materials at any moment without warning. All copyrighted elements are protected under intellectual property acts.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">We reserve the right to amend catalog prices, stock availability details, and textual materials at any moment without warning. All copyrighted elements are protected under intellectual property acts.</p>',
+                ],
             ],
             [
                 'slug' => 'careers',
@@ -340,8 +340,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Якщо ви хочете приєднатися до нас — надсилайте своє резюме на адресу <strong>hr@tech.filkx.com</strong>.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Work at FilkxTech</h2>
 <p class="text-base text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">We are constantly expanding and looking for talented individuals passionate about consumer technology. In our team, you will find opportunities for professional development, ambitious goals, and an supportive ecosystem.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">If you wish to join us, send your CV to <strong>hr@tech.filkx.com</strong>.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">If you wish to join us, send your CV to <strong>hr@tech.filkx.com</strong>.</p>',
+                ],
             ],
             [
                 'slug' => 'franchising',
@@ -352,8 +352,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">З питань франчайзингу пишіть на <strong>franchise@tech.filkx.com</strong>.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">FilkxTech Franchising Partnership</h2>
 <p class="text-base text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">Launch a certified FilkxTech store in your area. We provide a validated business model, direct electronics distribution, and complete marketing and operational guidance.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">For franchise proposals, email us at <strong>franchise@tech.filkx.com</strong>.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">For franchise proposals, email us at <strong>franchise@tech.filkx.com</strong>.</p>',
+                ],
             ],
             [
                 'slug' => 'promo-rules',
@@ -364,8 +364,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Умови нарахування бонусів, подарунків чи надання спеціальних цін вказуються в детальній оферті кожної окремої рекламної кампанії на головній сторінці.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Official Promotion & Sweepstakes Rules</h2>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">All promotional discount codes, rewards, and product giveaways across the FilkxTech network are governed by established rules. The official host is FilkxTech Premium LLC.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Specific terms regarding bonus points, gift products, or special promo pricing are provided on the details page of each active advertising campaign.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Specific terms regarding bonus points, gift products, or special promo pricing are provided on the details page of each active advertising campaign.</p>',
+                ],
             ],
             [
                 'slug' => 'privacy',
@@ -376,8 +376,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Збір даних здійснюється виключно з метою обробки замовлень та надання персоналізованих пропозицій. Ми не передаємо ваші дані третім особам без вашої прямої згоди.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Privacy Policy & Personal Data Protection</h2>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">We value your privacy and guarantee the security of your personal database records. This policy document explains how we collect, process, and protect your information when utilizing our services.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Data collection is done purely to complete your orders and supply customized discounts. We never transfer your details to third parties without your explicit permission.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Data collection is done purely to complete your orders and supply customized discounts. We never transfer your details to third parties without your explicit permission.</p>',
+                ],
             ],
             [
                 'slug' => 'oferta',
@@ -388,8 +388,8 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Моментом безумовного прийняття умов договору користувачем (акцептом оферти) вважається факт оформлення та підтвердження замовлення на веб-сайті магазину.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Public Offer Agreement</h2>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">This agreement constitutes the official public offer of the FilkxTech online store for purchasing products remotely through electronic channels.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">The moment of unconditional acceptance of these conditions by the user (acceptance of the offer) is defined as placing and validating an order on this website.</p>'
-                ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">The moment of unconditional acceptance of these conditions by the user (acceptance of the offer) is defined as placing and validating an order on this website.</p>',
+                ],
             ],
             [
                 'slug' => 'cookies',
@@ -400,9 +400,9 @@ return new class extends Migration
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Файли cookie допомагають нам зберігати ваші налаштування мови та товари в кошику. Ви можете в будь-який час вимкнути файли cookie в налаштуваннях вашого браузера.</p>',
                     'en' => '<h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Cookies Usage Policy</h2>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Our website utilizes cookie files to enhance your browsing experience, analyze traffic patterns, and display relevant commercial ads.</p>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies help us preserve your language selections and remember cart items. You can block cookie files at any moment inside your browser options.</p>'
-                ]
-            ]
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies help us preserve your language selections and remember cart items. You can block cookie files at any moment inside your browser options.</p>',
+                ],
+            ],
         ];
 
         foreach ($pages as $p) {

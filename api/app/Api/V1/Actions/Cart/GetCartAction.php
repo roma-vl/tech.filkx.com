@@ -6,19 +6,22 @@ use App\Api\V1\Dto\CartDetailsDto;
 use App\Api\V1\Dto\CartSessionDto;
 use App\Api\V1\Repositories\CartRepositoryInterface;
 use App\Models\Cart;
+use App\Services\Pricing\Dto\CartLineItemDto;
+use App\Services\Pricing\PriceCalculationService;
 use Illuminate\Support\Str;
 
 class GetCartAction
 {
     public function __construct(
-        protected CartRepositoryInterface $cartRepository
+        protected CartRepositoryInterface $cartRepository,
+        protected PriceCalculationService $priceCalculationService
     ) {}
 
     public function execute(CartSessionDto $sessionDto): CartDetailsDto
     {
         $cart = $this->resolveCart($sessionDto);
 
-        $items = $cart->items()->with(['variant.product', 'variant.stocks'])->get();
+        $items = $cart->items()->with(['variant.product.categories', 'variant.stocks'])->get();
 
         $validatedItems = [];
         $total = 0;
@@ -65,10 +68,13 @@ class GetCartAction
             $subtotal = $price * $quantity;
             $total += $subtotal;
 
+            $categoryIds = $variant->product->categories->pluck('id')->all();
+
             $validatedItems[] = [
                 'id' => $item->id,
                 'variant_id' => $variant->id,
                 'product_id' => $variant->product_id,
+                'category_ids' => $categoryIds,
                 'name' => $variant->product->name['uk'] ?? $variant->product->name['en'] ?? '',
                 'slug' => $variant->product->slug,
                 'sku' => $variant->sku,
@@ -81,10 +87,27 @@ class GetCartAction
             ];
         }
 
+        // Automatic, site-wide Promotions are surfaced here (no coupon code needed) so
+        // the cart always reflects the real payable price; a Coupon is only known once
+        // the customer enters one, via ValidateCouponAction.
+        $priceResult = $this->priceCalculationService->calculate(
+            array_map(
+                fn (array $item) => new CartLineItemDto(
+                    productId: $item['product_id'],
+                    categoryIds: $item['category_ids'],
+                    unitPrice: $item['price'],
+                    quantity: $item['quantity']
+                ),
+                $validatedItems
+            )
+        );
+
         return new CartDetailsDto(
             sessionId: $cart->session_id ?? '',
             items: $validatedItems,
-            total: $total
+            total: $total,
+            promotionDiscount: $priceResult->promotionDiscount,
+            discountedTotal: $priceResult->total
         );
     }
 

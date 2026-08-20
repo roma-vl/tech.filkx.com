@@ -19,18 +19,18 @@
           <h1
             class="font-headline-lg text-zinc-900 dark:text-white text-3xl font-bold"
           >
-            {{ isCheckoutMode ? "Secure Checkout" : "Your Shopping Cart" }}
+            {{ isCheckoutMode ? t("cart.checkoutTitle") : t("cart.title") }}
           </h1>
-          <p class="text-on-surface-variant mt-2 text-gray-500">
+          <p class="mt-2 text-zinc-500 dark:text-zinc-400">
             {{
               isCheckoutMode
-                ? "Please fill in your delivery details to finalize the order."
-                : `${cartStore.cartCount} items ready for secure checkout.`
+                ? t("cart.checkoutSubtitle")
+                : t("cart.itemsReady", { count: cartStore.cartCount })
             }}
           </p>
         </div>
         <button
-          class="text-primary font-bold text-sm hover:underline flex items-center gap-1 text-blue-650"
+          class="font-bold text-sm hover:underline flex items-center gap-1 text-blue-600 dark:text-blue-400"
           type="button"
           @click="
             isCheckoutMode
@@ -39,34 +39,34 @@
           "
         >
           <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-          {{ isCheckoutMode ? "Back to Cart" : "Continue Shopping" }}
+          {{ isCheckoutMode ? t("cart.backToCart") : t("cart.continueShopping") }}
         </button>
       </div>
 
       <!-- Empty State -->
       <div
         v-if="cartStore.cart.length === 0"
-        class="bg-surface-container-lowest rounded-xl border border-outline-variant p-12 text-center"
+        class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 text-center"
       >
         <div
-          class="w-20 h-20 mx-auto rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant mb-5"
+          class="w-20 h-20 mx-auto rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 mb-5"
         >
           <span class="material-symbols-outlined text-[44px]">remove_shopping_cart</span>
         </div>
         <h2
           class="font-headline-md text-zinc-900 dark:text-white text-xl font-bold mb-2"
         >
-          Your cart is empty
+          {{ t("cart.emptyTitle") }}
         </h2>
-        <p class="text-on-surface-variant mb-6 text-gray-500">
-          Add premium electronics to start checkout.
+        <p class="mb-6 text-zinc-500 dark:text-zinc-400">
+          {{ t("cart.emptySubtitle") }}
         </p>
         <button
-          class="bg-[#00a046] text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-600 transition-all"
+          class="bg-[#00a046] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#00b050] transition-all"
           type="button"
           @click="router.push({ name: 'catalog' })"
         >
-          Explore Catalog
+          {{ t("cart.exploreCatalog") }}
         </button>
       </div>
 
@@ -123,7 +123,7 @@
         <h2
           class="font-headline-md text-zinc-900 dark:text-white text-2xl font-bold mb-8"
         >
-          Recommended for you
+          {{ t("cart.recommended") }}
         </h2>
         <div class="recommended-grid">
           <ProductCard
@@ -131,39 +131,34 @@
             :key="product.id"
             :product="product"
             view-mode="grid"
-            @quick-view="openQuickView"
           />
         </div>
       </section>
 
-      <!-- Quick View Modal -->
-      <QuickViewModal
-        v-if="isQuickViewOpen && quickViewProduct"
-        :product="quickViewProduct"
-        @close="closeQuickView"
-      />
-
-      <!-- Payment Simulator Modal -->
-      <PaymentSimulatorModal
-        v-if="isPaymentSimulatorOpen && pendingSuccessData"
-        :order-data="pendingSuccessData"
-        :format-price="formatPrice"
-        @success="confirmSimulatedPayment"
-        @close="isPaymentSimulatorOpen = false"
-      />
+      <!-- Redirecting to LiqPay -->
+      <div
+        v-if="isRedirectingToPayment"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-sm"
+      >
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white" />
+        <p class="text-white font-semibold">
+          {{ t("cart.redirectingToPayment") }}
+        </p>
+      </div>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { useShoppingCart } from "@/features/cart/composables/useShoppingCart";
 import SuccessMessage from "@/widgets/ShoppingCart/SuccessMessage.vue";
 import CheckoutForm from "@/widgets/ShoppingCart/CheckoutForm.vue";
 import CartItemsList from "@/widgets/ShoppingCart/CartItemsList.vue";
 import CartSummary from "@/widgets/ShoppingCart/CartSummary.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
-import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
-import PaymentSimulatorModal from "@/widgets/ShoppingCart/PaymentSimulatorModal.vue";
+
+const { t } = useI18n();
 
 const {
   router,
@@ -183,13 +178,7 @@ const {
   moveToCart,
   removePromo,
   hasOutOfStockItems,
-  isQuickViewOpen,
-  quickViewProduct,
-  openQuickView,
-  closeQuickView,
-  isPaymentSimulatorOpen,
-  pendingSuccessData,
-  confirmSimulatedPayment,
+  isRedirectingToPayment,
   formatPrice,
   applyPromo,
   addRecommended,
@@ -207,9 +196,6 @@ const {
   display: grid;
   gap: 24px;
   grid-template-columns: 1fr;
-}
-.filled-symbol {
-  font-variation-settings: "FILL" 1;
 }
 @media (min-width: 768px) {
   .recommended-grid {

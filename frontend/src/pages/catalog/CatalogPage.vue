@@ -33,12 +33,64 @@
       <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight">
         {{ currentCategoryName }}
       </h1>
-      <p class="text-sm text-zinc-400 dark:text-zinc-500 mt-1">
-        <template v-if="isLoading">Завантаження...</template>
-        <template v-else>{{ pagination.total }} товарів</template>
-      </p>
     </div>
   </header>
+
+  <!-- Toolbar -->
+  <div class="max-w-container-max mx-auto px-4 md:px-8 pb-4 flex items-center gap-3 flex-wrap font-sans">
+    <!-- Products count -->
+    <span class="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mr-auto hidden sm:block">
+      <template v-if="!isLoading">
+        Знайдено {{ pagination.total }} товарів
+      </template>
+    </span>
+
+    <!-- View Toggle: 4-per-row grid / 5-per-row grid / list -->
+    <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5">
+      <button
+        :class="viewMode === 'grid' && gridDensity === 4 ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="4 товари в рядок"
+        @click="viewMode = 'grid'; gridDensity = 4"
+      >
+        <span class="material-symbols-outlined text-[18px]">view_comfy</span>
+      </button>
+      <button
+        :class="viewMode === 'grid' && gridDensity === 5 ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="5 товарів в рядок"
+        @click="viewMode = 'grid'; gridDensity = 5"
+      >
+        <span class="material-symbols-outlined text-[18px]">grid_on</span>
+      </button>
+      <button
+        :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
+        class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
+        title="Список"
+        @click="viewMode = 'list'"
+      >
+        <span class="material-symbols-outlined text-[18px]">view_list</span>
+      </button>
+    </div>
+
+    <!-- Sort -->
+    <UiDropdown v-model="sortBy" :options="sortOptions" align-right />
+
+    <!-- Mobile Filter Button -->
+    <UiButton
+      variant="secondary"
+      size="sm"
+      class="lg:hidden relative"
+      @click="isMobileFilterOpen = true"
+    >
+      <span class="material-symbols-outlined text-[18px]">tune</span>
+      Фільтри
+      <span
+        v-if="activeFilters.length"
+        class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
+      >{{ activeFilters.length }}</span>
+    </UiButton>
+  </div>
 
   <!-- Main Catalog Layout -->
   <main class="max-w-container-max mx-auto px-4 md:px-8 py-5 flex gap-6 font-sans">
@@ -67,60 +119,12 @@
     <!-- Products Workspace -->
     <section class="flex-1 min-w-0">
 
-      <!-- Toolbar -->
-      <div class="flex items-center gap-3 mb-4 flex-wrap">
-        <!-- Products count -->
-        <span class="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mr-auto hidden sm:block">
-          <template v-if="!isLoading">
-            Показано {{ filteredProducts.length }} з {{ pagination.total }}
-          </template>
-        </span>
-
-        <!-- View Toggle -->
-        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 gap-0.5">
-          <button
-            :class="viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
-            class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-            title="Сітка"
-            @click="viewMode = 'grid'"
-          >
-            <span class="material-symbols-outlined text-[18px]">grid_view</span>
-          </button>
-          <button
-            :class="viewMode === 'list' ? 'bg-white dark:bg-zinc-700 shadow text-[#00a046]' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'"
-            class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-            title="Список"
-            @click="viewMode = 'list'"
-          >
-            <span class="material-symbols-outlined text-[18px]">view_list</span>
-          </button>
-        </div>
-
-        <!-- Sort -->
-        <UiDropdown v-model="sortBy" :options="sortOptions" align-right />
-
-        <!-- Mobile Filter Button -->
-        <UiButton
-          variant="secondary"
-          size="sm"
-          class="lg:hidden relative"
-          @click="isMobileFilterOpen = true"
-        >
-          <span class="material-symbols-outlined text-[18px]">tune</span>
-          Фільтри
-          <span
-            v-if="activeFilters.length"
-            class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
-          >{{ activeFilters.length }}</span>
-        </UiButton>
-      </div>
-
       <!-- Active Filters Chips -->
-      <div v-if="activeFilters.length" class="flex flex-wrap gap-2 items-center mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800">
+      <div v-if="activeFilters.length" class="flex flex-wrap gap-2 items-center mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800">
         <button
           v-for="filter in activeFilters"
           :key="`${filter.type}-${filter.label}`"
-          class="flex items-center gap-1 bg-white dark:bg-zinc-800 border border-[#00a046]/20 text-[#00a046] px-2.5 py-1 rounded-full text-xs font-bold hover:bg-[#00a046]/5 transition-all"
+          class="flex items-center gap-1 bg-white dark:bg-zinc-800 border border-[#00a046]/20 text-[#00a046] px-2.5 py-1 rounded-md text-xs font-bold hover:bg-[#00a046]/5 transition-all"
           @click="removeFilter(filter)"
         >
           {{ filter.label }}
@@ -140,12 +144,13 @@
       <!-- Loading Skeleton -->
       <div
         v-if="isLoading"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? gridClass : 'flex flex-col gap-4'"
       >
         <div
           v-for="i in 9"
           :key="i"
-          class="animate-pulse bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden"
+          :class="viewMode === 'grid' ? 'border-r border-b border-zinc-200 dark:border-zinc-800' : 'rounded-md border border-zinc-100 dark:border-zinc-800'"
+          class="animate-pulse bg-white dark:bg-zinc-900 overflow-hidden"
         >
           <div class="aspect-[1.15/1] bg-zinc-100 dark:bg-zinc-800" />
           <div class="p-5 space-y-3">
@@ -171,21 +176,20 @@
       <!-- Products Grid / List -->
       <div
         v-else-if="filteredProducts.length"
-        :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5' : 'flex flex-col gap-4'"
+        :class="viewMode === 'grid' ? gridClass : 'flex flex-col gap-4'"
       >
         <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
           :product="product"
           :view-mode="viewMode"
-          @quick-view="openQuickView"
         />
       </div>
 
       <!-- Empty State -->
       <div
         v-else
-        class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800 p-16 text-center"
+        class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center"
       >
         <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
           <span class="material-symbols-outlined text-[32px] text-zinc-300 dark:text-zinc-600">search_off</span>
@@ -207,7 +211,7 @@
         <button
           :disabled="pagination.page === 1"
           :class="pagination.page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'"
-          class="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
+          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
           @click="changePage(pagination.page - 1)"
         >
           <span class="material-symbols-outlined text-[18px]">chevron_left</span>
@@ -221,7 +225,7 @@
           <button
             v-else
             :class="pagination.page === p ? 'bg-[#00a046] text-white border-[#00a046] shadow-sm' : 'text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600'"
-            class="w-9 h-9 flex items-center justify-center rounded-lg border font-bold text-sm transition-all"
+            class="w-9 h-9 flex items-center justify-center rounded-md border font-bold text-sm transition-all"
             @click="changePage(p as number)"
           >{{ p }}</button>
         </template>
@@ -229,7 +233,7 @@
         <button
           :disabled="pagination.page === pagination.lastPage"
           :class="pagination.page === pagination.lastPage ? 'opacity-40 cursor-not-allowed' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'"
-          class="w-9 h-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
+          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
           @click="changePage(pagination.page + 1)"
         >
           <span class="material-symbols-outlined text-[18px]">chevron_right</span>
@@ -294,28 +298,34 @@
       </div>
     </div>
   </Teleport>
-
-  <!-- Quick View Modal -->
-  <QuickViewModal
-    :is-open="isQuickViewOpen"
-    :product="selectedProductForQuickView"
-    @close="closeQuickView"
-  />
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
-import QuickViewModal from "@/widgets/Catalog/QuickViewModal.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";
+
+const { t } = useI18n();
+
+useHead({
+  title: computed(() => t("meta.catalogTitle")),
+  meta: computed(() => [
+    { name: "description", content: t("meta.catalogDescription") },
+    { property: "og:title", content: t("meta.catalogTitle") },
+    { property: "og:description", content: t("meta.catalogDescription") },
+  ]),
+});
 
 const {
   route,
   router,
   viewMode,
+  gridDensity,
   sortBy,
   priceMin,
   priceMax,
@@ -325,8 +335,6 @@ const {
   onlyDiscounts,
   onlyInStock,
   isMobileFilterOpen,
-  selectedProductForQuickView,
-  isQuickViewOpen,
   isLoading,
   rawProducts,
   categoriesList,
@@ -339,11 +347,23 @@ const {
   activeFilters,
   removeFilter,
   clearFilters,
-  openQuickView,
-  closeQuickView,
   currentCategoryName,
   currentCategoryPath,
 } = useCatalog();
+
+// Tailwind's build-time scanner needs each class written out literally
+// somewhere in the source, so the column count can't be interpolated
+// directly into the class string (e.g. `lg:grid-cols-${n}`) - this lookup
+// keeps every combination as a real string the scanner can find.
+const densityColumnsClass: Record<number, string> = {
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5",
+};
+
+const gridClass = computed(
+  () =>
+    `grid grid-cols-1 sm:grid-cols-2 ${densityColumnsClass[gridDensity.value]} border-t border-l border-zinc-200 dark:border-zinc-800`,
+);
 
 const sortOptions = [
   { value: "popularity", label: "За популярністю" },

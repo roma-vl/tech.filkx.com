@@ -23,14 +23,20 @@ class Order extends Model
         'delivery_method',
         'payment_method',
         'payment_status',
+        'payment_reference',
+        'paid_at',
         'status',
         'total_price',
+        'coupon_code',
+        'discount_amount',
         'carrier',
         'tracking_number',
     ];
 
     protected $casts = [
         'total_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

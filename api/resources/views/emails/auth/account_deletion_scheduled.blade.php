@@ -5,7 +5,7 @@
 
     <p>Your account at <strong>{{ config('app.name') }}</strong> has been scheduled for permanent deletion.</p>
 
-    <p>All associated data, including your streams, playlists, and subscription history, will be deleted in <strong>3
+    <p>All associated data, including your orders and account history, will be deleted in <strong>3
             days</strong>.</p>
 
     <p>If you did not request this, or have changed your mind, you can restore your account immediately by clicking the

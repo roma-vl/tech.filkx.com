@@ -86,7 +86,10 @@
     </template>
 
     <template v-else>
-      <HeroSlider :categories="categories" />
+      <HeroSlider
+        :categories="categories"
+        :banners="banners"
+      />
       <UspGrid />
       <CatalogSection :categories="popularCategories" />
       <FlashDeals
@@ -97,15 +100,18 @@
       <RecommendedProducts
         v-if="recommended.length > 0"
         :products="recommended"
+        :personalized="isRecommendedPersonalized"
       />
     </template>
 
     <TechBlog />
-    <BrandPartners />
   </main>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useHead } from "@vueuse/head";
+import { useI18n } from "vue-i18n";
 import { useHome } from "@/features/home/composables/useHome";
 import HeroSlider from "@/widgets/Home/HeroSlider.vue";
 import UspGrid from "@/widgets/Home/UspGrid.vue";
@@ -113,7 +119,26 @@ import CatalogSection from "@/widgets/Home/CatalogSection.vue";
 import FlashDeals from "@/widgets/Home/FlashDeals.vue";
 import RecommendedProducts from "@/widgets/Home/RecommendedProducts.vue";
 import TechBlog from "@/widgets/Home/TechBlog.vue";
-import BrandPartners from "@/widgets/Home/BrandPartners.vue";
 
-const { categories, popularCategories, flashDeals, recommended, loading, loadHomeData } = useHome();
+const {
+  banners,
+  categories,
+  popularCategories,
+  flashDeals,
+  recommended,
+  isRecommendedPersonalized,
+  loading,
+  loadHomeData,
+} = useHome();
+
+const { t } = useI18n();
+
+useHead({
+  title: computed(() => t("meta.homeTitle")),
+  meta: computed(() => [
+    { name: "description", content: t("meta.homeDescription") },
+    { property: "og:title", content: t("meta.homeTitle") },
+    { property: "og:description", content: t("meta.homeDescription") },
+  ]),
+});
 </script>

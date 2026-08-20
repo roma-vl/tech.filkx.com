@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onServerPrefetch,
+  computed,
+  watch,
+} from "vue";
 import { useRouter, RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
+import { resolveProductImage } from "@/entities/product/lib/resolveProductImage";
 
 interface SearchProduct {
   id: string | number;
@@ -18,9 +27,9 @@ interface SearchProduct {
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const { locale, t, tm } = useI18n();
 
 const isDark = ref(false);
-const currentLang = ref("UA");
 
 const toggleDarkMode = () => {
   isDark.value = !isDark.value;
@@ -34,8 +43,8 @@ const toggleDarkMode = () => {
 };
 
 const setLanguage = (lang: string) => {
-  currentLang.value = lang;
-  localStorage.setItem("lang", lang);
+  if (locale.value === lang) return;
+  authStore.updateLocale(lang);
 };
 
 const searchInput = ref<HTMLInputElement | null>(null);
@@ -43,20 +52,7 @@ const searchQuery = ref("");
 const showDropdown = ref(false);
 const isMegaMenuOpen = ref(false);
 
-const popularQueries = [
-  "SSD",
-  "Кава",
-  "Свічки",
-  "Чайник",
-  "Кросівки",
-  "Jack Daniel's",
-  "Телефон",
-  "Мишка",
-  "Lego",
-  "Сумка",
-  "Крокси",
-  "Наушники",
-];
+const popularQueries = computed(() => tm("header.search.popular") as string[]);
 
 const searchResults = ref<SearchProduct[]>([]);
 const isSearching = ref(false);
@@ -65,20 +61,7 @@ const mapApiProduct = (prod: any): SearchProduct => {
   const mainVariant = prod.variants?.[0] || null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
 
-  let image = "";
-  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-    const primary =
-      mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-      mainVariant.dimensions.images[0];
-    if (primary && primary.url) {
-      image = primary.url;
-    }
-  }
-
-  if (!image) {
-    image =
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-  }
+  const image = resolveProductImage(mainVariant, prod.variants);
 
   const name =
     typeof prod.name === "object" ? prod.name.uk || prod.name.en : prod.name;
@@ -88,7 +71,7 @@ const mapApiProduct = (prod: any): SearchProduct => {
     ? typeof categoryObj.name === "object"
       ? categoryObj.name.uk || categoryObj.name.en
       : categoryObj.name
-    : "Товари";
+    : t("header.search.defaultCategory");
 
   return {
     id: prod.id,
@@ -131,12 +114,19 @@ watch(searchQuery, (newQuery) => {
   }, 300);
 });
 
-// Using dynamic database categories mapped to columns layout
-const categories = ref<any[]>([]);
-const activeCat = ref<any>(null);
+// Using dynamic database categories mapped to columns layout.
+// Raw categories are kept separate from the locale-picked labels so the mega
+// menu re-translates immediately when the visitor switches language, without
+// needing to refetch from the API.
+const rawCategories = ref<any[]>([]);
+const categories = computed(() => mapDbCategoriesToMenu(rawCategories.value, locale.value));
+const activeCatId = ref<string | number | null>(null);
+const activeCat = computed(
+  () => categories.value.find((c: any) => c.id === activeCatId.value) || categories.value[0] || null,
+);
 
 const selectCategory = (cat: any) => {
-  activeCat.value = cat;
+  activeCatId.value = cat.id;
 };
 
 const getLinkRoute = (link: any) => {
@@ -227,7 +217,7 @@ const toggleCatalog = () => {
 };
 
 const triggerVoiceSearch = () => {
-  cartStore.addToast("Voice search activated. Start speaking...", "info");
+  cartStore.addToast(t("header.search.voiceActivated"), "info");
 };
 
 const unreadCount = computed(() => cartStore.unreadNotificationsCount);
@@ -251,6 +241,24 @@ watch(
   },
 );
 
+const fetchMegaMenuCategories = async () => {
+  try {
+    const response = await productApi.catalogGetCategories();
+    const responseData = response.data;
+    if (
+      responseData &&
+      (responseData.success || responseData.status === "success")
+    ) {
+      rawCategories.value = responseData.data || [];
+      if (categories.value.length > 0) {
+        activeCatId.value = categories.value[0].id;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load mega menu categories:", error);
+  }
+};
+
 onMounted(async () => {
   window.addEventListener("keydown", handleKeydown);
   document.addEventListener("click", handleClickOutside);
@@ -266,26 +274,12 @@ onMounted(async () => {
     document.documentElement.classList.remove("dark");
   }
 
-  // Load language
-  currentLang.value = localStorage.getItem("lang") || "UA";
-
-  try {
-    const response = await productApi.catalogGetCategories();
-    const responseData = response.data;
-    if (
-      responseData &&
-      (responseData.success || responseData.status === "success")
-    ) {
-      const dbCats = responseData.data || [];
-      categories.value = mapDbCategoriesToMenu(dbCats);
-      if (categories.value.length > 0) {
-        activeCat.value = categories.value[0];
-      }
-    }
-  } catch (error) {
-    console.error("Failed to load mega menu categories:", error);
-  }
+  fetchMegaMenuCategories();
 });
+
+// Prerendering has no DOM, so onMounted never runs — fetch the mega-menu
+// categories here so every static page ships real nav content.
+onServerPrefetch(fetchMegaMenuCategories);
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeydown);
@@ -301,13 +295,13 @@ onUnmounted(() => {
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4">
         <!-- Left: sota.store style top menu links -->
         <div class="flex items-center gap-5">
-          <router-link to="/shipping-payment" class="hover:text-white transition-colors">Оплата та доставка</router-link>
-          <router-link to="/warranty-returns" class="hover:text-white transition-colors">Гарантія та обмін</router-link>
-          <router-link to="/service" class="hover:text-white transition-colors">Сервіс</router-link>
-          <router-link to="/services" class="hover:text-white transition-colors">Послуги</router-link>
-          <router-link to="/installments" class="hover:text-white transition-colors">Розстрочка</router-link>
-          <router-link to="/filkx-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">Filkx Обмін</router-link>
-          <router-link to="/contacts" class="hover:text-white transition-colors">Контакти</router-link>
+          <router-link to="/shipping-payment" class="hover:text-white transition-colors">{{ t("header.topLinks.shippingPayment") }}</router-link>
+          <router-link to="/warranty-returns" class="hover:text-white transition-colors">{{ t("header.topLinks.warrantyReturns") }}</router-link>
+          <router-link to="/service" class="hover:text-white transition-colors">{{ t("header.topLinks.service") }}</router-link>
+          <router-link to="/services" class="hover:text-white transition-colors">{{ t("header.topLinks.services") }}</router-link>
+          <router-link to="/installments" class="hover:text-white transition-colors">{{ t("header.topLinks.installments") }}</router-link>
+          <router-link to="/filkx-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">{{ t("header.topLinks.filkxExchange") }}</router-link>
+          <router-link to="/contacts" class="hover:text-white transition-colors">{{ t("header.topLinks.contacts") }}</router-link>
         </div>
 
         <!-- Right: phone, theme toggle, and language switcher -->
@@ -323,7 +317,7 @@ onUnmounted(() => {
             type="button"
             class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
             @click="toggleDarkMode"
-            :title="isDark ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'"
+            :title="isDark ? t('header.switchToLightTheme') : t('header.switchToDarkTheme')"
           >
             <span class="material-symbols-outlined text-[16px]">
               {{ isDark ? 'light_mode' : 'dark_mode' }}
@@ -336,11 +330,11 @@ onUnmounted(() => {
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
               :class="
-                currentLang === 'UA'
+                locale === 'uk'
                   ? 'bg-[#00a046] text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               "
-              @click="setLanguage('UA')"
+              @click="setLanguage('uk')"
             >
               UA
             </button>
@@ -348,11 +342,11 @@ onUnmounted(() => {
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
               :class="
-                currentLang === 'EN'
+                locale === 'en'
                   ? 'bg-[#00a046] text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               "
-              @click="setLanguage('EN')"
+              @click="setLanguage('en')"
             >
                 EN
             </button>
@@ -368,7 +362,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-3">
         <button
           class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
-          title="Menu"
+          :title="t('header.menu')"
           @click="cartStore.openDrawer('account')"
         >
           <img
@@ -390,7 +384,7 @@ onUnmounted(() => {
           <span
             class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block"
           >
-            TechNova
+            FilkxTech
           </span>
         </a>
       </div>
@@ -407,7 +401,7 @@ onUnmounted(() => {
           <span class="block h-[2px] bg-white rounded-full w-full" />
         </span>
         <span v-else class="material-symbols-outlined text-[18px]">close</span>
-        <span>Каталог</span>
+        <span>{{ t("header.catalog") }}</span>
       </button>
 
       <!-- Center: Rozetka Styled Search Input -->
@@ -425,7 +419,7 @@ onUnmounted(() => {
               ref="searchInput"
               v-model="searchQuery"
               class="w-full h-full text-zinc-800 dark:text-zinc-100 text-sm focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent"
-              placeholder="Я шукаю..."
+              :placeholder="t('header.search.placeholder')"
               type="text"
               @focus="showDropdown = true"
             />
@@ -452,7 +446,7 @@ onUnmounted(() => {
             type="submit"
             class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
           >
-            Знайти
+            {{ t("header.search.submit") }}
           </button>
         </form>
 
@@ -466,7 +460,7 @@ onUnmounted(() => {
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
-              Шукаємо товари...
+              {{ t("header.search.searching") }}
             </div>
             <div
               v-for="n in 3"
@@ -485,7 +479,7 @@ onUnmounted(() => {
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
-              Результати пошуку
+              {{ t("header.search.results") }}
             </div>
             <div
               v-for="prod in filteredProducts"
@@ -523,7 +517,7 @@ onUnmounted(() => {
             v-else-if="searchQuery.trim()"
             class="text-center text-xs text-zinc-400 dark:text-zinc-500 py-2"
           >
-            Нічого не знайдено для "{{ searchQuery }}".
+            {{ t("header.search.noResults", { query: searchQuery }) }}
           </div>
 
           <!-- Popular Searches (Rozetka Tags Style) -->
@@ -531,7 +525,7 @@ onUnmounted(() => {
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider"
             >
-              Популярні запити
+              {{ t("header.search.popularQueries") }}
             </div>
             <div class="flex flex-wrap gap-2">
               <button
@@ -553,7 +547,7 @@ onUnmounted(() => {
         <!-- Notifications -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Notifications"
+          :title="t('header.actions.notifications')"
           @click="
             router.push({ name: 'account', query: { tab: 'notifications' } })
           "
@@ -572,7 +566,7 @@ onUnmounted(() => {
         <!-- Compare -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Compare"
+          :title="t('header.actions.compare')"
           @click="router.push({ name: 'account', query: { tab: 'compare' } })"
         >
           <span class="material-symbols-outlined text-[24px]"
@@ -589,7 +583,7 @@ onUnmounted(() => {
         <!-- Wishlist -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Wishlist"
+          :title="t('header.actions.wishlist')"
           @click="router.push({ name: 'account', query: { tab: 'favorites' } })"
         >
           <span class="material-symbols-outlined text-[24px]">favorite</span>
@@ -604,7 +598,7 @@ onUnmounted(() => {
         <!-- Cart -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Cart"
+          :title="t('header.actions.cart')"
           @click="cartStore.openDrawer('cart')"
         >
           <span class="material-symbols-outlined text-[24px]"
@@ -723,7 +717,7 @@ onUnmounted(() => {
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
                   @click="isMegaMenuOpen = false"
                 >
-                  Дивитися далі →
+                  {{ t("header.search.viewMore") }}
                 </RouterLink>
               </div>
             </div>
@@ -734,7 +728,7 @@ onUnmounted(() => {
           >
             <div class="text-center">
               <span class="material-symbols-outlined text-4xl mb-2">category</span>
-              <p class="text-xs font-bold">Немає дочірніх розділів.</p>
+              <p class="text-xs font-bold">{{ t("header.megaMenu.noSubcategories") }}</p>
             </div>
           </div>
         </div>

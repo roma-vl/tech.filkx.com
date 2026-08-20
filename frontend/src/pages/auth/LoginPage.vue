@@ -5,6 +5,13 @@
     </template>
 
     <div class="max-w-md mx-auto md:mx-0 w-full">
+      <TwoFactorChallengeForm
+        v-if="twoFactorChallengeToken"
+        :challenge-token="twoFactorChallengeToken"
+        @verified="onTwoFactorVerified"
+        @back="twoFactorChallengeToken = null"
+      />
+      <template v-else>
       <h1
         class="text-3xl md:text-4xl font-extrabold mb-2 text-gray-900 dark:text-white tracking-tight"
       >
@@ -86,6 +93,7 @@
           {{ $t("auth.login.createAccount") }}
         </router-link>
       </p>
+      </template>
     </div>
   </AuthLayout>
 </template>
@@ -102,6 +110,7 @@ import AuthLayout from "@/layouts/auth/AuthLayout.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiInput from "@/shared/ui/UiInput.vue";
 import OAuthButtons from "@/features/auth/components/OAuthButtons.vue";
+import TwoFactorChallengeForm from "@/features/auth/components/TwoFactorChallengeForm.vue";
 import { useReCaptcha } from "vue-recaptcha-v3";
 
 const { executeRecaptcha, recaptchaLoaded } = useReCaptcha() as any;
@@ -114,6 +123,7 @@ const { t } = useI18n();
 
 const container = ref<HTMLElement | null>(null);
 const loading = ref(false);
+const twoFactorChallengeToken = ref<string | null>(null);
 
 const form = reactive({
   email: "",
@@ -155,6 +165,11 @@ async function handleSubmit() {
 
   loading.value = false;
 
+  if (result.ok && result.twoFactorRequired) {
+    twoFactorChallengeToken.value = result.challengeToken;
+    return;
+  }
+
   if (result.ok) {
     toast.success(t("auth.login.successMessage"));
     const redirect = (route.query.redirect as string) || "/dashboard";
@@ -166,5 +181,11 @@ async function handleSubmit() {
     }
     toast.error(result.error || t("auth.login.errorMessage"));
   }
+}
+
+function onTwoFactorVerified() {
+  toast.success(t("auth.login.successMessage"));
+  const redirect = (route.query.redirect as string) || "/dashboard";
+  router.push(redirect);
 }
 </script>

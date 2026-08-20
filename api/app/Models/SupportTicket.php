@@ -19,18 +19,22 @@ class SupportTicket extends Model
         'status',
         'handled_by',
         'tags',
+        'read_at',
     ];
 
     protected $casts = [
         'status' => SupportStatusEnum::class,
         'tags' => 'array',
+        'read_at' => 'datetime',
     ];
 
     protected $appends = ['unread_count'];
 
     public function getUnreadCountAttribute()
     {
-        return $this->attributes['unread_count'] ?? 0;
+        // The `unreadCount` alias comes from `withCount([... as unreadCount])` in the
+        // list actions; it lands in $attributes verbatim, not snake_cased.
+        return $this->attributes['unreadCount'] ?? 0;
     }
 
     public function user(): BelongsTo

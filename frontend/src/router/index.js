@@ -73,8 +73,6 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Removed featureKey guard to allow access to locked features with FeatureLockOverlay
-
   if (to.path.startsWith("/admin")) {
     const adminRoles = ["admin", "administrator", "moderator", "support"];
     const userRoles = auth.user?.roles || [];

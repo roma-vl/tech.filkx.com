@@ -8,7 +8,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'ProductSummary',
+    title: 'Product Summary',
+    description: 'Product as returned by the public catalog endpoints (raw Eloquent model, camelCase-converted).',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer'),
+        new OA\Property(property: 'slug', type: 'string'),
+        new OA\Property(property: 'name', type: 'object', description: 'Localized name keyed by locale (uk, en)'),
+        new OA\Property(property: 'description', type: 'object', description: 'Localized description keyed by locale (uk, en)'),
+        new OA\Property(property: 'status', type: 'string', example: 'active'),
+        new OA\Property(property: 'isHot', type: 'boolean'),
+        new OA\Property(property: 'isRecommended', type: 'boolean'),
+        new OA\Property(property: 'viewsCount', type: 'integer'),
+        new OA\Property(property: 'brand', type: 'object', nullable: true),
+        new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'variants', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'approvedReviewsCount', type: 'integer'),
+        new OA\Property(property: 'approvedReviewsAvgRating', type: 'number', nullable: true),
+    ],
+)]
 class Product extends Model
 {
     use HasFactory, Searchable;

@@ -1,30 +1,30 @@
 <template>
   <div
-    class="bg-surface-container-low rounded-xl p-6 border border-outline-variant sticky top-24 shadow-sm"
+    class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-200 dark:border-zinc-800 sticky top-24 shadow-sm"
   >
     <h2
-      class="font-headline-md text-zinc-900 dark:text-white text-xl font-bold mb-6"
+      class="text-zinc-900 dark:text-white text-xl font-bold mb-6"
     >
-      Order Summary
+      {{ t("cart.summary.orderSummary") }}
     </h2>
     <div class="space-y-4 mb-6">
-      <div class="flex justify-between font-body-lg text-body-lg">
-        <span class="text-on-surface-variant text-gray-500">Subtotal</span>
+      <div class="flex justify-between">
+        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.summary.subtotal") }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           formatPrice(cartTotal)
         }}</span>
       </div>
       <div
         v-if="appliedPromo"
-        class="flex justify-between items-center font-body-lg text-body-lg text-[#00a046] font-bold"
+        class="flex justify-between items-center text-[#00a046] font-bold"
       >
         <span class="flex items-center gap-1">
           <span class="material-symbols-outlined text-[18px]">sell</span>
-          Promo Code ({{ appliedPromo }})
+          {{ t("cart.summary.promoCode") }} ({{ appliedPromo }})
           <button
             class="text-red-500 hover:text-red-700 ml-1 flex items-center"
             type="button"
-            title="Remove Promo Code"
+            :title="t('cart.summary.removePromoCode')"
             @click="$emit('removePromo')"
           >
             <span class="material-symbols-outlined text-[16px]">close</span>
@@ -32,24 +32,24 @@
         </span>
         <span class="font-semibold">-{{ formatPrice(discount) }}</span>
       </div>
-      <div class="flex justify-between font-body-lg text-body-lg">
-        <span class="text-on-surface-variant text-gray-500"
-          >Shipping Estimate</span
+      <div class="flex justify-between">
+        <span class="text-zinc-500 dark:text-zinc-400"
+          >{{ t("cart.summary.shippingEstimate") }}</span
         >
         <span class="font-semibold text-zinc-900 dark:text-white">{{
-          shipping === 0 ? "FREE" : formatPrice(shipping)
+          shipping === 0 ? t("cart.summary.free") : formatPrice(shipping)
         }}</span>
       </div>
-      <div class="flex justify-between font-body-lg text-body-lg">
-        <span class="text-on-surface-variant text-gray-500">Tax Estimate</span>
+      <div class="flex justify-between">
+        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.summary.taxEstimate") }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           formatPrice(tax)
         }}</span>
       </div>
       <div
-        class="pt-4 border-t border-outline-variant flex justify-between font-headline-md text-headline-md text-[#00a046] font-bold text-lg"
+        class="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex justify-between text-[#00a046] font-bold text-lg"
       >
-        <span>Total</span>
+        <span>{{ t("cart.summary.total") }}</span>
         <span>{{ formatPrice(total) }}</span>
       </div>
     </div>
@@ -57,27 +57,27 @@
     <!-- Promo Code input -->
     <div v-if="!isCheckoutMode" class="mb-6">
       <label
-        class="block font-label-md text-on-surface-variant text-sm font-semibold mb-2"
+        class="block text-zinc-500 dark:text-zinc-400 text-sm font-semibold mb-2"
         for="promo"
-        >Promo Code</label
+        >{{ t("cart.summary.promoCode") }}</label
       >
       <div class="flex gap-2">
         <input
           id="promo"
           :value="promoCode"
-          class="flex-grow bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary dark:text-white"
-          placeholder="Enter code"
+          class="flex-grow bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary text-zinc-900 dark:text-white"
+          :placeholder="t('cart.summary.enterCode')"
           type="text"
           @input="
             $emit('update:promoCode', ($event.target as HTMLInputElement).value)
           "
         />
         <button
-          class="px-4 py-2 border border-on-surface text-on-surface rounded-lg font-label-md hover:bg-surface-variant transition-colors dark:text-white"
+          class="px-4 py-2 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white rounded-lg font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           type="button"
           @click="$emit('applyPromo')"
         >
-          Apply
+          {{ t("cart.summary.apply") }}
         </button>
       </div>
     </div>
@@ -88,7 +88,7 @@
       class="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 text-xs font-semibold p-3 rounded-lg border border-red-200 dark:border-red-900/50 mb-4 flex items-start gap-1.5"
     >
       <span class="material-symbols-outlined text-[18px] shrink-0 text-red-500">warning</span>
-      <span>Деякі товари відсутні в наявності. Будь ласка, видаліть їх із кошика, щоб оформити замовлення.</span>
+      <span>{{ t("cart.summary.outOfStockWarning") }}</span>
     </div>
 
     <!-- Primary Checkout Button -->
@@ -107,23 +107,27 @@
       >
       {{
         isSubmitting
-          ? "Processing..."
+          ? t("cart.summary.processing")
           : isCheckoutMode
-            ? "Place Order"
-            : "Proceed to Checkout"
+            ? t("cart.summary.placeOrder")
+            : t("cart.summary.proceedToCheckout")
       }}
     </button>
 
     <div
-      class="flex items-center justify-center gap-2 text-on-surface-variant font-label-md text-xs text-gray-400"
+      class="flex items-center justify-center gap-2 text-zinc-400 dark:text-zinc-500 text-xs"
     >
       <span class="material-symbols-outlined text-[18px]">lock</span>
-      Secure Checkout with SSL Encryption
+      {{ t("cart.summary.secureCheckout") }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 defineProps<{
   cartTotal: number;
   discount: number;

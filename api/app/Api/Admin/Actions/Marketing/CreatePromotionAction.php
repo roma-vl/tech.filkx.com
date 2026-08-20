@@ -14,6 +14,11 @@ class CreatePromotionAction
 
     public function execute(PromotionDto $dto): Promotion
     {
-        return $this->promotionRepository->create($dto->toArray());
+        $promotion = $this->promotionRepository->create($dto->toArray());
+
+        $promotion->categories()->sync($dto->categoryIds);
+        $promotion->products()->sync($dto->productIds);
+
+        return $promotion;
     }
 }

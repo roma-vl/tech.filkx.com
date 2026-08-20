@@ -104,6 +104,8 @@
     <CouponEditModal
       :is-open="isEditModalOpen"
       :coupon="editingCoupon"
+      :categories="categories"
+      :products="products"
       @close="closeEditModal"
       @saved="handleSaved"
     />
@@ -126,6 +128,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
+import { productApi } from "@/shared/services/api/productApi";
 import { PlusIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
@@ -140,6 +143,8 @@ const { t } = useI18n();
 const toast = useToast();
 
 const coupons = ref([]);
+const categories = ref([]);
+const products = ref([]);
 const loading = ref(false);
 const deleteLoading = ref(false);
 const search = ref("");
@@ -287,8 +292,22 @@ watch(statusFilter, () => {
   fetchCoupons(1);
 });
 
+const fetchTargetingOptions = async () => {
+  try {
+    const [categoriesRes, productsRes] = await Promise.all([
+      productApi.adminGetCategories(),
+      productApi.adminGetProducts(),
+    ]);
+    categories.value = categoriesRes.data.data || [];
+    products.value = productsRes.data.data || [];
+  } catch (e) {
+    console.error("Failed to fetch categories/products for targeting", e);
+  }
+};
+
 onMounted(() => {
   fetchCoupons();
+  fetchTargetingOptions();
 });
 </script>
 

@@ -5,8 +5,8 @@
 
     <p>Hello {{ $userName }},</p>
 
-    <p>Thank you for joining Filkx! To get started with your 24/7 automated video streaming service, please verify your
-        email address by clicking the button below:</p>
+    <p>Thank you for joining {{ config('app.name') }}! Please verify your email address by clicking the button below to
+        activate your account:</p>
 
     @component('emails.components.button', ['url' => $verificationUrl])
         Verify Email Address
@@ -20,5 +20,5 @@
                                                              style="color: #3182ce; text-decoration: none;">Support
             Center</a>.</p>
 
-    <p>Happy streaming,<br>{{ config('app.name') }} Team</p>
+    <p>Thanks,<br>{{ config('app.name') }} Team</p>
 @endsection

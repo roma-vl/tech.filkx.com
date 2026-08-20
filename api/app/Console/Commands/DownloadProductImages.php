@@ -21,6 +21,7 @@ class DownloadProductImages extends Command
 
         if (! file_exists($source)) {
             $this->error("File not found: {$source}");
+
             return self::FAILURE;
         }
 
@@ -49,27 +50,30 @@ class DownloadProductImages extends Command
 
                 if (empty($imageUrls) || empty($slug)) {
                     $skipped++;
+
                     continue;
                 }
 
                 $product = Product::where('slug', $slug)->with('variants')->first();
                 if (! $product) {
                     $skipped++;
+
                     continue;
                 }
 
-                $variant = $product->variants->first();
-                if (! $variant) {
+                if ($product->variants->isEmpty()) {
                     $skipped++;
+
                     continue;
                 }
 
-                $dims = $variant->dimensions ?? [];
-                $existingImages = $dims['images'] ?? [];
+                $firstVariant = $product->variants->first();
+                $existingImages = $firstVariant->dimensions['images'] ?? [];
 
                 // Skip if already has local images and not forcing
                 if (! $force && ! empty($existingImages)) {
                     $skipped++;
+
                     continue;
                 }
 
@@ -79,6 +83,7 @@ class DownloadProductImages extends Command
                 foreach ($imageUrls as $url) {
                     if ($this->isPaymentImage($url)) {
                         $filtered++;
+
                         continue;
                     }
                     $localPath = $this->downloadImage($url, $slug);
@@ -95,9 +100,16 @@ class DownloadProductImages extends Command
                 }
 
                 if (! empty($localImages)) {
-                    $dims['images'] = $localImages;
-                    $variant->dimensions = $dims;
-                    $variant->save();
+                    // Every variant of a product is the same physical device in a
+                    // different config (RAM/storage/color) - they share one photoshoot,
+                    // so attach the same images to all of them rather than just the
+                    // first, or unphotographed variants would show no gallery at all.
+                    foreach ($product->variants as $variant) {
+                        $dims = $variant->dimensions ?? [];
+                        $dims['images'] = $localImages;
+                        $variant->dimensions = $dims;
+                        $variant->save();
+                    }
                 }
             }
         }
@@ -119,6 +131,7 @@ class DownloadProductImages extends Command
                 return true;
             }
         }
+
         return false;
     }
 
@@ -147,9 +160,9 @@ class DownloadProductImages extends Command
             foreach (array_unique($urls) as $tryUrl) {
                 $response = Http::timeout(15)
                     ->withHeaders([
-                        'User-Agent'  => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-                        'Referer'     => 'https://sota.store/',
-                        'Accept'      => 'image/webp,image/*,*/*',
+                        'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+                        'Referer' => 'https://sota.store/',
+                        'Accept' => 'image/webp,image/*,*/*',
                     ])
                     ->get($tryUrl);
 
@@ -163,6 +176,7 @@ class DownloadProductImages extends Command
                 }
 
                 Storage::disk('public')->put($storagePath, $response->body());
+
                 return $storagePath;
             }
 
@@ -170,6 +184,7 @@ class DownloadProductImages extends Command
 
         } catch (\Throwable $e) {
             $this->warn(" Error {$slug}: {$e->getMessage()}");
+
             return null;
         }
     }

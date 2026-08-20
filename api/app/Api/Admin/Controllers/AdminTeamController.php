@@ -4,103 +4,197 @@ namespace App\Api\Admin\Controllers;
 
 use App\Api\Admin\Actions\AssignUserRoleAction;
 use App\Api\Admin\Actions\CreateAdminUserAction;
+use App\Api\Admin\Actions\Team\ListInvitableRolesAction;
+use App\Api\Admin\Actions\Team\ListTeamMembersAction;
+use App\Api\Admin\Actions\ToggleUserSuspensionAction;
 use App\Api\Admin\Resources\AdminUserResource;
 use App\Api\Admin\Resources\RoleResource;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(name="Admin Team", description="Admin team management")
- */
 class AdminTeamController extends BaseApiController
 {
-    /**
-     * List all admin team members and summary stats.
-     *
-     * GET /admin/team
-     */
-    public function index(): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/team',
+        summary: 'List all admin team members and summary stats',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Team'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(
+                                    property: 'team',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'object'),
+                                ),
+                                new OA\Property(
+                                    property: 'stats',
+                                    properties: [
+                                        new OA\Property(property: 'total', type: 'integer', example: 5),
+                                        new OA\Property(property: 'owners', type: 'integer', example: 1),
+                                    ],
+                                    type: 'object',
+                                ),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function index(ListTeamMembersAction $action): JsonResponse
     {
-        $adminRoles = Role::whereIn('name', ['admin', 'administrator', 'moderator', 'support', 'owner'])
-            ->pluck('id');
-
-        $team = User::whereHas('roles', fn ($q) => $q->whereIn('roles.id', $adminRoles))
-            ->with('roles')
-            ->latest()
-            ->get();
-
-        $stats = [
-            'total'  => $team->count(),
-            'owners' => $team->filter(fn ($u) => $u->roles->contains('name', 'owner'))->count(),
-        ];
+        $result = $action->execute();
 
         return self::successfulResponseWithData([
-            'team'  => AdminUserResource::collection($team),
-            'stats' => $stats,
+            'team' => AdminUserResource::collection($result['team']),
+            'stats' => $result['stats'],
         ]);
     }
 
-    /**
-     * List roles available for team invite.
-     *
-     * GET /admin/team/roles
-     */
-    public function roles(): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/team/roles',
+        summary: 'List roles available for team invite',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Team'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(
+                                    property: 'roles',
+                                    type: 'array',
+                                    items: new OA\Items(type: 'object'),
+                                ),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function roles(ListInvitableRolesAction $action): JsonResponse
     {
-        $roles = Role::orderBy('name')->get();
+        $roles = $action->execute();
 
         return self::successfulResponseWithData([
             'roles' => RoleResource::collection($roles),
         ]);
     }
 
-    /**
-     * Invite a new admin team member.
-     *
-     * POST /admin/team/invite
-     */
+    #[OA\Post(
+        path: '/api/admin/team/invite',
+        summary: 'Invite a new admin team member',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name', 'email', 'roleId'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Jane Doe'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jane@example.com'),
+                    new OA\Property(property: 'roleId', type: 'integer', example: 2),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Team'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Team member invited successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
     public function invite(
         Request $request,
         CreateAdminUserAction $createAction,
         AssignUserRoleAction $assignRoleAction
     ): JsonResponse {
         $data = $request->validate([
-            'name'   => ['required', 'string', 'max:255'],
-            'email'  => ['required', 'email', 'unique:users,email'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'roleId' => ['required', 'exists:roles,id'],
         ]);
 
-        $password = \Illuminate\Support\Str::random(12);
+        $password = Str::random(12);
 
         $user = $createAction->execute([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => $password,
         ], $request->ip(), $request->userAgent());
 
         $role = Role::findOrFail($data['roleId']);
-        $assignRoleAction->execute($user, [$role->name]);
+        $assignRoleAction->execute($user, [$role->slug]);
 
         return self::successfulResponseWithData(new AdminUserResource($user->load('roles')));
     }
 
-    /**
-     * Toggle admin team member active/suspended status.
-     *
-     * POST /admin/team/{id}/toggle-status
-     */
-    public function toggleStatus(int $id): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/team/{id}/toggle-status',
+        summary: 'Toggle admin team member active/suspended status',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Team'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Status toggled successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'status', type: 'string', enum: ['active', 'suspended']),
+                                new OA\Property(property: 'message', type: 'string', example: 'Team member activated successfully.'),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: 'Team member not found'),
+        ],
+    )]
+    public function toggleStatus(int $id, Request $request, ToggleUserSuspensionAction $action): JsonResponse
     {
-        $user = User::findOrFail($id);
-
-        $user->status = $user->status === 'active' ? 'suspended' : 'active';
-        $user->save();
+        $user = $action->execute($id, $request->ip(), $request->userAgent());
 
         return self::successfulResponseWithData([
-            'status'  => $user->status,
+            'status' => $user->status,
             'message' => $user->status === 'active'
                 ? 'Team member activated successfully.'
                 : 'Team member suspended successfully.',

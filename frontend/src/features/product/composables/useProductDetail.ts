@@ -1,7 +1,16 @@
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  onServerPrefetch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
+import { resolveProductImage, resolveGalleryImages } from "@/entities/product/lib/resolveProductImage";
+import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 export function useProductDetail() {
   const route = useRoute();
@@ -47,25 +56,7 @@ export function useProductDetail() {
           )
         : 0;
 
-      let image = "";
-      if (
-        mainVariant &&
-        mainVariant.dimensions &&
-        mainVariant.dimensions.images &&
-        mainVariant.dimensions.images.length > 0
-      ) {
-        const primary =
-          mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-          mainVariant.dimensions.images[0];
-        if (primary && primary.url) {
-          image = primary.url;
-        }
-      }
-
-      if (!image) {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
-      }
+      const image = resolveProductImage(mainVariant, rawProduct.value.variants);
 
       const name =
         typeof rawProduct.value.name === "object"
@@ -97,12 +88,7 @@ export function useProductDetail() {
 
       const ramVal = getAttrValue("memory") || getAttrValue("ram");
       const storageVal = getAttrValue("storage");
-      const subtitle =
-        ramVal && storageVal
-          ? `${ramVal} ОЗУ / ${storageVal}`
-          : rawProduct.value.brand?.name
-            ? `${rawProduct.value.brand.name} Edition`
-            : "Premium Tech Edition";
+      const subtitle = ramVal && storageVal ? `${ramVal} ОЗУ / ${storageVal}` : null;
 
       const specsList: any[] = [];
       const list: any[] = [];
@@ -163,10 +149,10 @@ export function useProductDetail() {
           rawProduct.value.categories && rawProduct.value.categories[0]
             ? rawProduct.value.categories[0].name.uk ||
               rawProduct.value.categories[0].name.en
-            : "Смартфони",
+            : null,
         subtitle: subtitle,
         price: price,
-        oldPrice: oldPrice || price * 1.15,
+        oldPrice: oldPrice,
         image: image,
         rating: rawProduct.value.approvedReviewsAvgRating != null ? parseFloat(rawProduct.value.approvedReviewsAvgRating) : 0,
         reviews: rawProduct.value.approvedReviewsCount != null ? Number(rawProduct.value.approvedReviewsCount) : 0,
@@ -180,35 +166,11 @@ export function useProductDetail() {
 
   const galleryImages = computed(() => {
     if (!rawProduct.value) return [];
-    const mainVariant = activeVariant.value;
-    const images: any[] = [];
-
-    if (
-      mainVariant &&
-      mainVariant.dimensions &&
-      mainVariant.dimensions.images &&
-      mainVariant.dimensions.images.length > 0
-    ) {
-      mainVariant.dimensions.images.forEach((img: any, idx: number) => {
-        images.push({
-          label: img.isPrimary ? "Основний вигляд" : `Вигляд ${idx + 1}`,
-          src: img.url,
-        });
-      });
-    }
-
-    if (images.length === 0) {
-      const mainImg =
-        product.value?.image ||
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
-      images.push(
-        { label: "Основний вигляд", src: mainImg },
-        { label: "Вигляд збоку", src: mainImg },
-        { label: "Детальний макро-вигляд", src: mainImg },
-      );
-    }
-
-    return images;
+    const images = resolveGalleryImages(activeVariant.value, rawProduct.value.variants);
+    return images.map((img, idx) => ({
+      label: img.isPrimary ? "Основний вигляд" : `Вигляд ${idx + 1}`,
+      src: img.url,
+    }));
   });
 
   const availableColors = computed(() => {
@@ -349,6 +311,21 @@ export function useProductDetail() {
     }
   };
 
+  const relatedProducts = ref<any[]>([]);
+
+  const fetchRelatedProducts = async (slug: string) => {
+    try {
+      const response = await productApi.catalogGetRelatedProducts(slug);
+      if (response.data && response.data.status === "success") {
+        relatedProducts.value = (response.data.data || [])
+          .map(mapCatalogProduct)
+          .filter(Boolean);
+      }
+    } catch (e) {
+      console.error("Failed to fetch related products:", e);
+    }
+  };
+
   // Magnifying hover zoom state variables
   const isZoomed = ref(false);
   const zoomStyle = ref({
@@ -395,6 +372,7 @@ export function useProductDetail() {
         name: product.value.name,
         category: "Основний пристрій",
         price: product.value.price,
+        oldPrice: product.value.oldPrice,
         locked: true,
         image: galleryImages.value[0]?.src || "",
       },
@@ -408,33 +386,18 @@ export function useProductDetail() {
           ? rp.categories[0].name.uk || rp.categories[0].name.en
           : "Аксесуар";
 
-      let image = "";
-      if (rp.variants && rp.variants[0]) {
-        const v = rp.variants[0];
-        if (
-          v.dimensions &&
-          v.dimensions.images &&
-          v.dimensions.images.length > 0
-        ) {
-          const primary =
-            v.dimensions.images.find((img: any) => img.isPrimary) ||
-            v.dimensions.images[0];
-          image = primary.url || "";
-        }
-      }
-      if (!image) {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
-      }
-
-      const price =
-        rp.variants && rp.variants[0] ? parseFloat(rp.variants[0].price) : 0;
+      const mainVariant = rp.variants?.[0] || null;
+      const image = resolveProductImage(mainVariant, rp.variants);
+      const price = mainVariant ? parseFloat(mainVariant.price) : 0;
+      const oldPriceRaw = mainVariant?.oldPrice || mainVariant?.old_price;
+      const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
 
       list.push({
         id: rp.id,
         name: name,
         category: category,
         price: price,
+        oldPrice: oldPrice,
         locked: false,
         image: image,
       });
@@ -461,19 +424,6 @@ export function useProductDetail() {
     },
   ];
 
-  const reviews = [
-    {
-      name: "Марта В.",
-      title: "Чудовий вибір для роботи та графіки",
-      text: "Неймовірний екран, кольори соковиті, очі не втомлюються. Продуктивності з запасом, а матеріали корпусу відчуваються дорого.",
-    },
-    {
-      name: "Данило К.",
-      title: "Преміальний рівень пристрою",
-      text: "Швидкість роботи SSD вражає. Дуже задоволений часом автономної роботи — витримує цілий день інтенсивного програмування.",
-    },
-  ];
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("uk-UA", {
       style: "currency",
@@ -490,12 +440,21 @@ export function useProductDetail() {
       .reduce((sum, item) => sum + item.price, 0);
   });
 
+  // Real savings only - the sum of each included item's own oldPrice→price
+  // markdown. There is no separate bundle-only discount, so the total is
+  // simply the subtotal; this figure is purely informational.
   const bundleSavings = computed(() =>
-    selectedBundleIds.value.length ? 3000 : 0,
+    bundleItems.value
+      .filter(
+        (item) => item.locked || selectedBundleIds.value.includes(item.id),
+      )
+      .reduce(
+        (sum, item) =>
+          sum + Math.max(0, (item.oldPrice ?? item.price) - item.price),
+        0,
+      ),
   );
-  const bundleTotal = computed(() =>
-    Math.max(0, bundleSubtotal.value - bundleSavings.value),
-  );
+  const bundleTotal = computed(() => bundleSubtotal.value);
 
   const setSelectedImage = (index: number) => {
     selectedImageIndex.value = index;
@@ -535,22 +494,7 @@ export function useProductDetail() {
         const mainVariant =
           rp.variants && rp.variants[0] ? rp.variants[0] : null;
         const price = mainVariant ? parseFloat(mainVariant.price) : 0;
-        let image = "";
-        if (
-          mainVariant &&
-          mainVariant.dimensions &&
-          mainVariant.dimensions.images &&
-          mainVariant.dimensions.images.length > 0
-        ) {
-          const primary =
-            mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-            mainVariant.dimensions.images[0];
-          image = primary.url || "";
-        }
-        if (!image) {
-          image =
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBZjrYzoYVLWW_oiXKtFfrvXfrqZhFl0aOo-qiqP-OxioJPU85soCgr1bPX8-8SrIpEgyr7zYqcamNRaM1BW5yOnQdyQkcNC89uNihkW1bThAYw05lRVqC36IMTBCvBLVH7opxwC_Q3tAwXBXFTV3E_7Pec49dMJ6oEmwa-i1h3rfPR3C3ZxfrlPDm4iN8h3YEy4Smhr2pI6IcA1YpRV8_hq162IYmxl8-kkt1WI_Z9ARaUKWft3ncDr_m6Dug4Fa0Nm0Rr2ngLp0Q";
-        }
+        const image = resolveProductImage(mainVariant, rp.variants);
         const name =
           typeof rp.name === "object" ? rp.name.uk || rp.name.en : rp.name;
 
@@ -578,6 +522,7 @@ export function useProductDetail() {
           cartStore.trackProductView(rawProduct.value);
         }
         fetchRandomProducts();
+        fetchRelatedProducts(rawProduct.value.slug);
       }
     } catch (error) {
       console.error("Failed to fetch product details:", error);
@@ -596,6 +541,10 @@ export function useProductDetail() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
   });
+
+  // No DOM/onMounted during prerendering — fetch the same data here so the
+  // static build captures the real product.
+  onServerPrefetch(() => fetchProductDetails());
 
   // Re-fetch when navigating between products (Vue Router reuses the component instance)
   watch(
@@ -638,7 +587,7 @@ export function useProductDetail() {
     tabs,
     bundleItems,
     qualityGuarantees,
-    reviews,
+    relatedProducts,
     formatPrice,
     bundleSubtotal,
     bundleSavings,

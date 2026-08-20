@@ -172,6 +172,12 @@
         </div>
       </div>
 
+      <DiscountTargetingFields
+        v-model="targeting"
+        :categories="categories"
+        :products="products"
+      />
+
       <div class="flex items-center justify-between p-4 bg-gray-55 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800">
         <div>
           <span class="text-sm font-semibold text-gray-900 dark:text-white block">
@@ -238,6 +244,7 @@ import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import DiscountTargetingFields from "@/components/admin/features/marketing/DiscountTargetingFields.vue";
 import {
   ExclamationCircleIcon,
   RocketLaunchIcon,
@@ -248,6 +255,14 @@ const props = defineProps({
   promotion: {
     type: Object,
     default: null
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  products: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -273,6 +288,16 @@ const form = ref({
   usageLimitPerUser: null,
   minimumAmount: null,
   applicablePlanIds: [],
+  categoryIds: [],
+  productIds: [],
+});
+
+const targeting = computed({
+  get: () => ({ categoryIds: form.value.categoryIds, productIds: form.value.productIds }),
+  set: (val) => {
+    form.value.categoryIds = val.categoryIds;
+    form.value.productIds = val.productIds;
+  },
 });
 
 const loading = ref(false);
@@ -315,6 +340,8 @@ watch(
         usageLimitPerUser: newVal.usageLimitPerUser ?? null,
         minimumAmount: newVal.minimumAmount ?? null,
         applicablePlanIds: newVal.applicablePlanIds || [],
+        categoryIds: newVal.categoryIds || [],
+        productIds: newVal.productIds || [],
       };
     } else {
       form.value = {
@@ -334,6 +361,8 @@ watch(
         usageLimitPerUser: null,
         minimumAmount: null,
         applicablePlanIds: [],
+        categoryIds: [],
+        productIds: [],
       };
     }
   },

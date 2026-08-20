@@ -312,13 +312,25 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, watch, onMounted, onServerPrefetch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useHead } from '@vueuse/head';
 import api from '@/shared/services/api/apiClient';
 import { UiInput, UiSelect } from '@/shared/ui';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
+
+useHead({
+  title: computed(() => t('meta.blogTitle')),
+  meta: computed(() => [
+    { name: 'description', content: t('meta.blogDescription') },
+    { property: 'og:title', content: t('meta.blogTitle') },
+    { property: 'og:description', content: t('meta.blogDescription') },
+  ]),
+});
 
 const posts = ref([]);
 const categories = ref([]);
@@ -453,6 +465,12 @@ watch(
 );
 
 onMounted(async () => {
+  await Promise.all([fetchPosts(Number(route.query.page) || 1), fetchSidebar()]);
+});
+
+// Prerendering has no DOM, so onMounted never runs — fetch the same data
+// here so the static build captures real blog listing content.
+onServerPrefetch(async () => {
   await Promise.all([fetchPosts(Number(route.query.page) || 1), fetchSidebar()]);
 });
 </script>

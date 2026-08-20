@@ -3,6 +3,7 @@ import { ref, reactive, computed, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/shared/services/api/apiClient";
+import TwoFactorSection from "@/widgets/Account/components/TwoFactorSection.vue";
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
@@ -32,6 +33,7 @@ interface CardItem {
 const expandedSections = reactive<Record<string, boolean>>({
   profile: true,
   password: false,
+  twoFactor: false,
   addresses: false,
   cards: false,
 });
@@ -674,6 +676,12 @@ const inputClass =
         </form>
       </div>
     </div>
+
+    <!-- 2b. TWO-FACTOR AUTHENTICATION ACCORDION -->
+    <TwoFactorSection
+      :expanded="expandedSections.twoFactor"
+      @toggle="toggleSection('twoFactor')"
+    />
 
     <!-- 3. ADDRESS BOOK ACCORDION -->
     <div

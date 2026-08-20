@@ -22,6 +22,10 @@ class StoreCouponRequest extends FormRequest
             'usageLimit' => 'nullable|integer|min:1',
             'expiresAt' => 'nullable|date',
             'isActive' => 'boolean',
+            'categoryIds' => 'array',
+            'categoryIds.*' => 'integer|exists:categories,id',
+            'productIds' => 'array',
+            'productIds.*' => 'integer|exists:products,id',
         ];
     }
 }

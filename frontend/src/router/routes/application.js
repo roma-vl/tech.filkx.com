@@ -19,7 +19,7 @@ export default [
         name: "home",
         component: HomePage,
         meta: {
-          title: "Home — Stream Studio",
+          title: "Home — Tech Filkx",
           auth: false,
         },
       },
@@ -28,10 +28,9 @@ export default [
         name: "dashboard",
         component: HomePage,
         meta: {
-          title: "Dashboard — Stream Studio",
+          title: "Dashboard — Tech Filkx",
           auth: true,
           verified: true,
-          requiresSubscription: true,
         },
       },
       {

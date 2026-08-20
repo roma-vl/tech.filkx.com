@@ -21,6 +21,11 @@ class UpdateCouponAction
             throw new CouponNotFoundException;
         }
 
-        return $this->couponRepository->update($coupon, $dto->toArray());
+        $coupon = $this->couponRepository->update($coupon, $dto->toArray());
+
+        $coupon->categories()->sync($dto->categoryIds);
+        $coupon->products()->sync($dto->productIds);
+
+        return $coupon;
     }
 }

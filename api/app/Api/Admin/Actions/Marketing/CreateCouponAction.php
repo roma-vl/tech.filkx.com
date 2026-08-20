@@ -14,6 +14,11 @@ class CreateCouponAction
 
     public function execute(CouponDto $dto): Coupon
     {
-        return $this->couponRepository->create($dto->toArray());
+        $coupon = $this->couponRepository->create($dto->toArray());
+
+        $coupon->categories()->sync($dto->categoryIds);
+        $coupon->products()->sync($dto->productIds);
+
+        return $coupon;
     }
 }

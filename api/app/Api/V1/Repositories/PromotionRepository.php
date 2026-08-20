@@ -4,12 +4,13 @@ namespace App\Api\V1\Repositories;
 
 use App\Models\Promotion;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class PromotionRepository implements PromotionRepositoryInterface
 {
     public function paginate(array $filters, int $perPage): LengthAwarePaginator
     {
-        $query = Promotion::query();
+        $query = Promotion::with(['categories', 'products']);
 
         if (! empty($filters['search'])) {
             $query->where('name', 'like', "%{$filters['search']}%");
@@ -57,5 +58,18 @@ class PromotionRepository implements PromotionRepositoryInterface
     public function delete(Promotion $promotion): bool
     {
         return (bool) $promotion->delete();
+    }
+
+    public function activePromotions(): Collection
+    {
+        return Promotion::with(['categories', 'products'])
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('start_date')->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->get();
     }
 }

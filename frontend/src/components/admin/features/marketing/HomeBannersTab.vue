@@ -1,0 +1,450 @@
+<template>
+  <div class="space-y-6">
+    <!-- Top Action Bar -->
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
+    >
+      <div>
+        <h3 class="font-bold text-gray-900 dark:text-white">
+          Банери на головній сторінці
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Керує слайдами hero-блоку на головній сторінці магазину. Порядок визначається полем "Порядок".
+        </p>
+      </div>
+
+      <AppButton
+        variant="primary"
+        class="flex items-center gap-2 shrink-0 h-[38px] !py-0 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+        @click="openAddModal"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        Додати банер
+      </AppButton>
+    </div>
+
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
+    >
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Прев'ю
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Заголовок
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Посилання
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Порядок
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Статус
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Дії
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr
+              v-for="banner in sortedBanners"
+              :key="banner.id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            >
+              <td class="px-6 py-4">
+                <img
+                  :src="banner.imageUrl"
+                  :alt="banner.title"
+                  class="w-20 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                >
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate">
+                {{ banner.title }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-mono text-xs">{{ linkTypeLabels[banner.linkType] }}</span>
+                <span
+                  v-if="banner.linkValue"
+                  class="block text-xs text-gray-400 truncate max-w-[160px]"
+                >{{ banner.linkValue }}</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                {{ banner.sortOrder }}
+              </td>
+              <td class="px-6 py-4">
+                <span
+                  class="px-2.5 py-1 rounded-full text-xs font-bold"
+                  :class="banner.isActive
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'"
+                >
+                  {{ banner.isActive ? "Активний" : "Вимкнено" }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex justify-end gap-2">
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    class="!p-2 text-blue-600 dark:text-blue-400"
+                    @click="openEditModal(banner)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                  </AppButton>
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    class="!p-2 text-red-600 dark:text-red-400"
+                    @click="deleteBanner(banner)"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </AppButton>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="sortedBanners.length === 0">
+              <td
+                colspan="6"
+                class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
+              >
+                Банерів ще немає. Без жодного банера на головній показується нейтральний заповнювач без промо-контенту.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Banner Modal -->
+    <AppModal
+      v-model="showModal"
+      :title="isEditing ? 'Редагувати банер' : 'Додати банер'"
+      max-width="lg"
+    >
+      <form
+        class="space-y-4"
+        @submit.prevent="saveBanner"
+      >
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            Зображення
+          </label>
+          <div class="relative">
+            <div
+              v-if="form.imageUrl"
+              class="relative rounded-xl overflow-hidden aspect-[21/9] mb-2 border border-gray-200 dark:border-gray-700"
+            >
+              <img
+                :src="form.imageUrl"
+                class="w-full h-full object-cover"
+              >
+              <AppButton
+                variant="ghost"
+                size="sm"
+                class="absolute top-2 right-2 !p-1.5 bg-black/50 hover:bg-black/70 rounded-lg !text-white border-none shadow-none"
+                @click="form.imageUrl = ''; form.imagePath = ''"
+              >
+                ✕
+              </AppButton>
+            </div>
+            <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors">
+              <span class="text-xs text-gray-400">{{ uploading ? "Завантаження..." : "Завантажити зображення (обов'язково)" }}</span>
+              <input
+                type="file"
+                accept="image/*"
+                class="sr-only"
+                @change="uploadImage"
+              >
+            </label>
+          </div>
+        </div>
+
+        <AppInput
+          v-model="form.badge"
+          label="Бейдж"
+          placeholder="напр. Новинка"
+        />
+        <AppInput
+          v-model="form.subtitle"
+          label="Підзаголовок"
+        />
+        <AppInput
+          v-model="form.title"
+          required
+          label="Заголовок"
+        />
+        <AppTextarea
+          v-model="form.description"
+          rows="3"
+          label="Опис"
+        />
+        <AppInput
+          v-model="form.buttonLabel"
+          label="Текст кнопки"
+          placeholder="Переглянути"
+        />
+
+        <AppSelect
+          v-model="form.linkType"
+          label="Тип посилання"
+          :options="linkTypeOptions"
+          option-value="value"
+          option-label="label"
+        />
+        <AppInput
+          v-if="form.linkType !== 'catalog'"
+          v-model="form.linkValue"
+          :label="linkValueLabel"
+          :placeholder="linkValuePlaceholder"
+        />
+
+        <AppInput
+          v-model.number="form.sortOrder"
+          type="number"
+          label="Порядок сортування"
+        />
+
+        <AppToggle
+          v-model="form.isActive"
+          label="Активний"
+          description="Неактивні банери не показуються на сайті"
+        />
+      </form>
+
+      <template #footer>
+        <AppButton
+          variant="secondary"
+          class="mr-2"
+          @click="showModal = false"
+        >
+          Скасувати
+        </AppButton>
+        <AppButton
+          variant="primary"
+          class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
+          :disabled="!form.title || !form.imagePath"
+          @click="saveBanner"
+        >
+          Зберегти
+        </AppButton>
+      </template>
+    </AppModal>
+
+    <!-- Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showDeleteModal"
+      title="Видалення банера"
+      :message="`Ви впевнені, що хочете видалити банер &quot;${bannerToDelete?.title || ''}&quot;?`"
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      :loading="deletingBanner"
+      @confirm="confirmDeleteBanner"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useToast } from "vue-toastification";
+import api from "@/shared/services/api/apiClient";
+import AppInput from "@/components/admin/ui/AppInput.vue";
+import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
+import AppSelect from "@/components/admin/ui/AppSelect.vue";
+import AppToggle from "@/components/admin/ui/AppToggle.vue";
+import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppModal from "@/components/admin/ui/AppModal.vue";
+import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const toast = useToast();
+
+const linkTypeOptions = [
+  { value: "catalog", label: "Весь каталог" },
+  { value: "category", label: "Категорія" },
+  { value: "product", label: "Товар" },
+  { value: "url", label: "Довільне посилання" },
+];
+const linkTypeLabels = Object.fromEntries(linkTypeOptions.map((o) => [o.value, o.label]));
+
+const linkValueLabel = computed(() => {
+  switch (form.value.linkType) {
+    case "category": return "Slug категорії";
+    case "product": return "Slug товару";
+    case "url": return "URL / шлях";
+    default: return "Значення посилання";
+  }
+});
+const linkValuePlaceholder = computed(() => {
+  switch (form.value.linkType) {
+    case "category": return "napr. smartphones";
+    case "product": return "napr. iphone-15-pro";
+    case "url": return "/catalog?category=audio";
+    default: return "";
+  }
+});
+
+const banners = ref([]);
+const sortedBanners = computed(() =>
+  [...banners.value].sort((a, b) => a.sortOrder - b.sortOrder),
+);
+
+const fetchBanners = async () => {
+  try {
+    const { data } = await api.get("/admin/home-banners");
+    banners.value = data.data;
+  } catch (error) {
+    console.error("Failed to load home banners:", error);
+    toast.error("Помилка завантаження банерів");
+  }
+};
+
+onMounted(fetchBanners);
+
+const showModal = ref(false);
+const isEditing = ref(false);
+const uploading = ref(false);
+
+const defaultForm = () => ({
+  id: null,
+  badge: "",
+  subtitle: "",
+  title: "",
+  description: "",
+  imagePath: "",
+  imageUrl: "",
+  buttonLabel: "",
+  linkType: "catalog",
+  linkValue: "",
+  isActive: true,
+  sortOrder: banners.value.length,
+});
+
+const form = ref(defaultForm());
+
+const openAddModal = () => {
+  isEditing.value = false;
+  form.value = defaultForm();
+  showModal.value = true;
+};
+
+const openEditModal = (banner) => {
+  isEditing.value = true;
+  form.value = { ...banner };
+  showModal.value = true;
+};
+
+const uploadImage = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append("image", file);
+  uploading.value = true;
+  try {
+    const { data } = await api.post("/admin/home-banners/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    form.value.imagePath = data.data.path;
+    form.value.imageUrl = data.data.url;
+  } catch (error) {
+    console.error("Failed to upload banner image:", error);
+    toast.error("Помилка завантаження зображення");
+  } finally {
+    uploading.value = false;
+  }
+};
+
+const saveBanner = async () => {
+  if (!form.value.title || !form.value.imagePath) return;
+  const payload = {
+    badge: form.value.badge || null,
+    subtitle: form.value.subtitle || null,
+    title: form.value.title,
+    description: form.value.description || null,
+    imagePath: form.value.imagePath,
+    buttonLabel: form.value.buttonLabel || null,
+    linkType: form.value.linkType,
+    linkValue: form.value.linkType === "catalog" ? null : form.value.linkValue,
+    isActive: form.value.isActive,
+    sortOrder: form.value.sortOrder,
+  };
+
+  try {
+    if (isEditing.value) {
+      await api.put(`/admin/home-banners/${form.value.id}`, payload);
+    } else {
+      await api.post("/admin/home-banners", payload);
+    }
+    showModal.value = false;
+    toast.success("Банер збережено");
+    fetchBanners();
+  } catch (error) {
+    console.error("Failed to save banner:", error);
+    toast.error("Помилка збереження банера");
+  }
+};
+
+const showDeleteModal = ref(false);
+const bannerToDelete = ref(null);
+const deletingBanner = ref(false);
+
+const deleteBanner = (banner) => {
+  bannerToDelete.value = banner;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteBanner = async () => {
+  if (!bannerToDelete.value) return;
+  deletingBanner.value = true;
+  try {
+    await api.delete(`/admin/home-banners/${bannerToDelete.value.id}`);
+    toast.success("Банер видалено");
+    showDeleteModal.value = false;
+    fetchBanners();
+  } catch (error) {
+    console.error("Failed to delete banner:", error);
+    toast.error("Помилка видалення банера");
+  } finally {
+    deletingBanner.value = false;
+  }
+};
+</script>

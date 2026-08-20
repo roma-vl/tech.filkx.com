@@ -2,158 +2,259 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\Api\V1\Enum\SupportStatusEnum;
+use App\Api\V1\Actions\Support\CreateSupportTicketAction;
+use App\Api\V1\Actions\Support\GetSupportTicketAction;
+use App\Api\V1\Actions\Support\ListMySupportTicketsAction;
+use App\Api\V1\Actions\Support\MarkSupportTicketAsReadAction;
+use App\Api\V1\Actions\Support\SendSupportMessageAction;
+use App\Api\V1\Actions\Support\TransferSupportTicketAction;
+use App\Api\V1\Requests\SendSupportMessageRequest;
+use App\Api\V1\Requests\StoreSupportTicketRequest;
 use App\Api\V1\Resources\Support\SupportMessageResource;
 use App\Api\V1\Resources\Support\SupportTicketResource;
 use App\Models\SupportTicket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class SupportController extends BaseApiController
 {
-    public function index(Request $request): JsonResponse
+    #[OA\Get(
+        path: '/api/support/tickets',
+        summary: "List the authenticated user's support tickets",
+        security: [['bearerAuth' => []]],
+        tags: ['Support'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "The authenticated user's support tickets, newest first",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SupportTicketResource'),
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function index(Request $request, ListMySupportTicketsAction $action): JsonResponse
     {
-        $user = $request->user();
-        $tickets = SupportTicket::where('user_id', $user->id)
-            ->with(['lastMessage'])
-            ->withCount(['unreadMessagesForUser as unreadCount'])
-            ->latest('updated_at')
-            ->get();
-
-        return self::successfulResponseWithData(SupportTicketResource::collection($tickets));
-    }
-
-    public function store(Request $request): JsonResponse
-    {
-        $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-            'file' => 'nullable|file|max:10240',
-        ]);
-
-        $user = $request->user();
-
-        $ticket = SupportTicket::create([
-            'user_id' => $user->id,
-            'subject' => $request->input('subject'),
-            'status' => 'new',
-            'handled_by' => 'human',
-        ]);
-
-        $filePath = null;
-        $fileType = null;
-        $fileName = null;
-        $fileSize = null;
-
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filePath = $file->store('support_files', 'public');
-            $fileType = $file->getClientMimeType();
-            $fileName = $file->getClientOriginalName();
-            $fileSize = $file->getSize();
-        }
-
-        $ticket->messages()->create([
-            'user_id' => $user->id,
-            'message' => $request->input('message'),
-            'file_path' => $filePath,
-            'file_type' => $fileType,
-            'file_name' => $fileName,
-            'file_size' => $fileSize,
-            'is_admin' => false,
-        ]);
-
         return self::successfulResponseWithData(
-            new SupportTicketResource($ticket->load('messages')),
+            SupportTicketResource::collection($action->execute($request->user()))
         );
     }
 
-    public function show(SupportTicket $ticket): JsonResponse
+    #[OA\Post(
+        path: '/api/support/tickets',
+        summary: 'Open a new support ticket',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['subject', 'message'],
+                    properties: [
+                        new OA\Property(property: 'subject', type: 'string', maxLength: 255),
+                        new OA\Property(property: 'message', type: 'string'),
+                        new OA\Property(property: 'file', description: 'Up to 10 MB', type: 'string', format: 'binary'),
+                    ],
+                ),
+            ),
+        ),
+        tags: ['Support'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'The created ticket with its first message',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/SupportTicketResource'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 422, description: 'Validation failed'),
+        ],
+    )]
+    public function store(StoreSupportTicketRequest $request, CreateSupportTicketAction $action): JsonResponse
     {
-        if ($ticket->user_id !== auth('api')->id()) {
-            return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
-        }
+        $ticket = $action->execute($request->user(), $request->validated(), $request->file('file'));
 
-        return self::successfulResponseWithData(
-            new SupportTicketResource($ticket->load(['publicMessages.user', 'user']))
-        );
+        return self::successfulResponseWithData(new SupportTicketResource($ticket));
     }
 
-    public function markAsRead(SupportTicket $ticket): Response
+    #[OA\Get(
+        path: '/api/support/tickets/{ticket}',
+        summary: 'Get a support ticket with its public messages',
+        security: [['bearerAuth' => []]],
+        tags: ['Support'],
+        parameters: [
+            new OA\Parameter(name: 'ticket', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'The support ticket',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/SupportTicketResource'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 403, description: 'The ticket does not belong to the authenticated user'),
+        ],
+    )]
+    public function show(Request $request, SupportTicket $ticket, GetSupportTicketAction $action): JsonResponse
     {
-        if ($ticket->user_id !== auth('api')->id()) {
-            abort(403);
+        try {
+            $ticket = $action->execute($ticket, $request->user());
+        } catch (AccessDeniedHttpException $e) {
+            return self::errorResponse($e->getMessage(), Response::HTTP_FORBIDDEN);
         }
 
-        $ticket->update(['read_at' => now()]);
-        $ticket->messages()->where('is_admin', true)->whereNull('read_at')->update(['read_at' => now()]);
+        return self::successfulResponseWithData(new SupportTicketResource($ticket));
+    }
+
+    #[OA\Post(
+        path: '/api/support/tickets/{ticket}/mark-as-read',
+        summary: "Mark a ticket's admin messages as read by the customer",
+        security: [['bearerAuth' => []]],
+        tags: ['Support'],
+        parameters: [
+            new OA\Parameter(name: 'ticket', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Marked as read'),
+            new OA\Response(response: 403, description: 'The ticket does not belong to the authenticated user'),
+        ],
+    )]
+    public function markAsRead(Request $request, SupportTicket $ticket, MarkSupportTicketAsReadAction $action): Response
+    {
+        $action->execute($ticket, $request->user());
 
         return response()->noContent();
     }
 
-    public function sendMessage(Request $request, SupportTicket $ticket): JsonResponse
+    #[OA\Post(
+        path: '/api/support/tickets/{ticket}/message',
+        summary: 'Send a message on a support ticket',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', nullable: true),
+                        new OA\Property(property: 'file', description: 'Up to 10 MB', type: 'string', format: 'binary'),
+                    ],
+                ),
+            ),
+        ),
+        tags: ['Support'],
+        parameters: [
+            new OA\Parameter(name: 'ticket', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'The created message',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/SupportMessageResource'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 403, description: 'The ticket does not belong to the authenticated user'),
+            new OA\Response(response: 422, description: 'Neither a message nor a file was provided'),
+        ],
+    )]
+    public function sendMessage(SendSupportMessageRequest $request, SupportTicket $ticket, SendSupportMessageAction $action): JsonResponse
     {
-        if ($ticket->user_id !== auth('api')->id()) {
-            return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
-        }
-
-        $request->validate([
-            'message' => 'nullable|string',
-            'file' => 'nullable|file|max:10240',
-        ]);
-
-        if (! $request->input('message') && ! $request->hasFile('file')) {
-            return self::errorResponse('Message or file is required', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $filePath = null;
-        $fileType = null;
-        $fileName = null;
-        $fileSize = null;
-
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filePath = $file->store('support_files', 'public');
-            $fileType = $file->getClientMimeType();
-            $fileName = $file->getClientOriginalName();
-            $fileSize = $file->getSize();
-        }
-
-        $message = $ticket->messages()->create([
-            'user_id' => auth('api')->id(),
-            'message' => $request->input('message'),
-            'file_path' => $filePath,
-            'file_type' => $fileType,
-            'file_name' => $fileName,
-            'file_size' => $fileSize,
-            'is_admin' => false,
-        ]);
-
-        if ($ticket->status === SupportStatusEnum::DONE) {
-            $ticket->update(['status' => SupportStatusEnum::ACCEPTED]);
+        try {
+            $message = $action->execute($ticket, $request->user(), $request->validated(), $request->file('file'));
+        } catch (AccessDeniedHttpException $e) {
+            return self::errorResponse($e->getMessage(), Response::HTTP_FORBIDDEN);
+        } catch (UnprocessableEntityHttpException $e) {
+            return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return self::successfulResponseWithData(new SupportMessageResource($message));
     }
 
-    public function transfer(SupportTicket $ticket): JsonResponse
+    #[OA\Post(
+        path: '/api/support/tickets/{ticket}/transfer',
+        summary: 'Hand a ticket back to a human agent',
+        security: [['bearerAuth' => []]],
+        tags: ['Support'],
+        parameters: [
+            new OA\Parameter(name: 'ticket', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'The updated ticket',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/SupportTicketResource'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 403, description: 'The ticket does not belong to the authenticated user'),
+        ],
+    )]
+    public function transfer(Request $request, SupportTicket $ticket, TransferSupportTicketAction $action): JsonResponse
     {
-        if ($ticket->user_id !== auth('api')->id()) {
-            return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
+        try {
+            $ticket = $action->execute($ticket, $request->user(), 'human');
+        } catch (AccessDeniedHttpException $e) {
+            return self::errorResponse($e->getMessage(), Response::HTTP_FORBIDDEN);
         }
-        $ticket->update(['handled_by' => 'human']);
 
-        return self::successfulResponseWithData(new SupportTicketResource($ticket->load('messages')));
+        return self::successfulResponseWithData(new SupportTicketResource($ticket));
     }
 
-    public function transferToAi(SupportTicket $ticket): JsonResponse
+    #[OA\Post(
+        path: '/api/support/tickets/{ticket}/transfer-to-ai',
+        summary: 'Hand a ticket over to the AI assistant',
+        security: [['bearerAuth' => []]],
+        tags: ['Support'],
+        parameters: [
+            new OA\Parameter(name: 'ticket', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'The updated ticket',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'data', ref: '#/components/schemas/SupportTicketResource'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 403, description: 'The ticket does not belong to the authenticated user'),
+        ],
+    )]
+    public function transferToAi(Request $request, SupportTicket $ticket, TransferSupportTicketAction $action): JsonResponse
     {
-        if ($ticket->user_id !== auth('api')->id()) {
-            return self::errorResponse('Access denied', Response::HTTP_FORBIDDEN);
+        try {
+            $ticket = $action->execute($ticket, $request->user(), 'ai');
+        } catch (AccessDeniedHttpException $e) {
+            return self::errorResponse($e->getMessage(), Response::HTTP_FORBIDDEN);
         }
-        $ticket->update(['handled_by' => 'ai']);
 
-        return self::successfulResponseWithData(new SupportTicketResource($ticket->load('messages')));
+        return self::successfulResponseWithData(new SupportTicketResource($ticket));
     }
 }

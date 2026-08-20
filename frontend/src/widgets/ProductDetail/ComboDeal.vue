@@ -56,7 +56,10 @@
           <p class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Загальна вартість</p>
           <p class="text-3xl font-extrabold text-[#00a046] tracking-tight">{{ formatPrice(bundleTotal) }}</p>
           <p class="text-xs text-zinc-400">Окремо: {{ formatPrice(bundleSubtotal) }}</p>
-          <span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 font-bold text-xs px-2.5 py-1 rounded-full">
+          <span
+            v-if="bundleSavings > 0"
+            class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 font-bold text-xs px-2.5 py-1 rounded-full"
+          >
             <span class="material-symbols-outlined text-[12px]">savings</span>
             Економія {{ formatPrice(bundleSavings) }}
           </span>
@@ -78,6 +81,7 @@ interface BundleItem {
   name: string;
   category: string;
   price: number;
+  oldPrice?: number | null;
   locked?: boolean;
   image: string;
 }

@@ -3,22 +3,63 @@
 namespace App\Api\V1\Controllers;
 
 use App\Api\V1\Actions\Checkout\PlaceOrderAction;
+use App\Api\V1\Actions\Checkout\PlaceQuickOrderAction;
 use App\Api\V1\Dto\PlaceOrderDto;
+use App\Api\V1\Dto\PlaceQuickOrderDto;
 use App\Api\V1\Exceptions\CheckoutValidationException;
 use App\Api\V1\Exceptions\EmptyCartException;
 use App\Api\V1\Requests\PlaceOrderRequest;
 use App\Api\V1\Resources\CheckoutOrderResource;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutController extends BaseApiController
 {
+    #[OA\Post(
+        path: '/api/v1/checkout',
+        summary: 'Place an order from the current cart',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['customerName', 'customerPhone', 'customerEmail', 'shippingAddress', 'deliveryMethod', 'paymentMethod'],
+                properties: [
+                    new OA\Property(property: 'customerName', type: 'string', maxLength: 255),
+                    new OA\Property(property: 'customerPhone', type: 'string', maxLength: 50),
+                    new OA\Property(property: 'customerEmail', type: 'string', format: 'email', maxLength: 255),
+                    new OA\Property(property: 'shippingCountry', type: 'string', maxLength: 100, nullable: true),
+                    new OA\Property(property: 'shippingCity', type: 'string', maxLength: 100, nullable: true),
+                    new OA\Property(property: 'shippingAddress', type: 'string', maxLength: 500),
+                    new OA\Property(property: 'deliveryMethod', type: 'string', maxLength: 100),
+                    new OA\Property(property: 'paymentMethod', type: 'string', maxLength: 100),
+                    new OA\Property(property: 'sessionId', type: 'string', nullable: true, description: 'Alternative to the X-Cart-Session-ID header.'),
+                    new OA\Property(property: 'couponCode', type: 'string', nullable: true),
+                ],
+            ),
+        ),
+        tags: ['Checkout'],
+        parameters: [
+            new OA\Parameter(
+                name: 'X-Cart-Session-ID',
+                description: 'Guest cart session identifier. Omit when authenticated - the customer\'s own cart is used instead.',
+                in: 'header',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Order created from the cart',
+                content: new OA\JsonContent(ref: '#/components/schemas/CheckoutOrderResource'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Cart is empty or a line item/coupon failed validation (out of stock, inactive product, invalid coupon, ...)',
+            ),
+        ],
+    )]
     public function placeOrder(PlaceOrderRequest $request, PlaceOrderAction $action): JsonResponse
     {
         try {
@@ -34,77 +75,47 @@ class CheckoutController extends BaseApiController
         }
     }
 
-    public function quickOrder(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/v1/checkout/quick',
+        summary: 'Place a quick single-item order (no cart, no coupon, fixed Kyiv/Nova Poshta shipping placeholder)',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['customerName', 'customerPhone', 'variantId'],
+                properties: [
+                    new OA\Property(property: 'customerName', type: 'string', maxLength: 255),
+                    new OA\Property(property: 'customerPhone', type: 'string', maxLength: 50),
+                    new OA\Property(property: 'variantId', type: 'integer'),
+                    new OA\Property(property: 'paymentMethod', type: 'string', enum: ['cod', 'card'], default: 'cod'),
+                ],
+            ),
+        ),
+        tags: ['Checkout'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Quick order created for a single unit of the given variant',
+                content: new OA\JsonContent(ref: '#/components/schemas/CheckoutOrderResource'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation failed, or the variant is unavailable/out of stock',
+            ),
+        ],
+    )]
+    public function quickOrder(Request $request, PlaceQuickOrderAction $action): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'customerName' => 'required|string|max:255',
             'customerPhone' => 'required|string|max:50',
             'variantId' => 'required|integer|exists:product_variants,id',
+            'paymentMethod' => 'sometimes|string|in:cod,card',
         ]);
 
         try {
-            $order = DB::transaction(function () use ($validated) {
-                $variant = ProductVariant::with(['product', 'stocks'])
-                    ->lockForUpdate()
-                    ->find($validated['variantId']);
+            $order = $action->execute(PlaceQuickOrderDto::fromRequest($request));
 
-                if (! $variant || $variant->product->status !== 'active') {
-                    throw new CheckoutValidationException('Товар недоступний');
-                }
-
-                // Check stock availability
-                $stock = $variant->stocks->first();
-                if ($stock) {
-                    $availableStock = $stock->quantity - $stock->reserved;
-                    if ($availableStock < 1) {
-                        throw new CheckoutValidationException('Недостатньо товару в наявності');
-                    }
-                    // Reserve quantity
-                    $stock->increment('reserved', 1);
-                }
-
-                // Snapshot details
-                $productName = $variant->product->name['uk'] ?? $variant->product->name['en'] ?? 'Товар';
-                $price = (float) $variant->price;
-
-                // Generate unique order number: FKX-YYYYMMDD-XXXXXX
-                $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
-                while (Order::where('order_number', $orderNumber)->exists()) {
-                    $orderNumber = 'FKX-'.date('Ymd').'-'.strtoupper(Str::random(6));
-                }
-
-                // Create Order
-                $order = Order::create([
-                    'order_number' => $orderNumber,
-                    'user_id' => auth('api')->id(),
-                    'customer_name' => $validated['customerName'],
-                    'customer_email' => auth('api')->user()?->email ?? 'quick-order@electro.com',
-                    'customer_phone' => $validated['customerPhone'],
-                    'shipping_country' => 'Ukraine',
-                    'shipping_city' => 'Київ',
-                    'shipping_address' => 'Швидке замовлення (передзвонити для уточнення деталей)',
-                    'delivery_method' => 'nova_poshta',
-                    'payment_method' => 'cod',
-                    'payment_status' => 'pending',
-                    'status' => 'pending_payment',
-                    'total_price' => $price,
-                    'discount_amount' => 0,
-                ]);
-
-                // Save order item snapshot
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'variant_id' => $variant->id,
-                    'product_name' => $productName,
-                    'sku' => $variant->sku,
-                    'price' => $price,
-                    'quantity' => 1,
-                ]);
-
-                return $order;
-            });
-
-            return self::successfulResponseWithData(new CheckoutOrderResource($order->load('items')), Response::HTTP_CREATED);
+            return self::successfulResponseWithData(new CheckoutOrderResource($order), Response::HTTP_CREATED);
         } catch (CheckoutValidationException $e) {
             return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {

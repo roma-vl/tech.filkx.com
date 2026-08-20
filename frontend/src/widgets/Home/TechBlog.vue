@@ -1,12 +1,16 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onServerPrefetch } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
 const router = useRouter();
+const { t, locale } = useI18n();
 const posts = ref([]);
 const loading = ref(true);
+
+const loadFailed = ref(false);
 
 const fetchLatestPosts = async () => {
   try {
@@ -15,8 +19,7 @@ const fetchLatestPosts = async () => {
     });
     posts.value = data.data.data || [];
   } catch {
-    // fallback to static articles if API is unavailable
-    posts.value = staticArticles;
+    loadFailed.value = true;
   } finally {
     loading.value = false;
   }
@@ -24,7 +27,7 @@ const fetchLatestPosts = async () => {
 
 const formatDate = (d) => {
   if (!d) return "";
-  return new Date(d).toLocaleDateString("uk-UA", {
+  return new Date(d).toLocaleDateString(locale.value === "uk" ? "uk-UA" : "en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -32,54 +35,15 @@ const formatDate = (d) => {
 };
 
 const getTitle = (post) =>
-  post.title?.uk || post.title?.en || post.title || "";
+  post.title?.[locale.value] || post.title?.uk || post.title?.en || post.title || "";
 
 const getExcerpt = (post) =>
-  post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
-
-const staticArticles = [
-  {
-    id: 1,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBJQNj0EC0emUkDyzp90oAj9LJPzpKPXT6LWZapnUxdjLR5TAEy9kuHaJr94uG2PzVeehWJTvry4Ee2usgri_YrTONN_qiozc1qDVA0IvjUJcjmfX4tlyXbG7cS55CYK0qdtU_5nNwNG1cvHRVWZ4RDHp1qQpcIlcPkq0kc54-dRRkNH3kiZOkglgTPglzSvbgSmBPllFt0kRkaUl6e5wMCrocXFoM-7JxcSFJb9mOT7tc5df8zDbGD5gV5FgaFM7ihaGDzCu-bE7Q",
-    title: { uk: "Як вибрати ідеальний ноутбук для розробника в 2026 році" },
-    excerpt: {
-      uk: "Аналіз актуальних процесорів, обсягу оперативної пам'яті та дисплеїв для комфортного кодингу.",
-    },
-    publishedAt: "2026-05-28",
-    readTime: "5 хв",
-    category: { name: { uk: "Ноутбуки" } },
-  },
-  {
-    id: 2,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBiUjsdg3UEZ3Invqr34vCkdhNreoHpan9Pb-BGKmaVy0RU0uSQyzTsKkbXAwFc883Y5jTxMbVRUKZoDSaTo3FbaT7XaZnss_re9YT00JhaTBlC6yvueGFeJfKhhh6JIjDtiTNIfRdJjC8ZyTTSHtYB81L85eJ1STBcLutY96W12sDqOctNxTwyq1m0MT7_6PTUKAE858poN7UqRe7nE46hjcjRrp_larxv7sHMDVCn7iT7817fw1OcxPdOG2sWfInGcMEAEIPakTE",
-    title: { uk: "Порівняння ANC навушників: Obsidian X проти конкурентів" },
-    excerpt: {
-      uk: "Детальний звуковий тест та вимірювання ефективності активного шумозаглушення в міському середовищі.",
-    },
-    publishedAt: "2026-05-24",
-    readTime: "7 хв",
-    category: { name: { uk: "Аудіо" } },
-  },
-  {
-    id: 3,
-    slug: "",
-    coverImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAG1j0OkwUBTuRJYlZq12iTWSfCx0hTSkVryqbF-FYIDY0p2IODoLkQCjdBzvMUE28jinrTZ-Yhx8ATbKeWyMq2bSKQehQZ5dUfTVBStqMLuWl_dnxdhw_-eZMoiP9_egaelvQQU7gzfXiv-g6KH0W1d7n6iYmoObJXDCEXbrnLagqWXZxOIyeHX_fQAyS84ZvkaGDv8Ld75VMMB-p3JQk_MupRVz9V0REcSykJQllrCavETBkPh8j054bmRUv5No-7faKEr_uRPp0",
-    title: { uk: "Екосистема розумного дому: з чого розпочати побудову" },
-    excerpt: {
-      uk: "Покрокове керівництво з підбору датчиків, розумних колонок та хабів автоматизації для квартири.",
-    },
-    publishedAt: "2026-05-18",
-    readTime: "6 хв",
-    category: { name: { uk: "Смарт Дім" } },
-  },
-];
+  post.excerpt?.[locale.value] || post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
 
 onMounted(fetchLatestPosts);
+// Prerendering has no DOM, so onMounted never runs — fetch here so the
+// static build captures real teaser content.
+onServerPrefetch(fetchLatestPosts);
 </script>
 
 <template>
@@ -87,18 +51,18 @@ onMounted(fetchLatestPosts);
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
       <div class="space-y-2">
-        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">Журнал</span>
+        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">{{ t("home.blog.label") }}</span>
         <h2
           class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
         >
-          Блог та огляди техніки
+          {{ t("home.blog.title") }}
         </h2>
         <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md">
-          Корисні статті, огляди новинок та поради від експертів FilkxTech
+          {{ t("home.blog.description") }}
         </p>
       </div>
       <UiSectionLink :to="{ name: 'blog' }">
-        Читати всі статті
+        {{ t("home.blog.readAll") }}
       </UiSectionLink>
     </div>
 
@@ -119,6 +83,17 @@ onMounted(fetchLatestPosts);
           <div class="h-4 w-5/6 bg-zinc-200 dark:bg-zinc-700 rounded" />
         </div>
       </div>
+    </div>
+
+    <!-- Empty / failed state -->
+    <div
+      v-else-if="posts.length === 0"
+      class="flex flex-col items-center justify-center py-16 text-zinc-500 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800"
+    >
+      <span class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650">article</span>
+      <p class="text-sm font-bold">
+        {{ loadFailed ? t("home.blog.loadFailed") : t("home.blog.empty") }}
+      </p>
     </div>
 
     <!-- Posts grid -->
@@ -155,7 +130,7 @@ onMounted(fetchLatestPosts);
             <span
               class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
             >
-              {{ post.category.name?.uk || post.category.name?.en }}
+              {{ post.category.name?.[locale] || post.category.name?.uk || post.category.name?.en }}
             </span>
           </div>
         </div>
@@ -166,7 +141,7 @@ onMounted(fetchLatestPosts);
           <div class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
             <span>{{ formatDate(post.publishedAt) }}</span>
             <span>·</span>
-            <span>{{ post.readTime || (post.views ? post.views + " переглядів" : "5 хв") }}</span>
+            <span>{{ post.readTime || (post.views ? t("home.blog.viewsCount", { count: post.views }) : t("home.blog.defaultReadTime")) }}</span>
           </div>
 
           <!-- Title -->
@@ -188,7 +163,7 @@ onMounted(fetchLatestPosts);
             <span
               class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1.5"
             >
-              Читати статтю
+              {{ t("home.blog.readArticle") }}
               <span
                 class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
               >arrow_forward</span>

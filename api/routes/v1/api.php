@@ -2,11 +2,14 @@
 
 use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
+use App\Api\Admin\Controllers\AdminBlogController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
+use App\Api\Admin\Controllers\AdminHomeBannerController;
 use App\Api\Admin\Controllers\AdminMarketingController;
 use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
+use App\Api\Admin\Controllers\AdminPageController;
 use App\Api\Admin\Controllers\AdminProductController;
 use App\Api\Admin\Controllers\AdminRoleController;
 use App\Api\Admin\Controllers\AdminServerLogController;
@@ -19,22 +22,24 @@ use App\Api\Admin\Controllers\AdminTeamController;
 use App\Api\Admin\Controllers\AdminUserController;
 use App\Api\V1\Controllers\ActivityController;
 use App\Api\V1\Controllers\Auth\AuthController;
-use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\Auth\OAuthController;
+use App\Api\V1\Controllers\Auth\TwoFactorAuthenticationController;
+use App\Api\V1\Controllers\BlogController;
 use App\Api\V1\Controllers\CartController;
 use App\Api\V1\Controllers\CatalogController;
 use App\Api\V1\Controllers\CheckoutController;
 use App\Api\V1\Controllers\CouponController;
-use App\Api\Admin\Controllers\AdminBlogController;
-use App\Api\V1\Controllers\BlogController;
+use App\Api\V1\Controllers\DeliveryController;
 use App\Api\V1\Controllers\HomeController;
 use App\Api\V1\Controllers\IndexController;
+use App\Api\V1\Controllers\NewsletterController;
 use App\Api\V1\Controllers\NotificationController;
+use App\Api\V1\Controllers\PageController;
+use App\Api\V1\Controllers\PaymentController;
+use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
 use App\Api\V1\Controllers\UserController;
-use App\Api\Admin\Controllers\AdminPageController;
-use App\Api\V1\Controllers\PageController;
 use App\Http\Middleware\IdentifyImpersonation;
 use Illuminate\Support\Facades\Route;
 
@@ -43,12 +48,19 @@ Route::get('/system/status', [SystemController::class, 'status']);
 Route::prefix('v1')->group(function () {
     // Public auth routes
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register'])
+            ->middleware('throttle:10,1');
+        Route::post('/login', [AuthController::class, 'login'])
+            ->middleware('throttle:5,1');
+        Route::post('/2fa/verify', [AuthController::class, 'verifyTwoFactor'])
+            ->middleware('throttle:5,1');
         Route::get('/verify-email', [AuthController::class, 'verifyEmailByParams']);
-        Route::post('/email/resend', [AuthController::class, 'resendVerification']);
-        Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
-        Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+        Route::post('/email/resend', [AuthController::class, 'resendVerification'])
+            ->middleware('throttle:3,1');
+        Route::post('/password/forgot', [AuthController::class, 'forgotPassword'])
+            ->middleware('throttle:5,1');
+        Route::post('/password/reset', [AuthController::class, 'resetPassword'])
+            ->middleware('throttle:3,1');
 
         // Protected auth routes
         Route::middleware('auth:api')->group(function () {
@@ -67,6 +79,7 @@ Route::prefix('v1')->group(function () {
         Route::get('products', [CatalogController::class, 'products']);
         Route::get('products/random', [CatalogController::class, 'randomProducts']);
         Route::get('products/{slug}', [CatalogController::class, 'product']);
+        Route::get('products/{slug}/related', [CatalogController::class, 'relatedProducts']);
         Route::get('products/{slug}/reviews', [ReviewController::class, 'index']);
     });
 
@@ -93,9 +106,33 @@ Route::prefix('v1')->group(function () {
     });
 
     // Checkout route
-    Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
-    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder']);
-    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+    Route::post('/checkout', [CheckoutController::class, 'placeOrder'])
+        ->middleware('throttle:10,1');
+    Route::post('/checkout/quick', [CheckoutController::class, 'quickOrder'])
+        ->middleware('throttle:10,1');
+
+    // Payment routes
+    Route::prefix('payments')->group(function () {
+        Route::post('/orders/{orderNumber}/liqpay', [PaymentController::class, 'initiateLiqPay'])
+            ->middleware('throttle:10,1');
+        Route::get('/orders/{orderNumber}/status', [PaymentController::class, 'orderStatus']);
+        // No throttle here: LiqPay calls this server-to-server and retries until it gets a 200;
+        // authenticity is enforced by signature verification inside the handler, not by rate limiting.
+        Route::post('/liqpay/callback', [PaymentController::class, 'liqPayCallback']);
+    });
+    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon'])
+        ->middleware('throttle:20,1');
+
+    // Delivery routes (Nova Poshta city/warehouse autocomplete) - public, guest-friendly
+    Route::prefix('delivery')->group(function () {
+        Route::get('/availability', [DeliveryController::class, 'availability']);
+        Route::get('/cities', [DeliveryController::class, 'cities'])
+            ->middleware('throttle:30,1');
+        Route::get('/warehouses', [DeliveryController::class, 'warehouses'])
+            ->middleware('throttle:30,1');
+    });
+    Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+        ->middleware('throttle:5,1');
 });
 
 // OAuth routes
@@ -126,6 +163,15 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     // Password management for OAuth users
     Route::post('/user/password/set', [UserController::class, 'setPassword']);
 
+    // Two-factor authentication management
+    Route::post('/user/2fa/enable', [TwoFactorAuthenticationController::class, 'enable']);
+    Route::post('/user/2fa/confirm', [TwoFactorAuthenticationController::class, 'confirm'])
+        ->middleware('throttle:10,1');
+    Route::post('/user/2fa/disable', [TwoFactorAuthenticationController::class, 'disable'])
+        ->middleware('throttle:10,1');
+    Route::post('/user/2fa/recovery-codes/regenerate', [TwoFactorAuthenticationController::class, 'regenerateRecoveryCodes'])
+        ->middleware('throttle:10,1');
+
     // Avatar management
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::delete('/user/avatar', [UserController::class, 'deleteAvatar']);
@@ -137,6 +183,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     // User orders endpoint
     Route::get('/user/orders', [UserController::class, 'getOrders']);
     Route::post('/user/orders/{id}/cancel', [UserController::class, 'cancelOrder']);
+    Route::get('/user/orders/{id}/invoice', [UserController::class, 'downloadInvoice']);
 
     // Product reviews (auth required to submit/edit)
     Route::post('v1/catalog/products/{slug}/reviews', [ReviewController::class, 'store']);
@@ -281,6 +328,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         // Accounting Module
         Route::get('accounting/ledger', [AdminAccountingController::class, 'ledger']);
         Route::get('accounting/invoices', [AdminAccountingController::class, 'invoices']);
+        Route::get('accounting/invoices/{id}/pdf', [AdminAccountingController::class, 'downloadInvoice']);
         Route::get('accounting/stats', [AdminAccountingController::class, 'accountingStats']);
         Route::get('accounting/export', [AdminAccountingController::class, 'export']);
 
@@ -331,8 +379,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('pages', [AdminPageController::class, 'store']);
         Route::put('pages/{id}', [AdminPageController::class, 'update']);
         Route::delete('pages/{id}', [AdminPageController::class, 'destroy']);
-    });
 
-    Route::get('/version', [SystemController::class, 'status']);
+        // Home Banners (storefront hero slider CMS)
+        Route::get('home-banners', [AdminHomeBannerController::class, 'index']);
+        Route::post('home-banners', [AdminHomeBannerController::class, 'store']);
+        Route::put('home-banners/{id}', [AdminHomeBannerController::class, 'update']);
+        Route::delete('home-banners/{id}', [AdminHomeBannerController::class, 'destroy']);
+        Route::post('home-banners/upload', [AdminHomeBannerController::class, 'uploadImage']);
+    });
 
 });

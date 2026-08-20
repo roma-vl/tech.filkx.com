@@ -135,15 +135,62 @@
         :product="product"
         :gallery-images="galleryImages"
         :quality-guarantees="qualityGuarantees"
-        :reviews="reviews"
         @change-tab="activeTab = $event"
       />
+
+      <!-- Related products -->
+      <section
+        v-if="relatedProducts.length > 0"
+        class="mt-14"
+      >
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <h2 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">
+            Схожі товари
+          </h2>
+          <div
+            v-if="relatedProducts.length > 5"
+            class="flex gap-2 shrink-0"
+          >
+            <button
+              class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+              type="button"
+              aria-label="Прокрутити ліворуч"
+              @click="scrollRelated('left')"
+            >
+              <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_left</span>
+            </button>
+            <button
+              class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+              type="button"
+              aria-label="Прокрутити праворуч"
+              @click="scrollRelated('right')"
+            >
+              <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        <div
+          ref="relatedScrollRef"
+          class="flex overflow-x-auto gap-4 hide-scrollbar scroll-smooth snap-x snap-mandatory py-2"
+        >
+          <div
+            v-for="related in relatedProducts"
+            :key="related.id"
+            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start border-t border-l border-zinc-200 dark:border-zinc-800"
+          >
+            <ProductCard
+              :product="related"
+              view-mode="grid"
+            />
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Sticky Buy Bar -->
     <div
-      class="fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-100 dark:border-zinc-800 bg-white/96 dark:bg-zinc-900/96 backdrop-blur-md shadow-xl transition-transform duration-300 ease-in-out translate-y-full"
-      :class="{ 'translate-y-0': showStickyBar }"
+      class="fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-100 dark:border-zinc-800 bg-white/96 dark:bg-zinc-900/96 backdrop-blur-md shadow-xl transition-transform duration-300 ease-in-out"
+      :class="showStickyBar ? 'translate-y-0' : 'translate-y-full'"
     >
       <div class="max-w-container-max mx-auto px-4 md:px-8 h-[68px] flex items-center gap-4">
         <img
@@ -194,12 +241,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from "vue";
+import { useHead } from "@vueuse/head";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
 import ComboDeal from "@/widgets/ProductDetail/ComboDeal.vue";
 import ProductTabs from "@/widgets/ProductDetail/ProductTabs.vue";
 import QuickOrderModal from "@/widgets/Catalog/QuickOrderModal.vue";
+import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import { UiButton } from "@/shared/ui";
 
 const {
@@ -225,7 +275,7 @@ const {
   tabs,
   bundleItems,
   qualityGuarantees,
-  reviews,
+  relatedProducts,
   formatPrice,
   bundleSubtotal,
   bundleSavings,
@@ -239,4 +289,87 @@ const {
   openQuickOrder,
   closeQuickOrder,
 } = useProductDetail();
+
+const relatedScrollRef = ref<HTMLElement | null>(null);
+const scrollRelated = (direction: "left" | "right") => {
+  const el = relatedScrollRef.value;
+  if (!el) return;
+  const cardWidth = el.firstElementChild?.clientWidth ?? 320;
+  const amount = (cardWidth + 16) * (direction === "left" ? -1 : 1);
+  el.scrollBy({ left: amount, behavior: "smooth" });
+};
+
+const metaDescription = computed(() =>
+  product.value?.description
+    ? String(product.value.description).replace(/\s+/g, " ").slice(0, 160)
+    : "",
+);
+
+useHead({
+  title: computed(() =>
+    product.value ? `${product.value.name} — FilkxTech` : "FilkxTech",
+  ),
+  meta: computed(() =>
+    product.value
+      ? [
+          { name: "description", content: metaDescription.value },
+          { property: "og:type", content: "product" },
+          { property: "og:title", content: product.value.name },
+          { property: "og:description", content: metaDescription.value },
+          { property: "og:image", content: product.value.image },
+        ]
+      : [],
+  ),
+  // Product/Offer schema.org structured data so search engines can render
+  // rich results (price, availability, rating) directly in listings.
+  script: computed(() =>
+    product.value
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.value.name,
+              image: product.value.image ? [product.value.image] : undefined,
+              description: metaDescription.value || undefined,
+              category: product.value.category || undefined,
+              sku: String(product.value.id),
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "UAH",
+                price: product.value.price,
+                availability: product.value.inStock
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+                url:
+                  typeof window !== "undefined"
+                    ? window.location.href
+                    : undefined,
+              },
+              ...(product.value.reviews > 0
+                ? {
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: product.value.rating,
+                      reviewCount: product.value.reviews,
+                    },
+                  }
+                : {}),
+            }),
+          },
+        ]
+      : [],
+  ),
+});
 </script>
+
+<style scoped>
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

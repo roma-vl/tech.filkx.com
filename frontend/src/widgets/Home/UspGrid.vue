@@ -1,34 +1,39 @@
 <script setup>
-const items = [
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
+const items = computed(() => [
   {
     icon: "local_shipping",
-    title: "Безкоштовна доставка",
-    description: "Для всіх замовлень від 2000 ₴ по всій Україні.",
+    title: t("home.usp.freeShipping.title"),
+    description: t("home.usp.freeShipping.description"),
     accent: "text-blue-500",
     bg: "bg-blue-500/10 dark:bg-blue-500/5",
   },
   {
     icon: "verified",
-    title: "Офіційна гарантія",
-    description: "100% оригінальна продукція з гарантійним обслуговуванням.",
+    title: t("home.usp.officialWarranty.title"),
+    description: t("home.usp.officialWarranty.description"),
     accent: "text-[#00a046]",
     bg: "bg-emerald-500/10 dark:bg-emerald-500/5",
   },
   {
     icon: "assignment_return",
-    title: "Повернення протягом 14 днів",
-    description: "Простий обмін або повернення коштів без зайвих питань.",
+    title: t("home.usp.returns.title"),
+    description: t("home.usp.returns.description"),
     accent: "text-amber-500",
     bg: "bg-amber-500/10 dark:bg-amber-500/5",
   },
   {
     icon: "support_agent",
-    title: "Цілодобова підтримка 24/7",
-    description: "Наші експерти завжди на зв'язку, щоб допомогти з вибором.",
+    title: t("home.usp.support.title"),
+    description: t("home.usp.support.description"),
     accent: "text-purple-500",
     bg: "bg-purple-500/10 dark:bg-purple-500/5",
   },
-];
+]);
 </script>
 
 <template>

@@ -10,6 +10,7 @@ export interface User {
   emailVerifiedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface UserSession {
