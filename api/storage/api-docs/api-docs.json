@@ -3080,6 +3080,17 @@
                 ],
                 "summary": "List brands with their active product count",
                 "operationId": "66a50539e63e59846c4565f64bef1fdd",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Category slug; scopes the product count to this category and its children",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Brand list",
@@ -3127,6 +3138,17 @@
                 ],
                 "summary": "Get the available catalog filter facets (price range and attributes)",
                 "operationId": "33755fbc7af512c1c622254454367ab2",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Category slug; scopes the price range and attribute/value facets to this category and its children",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Filter facets",

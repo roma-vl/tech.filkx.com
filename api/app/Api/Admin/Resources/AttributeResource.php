@@ -20,7 +20,7 @@ class AttributeResource extends JsonResource
                 if ($this->type === 'color') {
                     return [
                         'id' => $val->id,
-                        'value' => $val->value['value'] ?? $val->value,
+                        'value' => $val->value['uk'] ?? '',
                     ];
                 }
 

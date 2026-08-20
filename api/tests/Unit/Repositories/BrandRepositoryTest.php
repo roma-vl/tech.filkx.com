@@ -4,6 +4,7 @@ namespace Tests\Unit\Repositories;
 
 use App\Api\V1\Repositories\BrandRepository;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -157,5 +158,21 @@ class BrandRepositoryTest extends TestCase
         $result = $this->repository->getBrandsWithActiveProductsCount();
 
         $this->assertSame(0, $result->first()->products_count);
+    }
+
+    public function test_get_brands_with_active_products_count_scopes_to_the_given_category_ids(): void
+    {
+        $category = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+        $otherCategory = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'B', 'en' => 'B'], 'order' => 0]);
+
+        $brand = $this->makeBrand();
+        $inCategory = $this->makeProduct($brand, 'active');
+        $inCategory->categories()->attach($category->id);
+        $outsideCategory = $this->makeProduct($brand, 'active');
+        $outsideCategory->categories()->attach($otherCategory->id);
+
+        $result = $this->repository->getBrandsWithActiveProductsCount([$category->id]);
+
+        $this->assertSame(1, $result->firstWhere('id', $brand->id)->products_count);
     }
 }

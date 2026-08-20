@@ -48,12 +48,8 @@ class ListProductsAction
 
         // 2. Category filter
         if (! empty($filters['category'])) {
-            $categorySlug = $filters['category'];
-            $category = $this->categoryRepository->findBySlug($categorySlug);
-            if ($category) {
-                $categoryIds = [$category->id];
-                $categoryIds = array_merge($categoryIds, $category->children()->pluck('id')->toArray());
-
+            $categoryIds = $this->categoryRepository->resolveCategoryIdsBySlug($filters['category']);
+            if (! empty($categoryIds)) {
                 $query->whereHas('categories', function ($q) use ($categoryIds) {
                     $q->whereIn('categories.id', $categoryIds);
                 });

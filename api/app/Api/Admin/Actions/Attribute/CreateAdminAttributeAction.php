@@ -34,7 +34,12 @@ class CreateAdminAttributeAction
         foreach ($valuesInput as $valData) {
             $valuePayload = [];
             if ($attribute->type === 'color') {
-                $valuePayload = ['value' => $valData['value'] ?? ''];
+                // Stored with the same {uk, en} shape every other attribute value uses (a
+                // color has no locale, so both keys just hold the same hex string) - this
+                // keeps the public catalog's attribute-value JSON shape uniform instead of
+                // nesting an extra level for color alone.
+                $hex = $valData['value'] ?? '';
+                $valuePayload = ['uk' => $hex, 'en' => $hex];
             } else {
                 $valuePayload = [
                     'uk' => $valData['valueUk'] ?? '',

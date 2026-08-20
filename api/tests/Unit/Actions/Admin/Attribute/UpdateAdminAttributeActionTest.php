@@ -87,12 +87,12 @@ class UpdateAdminAttributeActionTest extends TestCase
     public function test_execute_updates_a_color_values_raw_value(): void
     {
         $attribute = Attribute::create(['code' => 'c', 'name' => ['uk' => 'A', 'en' => 'A'], 'type' => 'color']);
-        $value = AttributeValue::create(['attribute_id' => $attribute->id, 'value' => ['value' => '#000']]);
+        $value = AttributeValue::create(['attribute_id' => $attribute->id, 'value' => ['uk' => '#000', 'en' => '#000']]);
 
         $dto = $this->makeDto(['type' => 'color', 'values' => [['id' => $value->id, 'value' => '#fff']]]);
         $this->action->execute($attribute->id, $dto);
 
-        $this->assertDatabaseHas('attribute_values', ['id' => $value->id, 'value' => json_encode(['value' => '#fff'])]);
+        $this->assertDatabaseHas('attribute_values', ['id' => $value->id, 'value' => json_encode(['uk' => '#fff', 'en' => '#fff'])]);
     }
 
     public function test_execute_syncs_categories(): void

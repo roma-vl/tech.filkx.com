@@ -20,7 +20,7 @@ export function useCatalog() {
   const selectedBrands = ref<string[]>(
     route.query.brand ? (route.query.brand as string).split(",") : [],
   );
-  const selectedAttrs = ref<Record<string, string>>({});
+  const selectedAttrs = ref<Record<string, string[]>>({});
   const selectedRating = ref("");
   const onlyDiscounts = ref(false);
   const onlyInStock = ref(false);
@@ -80,7 +80,10 @@ export function useCatalog() {
 
   const fetchBrands = async () => {
     try {
-      const response = await productApi.catalogGetBrands();
+      const params = categorySlug.value
+        ? { category: categorySlug.value }
+        : undefined;
+      const response = await productApi.catalogGetBrands(params);
       if (response.data && response.data.status === "success") {
         dbBrands.value = response.data.data || [];
       }
@@ -91,16 +94,17 @@ export function useCatalog() {
 
   const fetchFilterSchema = async () => {
     try {
-      const response = await productApi.catalogGetFiltersSchema();
+      const params = categorySlug.value
+        ? { category: categorySlug.value }
+        : undefined;
+      const response = await productApi.catalogGetFiltersSchema(params);
       if (response.data && response.data.status === "success") {
         const data = response.data.data;
         dynamicAttributes.value = data.attributes || [];
-        if (priceMin.value === 0 && priceMax.value === 200000) {
-          priceMin.value = data.price.min || 0;
-          priceMax.value = data.price.max || 200000;
-          initialPriceMin.value = data.price.min || 0;
-          initialPriceMax.value = data.price.max || 200000;
-        }
+        priceMin.value = data.price.min || 0;
+        priceMax.value = data.price.max || 200000;
+        initialPriceMin.value = data.price.min || 0;
+        initialPriceMax.value = data.price.max || 200000;
       }
     } catch (error) {
       console.error("Failed to fetch filter schema:", error);
@@ -139,11 +143,12 @@ export function useCatalog() {
         params.in_stock = 1;
       }
 
-      // Add EAV attributes to query parameters in camelCase format
+      // Add EAV attributes to query parameters, comma-joining multi-selected values -
+      // matches ListProductsAction's `explode(',', ...)` parsing on the backend.
       Object.keys(selectedAttrs.value).forEach((code) => {
-        const val = selectedAttrs.value[code];
-        if (val) {
-          params[`attrs[${code}]`] = val;
+        const values = selectedAttrs.value[code];
+        if (values && values.length > 0) {
+          params[`attrs[${code}]`] = values.join(",");
         }
       });
 
@@ -209,21 +214,19 @@ export function useCatalog() {
       });
     });
 
-    // Dynamic attributes
+    // Dynamic attributes - one chip per selected value so each can be removed independently
     Object.keys(selectedAttrs.value).forEach((code) => {
-      const val = selectedAttrs.value[code];
-      if (val) {
-        const attr = dynamicAttributes.value.find((a) => a.code === code);
-        const attrName = attr
-          ? attr.name.uk || attr.name.en || attr.name
-          : code;
+      const values = selectedAttrs.value[code] || [];
+      const attr = dynamicAttributes.value.find((a) => a.code === code);
+      const attrName = attr ? attr.name.uk || attr.name.en || attr.name : code;
+      values.forEach((val) => {
         filters.push({
           type: "attribute",
           code: code,
           label: `${attrName}: ${val}`,
           value: val,
         });
-      }
+      });
     });
 
     if (
@@ -267,7 +270,14 @@ export function useCatalog() {
     }
     if (filter.type === "attribute") {
       const current = { ...selectedAttrs.value };
-      delete current[filter.code];
+      const remaining = (current[filter.code] || []).filter(
+        (v) => v !== filter.value,
+      );
+      if (remaining.length > 0) {
+        current[filter.code] = remaining;
+      } else {
+        delete current[filter.code];
+      }
       selectedAttrs.value = current;
     }
     if (filter.type === "price") {
@@ -332,8 +342,24 @@ export function useCatalog() {
 
   watch(
     () => [categorySlug.value, route.query.search, route.query.page],
-    () => {
+    async ([newCategory], [oldCategory]) => {
       pagination.value.page = parseInt(route.query.page as string) || 1;
+      if (newCategory !== oldCategory) {
+        // A category switch invalidates filters chosen for the previous category's
+        // facets (e.g. a phone attribute carrying over into laptops) - clear them and
+        // refetch the category-scoped price bounds/attributes/brand counts before
+        // reloading products against the new category. Resetting selectedAttrs/
+        // selectedBrands (and fetchFilterSchema() updating priceMin/priceMax) already
+        // triggers the watch() below, which calls fetchProducts() itself - an explicit
+        // call here would just be a redundant duplicate request.
+        selectedAttrs.value = {};
+        selectedBrands.value = [];
+        selectedRating.value = "";
+        onlyDiscounts.value = false;
+        onlyInStock.value = false;
+        await Promise.all([fetchFilterSchema(), fetchBrands()]);
+        return;
+      }
       fetchProducts();
     },
   );
@@ -387,6 +413,8 @@ export function useCatalog() {
     sortBy,
     priceMin,
     priceMax,
+    initialPriceMin,
+    initialPriceMax,
     selectedBrands,
     selectedAttrs,
     selectedRating,

@@ -48,7 +48,7 @@ class CreateAdminAttributeActionTest extends TestCase
 
         $attribute = $this->action->execute($dto);
 
-        $this->assertDatabaseHas('attribute_values', ['attribute_id' => $attribute->id, 'value' => json_encode(['value' => '#ff0000'])]);
+        $this->assertDatabaseHas('attribute_values', ['attribute_id' => $attribute->id, 'value' => json_encode(['uk' => '#ff0000', 'en' => '#ff0000'])]);
     }
 
     public function test_execute_creates_localized_values_for_a_non_color_attribute(): void

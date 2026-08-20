@@ -289,6 +289,46 @@ class CatalogControllerTest extends TestCase
         $this->assertContains('color', $codes);
     }
 
+    public function test_filters_scopes_the_price_range_to_the_given_category(): void
+    {
+        $categoryA = Category::create(['slug' => 'cat-a-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+        $categoryB = Category::create(['slug' => 'cat-b-'.uniqid(), 'name' => ['uk' => 'B', 'en' => 'B'], 'order' => 0]);
+
+        $productA = $this->makeProduct();
+        $productA->categories()->attach($categoryA->id);
+        $this->makeVariant($productA, 16700);
+
+        $productB = $this->makeProduct();
+        $productB->categories()->attach($categoryB->id);
+        $this->makeVariant($productB, 99);
+
+        $response = $this->getJson('/api/v1/catalog/filters?category='.$categoryA->slug);
+
+        $response->assertOk()
+            ->assertJsonPath('data.price.min', 16700)
+            ->assertJsonPath('data.price.max', 16700);
+    }
+
+    public function test_brands_scopes_the_product_count_to_the_given_category(): void
+    {
+        $categoryA = Category::create(['slug' => 'cat-a-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+        $categoryB = Category::create(['slug' => 'cat-b-'.uniqid(), 'name' => ['uk' => 'B', 'en' => 'B'], 'order' => 0]);
+
+        $brand = Brand::create(['name' => 'Brand A', 'slug' => 'brand-'.uniqid()]);
+        $productA = $this->makeProduct('active', $brand);
+        $productA->categories()->attach($categoryA->id);
+        $this->makeVariant($productA, 100);
+        $productB = $this->makeProduct('active', $brand);
+        $productB->categories()->attach($categoryB->id);
+        $this->makeVariant($productB, 100);
+
+        $response = $this->getJson('/api/v1/catalog/brands?category='.$categoryA->slug);
+
+        $response->assertOk();
+        $payload = collect($response->json('data'))->firstWhere('slug', $brand->slug);
+        $this->assertSame(1, $payload['productsCount']);
+    }
+
     public function test_product_returns_an_active_products_details_by_slug(): void
     {
         $product = $this->makeProduct();

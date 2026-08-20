@@ -39,12 +39,12 @@ export const productApi = {
     return apiClient.get("/v1/catalog/categories");
   },
 
-  catalogGetBrands() {
-    return apiClient.get("/v1/catalog/brands");
+  catalogGetBrands(params?: Record<string, any>) {
+    return apiClient.get("/v1/catalog/brands", { params });
   },
 
-  catalogGetFiltersSchema() {
-    return apiClient.get("/v1/catalog/filters");
+  catalogGetFiltersSchema(params?: Record<string, any>) {
+    return apiClient.get("/v1/catalog/filters", { params });
   },
 
   catalogGetHome(params?: Record<string, any>) {

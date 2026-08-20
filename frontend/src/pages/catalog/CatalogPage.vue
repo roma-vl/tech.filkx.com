@@ -144,6 +144,8 @@
         <CatalogFiltersWidget
           v-model:price-min="priceMin"
           v-model:price-max="priceMax"
+          :initial-price-min="initialPriceMin"
+          :initial-price-max="initialPriceMax"
           v-model:selected-brands="selectedBrands"
           v-model:selected-attrs="selectedAttrs"
           v-model:selected-rating="selectedRating"
@@ -364,6 +366,8 @@
           <CatalogFiltersWidget
             v-model:price-min="priceMin"
             v-model:price-max="priceMax"
+            :initial-price-min="initialPriceMin"
+            :initial-price-max="initialPriceMax"
             v-model:selected-brands="selectedBrands"
             v-model:selected-attrs="selectedAttrs"
             v-model:selected-rating="selectedRating"
@@ -415,6 +419,8 @@ const {
   sortBy,
   priceMin,
   priceMax,
+  initialPriceMin,
+  initialPriceMax,
   selectedBrands,
   selectedAttrs,
   selectedRating,

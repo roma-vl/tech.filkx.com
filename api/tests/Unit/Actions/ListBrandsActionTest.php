@@ -4,6 +4,7 @@ namespace Tests\Unit\Actions;
 
 use App\Api\V1\Actions\ListBrandsAction;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -61,5 +62,21 @@ class ListBrandsActionTest extends TestCase
         $result = $this->action->execute();
 
         $this->assertSame(0, $result->firstWhere('id', $brand->id)->products_count);
+    }
+
+    public function test_execute_scopes_the_product_count_to_the_given_category(): void
+    {
+        $category = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'A', 'en' => 'A'], 'order' => 0]);
+        $otherCategory = Category::create(['slug' => 'cat-'.uniqid(), 'name' => ['uk' => 'B', 'en' => 'B'], 'order' => 0]);
+
+        $brand = Brand::create(['name' => 'Brand', 'slug' => 'brand-'.uniqid()]);
+        $inCategory = $this->makeProduct($brand, 'active');
+        $inCategory->categories()->attach($category->id);
+        $outsideCategory = $this->makeProduct($brand, 'active');
+        $outsideCategory->categories()->attach($otherCategory->id);
+
+        $result = $this->action->execute($category->slug);
+
+        $this->assertSame(1, $result->firstWhere('id', $brand->id)->products_count);
     }
 }

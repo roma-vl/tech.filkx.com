@@ -11,6 +11,7 @@ use App\Api\V1\Actions\ListProductsAction;
 use App\Api\V1\Repositories\ProductRepository;
 use App\Api\V1\Requests\ListProductsRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class CatalogController extends BaseApiController
@@ -57,6 +58,15 @@ class CatalogController extends BaseApiController
         tags: [
             'Catalog',
         ],
+        parameters: [
+            new OA\Parameter(
+                name: 'category',
+                description: 'Category slug; scopes the product count to this category and its children',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -82,9 +92,9 @@ class CatalogController extends BaseApiController
             ),
         ],
     )]
-    public function brands(ListBrandsAction $action): JsonResponse
+    public function brands(Request $request, ListBrandsAction $action): JsonResponse
     {
-        return self::successfulResponseWithData($action->execute());
+        return self::successfulResponseWithData($action->execute($request->query('category')));
     }
 
     #[OA\Get(
@@ -92,6 +102,15 @@ class CatalogController extends BaseApiController
         summary: 'Get the available catalog filter facets (price range and attributes)',
         tags: [
             'Catalog',
+        ],
+        parameters: [
+            new OA\Parameter(
+                name: 'category',
+                description: 'Category slug; scopes the price range and attribute/value facets to this category and its children',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+            ),
         ],
         responses: [
             new OA\Response(
@@ -142,9 +161,9 @@ class CatalogController extends BaseApiController
             ),
         ],
     )]
-    public function filters(GetCatalogFiltersAction $action): JsonResponse
+    public function filters(Request $request, GetCatalogFiltersAction $action): JsonResponse
     {
-        return self::successfulResponseWithData($action->execute());
+        return self::successfulResponseWithData($action->execute($request->query('category')));
     }
 
     #[OA\Get(

@@ -5,7 +5,9 @@ namespace Tests\Unit\Actions;
 use App\Api\V1\Actions\GetCatalogFiltersAction;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -39,6 +41,16 @@ class GetCatalogFiltersActionTest extends TestCase
             'product_id' => $product->id,
             'sku' => 'sku-'.uniqid(),
             'price' => $price,
+        ]);
+    }
+
+    private function makeCategory(?int $parentId = null): Category
+    {
+        return Category::create([
+            'slug' => 'cat-'.uniqid(),
+            'name' => ['uk' => 'Категорія', 'en' => 'Category'],
+            'order' => 0,
+            'parent_id' => $parentId,
         ]);
     }
 
@@ -106,5 +118,84 @@ class GetCatalogFiltersActionTest extends TestCase
         $this->assertCount(1, $attributePayload['values']);
         $this->assertSame($value->id, $attributePayload['values']->first()['id']);
         $this->assertSame($value->value, $attributePayload['values']->first()['value']);
+    }
+
+    public function test_execute_scopes_the_price_range_to_the_given_category(): void
+    {
+        $category = $this->makeCategory();
+        $otherCategory = $this->makeCategory();
+
+        $inCategory = $this->makeProduct();
+        $inCategory->categories()->attach($category->id);
+        $this->makeVariant($inCategory, 16700);
+
+        $outsideCategory = $this->makeProduct();
+        $outsideCategory->categories()->attach($otherCategory->id);
+        $this->makeVariant($outsideCategory, 99);
+
+        $result = $this->action->execute($category->slug);
+
+        $this->assertSame(16700.0, $result['price']['min']);
+        $this->assertSame(16700.0, $result['price']['max']);
+    }
+
+    public function test_execute_includes_products_in_a_child_category_when_scoping_by_the_parent(): void
+    {
+        $parent = $this->makeCategory();
+        $child = $this->makeCategory($parent->id);
+
+        $product = $this->makeProduct();
+        $product->categories()->attach($child->id);
+        $this->makeVariant($product, 500);
+
+        $result = $this->action->execute($parent->slug);
+
+        $this->assertSame(500.0, $result['price']['min']);
+        $this->assertSame(500.0, $result['price']['max']);
+    }
+
+    public function test_execute_only_returns_attributes_assigned_to_products_in_the_given_category(): void
+    {
+        $category = $this->makeCategory();
+        $otherCategory = $this->makeCategory();
+
+        $simAttribute = Attribute::create(['code' => 'sim-'.uniqid(), 'name' => ['uk' => 'SIM', 'en' => 'SIM'], 'type' => 'select']);
+        $simValue = AttributeValue::create(['attribute_id' => $simAttribute->id, 'value' => ['uk' => '2', 'en' => '2']]);
+
+        $ramAttribute = Attribute::create(['code' => 'ram-'.uniqid(), 'name' => ['uk' => 'Пам\'ять', 'en' => 'RAM'], 'type' => 'select']);
+        $ramValue = AttributeValue::create(['attribute_id' => $ramAttribute->id, 'value' => ['uk' => '16GB', 'en' => '16GB']]);
+
+        $inCategory = $this->makeProduct();
+        $inCategory->categories()->attach($category->id);
+        ProductAttributeValue::create([
+            'product_id' => $inCategory->id,
+            'attribute_id' => $ramAttribute->id,
+            'attribute_value_id' => $ramValue->id,
+        ]);
+
+        $outsideCategory = $this->makeProduct();
+        $outsideCategory->categories()->attach($otherCategory->id);
+        ProductAttributeValue::create([
+            'product_id' => $outsideCategory->id,
+            'attribute_id' => $simAttribute->id,
+            'attribute_value_id' => $simValue->id,
+        ]);
+
+        $result = $this->action->execute($category->slug);
+
+        $codes = $result['attributes']->pluck('code')->all();
+        $this->assertContains($ramAttribute->code, $codes);
+        $this->assertNotContains($simAttribute->code, $codes);
+    }
+
+    public function test_execute_with_an_unknown_category_slug_returns_the_unscoped_facets(): void
+    {
+        $product = $this->makeProduct();
+        $this->makeVariant($product, 100);
+
+        $result = $this->action->execute('does-not-exist');
+
+        $this->assertSame(100.0, $result['price']['min']);
+        $this->assertSame(100.0, $result['price']['max']);
     }
 }
