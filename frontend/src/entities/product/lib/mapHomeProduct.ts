@@ -6,9 +6,13 @@ export interface HomeProduct {
   slug: string;
   name: string;
   category: string;
+  brand: string | null;
   price: number;
   oldPrice: number | null;
   discount: string;
+  badge: string | null;
+  badgeClass: string;
+  inStock: boolean;
   rating: number;
   reviews: number;
   leftCount: number;
@@ -40,12 +44,16 @@ const pickLocalized = (value: any, locale: string): string => {
  * locale switch (e.g. data fetched once and cached) still show the right language
  * as of when they were mapped.
  */
-export function mapHomeProduct(p: any, locale: string = i18n.global.locale.value): HomeProduct | null {
+export function mapHomeProduct(
+  p: any,
+  locale: string = i18n.global.locale.value,
+): HomeProduct | null {
   try {
     const { t } = i18n.global;
     const name = pickLocalized(p.name, locale);
     const category =
-      pickLocalized(p.categories?.[0]?.name, locale) || t("home.productDefaults.category");
+      pickLocalized(p.categories?.[0]?.name, locale) ||
+      t("home.productDefaults.category");
 
     const firstVariant = p.variants?.[0] || {};
     const price = parseFloat(firstVariant.price) || 0;
@@ -55,6 +63,10 @@ export function mapHomeProduct(p: any, locale: string = i18n.global.locale.value
     const discount = oldPrice
       ? `-${Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF`
       : "";
+    const badge = oldPrice
+      ? `-${Math.round(((oldPrice - price) / oldPrice) * 100)}%`
+      : null;
+    const badgeClass = oldPrice ? "bg-rose-600" : "";
 
     let image = productPlaceholder;
     const images = firstVariant.dimensions?.images || [];
@@ -86,7 +98,10 @@ export function mapHomeProduct(p: any, locale: string = i18n.global.locale.value
       const label = pickLocalized(av.attribute?.name, locale);
       const attrValObj = av.attributeValue || av.attribute_value;
       const val =
-        pickLocalized(attrValObj?.value, locale) || av.customValue || av.custom_value || "";
+        pickLocalized(attrValObj?.value, locale) ||
+        av.customValue ||
+        av.custom_value ||
+        "";
       if (label && val) {
         features.push(`${label}: ${val}`);
       }
@@ -122,11 +137,19 @@ export function mapHomeProduct(p: any, locale: string = i18n.global.locale.value
       slug: p.slug,
       name,
       category,
+      brand: p.brand ? p.brand.name : null,
       price,
       oldPrice,
       discount,
-      rating: p.approvedReviewsAvgRating != null ? parseFloat(p.approvedReviewsAvgRating) : 0,
-      reviews: p.approvedReviewsCount != null ? Number(p.approvedReviewsCount) : 0,
+      badge,
+      badgeClass,
+      inStock: totalStock > 0,
+      rating:
+        p.approvedReviewsAvgRating != null
+          ? parseFloat(p.approvedReviewsAvgRating)
+          : 0,
+      reviews:
+        p.approvedReviewsCount != null ? Number(p.approvedReviewsCount) : 0,
       leftCount: totalStock,
       image,
       description: pickLocalized(p.description, locale),
