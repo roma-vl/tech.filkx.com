@@ -7,10 +7,18 @@ use App\Api\V1\Exceptions\OrderNotFoundException;
 use App\Api\V1\Repositories\OrderRepositoryInterface;
 use App\Models\Order;
 use App\Models\Stock;
+use App\Notifications\OrderStatusChangedNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class UpdateAdminOrderStatusAction
 {
+    /**
+     * Only these customer-facing transitions are worth an email - internal fulfilment
+     * states (processing, packed) would just be noise in the customer's inbox.
+     */
+    private const NOTIFIABLE_STATUSES = ['paid', 'shipped', 'delivered', 'cancelled', 'refunded'];
+
     public function __construct(
         protected OrderRepositoryInterface $orderRepository
     ) {}
@@ -23,7 +31,9 @@ class UpdateAdminOrderStatusAction
             throw new OrderNotFoundException;
         }
 
-        return DB::transaction(function () use ($order, $dto) {
+        $oldStatus = $order->status;
+
+        $order = DB::transaction(function () use ($order, $dto) {
             if ($dto->carrier !== null) {
                 $order->carrier = $dto->carrier;
             }
@@ -79,5 +89,11 @@ class UpdateAdminOrderStatusAction
 
             return $order->load('items');
         });
+
+        if ($oldStatus !== $order->status && in_array($order->status, self::NOTIFIABLE_STATUSES, true)) {
+            Notification::route('mail', $order->customer_email)->notify(new OrderStatusChangedNotification($order));
+        }
+
+        return $order;
     }
 }

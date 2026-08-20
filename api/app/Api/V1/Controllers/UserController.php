@@ -431,7 +431,7 @@ class UserController extends BaseApiController
     #[OA\Get(
         path: '/api/user/restore',
         summary: 'Restore a soft-deleted account via signed link',
-        description: 'Not currently wired to any route - the signed link is never issued by any notification in this codebase. Kept documented for when account-deletion emails are implemented.',
+        description: 'The signed link is issued by AccountDeletionScheduledNotification, sent when initiateDelete runs.',
         tags: ['User'],
         parameters: [
             new OA\Parameter(name: 'userId', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),

@@ -56,6 +56,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend (SPA) URL
+    |--------------------------------------------------------------------------
+    |
+    | The storefront/admin SPA is a separate service from this API. Notifications
+    | and redirects that need to point a user at the SPA (email verification,
+    | password reset, account restore, etc.) use this instead of `url`, which
+    | resolves against this API's own domain.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', env('APP_URL', 'http://localhost')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

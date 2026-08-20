@@ -7,14 +7,22 @@ use App\Api\V1\Exceptions\CheckoutValidationException;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use App\Notifications\OrderConfirmedNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class PlaceQuickOrderAction
 {
+    /**
+     * Guest quick orders with no authenticated user fall back to this placeholder in the
+     * customer_email column - there's no real address to send a confirmation to.
+     */
+    private const GUEST_EMAIL_PLACEHOLDER = 'quick-order@electro.com';
+
     public function execute(PlaceQuickOrderDto $dto): Order
     {
-        return DB::transaction(function () use ($dto) {
+        $order = DB::transaction(function () use ($dto) {
             $variant = ProductVariant::with(['product', 'stocks'])
                 ->lockForUpdate()
                 ->find($dto->variantId);
@@ -49,7 +57,7 @@ class PlaceQuickOrderAction
                 'order_number' => $orderNumber,
                 'user_id' => auth('api')->id(),
                 'customer_name' => $dto->customerName,
-                'customer_email' => auth('api')->user()?->email ?? 'quick-order@electro.com',
+                'customer_email' => auth('api')->user()?->email ?? self::GUEST_EMAIL_PLACEHOLDER,
                 'customer_phone' => $dto->customerPhone,
                 'shipping_country' => 'Ukraine',
                 'shipping_city' => 'Київ',
@@ -74,5 +82,11 @@ class PlaceQuickOrderAction
 
             return $order->load('items');
         });
+
+        if ($order->customer_email !== self::GUEST_EMAIL_PLACEHOLDER) {
+            Notification::route('mail', $order->customer_email)->notify(new OrderConfirmedNotification($order));
+        }
+
+        return $order;
     }
 }

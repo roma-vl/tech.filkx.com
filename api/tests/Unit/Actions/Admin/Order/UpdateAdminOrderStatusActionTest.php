@@ -11,7 +11,10 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\Warehouse;
+use App\Notifications\OrderStatusChangedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class UpdateAdminOrderStatusActionTest extends TestCase
@@ -118,5 +121,40 @@ class UpdateAdminOrderStatusActionTest extends TestCase
 
         $this->assertSame('refunded', $result->status);
         $this->assertSame('refunded', $result->payment_status);
+    }
+
+    public function test_execute_sends_a_status_changed_notification_for_a_customer_facing_transition(): void
+    {
+        Notification::fake();
+        [$order] = $this->makeOrderWithStock('paid', null);
+
+        $this->action->execute($order->id, new UpdateOrderStatusDto('shipped', 'Nova Poshta', 'TTN123'));
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            OrderStatusChangedNotification::class,
+            fn (OrderStatusChangedNotification $notification, array $channels, AnonymousNotifiable $notifiable) => $notifiable->routes['mail'] === 'test@example.com'
+                && $notification->order->status === 'shipped'
+        );
+    }
+
+    public function test_execute_does_not_send_a_notification_for_an_internal_only_transition(): void
+    {
+        Notification::fake();
+        [$order] = $this->makeOrderWithStock('paid', null);
+
+        $this->action->execute($order->id, new UpdateOrderStatusDto('processing', null, null));
+
+        Notification::assertNothingSent();
+    }
+
+    public function test_execute_does_not_send_a_notification_when_the_status_is_unchanged(): void
+    {
+        Notification::fake();
+        [$order] = $this->makeOrderWithStock('paid', null);
+
+        $this->action->execute($order->id, new UpdateOrderStatusDto('paid', null, null));
+
+        Notification::assertNothingSent();
     }
 }

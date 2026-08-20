@@ -8,6 +8,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Notifications\AccountDeletionScheduledNotification;
+use App\Notifications\AccountRestoredNotification;
 use App\Notifications\VerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -29,20 +31,17 @@ class UserControllerTest extends TestCase
         return ['Authorization' => "Bearer {$token}"];
     }
 
-    /**
-     * `restore` and `confirmEmailChange` are not wired to any route yet (see the
-     * controller's own OA docs) - the routes are registered here only so the signed-link
-     * behaviour can be exercised at the HTTP layer, matching what the route will look like
-     * once an account-deletion/email-change notification actually issues these links.
-     */
     private function signedRestoreUrl(int $userId): string
     {
-        Route::get('/api/user/restore', [UserController::class, 'restore'])->name('test.user.restore');
-        Route::getRoutes()->refreshNameLookups();
-
-        return URL::signedRoute('test.user.restore', ['userId' => $userId]);
+        return URL::signedRoute('user.restore', ['userId' => $userId]);
     }
 
+    /**
+     * `confirmEmailChange` is not wired to any route yet (see the controller's own OA docs)
+     * - the route is registered here only so the signed-link behaviour can be exercised at
+     * the HTTP layer, matching what the route will look like once an email-change
+     * notification actually issues these links.
+     */
     private function signedConfirmEmailChangeUrl(int $userId, string $newEmail): string
     {
         Route::get('/api/user/email/confirm-change', [UserController::class, 'confirmEmailChange'])
@@ -619,6 +618,7 @@ class UserControllerTest extends TestCase
 
     public function test_initiate_delete_soft_deletes_the_account(): void
     {
+        Notification::fake();
         $user = User::factory()->create();
 
         $response = $this->withHeaders($this->authHeader($user))->postJson('/api/user/delete');
@@ -627,10 +627,24 @@ class UserControllerTest extends TestCase
         $this->assertSoftDeleted($user);
     }
 
-    // --- Account restore (signed link; see signedRestoreUrl() for why the route is registered here) ---
+    public function test_initiate_delete_sends_an_account_deletion_scheduled_notification_with_a_restore_link(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create();
+
+        $this->withHeaders($this->authHeader($user))->postJson('/api/user/delete');
+
+        Notification::assertSentTo($user, AccountDeletionScheduledNotification::class, function (AccountDeletionScheduledNotification $notification) use ($user) {
+            return str_contains($notification->restoreUrl, "userId={$user->id}")
+                && str_contains($notification->restoreUrl, 'signature=');
+        });
+    }
+
+    // --- Account restore ---
 
     public function test_restore_restores_a_soft_deleted_account_and_redirects(): void
     {
+        Notification::fake();
         $user = User::factory()->create();
         $user->delete();
 
@@ -638,6 +652,17 @@ class UserControllerTest extends TestCase
 
         $response->assertRedirect(config('app.frontend_url').'/login?status=restored');
         $this->assertNotSoftDeleted($user);
+    }
+
+    public function test_restore_sends_an_account_restored_notification(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create();
+        $user->delete();
+
+        $this->get($this->signedRestoreUrl($user->id));
+
+        Notification::assertSentTo($user, AccountRestoredNotification::class);
     }
 
     public function test_restore_returns_400_for_an_unknown_user(): void
@@ -649,8 +674,6 @@ class UserControllerTest extends TestCase
 
     public function test_restore_rejects_an_invalid_signature(): void
     {
-        Route::get('/api/user/restore', [UserController::class, 'restore']);
-
         $response = $this->get('/api/user/restore?userId=1&signature=invalid');
 
         $response->assertStatus(400)->assertJsonPath('message', 'Invalid or expired restoration link');

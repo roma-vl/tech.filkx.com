@@ -12,7 +12,10 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\Warehouse;
+use App\Notifications\OrderConfirmedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class PlaceOrderActionTest extends TestCase
@@ -146,5 +149,23 @@ class PlaceOrderActionTest extends TestCase
 
         $this->assertSame(50.0, (float) $order->discount_amount);
         $this->assertSame(0.0, (float) $order->total_price);
+    }
+
+    public function test_execute_sends_an_order_confirmed_notification_to_the_customer_email(): void
+    {
+        Notification::fake();
+        $variant = $this->makeVariant(150, 5);
+        $cart = $this->makeCartWithItem($variant, 1);
+
+        $order = app(PlaceOrderAction::class)->execute($this->dtoFor($cart));
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            OrderConfirmedNotification::class,
+            function (OrderConfirmedNotification $notification, array $channels, AnonymousNotifiable $notifiable) use ($order) {
+                return $notification->order->is($order)
+                    && $notifiable->routes['mail'] === 'ivan@example.com';
+            }
+        );
     }
 }

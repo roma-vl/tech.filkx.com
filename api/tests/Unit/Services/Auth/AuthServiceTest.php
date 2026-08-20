@@ -11,6 +11,7 @@ use App\Events\AuditEvent;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\LoginNewDeviceNotification;
+use App\Notifications\PasswordChangedNotification;
 use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\Auth\TwoFactorAuthenticationService;
@@ -330,6 +331,17 @@ class AuthServiceTest extends TestCase
 
         $this->assertTrue(Hash::check('newpassword123', $user->fresh()->password));
         $this->assertSame(0, $user->tokens()->count());
+    }
+
+    public function test_reset_password_sends_a_password_changed_notification(): void
+    {
+        Notification::fake();
+        $user = $this->makeUser(['email' => 'reset3@example.com']);
+        $token = Password::broker()->createToken($user);
+
+        $this->service->resetPassword(new ResetPasswordDto('reset3@example.com', 'newpassword123', $token));
+
+        Notification::assertSentTo($user, PasswordChangedNotification::class);
     }
 
     public function test_reset_password_with_invalid_token_throws_validation_exception(): void
