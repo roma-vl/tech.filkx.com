@@ -39,7 +39,8 @@ function loadEnv(mode) {
   return env;
 }
 
-const MODE = process.env.NODE_ENV === "development" ? "development" : "production";
+const MODE =
+  process.env.NODE_ENV === "development" ? "development" : "production";
 const env = loadEnv(MODE);
 const API_BASE_URL = process.env.VITE_API_BASE_URL || env.VITE_API_BASE_URL;
 const SITE_BASE_URL = (
@@ -49,7 +50,9 @@ const SITE_BASE_URL = (
 ).replace(/\/$/, "");
 
 if (!API_BASE_URL) {
-  console.error("[sitemap] VITE_API_BASE_URL is not set (.env / .env.production) — aborting.");
+  console.error(
+    "[sitemap] VITE_API_BASE_URL is not set (.env / .env.production) — aborting.",
+  );
   process.exit(1);
 }
 
@@ -98,7 +101,9 @@ async function fetchAllPaginated(url, params) {
   let page = 1;
   let lastPage = 1;
   do {
-    const { data } = await api.get(url, { params: { ...params, page, per_page: 100 } });
+    const { data } = await api.get(url, {
+      params: { ...params, page, per_page: 100 },
+    });
     const payload = data?.data;
     const pageItems = payload?.data || (Array.isArray(payload) ? payload : []);
     for (const item of pageItems) {
@@ -111,16 +116,23 @@ async function fetchAllPaginated(url, params) {
 }
 
 function xmlEscape(value) {
-  return String(value).replace(/[<>&'"]/g, (c) => ({
-    "<": "&lt;",
-    ">": "&gt;",
-    "&": "&amp;",
-    "'": "&apos;",
-    '"': "&quot;",
-  })[c]);
+  return String(value).replace(
+    /[<>&'"]/g,
+    (c) =>
+      ({
+        "<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        "'": "&apos;",
+        '"': "&quot;",
+      })[c],
+  );
 }
 
-function urlEntry(loc, { lastmod, changefreq = "weekly", priority = "0.5" } = {}) {
+function urlEntry(
+  loc,
+  { lastmod, changefreq = "weekly", priority = "0.5" } = {},
+) {
   return [
     "  <url>",
     `    <loc>${xmlEscape(loc)}</loc>`,
@@ -136,12 +148,26 @@ function urlEntry(loc, { lastmod, changefreq = "weekly", priority = "0.5" } = {}
 async function main() {
   const entries = [];
 
-  entries.push(urlEntry(`${SITE_BASE_URL}/`, { changefreq: "daily", priority: "1.0" }));
-  entries.push(urlEntry(`${SITE_BASE_URL}/catalog`, { changefreq: "daily", priority: "0.9" }));
-  entries.push(urlEntry(`${SITE_BASE_URL}/blog`, { changefreq: "daily", priority: "0.7" }));
+  entries.push(
+    urlEntry(`${SITE_BASE_URL}/`, { changefreq: "daily", priority: "1.0" }),
+  );
+  entries.push(
+    urlEntry(`${SITE_BASE_URL}/catalog`, {
+      changefreq: "daily",
+      priority: "0.9",
+    }),
+  );
+  entries.push(
+    urlEntry(`${SITE_BASE_URL}/blog`, { changefreq: "daily", priority: "0.7" }),
+  );
 
   for (const slug of STATIC_PAGES) {
-    entries.push(urlEntry(`${SITE_BASE_URL}/${slug}`, { changefreq: "monthly", priority: "0.3" }));
+    entries.push(
+      urlEntry(`${SITE_BASE_URL}/${slug}`, {
+        changefreq: "monthly",
+        priority: "0.3",
+      }),
+    );
   }
 
   try {
@@ -149,7 +175,7 @@ async function main() {
     const categorySlugs = flattenCategories(data?.data || []);
     for (const slug of categorySlugs) {
       entries.push(
-        urlEntry(`${SITE_BASE_URL}/catalog?category=${encodeURIComponent(slug)}`, {
+        urlEntry(`${SITE_BASE_URL}/category/${encodeURIComponent(slug)}`, {
           changefreq: "daily",
           priority: "0.7",
         }),

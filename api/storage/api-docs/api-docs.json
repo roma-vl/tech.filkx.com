@@ -5516,7 +5516,7 @@
                     "User"
                 ],
                 "summary": "Restore a soft-deleted account via signed link",
-                "description": "Not currently wired to any route - the signed link is never issued by any notification in this codebase. Kept documented for when account-deletion emails are implemented.",
+                "description": "The signed link is issued by AccountDeletionScheduledNotification, sent when initiateDelete runs.",
                 "operationId": "a4930327726835aa7b2c01eecead11b4",
                 "parameters": [
                     {

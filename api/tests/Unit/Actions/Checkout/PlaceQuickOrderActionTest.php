@@ -10,7 +10,10 @@ use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Notifications\OrderConfirmedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class PlaceQuickOrderActionTest extends TestCase
@@ -151,5 +154,33 @@ class PlaceQuickOrderActionTest extends TestCase
 
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('buyer@example.com', $order->customer_email);
+    }
+
+    public function test_execute_sends_an_order_confirmed_notification_for_an_authenticated_user(): void
+    {
+        Notification::fake();
+        $variant = $this->makeVariant(150);
+        $this->addStock($variant, 5);
+        $user = User::factory()->create(['email' => 'buyer@example.com']);
+        $this->actingAs($user, 'api');
+
+        app(PlaceQuickOrderAction::class)->execute($this->dtoFor($variant));
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            OrderConfirmedNotification::class,
+            fn (OrderConfirmedNotification $notification, array $channels, AnonymousNotifiable $notifiable) => $notifiable->routes['mail'] === 'buyer@example.com'
+        );
+    }
+
+    public function test_execute_does_not_send_a_notification_for_an_unauthenticated_guest_order(): void
+    {
+        Notification::fake();
+        $variant = $this->makeVariant(150);
+        $this->addStock($variant, 5);
+
+        app(PlaceQuickOrderAction::class)->execute($this->dtoFor($variant));
+
+        Notification::assertNothingSent();
     }
 }

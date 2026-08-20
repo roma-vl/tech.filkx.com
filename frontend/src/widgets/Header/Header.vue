@@ -119,10 +119,15 @@ watch(searchQuery, (newQuery) => {
 // menu re-translates immediately when the visitor switches language, without
 // needing to refetch from the API.
 const rawCategories = ref<any[]>([]);
-const categories = computed(() => mapDbCategoriesToMenu(rawCategories.value, locale.value));
+const categories = computed(() =>
+  mapDbCategoriesToMenu(rawCategories.value, locale.value),
+);
 const activeCatId = ref<string | number | null>(null);
 const activeCat = computed(
-  () => categories.value.find((c: any) => c.id === activeCatId.value) || categories.value[0] || null,
+  () =>
+    categories.value.find((c: any) => c.id === activeCatId.value) ||
+    categories.value[0] ||
+    null,
 );
 
 const selectCategory = (cat: any) => {
@@ -131,15 +136,15 @@ const selectCategory = (cat: any) => {
 
 const getLinkRoute = (link: any) => {
   return {
-    name: "catalog",
-    query: { category: link.slug }
+    name: "category",
+    params: { slug: link.slug },
   };
 };
 
 const getGroupRoute = (group: any) => {
   return {
-    name: "catalog",
-    query: { category: group.slug }
+    name: "category",
+    params: { slug: group.slug },
   };
 };
 
@@ -266,7 +271,10 @@ onMounted(async () => {
 
   // Load saved theme
   const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+  if (
+    savedTheme === "dark" ||
+    (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+  ) {
     isDark.value = true;
     document.documentElement.classList.add("dark");
   } else {
@@ -291,25 +299,62 @@ onUnmounted(() => {
   <!-- Main Header Shell -->
   <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
     <!-- Announcement bar -->
-    <div class="hidden md:block bg-[#13191f] border-b border-white/[0.06] text-zinc-400">
-      <div class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4">
+    <div
+      class="hidden md:block bg-[#13191f] border-b border-white/[0.06] text-zinc-400"
+    >
+      <div
+        class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4"
+      >
         <!-- Left: sota.store style top menu links -->
         <div class="flex items-center gap-5">
-          <router-link to="/shipping-payment" class="hover:text-white transition-colors">{{ t("header.topLinks.shippingPayment") }}</router-link>
-          <router-link to="/warranty-returns" class="hover:text-white transition-colors">{{ t("header.topLinks.warrantyReturns") }}</router-link>
-          <router-link to="/service" class="hover:text-white transition-colors">{{ t("header.topLinks.service") }}</router-link>
-          <router-link to="/services" class="hover:text-white transition-colors">{{ t("header.topLinks.services") }}</router-link>
-          <router-link to="/installments" class="hover:text-white transition-colors">{{ t("header.topLinks.installments") }}</router-link>
-          <router-link to="/filkx-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">{{ t("header.topLinks.filkxExchange") }}</router-link>
-          <router-link to="/contacts" class="hover:text-white transition-colors">{{ t("header.topLinks.contacts") }}</router-link>
+          <router-link
+            to="/shipping-payment"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.shippingPayment") }}</router-link
+          >
+          <router-link
+            to="/warranty-returns"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.warrantyReturns") }}</router-link
+          >
+          <router-link
+            to="/service"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.service") }}</router-link
+          >
+          <router-link
+            to="/services"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.services") }}</router-link
+          >
+          <router-link
+            to="/installments"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.installments") }}</router-link
+          >
+          <router-link
+            to="/filkx-exchange"
+            class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors"
+            >{{ t("header.topLinks.filkxExchange") }}</router-link
+          >
+          <router-link
+            to="/contacts"
+            class="hover:text-white transition-colors"
+            >{{ t("header.topLinks.contacts") }}</router-link
+          >
         </div>
 
         <!-- Right: phone, theme toggle, and language switcher -->
         <div class="flex items-center gap-5">
           <!-- Phone link -->
-          <a href="tel:0800330131" class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300">
+          <a
+            href="tel:0800330131"
+            class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300"
+          >
             0 800 33-01-31
-            <span class="material-symbols-outlined text-[13px] select-none">keyboard_arrow_down</span>
+            <span class="material-symbols-outlined text-[13px] select-none"
+              >keyboard_arrow_down</span
+            >
           </a>
 
           <!-- Theme Toggle Button -->
@@ -317,15 +362,21 @@ onUnmounted(() => {
             type="button"
             class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
             @click="toggleDarkMode"
-            :title="isDark ? t('header.switchToLightTheme') : t('header.switchToDarkTheme')"
+            :title="
+              isDark
+                ? t('header.switchToLightTheme')
+                : t('header.switchToDarkTheme')
+            "
           >
             <span class="material-symbols-outlined text-[16px]">
-              {{ isDark ? 'light_mode' : 'dark_mode' }}
+              {{ isDark ? "light_mode" : "dark_mode" }}
             </span>
           </button>
 
           <!-- Language Selector -->
-          <div class="flex items-center bg-[#252a32] p-0.5 rounded border border-white/[0.05]">
+          <div
+            class="flex items-center bg-[#252a32] p-0.5 rounded border border-white/[0.05]"
+          >
             <button
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
@@ -348,7 +399,7 @@ onUnmounted(() => {
               "
               @click="setLanguage('en')"
             >
-                EN
+              EN
             </button>
           </div>
         </div>
@@ -391,11 +442,16 @@ onUnmounted(() => {
 
       <!-- Catalog Toggle Button -->
       <button
-        :class="isMegaMenuOpen ? 'bg-[#009040]' : 'bg-[#00a046] hover:bg-[#00b050]'"
+        :class="
+          isMegaMenuOpen ? 'bg-[#009040]' : 'bg-[#00a046] hover:bg-[#00b050]'
+        "
         class="catalog-btn hidden md:flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm text-white transition-all shrink-0 shadow-sm"
         @click="toggleCatalog"
       >
-        <span v-if="!isMegaMenuOpen" class="flex flex-col gap-[4px] w-[15px] shrink-0">
+        <span
+          v-if="!isMegaMenuOpen"
+          class="flex flex-col gap-[4px] w-[15px] shrink-0"
+        >
           <span class="block h-[2px] bg-white rounded-full w-full" />
           <span class="block h-[2px] bg-white rounded-full w-[10px]" />
           <span class="block h-[2px] bg-white rounded-full w-full" />
@@ -467,12 +523,16 @@ onUnmounted(() => {
               :key="n"
               class="flex items-center gap-3 p-2 animate-pulse"
             >
-              <div class="w-10 h-10 bg-zinc-150 dark:bg-zinc-800 rounded shrink-0" />
+              <div
+                class="w-10 h-10 bg-zinc-150 dark:bg-zinc-800 rounded shrink-0"
+              />
               <div class="flex-grow space-y-1.5">
                 <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded w-1/4" />
                 <div class="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-3/4" />
               </div>
-              <div class="w-12 h-3 bg-zinc-200 dark:bg-zinc-700 rounded shrink-0" />
+              <div
+                class="w-12 h-3 bg-zinc-200 dark:bg-zinc-700 rounded shrink-0"
+              />
             </div>
           </div>
           <div v-else-if="filteredProducts.length > 0" class="space-y-1">
@@ -507,9 +567,10 @@ onUnmounted(() => {
                   v-html="highlightMatch(prod.name, searchQuery)"
                 />
               </div>
-              <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 shrink-0">{{
-                formatPrice(prod.price)
-              }}</span>
+              <span
+                class="text-xs font-bold text-zinc-900 dark:text-zinc-100 shrink-0"
+                >{{ formatPrice(prod.price) }}</span
+              >
             </div>
           </div>
 
@@ -625,12 +686,9 @@ onUnmounted(() => {
           class="w-[230px] xl:w-[250px] border-r border-zinc-800 bg-[#1c2229] p-4 shrink-0"
         >
           <ul class="space-y-1">
-            <li
-              v-for="cat in categories"
-              :key="cat.id"
-            >
+            <li v-for="cat in categories" :key="cat.id">
               <RouterLink
-                :to="{ name: 'catalog', query: { category: cat.slug } }"
+                :to="{ name: 'category', params: { slug: cat.slug } }"
                 :class="
                   activeCat && activeCat.id === cat.id
                     ? 'bg-[#252e37] text-white font-bold'
@@ -664,9 +722,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Center/Right: Sub-categories Columns (Identical to screenshot) -->
-        <div
-          class="flex-grow p-6 pl-8 bg-[#1c2229] text-white"
-        >
+        <div class="flex-grow p-6 pl-8 bg-[#1c2229] text-white">
           <div
             v-if="activeCat.columns && activeCat.columns.length > 0"
             class="grid grid-cols-4 gap-6"
@@ -676,12 +732,10 @@ onUnmounted(() => {
               :key="colIdx"
               class="space-y-6"
             >
-              <div
-                v-for="(group, gIdx) in col"
-                :key="gIdx"
-                class="space-y-2"
-              >
-                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+              <div v-for="(group, gIdx) in col" :key="gIdx" class="space-y-2">
+                <h4
+                  class="font-extrabold text-[11.5px] uppercase tracking-wider"
+                >
                   <RouterLink
                     :to="getGroupRoute(group)"
                     class="text-[#3898ec] hover:underline cursor-pointer"
@@ -727,8 +781,12 @@ onUnmounted(() => {
             class="flex items-center justify-center h-full text-zinc-500"
           >
             <div class="text-center">
-              <span class="material-symbols-outlined text-4xl mb-2">category</span>
-              <p class="text-xs font-bold">{{ t("header.megaMenu.noSubcategories") }}</p>
+              <span class="material-symbols-outlined text-4xl mb-2"
+                >category</span
+              >
+              <p class="text-xs font-bold">
+                {{ t("header.megaMenu.noSubcategories") }}
+              </p>
             </div>
           </div>
         </div>

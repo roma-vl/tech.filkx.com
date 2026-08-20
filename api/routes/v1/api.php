@@ -148,6 +148,11 @@ Route::prefix('oauth/{provider}')->group(function () {
 
 // Other API routes
 Route::get('/index', [IndexController::class, 'index']);
+
+// Account restoration (signed link issued by AccountDeletionScheduledNotification) - public,
+// reached from an emailed link before the user has a session again.
+Route::get('/user/restore', [UserController::class, 'restore'])->name('user.restore');
+
 Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function () {
 
     /*

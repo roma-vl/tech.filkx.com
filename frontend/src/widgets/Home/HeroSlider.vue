@@ -22,12 +22,14 @@ const activeIndex = ref(0);
 const hoveredCat = ref(null);
 let intervalId = null;
 
-const mappedCategories = computed(() => mapDbCategoriesToMenu(props.categories, locale.value));
+const mappedCategories = computed(() =>
+  mapDbCategoriesToMenu(props.categories, locale.value),
+);
 
 const getBannerLink = (banner) => {
   switch (banner.linkType) {
     case "category":
-      return { name: "catalog", query: { category: banner.linkValue } };
+      return { name: "category", params: { slug: banner.linkValue } };
     case "product":
       return banner.linkValue
         ? { name: "product-detail", params: { id: banner.linkValue } }
@@ -72,7 +74,8 @@ const nextSlide = () => {
   activeIndex.value = (activeIndex.value + 1) % slides.value.length;
 };
 const prevSlide = () => {
-  activeIndex.value = (activeIndex.value - 1 + slides.value.length) % slides.value.length;
+  activeIndex.value =
+    (activeIndex.value - 1 + slides.value.length) % slides.value.length;
   resetTimer();
 };
 const setSlide = (index) => {
@@ -83,25 +86,32 @@ const startTimer = () => {
   intervalId = setInterval(nextSlide, 7000);
 };
 const resetTimer = () => {
-  if (intervalId) { clearInterval(intervalId); startTimer(); }
+  if (intervalId) {
+    clearInterval(intervalId);
+    startTimer();
+  }
 };
 
 const getGroupRoute = (group) => {
   return {
-    name: "catalog",
-    query: { category: group.slug }
+    name: "category",
+    params: { slug: group.slug },
   };
 };
 
 const getLinkRoute = (link) => {
   return {
-    name: "catalog",
-    query: { category: link.slug }
+    name: "category",
+    params: { slug: link.slug },
   };
 };
 
-onMounted(() => { startTimer(); });
-onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
+onMounted(() => {
+  startTimer();
+});
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId);
+});
 </script>
 
 <template>
@@ -111,14 +121,16 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
       @mouseleave="hoveredCat = null"
     >
       <!-- ── Left: dark category sidebar (desktop only) ── -->
-      <div class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800">
+      <div
+        class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800"
+      >
         <!-- Category links -->
         <nav class="flex-1 overflow-y-auto cat-scroll bg-[#1c2229]">
           <template v-if="mappedCategories.length > 0">
             <RouterLink
               v-for="cat in mappedCategories"
               :key="cat.id"
-              :to="{ name: 'catalog', query: { category: cat.slug } }"
+              :to="{ name: 'category', params: { slug: cat.slug } }"
               class="w-full flex items-center justify-between px-4 py-2.5 text-left transition-all duration-150 group/cl rounded-none"
               :class="
                 hoveredCat && hoveredCat.id === cat.id
@@ -131,7 +143,11 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               <div class="flex items-center gap-3">
                 <span
                   class="material-symbols-outlined text-[19px] shrink-0 transition-colors"
-                  :class="hoveredCat && hoveredCat.id === cat.id ? 'text-white' : 'text-zinc-400 group-hover/cl:text-white'"
+                  :class="
+                    hoveredCat && hoveredCat.id === cat.id
+                      ? 'text-white'
+                      : 'text-zinc-400 group-hover/cl:text-white'
+                  "
                 >
                   {{ cat.icon }}
                 </span>
@@ -184,9 +200,13 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
             v-else
             class="absolute inset-0 bg-gradient-to-br from-[#1c2229] via-zinc-900 to-[#00a046]/20"
           />
-          <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
+          />
 
-          <div class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center">
+          <div
+            class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center"
+          >
             <div
               v-if="slide.badge || slide.subtitle"
               class="flex items-center gap-2 mb-3"
@@ -202,7 +222,9 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                 class="text-zinc-300 font-bold text-xs uppercase tracking-widest"
               >• {{ slide.subtitle }}</span>
             </div>
-            <h1 class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white">
+            <h1
+              class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
+            >
               {{ slide.title }}
             </h1>
             <p
@@ -233,13 +255,20 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
           </button>
           <button
             class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-            @click="() => { nextSlide(); resetTimer(); }"
+            @click="
+              () => {
+                nextSlide();
+                resetTimer();
+              }
+            "
           >
             <span class="material-symbols-outlined text-white text-[20px]">chevron_right</span>
           </button>
 
           <!-- Counter -->
-          <div class="absolute bottom-6 right-8 z-20 text-white/40 text-xs font-bold tabular-nums">
+          <div
+            class="absolute bottom-6 right-8 z-20 text-white/40 text-xs font-bold tabular-nums"
+          >
             {{ activeIndex + 1 }}&nbsp;/&nbsp;{{ slides.length }}
           </div>
 
@@ -248,7 +277,12 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
             <button
               v-for="(_, index) in slides"
               :key="index"
-              :class="['h-1.5 rounded-full transition-all duration-500', activeIndex === index ? 'w-12 bg-[#00a046]' : 'w-6 bg-white/30 hover:bg-white/50']"
+              :class="[
+                'h-1.5 rounded-full transition-all duration-500',
+                activeIndex === index
+                  ? 'w-12 bg-[#00a046]'
+                  : 'w-6 bg-white/30 hover:bg-white/50',
+              ]"
               :aria-label="t('home.hero.slideAriaLabel', { n: index + 1 })"
               @click="setSlide(index)"
             />
@@ -284,7 +318,9 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                 :key="gIdx"
                 class="space-y-2"
               >
-                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+                <h4
+                  class="font-extrabold text-[11.5px] uppercase tracking-wider"
+                >
                   <RouterLink
                     :to="getGroupRoute(group)"
                     class="text-[#3898ec] hover:underline cursor-pointer"
@@ -341,7 +377,14 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 </template>
 
 <style scoped>
-.cat-scroll::-webkit-scrollbar { width: 3px; }
-.cat-scroll::-webkit-scrollbar-track { background: transparent; }
-.cat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.cat-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.cat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
 </style>

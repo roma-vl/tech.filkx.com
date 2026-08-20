@@ -10,7 +10,11 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createHead } from "@vueuse/head";
-import { createRouter, createMemoryHistory, type RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createMemoryHistory,
+  type RouteRecordRaw,
+} from "vue-router";
 import App from "./App.vue";
 import { i18n } from "@/i18n";
 import MainLayout from "@/layouts/main/MainLayout.vue";
@@ -33,7 +37,12 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: "", name: "home", component: HomePage },
       { path: "catalog", name: "catalog", component: CatalogPage },
-      { path: "product/:id", name: "product-detail", component: ProductDetailPage },
+      { path: "category/:slug", name: "category", component: CatalogPage },
+      {
+        path: "product/:id",
+        name: "product-detail",
+        component: ProductDetailPage,
+      },
       { path: "blog", name: "blog", component: BlogPage },
       { path: "blog/:slug", name: "blog-post", component: BlogPostPage },
     ],

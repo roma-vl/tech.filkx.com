@@ -14,6 +14,7 @@ use App\Models\AuditLog;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\LoginNewDeviceNotification;
+use App\Notifications\PasswordChangedNotification;
 use App\Services\Auth\TwoFactorAuthenticationService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -243,6 +244,7 @@ class AuthService
                 $user->password = Hash::make($password);
                 $user->save();
                 $user->tokens()->delete();
+                $user->notify(new PasswordChangedNotification(request()->ip() ?? 'unknown', now()->toDateTimeString()));
             }
         );
 

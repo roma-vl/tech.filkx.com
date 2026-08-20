@@ -40,6 +40,12 @@ export default [
         meta: { title: "Catalog" },
       },
       {
+        path: "category/:slug",
+        name: "category",
+        component: CatalogPage,
+        meta: { title: "Category" },
+      },
+      {
         path: "product/:id",
         name: "product-detail",
         component: ProductDetailPage,

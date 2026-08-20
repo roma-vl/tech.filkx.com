@@ -18,4 +18,19 @@ enum OrderStatusEnum: string
     {
         return array_column(self::cases(), 'value');
     }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::PENDING_PAYMENT => 'Очікує оплати',
+            self::PAID => 'Оплачено',
+            self::PROCESSING => 'В обробці',
+            self::PACKED => 'Зібрано',
+            self::SHIPPED => 'Відправлено',
+            self::DELIVERED => 'Доставлено',
+            self::COMPLETED => 'Виконано',
+            self::CANCELLED => 'Скасовано',
+            self::REFUNDED => 'Повернено',
+        };
+    }
 }

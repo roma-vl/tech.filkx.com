@@ -9,7 +9,8 @@
           Банери на головній сторінці
         </h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Керує слайдами hero-блоку на головній сторінці магазину. Порядок визначається полем "Порядок".
+          Керує слайдами hero-блоку на головній сторінці магазину. Порядок
+          визначається полем "Порядок".
         </p>
       </div>
 
@@ -42,22 +43,34 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Прев'ю
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Заголовок
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Посилання
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Порядок
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Статус
               </th>
-              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Дії
               </th>
             </tr>
@@ -75,11 +88,15 @@
                   class="w-20 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                 >
               </td>
-              <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate">
+              <td
+                class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate"
+              >
                 {{ banner.title }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                <span class="font-mono text-xs">{{ linkTypeLabels[banner.linkType] }}</span>
+                <span class="font-mono text-xs">{{
+                  linkTypeLabels[banner.linkType]
+                }}</span>
                 <span
                   v-if="banner.linkValue"
                   class="block text-xs text-gray-400 truncate max-w-[160px]"
@@ -91,14 +108,18 @@
               <td class="px-6 py-4">
                 <span
                   class="px-2.5 py-1 rounded-full text-xs font-bold"
-                  :class="banner.isActive
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'"
+                  :class="
+                    banner.isActive
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                  "
                 >
                   {{ banner.isActive ? "Активний" : "Вимкнено" }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
                 <div class="flex justify-end gap-2">
                   <AppButton
                     variant="ghost"
@@ -148,7 +169,8 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Банерів ще немає. Без жодного банера на головній показується нейтральний заповнювач без промо-контенту.
+                Банерів ще немає. Без жодного банера на головній показується
+                нейтральний заповнювач без промо-контенту.
               </td>
             </tr>
           </tbody>
@@ -167,7 +189,9 @@
         @submit.prevent="saveBanner"
       >
         <div>
-          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+          <label
+            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+          >
             Зображення
           </label>
           <div class="relative">
@@ -183,13 +207,22 @@
                 variant="ghost"
                 size="sm"
                 class="absolute top-2 right-2 !p-1.5 bg-black/50 hover:bg-black/70 rounded-lg !text-white border-none shadow-none"
-                @click="form.imageUrl = ''; form.imagePath = ''"
+                @click="
+                  form.imageUrl = '';
+                  form.imagePath = '';
+                "
               >
                 ✕
               </AppButton>
             </div>
-            <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors">
-              <span class="text-xs text-gray-400">{{ uploading ? "Завантаження..." : "Завантажити зображення (обов'язково)" }}</span>
+            <label
+              class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors"
+            >
+              <span class="text-xs text-gray-400">{{
+                uploading
+                  ? "Завантаження..."
+                  : "Завантажити зображення (обов'язково)"
+              }}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -304,22 +337,32 @@ const linkTypeOptions = [
   { value: "product", label: "Товар" },
   { value: "url", label: "Довільне посилання" },
 ];
-const linkTypeLabels = Object.fromEntries(linkTypeOptions.map((o) => [o.value, o.label]));
+const linkTypeLabels = Object.fromEntries(
+  linkTypeOptions.map((o) => [o.value, o.label]),
+);
 
 const linkValueLabel = computed(() => {
   switch (form.value.linkType) {
-    case "category": return "Slug категорії";
-    case "product": return "Slug товару";
-    case "url": return "URL / шлях";
-    default: return "Значення посилання";
+    case "category":
+      return "Slug категорії";
+    case "product":
+      return "Slug товару";
+    case "url":
+      return "URL / шлях";
+    default:
+      return "Значення посилання";
   }
 });
 const linkValuePlaceholder = computed(() => {
   switch (form.value.linkType) {
-    case "category": return "napr. smartphones";
-    case "product": return "napr. iphone-15-pro";
-    case "url": return "/catalog?category=audio";
-    default: return "";
+    case "category":
+      return "napr. smartphones";
+    case "product":
+      return "napr. iphone-15-pro";
+    case "url":
+      return "/category/audio";
+    default:
+      return "";
   }
 });
 
