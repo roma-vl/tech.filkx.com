@@ -323,12 +323,15 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   actual consent UI (banner/popup). Unchanged from the original audit; verify before EU/UA traffic
   if legally required.
 
-### 2.9 Catalog filter correctness (new, found 2026-08-20, not yet fixed)
+### 2.9 Catalog filter correctness (found 2026-08-20, **all five fixed 2026-08-20**, commit `6fabbee`)
 Found while auditing a user report that the catalog's filter sidebar "doesn't look logical" for the
-category being browsed. Confirmed live against the dev deployment — this is real, user-visible
-breakage, not a theoretical code-smell. All five are candidates for the next work pass; none are
-fixed yet. Ranked by user impact:
-- ❌ **Filter facets (price range, attribute list) are computed globally, not scoped to category.**
+category being browsed. Confirmed live against the dev deployment — this was real, user-visible
+breakage, not a theoretical code-smell. All five below are now fixed and covered by tests (18 new/
+updated backend tests across `GetCatalogFiltersActionTest`, `ListBrandsActionTest`,
+`BrandRepositoryTest`, `CategoryRepositoryTest` (new), `CatalogControllerTest`, the admin attribute
+action tests); full backend suite 1027 passed, frontend build clean. Kept for the record (ranked by
+user impact, as originally written) with each item's resolution noted:
+- ✅ **Filter facets (price range, attribute list) are computed globally, not scoped to category.**
   `GetCatalogFiltersAction::execute()` takes no category parameter — `Attribute::whereHas('values')`
   pulls every attribute with a value anywhere in the catalog, and the price `MIN`/`MAX` aggregate is
   over every active variant, unfiltered. `GET /v1/catalog/filters` doesn't inject a `Request` to
@@ -342,34 +345,51 @@ fixed yet. Ranked by user impact:
   products in that category (+ descendants, matching how `CatalogController::index` already treats
   category), do the same for `ListBrandsAction`/`BrandRepository`'s active-product counts, and
   refetch filters + brands in `useCatalog.ts` whenever the category changes rather than once on mount.
-- ❌ **The color attribute filter is completely non-functional.** The API serializes color attribute
+  **Fixed**: both Actions now accept an optional category slug; `CategoryRepository::resolveCategoryIdsBySlug()`
+  (extracted from `ListProductsAction`'s inline resolution, now shared by all three call sites)
+  resolves it. Live-verified two different categories now return genuinely different price bounds
+  and brand counts (e.g. `tablets-laptops-pc`: ₴16699–71852 vs. the old global ₴99–91444).
+- ✅ **The color attribute filter is completely non-functional.** The API serializes color attribute
   values one level more nested than every other attribute type — `{"value":{"value":"#hex"}}`
   instead of the `{"value":{"uk":"...","en":"..."}}` shape every other attribute uses. Neither the
   SQL match clause in `ListProductsAction` nor the frontend swatch (`CatalogFiltersWidget.vue`,
   which binds `val.value` directly to CSS `background-color`) account for the extra nesting.
   Verified live: filtering by any color returns 0 products, and the color swatches likely render
-  unstyled. **Fix direction**: normalize color value storage/serialization to the same shape as every
-  other attribute (or a dedicated `hex` key), then fix both the SQL match and the swatch binding to
-  read it consistently.
-- ❌ **Selected filters aren't cleared when the category changes.** `useCatalog.ts`'s route-query
+  unstyled. **Fixed**: storage normalized to `{uk, en}` everywhere (write path, a backfill migration,
+  the admin read path, the frontend swatch binding) — the SQL match clause and filters facet response
+  already expected that shape, so they needed no change once the data matched it. **Caveat**: no
+  product in the current seed data actually has a color attribute value assigned (verified via
+  `ProductAttributeValue::where('attribute_id', $colorAttrId)->count()` → 0), so the end-to-end fix
+  couldn't be visually confirmed against a real color-filtered product list — only that storage,
+  writes, and the query shape are now consistent. Assign a color to at least one seeded product to
+  close that verification gap.
+- ✅ **Selected filters aren't cleared when the category changes.** `useCatalog.ts`'s route-query
   watcher refetches the product list on a category switch but leaves `selectedAttrs`/
   `selectedBrands`/price bounds/rating/discount/in-stock filters untouched — a filter chosen in one
   category (e.g. a phone attribute) silently carries into an unrelated category and can produce a
-  confusing empty result. **Fix direction**: reset filter selections on category change, ideally
-  after (or as part of) the §2.9-first-bullet fix so they reset against the newly category-scoped
-  facet list.
-- ❌ **Price slider bounds are hardcoded** (`0`–`200000` in `CatalogFiltersWidget.vue`) instead of
+  confusing empty result. **Fixed**: category-change now resets `selectedAttrs`/`selectedBrands`/
+  `selectedRating`/`onlyDiscounts`/`onlyInStock` before refetching, alongside the category-scoped
+  facet refetch from the first bullet.
+- ✅ **Price slider bounds are hardcoded** (`0`–`200000` in `CatalogFiltersWidget.vue`) instead of
   driven by the fetched `price.min`/`price.max` that `useCatalog.ts` already has available but never
   passes down to the slider component. Not yet biting in practice (today's real max is ~91 000₴) but
   latent — any product priced above 200 000₴ becomes permanently unreachable via the slider.
-- ❌ **Attribute filters are single-select in the UI despite the backend supporting comma-separated
+  **Fixed**: wired through to both `CatalogFiltersWidget` instances — the desktop sidebar one and the
+  mobile filter drawer's separate instance, which an initial fix pass missed and code review caught.
+- ✅ **Attribute filters are single-select in the UI despite the backend supporting comma-separated
   multi-value** (`attrs[color]=red,blue`, matching the endpoint's own OpenAPI doc and
   `ListProductsAction`'s `explode(',', ...)` parsing). `useCatalog.ts` types `selectedAttrs` as one
   value per attribute code and `CatalogFiltersWidget.vue`'s `toggleAttr` always replaces rather than
-  accumulates — a shopper can't select "128GB or 256GB" at once. **Fix direction**: change
-  `selectedAttrs` to `Record<string, string[]>`, join with `,` when building the query, render
-  attribute value buttons as multi-toggle.
-- Minor, data not code: a gaming laptop ("Lenovo Legion 5 Pro") is miscategorized under
+  accumulates — a shopper can't select "128GB or 256GB" at once. **Fixed**: `selectedAttrs` is now
+  `Record<string, string[]>`, joined with `,` when building the query, with one removable filter chip
+  per selected value. Live-verified: selecting AMOLED then IPS under "Тип матриці" (display type)
+  produces two independent chips and an OR-matched 2-product result (one of each type), instead of
+  the second click replacing the first.
+- **Found during the fix, not part of the original five**: the category-change handler was firing up
+  to three redundant `fetchProducts()` calls (an explicit one, plus reactive ones triggered by
+  clearing filter refs and by the price-bounds refetch) — simplified to rely on the existing reactive
+  watcher instead of also calling it explicitly, cutting it down to one.
+- Still open, data not code: a gaming laptop ("Lenovo Legion 5 Pro") is miscategorized under
   "Смартфони" (Smartphones) in the seeded catalog data — not a logic bug, but it compounds the
   "filters don't make sense here" impression while browsing that category. Worth a seed-data
   correction, not a code fix.
@@ -436,16 +456,15 @@ fixed yet. Ranked by user impact:
    routes now exist (2026-08-20, §2.6), Redis-backed caching, image storage strategy (confirm
    local-disk is acceptable or move to S3/R2), promotions engine hardening, shipping API integration
    if not already automated.
-4. **Next up (recommended immediate priority)**: the §2.9 catalog-filter bugs — they're fully
-   diagnosed with concrete fix directions and no unknowns blocking them, they're directly
-   user-visible (this whole audit started from a user noticing filters "don't look logical"), and
-   they're isolated to `GetCatalogFiltersAction`/`ListProductsAction`/`useCatalog.ts`/
-   `CatalogFiltersWidget.vue` — no schema changes needed except possibly normalizing how color
-   attribute values are stored. Suggested order: (1) category-scope the filters endpoint — the
-   highest-impact, most-reported symptom; (2) fix the color filter's data-shape mismatch; (3) clear
-   filter selections on category change; (4) wire the price slider to real fetched bounds; (5)
-   multi-select attribute filters. Each is independently shippable.
-5. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
+4. ~~§2.9 catalog-filter bugs~~ ✅ **done** (2026-08-20, commit `6fabbee`) — all five fixed, see §2.9
+   for detail. One follow-up left from that pass: no seeded product currently has a color attribute
+   value assigned, so the color-filter fix's end-to-end effect is untested against real data — assign
+   one to close that gap.
+5. **Next up (recommended immediate priority)**: none currently queued — see §2 for open items by
+   area (CI, cookie consent, lawyer review of legal pages, Sentry project creation are the remaining
+   launch blockers per phase 2 above; promotions engine hardening and image storage strategy are the
+   next launch-quality items per phase 3).
+6. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
    test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
    Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
    build frontend test infrastructure from scratch (still literally zero), external analytics, load

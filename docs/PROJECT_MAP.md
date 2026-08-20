@@ -323,7 +323,7 @@ What now exists (working tree, uncommitted as of 2026-08-17 on `add-new-logic`):
 
 ## Known technical debt / inconsistencies (verified 2026-08-16, re-checked 2026-08-17 against
 `add-new-logic`, and again 2026-08-20 against `develop` — items below are corrected where later
-commits changed the picture; items 11-15 are new findings from the 2026-08-20 pass, not yet fixed)
+commits changed the picture; items 11-15 were found during the 2026-08-20 pass and fixed the same day)
 
 1. **`Makefile` `test-backend` target is broken**: `docker compose run --rm tech-api-php-cli php artisan`
    — missing the `test` argument, so it runs `php artisan` (prints command list) instead of the test
@@ -370,31 +370,25 @@ commits changed the picture; items 11-15 are new findings from the 2026-08-20 pa
     `components/admin/features/catalog/ProductFormModal.vue` (1145 lines),
     `widgets/Account/tabs/AccountOrdersTab.vue` (869 lines), `widgets/Header/Header.vue` (~750+
     lines), `components/admin/features/catalog/ProductsTab.vue` (724 lines).
-11. **Catalog filter facets are computed globally, never scoped to the category being browsed**
-    (found 2026-08-20, not yet fixed — see `DEVELOPMENT_PLAN.md` §2.9 for the full write-up).
-    `GetCatalogFiltersAction::execute()` takes no category argument — its price min/max and the
-    attribute/value list it returns are aggregated across the *entire* active catalog regardless of
-    which category the shopper is looking at, and the `GET /v1/catalog/filters` route doesn't even
-    inject a `Request` to receive one if the frontend sent it (which it currently doesn't either).
-    Verified live: identical byte-for-byte response for every category and for no category at all.
-    Real consequence: a category's price slider spans the whole catalog's range, and its attribute
-    sidebar lists facets (e.g. "SIM Card Count") that don't apply to anything actually in that
-    category.
-12. **The color attribute filter is completely non-functional**: the API serializes color attribute
-    values one level more nested than every other attribute type (`{"value":{"value":"#hex"}}`
-    instead of `{"value":{"uk":"...","en":"..."}}`), which the SQL match clause in
-    `ListProductsAction` never accounts for (0 results for any color filter, verified live) and
-    which the frontend swatch binds directly to CSS `background-color` as if it were already a hex
-    string (renders unstyled).
-13. **Selected catalog filters (attrs, brand, price, rating, discounts/in-stock) aren't cleared when
-    switching category** — `useCatalog.ts`'s route-query watcher refetches the product list on a
-    category change but leaves every filter selection in place, so a filter chosen in one category
-    silently carries into the next and can produce an empty result with no visible explanation.
-14. **The catalog price-range slider's bounds are hardcoded** (`0`–`200000` in
-    `CatalogFiltersWidget.vue`) rather than driven by the fetched `price.min`/`price.max` — the
-    fetched values exist on the page (`useCatalog.ts`) but were never actually passed down to the
-    slider component.
-15. **Catalog attribute filters are single-select in the UI despite the backend supporting
-    comma-separated multi-value** (`attrs[color]=red,blue`, per `ListProductsAction` and the
-    endpoint's own OpenAPI doc) — `useCatalog.ts` types `selectedAttrs` as one value per attribute
-    code and always replaces rather than accumulates on a second click.
+11. ~~Catalog filter facets are computed globally, never scoped to the category being browsed~~
+    **fixed 2026-08-20, commit `6fabbee`** — `GetCatalogFiltersAction`/`ListBrandsAction` now accept
+    an optional category slug and scope price range, attribute facets, and brand counts to it (+
+    children) via a shared `CategoryRepository::resolveCategoryIdsBySlug()`; `useCatalog.ts` sends it
+    and refetches on category change. See `DEVELOPMENT_PLAN.md` §2.9 for the full write-up and
+    live-verification detail.
+12. ~~The color attribute filter is completely non-functional~~ **fixed 2026-08-20, commit `6fabbee`**
+    — color values normalized to the same `{uk, en}` shape every other attribute type uses (write
+    path, a backfill migration, admin read path, frontend swatch binding); the SQL match and filters
+    response already expected that shape. Caveat: no seeded product currently has a color value
+    assigned, so this couldn't be confirmed end-to-end against real filtered results — see
+    `DEVELOPMENT_PLAN.md` §2.9.
+13. ~~Selected catalog filters aren't cleared when switching category~~ **fixed 2026-08-20, commit
+    `6fabbee`** — category change now resets attrs/brand/rating/discount/in-stock selections before
+    refetching.
+14. ~~The catalog price-range slider's bounds are hardcoded~~ **fixed 2026-08-20, commit `6fabbee`**
+    — wired to the real fetched `price.min`/`price.max` in both the desktop sidebar and the mobile
+    filter drawer's separate widget instance (the latter was missed in the first pass, caught in
+    review).
+15. ~~Catalog attribute filters are single-select in the UI despite the backend supporting
+    comma-separated multi-value~~ **fixed 2026-08-20, commit `6fabbee`** — `selectedAttrs` is now
+    `Record<string, string[]>`, live-verified accumulating and OR-matching two values at once.
