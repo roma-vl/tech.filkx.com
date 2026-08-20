@@ -5,6 +5,12 @@ Production-readiness and growth plan. Originally audited against actual code on 
 diverged from `master` by 14 commits (payment gateway, rate limiting, Sentry, backups, 2FA, legal
 page content, backend unit tests, homepage/header/footer i18n, cart dark-mode/i18n, homepage banner
 CMS, newsletter) — several items below flipped status as a result; each corrected line says so.
+**Re-audited again 2026-08-20 against branch `develop`** (which now includes everything from
+`add-new-logic` via merge, plus admin Page/Stats/Team/Blog/Category controller-to-Action extraction,
+a transactional-email audit and fix pass, a catalog-navigation restructure to real category/
+subcategory routes, and a home-page product-card consistency pass) — see §2.9 (new) for a set of
+real catalog-filter bugs found during this pass and not yet fixed, and the "Suggested phase order"
+at the bottom for what's proposed next.
 Companion to `docs/PROJECT_MAP.md` (navigation) and supersedes the stale `implementation_roadmap.md`
 (written 2026-06-11, before ~20 subsequent "fix" commits) for status purposes — that file's
 checkboxes are corrected below, item by item.
@@ -114,6 +120,19 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   rotation are configured appropriately for a public storefront (not verified this pass).
 - reCAPTCHA v3 is wired on login/register (`VITE_RECAPTCHA_SITE_KEY` in `frontend/.env*`,
   used in `main.js`, `LoginPage.vue`, `RegisterPage.vue`) — ✅ good baseline bot mitigation.
+- ✅ **Transactional email links fixed** (done 2026-08-20, commit `4a5b6c2`). Every email that builds
+  a link (verify-email, reset-password) was concatenating `config('app.frontend_url')` — which was
+  `null`, the key didn't exist in `config/app.php` despite `.env` setting `FRONTEND_URL` — producing
+  a broken relative link in every account-security email sent. Also fixed: the "new device" login
+  email (`LoginNewDeviceNotification`, which fires on a user's very first login since there's no
+  prior `AuditLog` row to compare against — i.e. right after registering) was using an unbranded
+  default Laravel mail with a "Change Password" link pointing at a nonexistent backend route instead
+  of the frontend; combined with the `frontend_url` bug this is very plausibly what read as "I
+  registered and got a broken password-reset email." `PasswordChangedNotification`,
+  `AccountDeletionScheduledNotification`, `AccountRestoredNotification` — blade views existed,
+  nothing sent them — are now wired up; `GET /api/user/restore` (previously referenced in a docblock
+  but never registered) now exists. See `PROJECT_MAP.md` "Notifications / transactional email" for
+  the full inventory.
 
 ### 2.3 Observability
 - 🟡 **Error tracking wired but inert** (done 2026-08-16, commit `f0de4e4`). `sentry/sentry-laravel`
@@ -155,12 +174,15 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   (`placeOrder` and `quickOrder` — stock reservation/locking, validation failures, coupon
   application, payment-method handling), `CatalogControllerTest` (category/brand/price-range/
   discount/in-stock filtering), and `AdminOrderControllerTest` (status transitions and their
-  stock-adjustment side effects, admin role-gating). Still 🟡 not ✅: the live
-  `POST /coupons/validate` endpoint and admin marketing (coupon/promotion) CRUD remain untested at
-  the Feature level (the underlying `ValidateCouponAction`/`PriceCalculationService` are
-  unit-tested), and the Meilisearch-search-keyword branch of `ListProductsAction` has no test
-  coverage (deliberately out of scope — no test-driver convention exists yet for Scout in this
-  codebase; see the new Feature test's `setUp()`).
+  stock-adjustment side effects, admin role-gating). Extended again 2026-08-20 (commits `65af0c2`,
+  `75a12d8`) with 54 unit tests for the newly-extracted admin Page/Stats/Team/Category/Blog Actions.
+  Still 🟡 not ✅: the live `POST /coupons/validate` endpoint and admin marketing (coupon/promotion)
+  CRUD remain untested at the Feature level (the underlying
+  `ValidateCouponAction`/`PriceCalculationService` are unit-tested), the Meilisearch-search-keyword
+  branch of `ListProductsAction` has no test coverage (deliberately out of scope — no test-driver
+  convention exists yet for Scout in this codebase; see the new Feature test's `setUp()`), and the
+  catalog-filters bugs in §2.9 below were found precisely because `GetCatalogFiltersAction` still has
+  no test coverage of its own.
 - ❌ **Frontend test infrastructure still doesn't exist** — no `vitest.config.*`, no `.spec.ts`/
   `.test.ts` files anywhere in `frontend/`, despite `test:unit`/`test:e2e` npm scripts. Unchanged
   from the original audit.
@@ -216,11 +238,14 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
     reachable dev API; `PRERENDER_MODE=production`/unset is the real default and matches what
     `vite build`'s default mode bakes into the client bundle), and grepping the output HTML for
     real product/post names, prices, and JSON-LD — not just checking the script exits 0.
-  - **Descoped**: distinct category-listing pages. The app has no separate route per category —
-    `CatalogPage.vue` filters via a `?category=` query string on the single `/catalog` path — so
-    there's no distinct clean URL to prerender a file for. The sitemap (below) still lists
-    `/catalog?category=<slug>` for every real category as a crawlable, if not statically
-    prerendered, URL.
+  - **No longer descoped, as of 2026-08-20 (commit `8fb19a6`)**: distinct category-listing pages now
+    exist — `category/:slug` is a real route (see `PROJECT_MAP.md` "Routing"), not a `?category=`
+    query string on the single `/catalog` path, so there is now a clean per-category URL. The
+    sitemap generator and prerender route table were both updated to emit/crawl `/category/<slug>`
+    instead of `/catalog?category=<slug>`; whether every category is actually included in the
+    *prerendered* (not just sitemap-listed) set hasn't been re-verified since the route change —
+    worth confirming `prerender.mjs`'s route collection was updated to match before relying on it
+    for SEO.
   - **Known caveat found during verification, not fixed (out of scope — backend data ordering, not
     a frontend bug)**: the public products-listing endpoint's default order doesn't appear fully
     stable across separate paginated requests — sequential `page=1,2,3…` calls can return a
@@ -298,6 +323,57 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   actual consent UI (banner/popup). Unchanged from the original audit; verify before EU/UA traffic
   if legally required.
 
+### 2.9 Catalog filter correctness (new, found 2026-08-20, not yet fixed)
+Found while auditing a user report that the catalog's filter sidebar "doesn't look logical" for the
+category being browsed. Confirmed live against the dev deployment — this is real, user-visible
+breakage, not a theoretical code-smell. All five are candidates for the next work pass; none are
+fixed yet. Ranked by user impact:
+- ❌ **Filter facets (price range, attribute list) are computed globally, not scoped to category.**
+  `GetCatalogFiltersAction::execute()` takes no category parameter — `Attribute::whereHas('values')`
+  pulls every attribute with a value anywhere in the catalog, and the price `MIN`/`MAX` aggregate is
+  over every active variant, unfiltered. `GET /v1/catalog/filters` doesn't inject a `Request` to
+  receive a category even if one were sent, and the frontend (`productApi.ts`,
+  `useCatalog.ts`'s `onMounted`) never sends one and never refetches on category change. Verified
+  live: byte-identical response for every category and for no category at all. Concretely: browsing
+  a category where the cheapest item is 16 700₴ still shows a price slider capped at the whole
+  catalog's 99₴ floor, and the attribute sidebar lists facets (phone-only specs like "SIM Card
+  Count") that don't apply to anything in that category. **Fix direction**: accept `category` (slug)
+  in the Action and route, scope both the price aggregate and the attribute/value query to
+  products in that category (+ descendants, matching how `CatalogController::index` already treats
+  category), do the same for `ListBrandsAction`/`BrandRepository`'s active-product counts, and
+  refetch filters + brands in `useCatalog.ts` whenever the category changes rather than once on mount.
+- ❌ **The color attribute filter is completely non-functional.** The API serializes color attribute
+  values one level more nested than every other attribute type — `{"value":{"value":"#hex"}}`
+  instead of the `{"value":{"uk":"...","en":"..."}}` shape every other attribute uses. Neither the
+  SQL match clause in `ListProductsAction` nor the frontend swatch (`CatalogFiltersWidget.vue`,
+  which binds `val.value` directly to CSS `background-color`) account for the extra nesting.
+  Verified live: filtering by any color returns 0 products, and the color swatches likely render
+  unstyled. **Fix direction**: normalize color value storage/serialization to the same shape as every
+  other attribute (or a dedicated `hex` key), then fix both the SQL match and the swatch binding to
+  read it consistently.
+- ❌ **Selected filters aren't cleared when the category changes.** `useCatalog.ts`'s route-query
+  watcher refetches the product list on a category switch but leaves `selectedAttrs`/
+  `selectedBrands`/price bounds/rating/discount/in-stock filters untouched — a filter chosen in one
+  category (e.g. a phone attribute) silently carries into an unrelated category and can produce a
+  confusing empty result. **Fix direction**: reset filter selections on category change, ideally
+  after (or as part of) the §2.9-first-bullet fix so they reset against the newly category-scoped
+  facet list.
+- ❌ **Price slider bounds are hardcoded** (`0`–`200000` in `CatalogFiltersWidget.vue`) instead of
+  driven by the fetched `price.min`/`price.max` that `useCatalog.ts` already has available but never
+  passes down to the slider component. Not yet biting in practice (today's real max is ~91 000₴) but
+  latent — any product priced above 200 000₴ becomes permanently unreachable via the slider.
+- ❌ **Attribute filters are single-select in the UI despite the backend supporting comma-separated
+  multi-value** (`attrs[color]=red,blue`, matching the endpoint's own OpenAPI doc and
+  `ListProductsAction`'s `explode(',', ...)` parsing). `useCatalog.ts` types `selectedAttrs` as one
+  value per attribute code and `CatalogFiltersWidget.vue`'s `toggleAttr` always replaces rather than
+  accumulates — a shopper can't select "128GB or 256GB" at once. **Fix direction**: change
+  `selectedAttrs` to `Record<string, string[]>`, join with `,` when building the query, render
+  attribute value buttons as multi-toggle.
+- Minor, data not code: a gaming laptop ("Lenovo Legion 5 Pro") is miscategorized under
+  "Смартфони" (Smartphones) in the seeded catalog data — not a logic bug, but it compounds the
+  "filters don't make sense here" impression while browsing that category. Worth a seed-data
+  correction, not a code fix.
+
 ---
 
 ## 3. Broader improvements for a serious, growing storefront
@@ -322,9 +398,10 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   endpoint) — real, not aspirational, though the engine is flat (see §2.1).
 - **Content/blog**: scraper-sourced blog content **is** seeded and rendered — `BlogPostsFromSotaSeeder`
   is registered in `DatabaseSeeder`, and public `BlogController` + `pages/blog/*` (per
-  `PROJECT_MAP.md`) serve it, with a full `AdminBlogController` (posts/categories/tags CRUD +
-  image upload) on the admin side. This roadmap item is done, contrary to it not being mentioned
-  as complete in the June doc.
+  `PROJECT_MAP.md`) serve it, with a full admin side (posts/categories/tags CRUD + image upload,
+  `AdminBlogController` delegating to `Actions/Blog/*` as of 2026-08-20, commit `75a12d8` — it used
+  to hold this logic inline). This roadmap item is done, contrary to it not being mentioned as
+  complete in the June doc.
 - **i18n/multi-currency**: `name`/`description` fields are JSON multi-language (`uk`/`en` observed)
   at the data layer, and the frontend has separate `lang/public` and `lang/admin` locale files —
   solid foundation for UA/EN. As of 2026-08-16/17, most of the previously-hardcoded storefront
@@ -350,14 +427,25 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
    leftovers are removed (see `PROJECT_MAP.md` §"Known technical debt").
 2. **Launch blockers — mostly done now**: ~~payment gateway~~ ✅, ~~rate limiting~~ ✅,
    ~~Postgres backups~~ ✅, ~~Terms/Privacy content~~ ✅ (drafts, needs lawyer review),
-   ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything). Still open:
-   CI running lint+tests, a cookie-consent banner if legally required, lawyer review of the legal
-   pages, creating the Sentry project.
+   ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything),
+   ~~broken transactional email links~~ ✅ (2026-08-20, §2.2). Still open: CI running lint+tests, a
+   cookie-consent banner if legally required, lawyer review of the legal pages, creating the Sentry
+   project.
 3. **Launch-quality**: ~~SSR or prerendering + real sitemap generation for SEO~~ ✅ prerendering +
-   sitemap generation now exist (see §2.6 — uncommitted working-tree state), Redis-backed caching,
-   image storage strategy (confirm local-disk is acceptable or move to S3/R2), promotions engine
-   hardening, shipping API integration if not already automated.
-4. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
+   sitemap generation now exist (see §2.6), ~~single flat catalog page~~ ✅ real category/subcategory
+   routes now exist (2026-08-20, §2.6), Redis-backed caching, image storage strategy (confirm
+   local-disk is acceptable or move to S3/R2), promotions engine hardening, shipping API integration
+   if not already automated.
+4. **Next up (recommended immediate priority)**: the §2.9 catalog-filter bugs — they're fully
+   diagnosed with concrete fix directions and no unknowns blocking them, they're directly
+   user-visible (this whole audit started from a user noticing filters "don't look logical"), and
+   they're isolated to `GetCatalogFiltersAction`/`ListProductsAction`/`useCatalog.ts`/
+   `CatalogFiltersWidget.vue` — no schema changes needed except possibly normalizing how color
+   attribute values are stored. Suggested order: (1) category-scope the filters endpoint — the
+   highest-impact, most-reported symptom; (2) fix the color filter's data-shape mismatch; (3) clear
+   filter selections on category change; (4) wire the price slider to real fetched bounds; (5)
+   multi-select attribute filters. Each is independently shippable.
+5. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
    test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
    Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
    build frontend test infrastructure from scratch (still literally zero), external analytics, load

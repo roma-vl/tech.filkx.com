@@ -1,6 +1,10 @@
 # Project Map — tech.filkx.com (FilkxTech)
 
-Navigation reference for orienting quickly in this codebase. Verified against actual code on 2026-08-16.
+Navigation reference for orienting quickly in this codebase. Verified against actual code on 2026-08-16;
+**re-verified 2026-08-20 against branch `develop`** after admin Page/Stats/Team/Blog/Category
+controller-to-Action extraction, a transactional-email audit/fix pass, and a catalog-navigation
+restructure (category/subcategory routes replacing the single flat `/catalog?category=` page) — see
+each section below for what moved, and `docs/DEVELOPMENT_PLAN.md` §2.9 for bugs found but not yet fixed.
 For the production-readiness audit and roadmap, see `docs/DEVELOPMENT_PLAN.md`.
 
 ## What this is
@@ -107,9 +111,15 @@ Real, not aspirational: `Role`, `Permission` models with `roles`↔`permissions`
 Pattern actually used is **Action classes + thin controllers + Resources/DTOs**, NOT the DDD
 `app/Domain|Application|Infrastructure` layering that `implementation_roadmap.md` describes as the
 target — that structure was never built. Concretely:
-- `app/Api/V1/Actions/{Cart,Notification,User,Coupon,Checkout}/…` and `app/Api/Admin/Actions/{Product,Order,Brand,Attribute,...}/…`
-  hold single-responsibility "do one thing" classes (e.g. `PlaceOrderAction`), invoked from
-  controllers via constructor/method injection.
+- `app/Api/V1/Actions/{Cart,Notification,User,Coupon,Checkout}/…` and
+  `app/Api/Admin/Actions/{Product,Order,Brand,Attribute,Page,Stats,Team,Category,Blog,...}/…` hold
+  single-responsibility "do one thing" classes (e.g. `PlaceOrderAction`), invoked from controllers via
+  constructor/method injection. As of 2026-08-20 (commits `65af0c2`, `75a12d8`), `AdminPageController`,
+  `AdminStatsController`, `AdminTeamController`, `AdminCategoryController`, and `AdminBlogController`
+  were all migrated off inline controller logic onto this pattern — the June `implementation_roadmap.md`
+  and the 2026-08-16 pass of this doc still described `AdminBlogController` as holding its own
+  posts/categories/tags CRUD inline; that's no longer accurate, it's Actions now
+  (`app/Api/Admin/Actions/Blog/*`, 17 classes) same as everything else.
 - `app/Api/V1/Dto/` and `Admin/Dto/` — typed request→data transfer objects (e.g. `PlaceOrderDto::fromRequest()`).
 - `app/Api/V1/Resources/`, `Admin/Resources/` — JSON:API-ish response transformation (Laravel API Resources).
 - `app/Services/` is nearly empty (`Auth/`, `WishlistService.php` only) — most logic is in Actions, not Services.
@@ -128,6 +138,31 @@ target — that structure was never built. Concretely:
 the model layer. (Whether the index is populated/kept in sync in practice — e.g. via
 `scout:import` after seeding — should be verified operationally; no scheduled re-index job exists
 in `app/Console/Commands`.)
+
+### Notifications / transactional email
+`app/Notifications/*` — one class per email, each `extend`ing Laravel's base notification where a
+built-in one exists (`VerifyEmailNotification extends Auth\Notifications\VerifyEmail`,
+`ResetPasswordNotification extends Auth\Notifications\ResetPassword`) and overriding the URL builder
+to point at `config('app.frontend_url')` (the SPA) instead of the API's own domain. Plain
+`Illuminate\Notifications\Notification` (mail-only, no DB channel) for the rest:
+`LoginNewDeviceNotification`, `PasswordChangedNotification`, `AccountDeletionScheduledNotification`,
+`AccountRestoredNotification`, `OrderConfirmedNotification`, `OrderStatusChangedNotification`. Blade
+views live under `resources/views/emails/{auth,orders}/*`, sharing `emails/components/{button,divider}`
+and `emails/layouts/system`. Triggered from Actions/Services, never controllers — e.g.
+`AuthService::register()` calls `$user->sendEmailVerificationNotification()`,
+`UpdateAdminOrderStatusAction` fires `OrderStatusChangedNotification` for customer-facing transitions
+only (paid/shipped/delivered/cancelled/refunded, not internal states like processing/packed).
+As of 2026-08-20 (commit `4a5b6c2`): `config('app.frontend_url')` was previously undefined
+(`config/app.php` had no `frontend_url` key despite `.env` setting `FRONTEND_URL`), so every one of
+these emails' links were broken relative paths — fixed. The `LocalizableEmail` trait, which every
+notification's `toMail()` called with `$notifiable->locale` but which silently ignored that argument
+and always returned the same view, was deleted (dead abstraction — this codebase's actual i18n
+pattern is JSON-column data, not per-locale blade files, so there was nothing for it to select
+between). `PasswordChangedNotification`/`AccountDeletionScheduledNotification`/
+`AccountRestoredNotification`/`OrderConfirmedNotification`/`OrderStatusChangedNotification` are all
+new — their blade views existed already (except the two order ones) but were either orphaned
+(nothing sent them) or the feature they'd confirm didn't exist yet (`GET /api/user/restore` was
+referenced in a docblock but not actually registered as a route — it is now).
 
 ### Testing (backend)
 As of 2026-08-17 (commit `ca5ef97` + Feature tests added alongside the 2FA/newsletter/home-banner
@@ -153,6 +188,15 @@ Meilisearch-search-keyword path in `ListProductsAction` (deliberately out of sco
 Feature test file's `setUp()` for why). Run via `make test-backend` — but note the Makefile bug
 below, which means this suite can't actually be run through the documented command today.
 
+As of 2026-08-20 (commits `65af0c2`, `75a12d8`), the newly-extracted admin Actions above got the same
+treatment: `Unit/Actions/Admin/{Page,Stats,Team,Category,Blog}/*ActionTest.php` (54 tests — slug
+generation/dedup, CRUD, pagination, filtering, soft-delete-aware uniqueness checks, tag/category
+`withCount` aggregates). Also fixed along the way and covered by its test:
+`ListTeamMembersAction`/`ListTeamMembersActionTest` was filtering admin-team roles by `Role::name`
+(a human label like `"Administrator"`) instead of `Role::slug` (`"admin"`) — since every other
+role check in the codebase (`hasAnyRole()`, route middleware, other FormRequests) uses `slug`, the
+team roster silently returned empty in practice. Fixed to match.
+
 ---
 
 ## Frontend (`frontend/src`)
@@ -163,6 +207,20 @@ below, which means this suite can't actually be run through the documented comma
 fetching from `/v1/pages/{slug}`). As of commit `75517a9`, the `pages` table has real
 terms/privacy/oferta/cookies content (not placeholder text) — still explicitly labeled as
 lawyer-unreviewed drafts, see DEVELOPMENT_PLAN §2.8.
+
+**Catalog browsing, as of 2026-08-20 (commit `8fb19a6`)**: category/subcategory browsing used to be
+one flat `/catalog` route (`CatalogPage.vue`) narrowed by a `?category=slug` query param, with no
+distinct URL per category — this is what DEVELOPMENT_PLAN §2.6 previously described as "descoped"
+for prerendering because there was no clean per-category route to prerender a file for. That's fixed:
+`application.js` now has `category/:slug` (name `category`), handling both categories and
+subcategories through the same route/component, since the backend already resolves a category slug
+plus every descendant (`GET /v1/catalog/products?category={slug}`). `/catalog` itself still exists
+(name `catalog`) but is narrowed to what it's actually for now: free-text search results (`?search=`)
+and a generic "browse everything" destination — it no longer reads `?category=` at all. Both routes
+render the same `CatalogPage.vue`/`useCatalog.ts`, so there's no duplicated listing/filter/pagination
+logic between them. Header mega-menu, footer category list, and hero-slider category links all point
+at `category/:slug` now; anything without a specific category (account-tab "continue shopping" CTAs,
+`FlashDeals`'s "all deals" link, etc.) correctly still points at bare `catalog`.
 
 ### State management (Pinia)
 Real stores live under FSD-style locations, with `src/stores/*.js` reduced to **re-export shims**
@@ -196,7 +254,16 @@ actively used**, not just a stray leftover:
   `components/application/features/support/` and `components/admin/features/support/`) — the
   previously-recorded "37 duplicate UI component names" and "duplicate `ProductCard`" no longer
   hold; only one `ProductCard.vue` exists now (`widgets/Catalog/ProductCard.vue`). Treat old notes
-  about this as stale.
+  about this as stale. As of 2026-08-20 (commit `7e37bac`), the home page's `CatalogSection.vue` and
+  `RecommendedProducts.vue` widgets were switched to actually render this same `ProductCard.vue`
+  (`view-mode="grid"`) instead of each hand-rolling its own near-duplicate card markup — they'd
+  drifted into a different (rounded, boxed, shadowed) visual style despite being conceptually the
+  same "product card" as the catalog grid. `FlashDeals.vue` keeps its own card markup (it has a
+  low-stock notice and a full-width "add to cart" button that don't fit `ProductCard`'s compact
+  icon-button contract) but was restyled (commit `70a5498`) to match the catalog's flat/bordered/
+  hover-zoom chrome rather than its previous rounded-card look, and had its dead Quick View
+  button+modal removed entirely (commit `82eca4d` — the feature had already been dropped from the
+  catalog card elsewhere; this was the last remaining reference to it).
 - `components/home/` (claimed in old notes to exist outside `widgets/`) does **not** exist —
   home page composition now lives correctly under `widgets/Home/` + `features/home/`.
 
@@ -255,8 +322,8 @@ What now exists (working tree, uncommitted as of 2026-08-17 on `add-new-logic`):
 ---
 
 ## Known technical debt / inconsistencies (verified 2026-08-16, re-checked 2026-08-17 against
-`add-new-logic`, which has diverged from `master` by 14 commits since — items below are corrected
-where those commits changed the picture)
+`add-new-logic`, and again 2026-08-20 against `develop` — items below are corrected where later
+commits changed the picture; items 11-15 are new findings from the 2026-08-20 pass, not yet fixed)
 
 1. **`Makefile` `test-backend` target is broken**: `docker compose run --rm tech-api-php-cli php artisan`
    — missing the `test` argument, so it runs `php artisan` (prints command list) instead of the test
@@ -303,3 +370,31 @@ where those commits changed the picture)
     `components/admin/features/catalog/ProductFormModal.vue` (1145 lines),
     `widgets/Account/tabs/AccountOrdersTab.vue` (869 lines), `widgets/Header/Header.vue` (~750+
     lines), `components/admin/features/catalog/ProductsTab.vue` (724 lines).
+11. **Catalog filter facets are computed globally, never scoped to the category being browsed**
+    (found 2026-08-20, not yet fixed — see `DEVELOPMENT_PLAN.md` §2.9 for the full write-up).
+    `GetCatalogFiltersAction::execute()` takes no category argument — its price min/max and the
+    attribute/value list it returns are aggregated across the *entire* active catalog regardless of
+    which category the shopper is looking at, and the `GET /v1/catalog/filters` route doesn't even
+    inject a `Request` to receive one if the frontend sent it (which it currently doesn't either).
+    Verified live: identical byte-for-byte response for every category and for no category at all.
+    Real consequence: a category's price slider spans the whole catalog's range, and its attribute
+    sidebar lists facets (e.g. "SIM Card Count") that don't apply to anything actually in that
+    category.
+12. **The color attribute filter is completely non-functional**: the API serializes color attribute
+    values one level more nested than every other attribute type (`{"value":{"value":"#hex"}}`
+    instead of `{"value":{"uk":"...","en":"..."}}`), which the SQL match clause in
+    `ListProductsAction` never accounts for (0 results for any color filter, verified live) and
+    which the frontend swatch binds directly to CSS `background-color` as if it were already a hex
+    string (renders unstyled).
+13. **Selected catalog filters (attrs, brand, price, rating, discounts/in-stock) aren't cleared when
+    switching category** — `useCatalog.ts`'s route-query watcher refetches the product list on a
+    category change but leaves every filter selection in place, so a filter chosen in one category
+    silently carries into the next and can produce an empty result with no visible explanation.
+14. **The catalog price-range slider's bounds are hardcoded** (`0`–`200000` in
+    `CatalogFiltersWidget.vue`) rather than driven by the fetched `price.min`/`price.max` — the
+    fetched values exist on the page (`useCatalog.ts`) but were never actually passed down to the
+    slider component.
+15. **Catalog attribute filters are single-select in the UI despite the backend supporting
+    comma-separated multi-value** (`attrs[color]=red,blue`, per `ListProductsAction` and the
+    endpoint's own OpenAPI doc) — `useCatalog.ts` types `selectedAttrs` as one value per attribute
+    code and always replaces rather than accumulates on a second click.
