@@ -80,7 +80,7 @@ const scrollCarousel = (direction: "left" | "right") => {
     <!-- Carousel Row -->
     <div
       ref="carouselRef"
-      class="flex overflow-x-auto hide-scrollbar scroll-smooth snap-x snap-mandatory px-0.5 py-2 border-t border-l border-zinc-200 dark:border-zinc-800"
+      class="flex overflow-x-auto hide-scrollbar scroll-smooth snap-x snap-mandatory px-0.5 py-8 -my-6 border-t border-l border-zinc-200 dark:border-zinc-800"
     >
       <ProductCard
         v-for="prod in products"
