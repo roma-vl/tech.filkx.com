@@ -522,6 +522,1006 @@
                 ]
             }
         },
+        "/api/admin/blog/posts": {
+            "get": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "List blog posts",
+                "operationId": "217d489f1a721481eb80353e3a9903df",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "published",
+                                "archived"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of blog posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/AdminBlogPost"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Create a blog post",
+                "operationId": "e06ccd549a728fa2b0ecf9abb5c97209",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "titleUk",
+                                    "titleEn",
+                                    "contentUk",
+                                    "contentEn",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "titleUk": {
+                                        "type": "string"
+                                    },
+                                    "titleEn": {
+                                        "type": "string"
+                                    },
+                                    "contentUk": {
+                                        "type": "string"
+                                    },
+                                    "contentEn": {
+                                        "type": "string"
+                                    },
+                                    "excerptUk": {
+                                        "type": "string"
+                                    },
+                                    "excerptEn": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published",
+                                            "archived"
+                                        ]
+                                    },
+                                    "categoryId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "tagIds": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "coverImage": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "publishedAt": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogPost"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Get a blog post",
+                "operationId": "7cf1548bdfa9972ffec74461ab3d56a8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogPost"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Update a blog post",
+                "operationId": "998ae3f74dccb7556680cbc986efae33",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "titleUk",
+                                    "titleEn",
+                                    "contentUk",
+                                    "contentEn",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "titleUk": {
+                                        "type": "string"
+                                    },
+                                    "titleEn": {
+                                        "type": "string"
+                                    },
+                                    "contentUk": {
+                                        "type": "string"
+                                    },
+                                    "contentEn": {
+                                        "type": "string"
+                                    },
+                                    "excerptUk": {
+                                        "type": "string"
+                                    },
+                                    "excerptEn": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published",
+                                            "archived"
+                                        ]
+                                    },
+                                    "categoryId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "tagIds": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "coverImage": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "publishedAt": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogPost"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Delete a blog post",
+                "operationId": "dd13176d4763179c32f9fc318ec16d7c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted successfully"
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/upload": {
+            "post": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Upload a blog cover/content image",
+                "operationId": "d598befbc84df241ca215df720b3f646",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/categories": {
+            "get": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "List blog categories",
+                "operationId": "4aa6daa6c411e23c9d57247e6713c1a5",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminBlogCategory"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Create a blog category",
+                "operationId": "6687c09d6c5ab57115cf74bbfe33cbd5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "descriptionUk": {
+                                        "type": "string"
+                                    },
+                                    "descriptionEn": {
+                                        "type": "string"
+                                    },
+                                    "order": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogCategory"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/categories/{id}": {
+            "put": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Update a blog category",
+                "operationId": "2585cac8b205a44e9f8cbbcb917d54c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "descriptionUk": {
+                                        "type": "string"
+                                    },
+                                    "descriptionEn": {
+                                        "type": "string"
+                                    },
+                                    "order": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogCategory"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Delete a blog category",
+                "operationId": "903802ad70f6ea7dac495b591a980d9e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category deleted successfully"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/tags": {
+            "get": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "List blog tags",
+                "operationId": "e1671ecea4ce8d22f7b12347e0d44120",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminBlogTag"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Create a blog tag",
+                "operationId": "df23a913c46669117e6188a8b7c01197",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tag created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogTag"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/blog/tags/{id}": {
+            "put": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Update a blog tag",
+                "operationId": "b01eaf48aa01b306972954fb0d4d1518",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tag updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminBlogTag"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Blog"
+                ],
+                "summary": "Delete a blog tag",
+                "operationId": "0e1cf3b3b4e074ade38cbef7ca78a43b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tag deleted successfully"
+                    },
+                    "404": {
+                        "description": "Tag not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/categories": {
+            "get": {
+                "tags": [
+                    "Admin Categories"
+                ],
+                "summary": "List catalog categories",
+                "operationId": "033c192c1cfe75798b2319f5e30d9839",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminCategory"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Categories"
+                ],
+                "summary": "Create a catalog category",
+                "operationId": "9d4681ed4476409a4a03a1575bebf863",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "parentId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "order": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminCategory"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/categories/{id}": {
+            "put": {
+                "tags": [
+                    "Admin Categories"
+                ],
+                "summary": "Update a catalog category",
+                "operationId": "cdf763d1658d906b6395b76b5407050c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameUk",
+                                    "nameEn"
+                                ],
+                                "properties": {
+                                    "nameUk": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "parentId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "order": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminCategory"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Categories"
+                ],
+                "summary": "Delete a catalog category",
+                "operationId": "6a23e6c4a9c51b0a42707c97c5ba39da",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category deleted successfully"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/admin/pages": {
             "get": {
                 "tags": [
@@ -5196,6 +6196,152 @@
     },
     "components": {
         "schemas": {
+            "AdminBlogCategory": {
+                "title": "Admin Blog Category Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "nameUk": {
+                        "type": "string"
+                    },
+                    "nameEn": {
+                        "type": "string"
+                    },
+                    "descriptionUk": {
+                        "type": "string"
+                    },
+                    "descriptionEn": {
+                        "type": "string"
+                    },
+                    "order": {
+                        "type": "integer"
+                    },
+                    "postsCount": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminBlogPost": {
+                "title": "Admin Blog Post Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "titleUk": {
+                        "type": "string"
+                    },
+                    "titleEn": {
+                        "type": "string"
+                    },
+                    "excerptUk": {
+                        "type": "string"
+                    },
+                    "excerptEn": {
+                        "type": "string"
+                    },
+                    "coverImage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "draft",
+                            "published",
+                            "archived"
+                        ]
+                    },
+                    "views": {
+                        "type": "integer"
+                    },
+                    "publishedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "categoryId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "categoryName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "authorName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "contentUk": {
+                        "type": "string"
+                    },
+                    "contentEn": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminBlogTag": {
+                "title": "Admin Blog Tag Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "nameUk": {
+                        "type": "string"
+                    },
+                    "nameEn": {
+                        "type": "string"
+                    },
+                    "postsCount": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminCategory": {
+                "title": "Admin Category Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parentId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "parentName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "nameUk": {
+                        "type": "string"
+                    },
+                    "nameEn": {
+                        "type": "string"
+                    },
+                    "order": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "AdminPage": {
                 "title": "Admin Page Resource",
                 "properties": {
@@ -5962,6 +7108,14 @@
         {
             "name": "Admin Accounting",
             "description": "Admin Accounting"
+        },
+        {
+            "name": "Admin Blog",
+            "description": "Admin Blog"
+        },
+        {
+            "name": "Admin Categories",
+            "description": "Admin Categories"
         },
         {
             "name": "Admin Pages",
