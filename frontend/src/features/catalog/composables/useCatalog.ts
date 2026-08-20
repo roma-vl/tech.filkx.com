@@ -38,6 +38,14 @@ export function useCatalog() {
     total: 0,
   });
 
+  // The category is addressed by its own route (`category/:slug`) rather than
+  // a `?category=` query param on the flat `/catalog` route - that route now
+  // exists only for free-text search results and a generic "all products"
+  // browse view, never for category browsing.
+  const categorySlug = computed(() =>
+    route.name === "category" ? (route.params.slug as string) : "",
+  );
+
   // Brand counts computed property dynamically mapping from DB
   const brands = computed(() => {
     return dbBrands.value.map((b) => {
@@ -115,8 +123,8 @@ export function useCatalog() {
         params.brand = selectedBrands.value.join(",");
       }
 
-      if (route.query.category) {
-        params.category = route.query.category;
+      if (categorySlug.value) {
+        params.category = categorySlug.value;
       }
 
       if (route.query.search) {
@@ -158,22 +166,20 @@ export function useCatalog() {
     }
   };
 
-  const selectCategory = (categorySlug: string) => {
-    router.push({
-      name: "catalog",
-      query: {
-        ...route.query,
-        category: categorySlug || undefined,
-        page: 1,
-      },
-    });
+  const selectCategory = (slug: string) => {
+    if (slug) {
+      router.push({ name: "category", params: { slug } });
+    } else {
+      router.push({ name: "catalog" });
+    }
   };
 
   const changePage = (page: number) => {
     if (page >= 1 && page <= pagination.value.lastPage) {
       pagination.value.page = page;
       router.push({
-        name: "catalog",
+        name: route.name as string,
+        params: route.params,
         query: {
           ...route.query,
           page: page,
@@ -289,7 +295,11 @@ export function useCatalog() {
     onlyInStock.value = false;
   };
 
-  const getCategoryPath = (categories: any[], slug: string, path: any[] = []): any[] | null => {
+  const getCategoryPath = (
+    categories: any[],
+    slug: string,
+    path: any[] = [],
+  ): any[] | null => {
     for (const cat of categories) {
       const currentPath = [...path, cat];
       if (cat.slug === slug) {
@@ -304,12 +314,14 @@ export function useCatalog() {
   };
 
   const currentCategoryPath = computed(() => {
-    if (!route.query.category) return [];
-    return getCategoryPath(categoriesList.value, route.query.category as string) || [];
+    if (!categorySlug.value) return [];
+    return getCategoryPath(categoriesList.value, categorySlug.value) || [];
   });
 
   const currentCategoryName = computed(() => {
-    if (!route.query.category) return "Всі товари";
+    if (!categorySlug.value) {
+      return route.query.search ? `Пошук: ${route.query.search}` : "Всі товари";
+    }
     const path = currentCategoryPath.value;
     if (path.length > 0) {
       const last = path[path.length - 1];
@@ -319,7 +331,7 @@ export function useCatalog() {
   });
 
   watch(
-    () => [route.query.category, route.query.search, route.query.page],
+    () => [categorySlug.value, route.query.search, route.query.page],
     () => {
       pagination.value.page = parseInt(route.query.page as string) || 1;
       fetchProducts();
@@ -383,6 +395,7 @@ export function useCatalog() {
     isMobileFilterOpen,
     isLoading,
     rawProducts,
+    categorySlug,
     categoriesList,
     brands,
     dynamicAttributes,

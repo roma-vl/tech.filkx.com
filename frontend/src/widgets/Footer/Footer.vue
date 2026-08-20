@@ -66,7 +66,8 @@ const handleSubscribe = async () => {
             >
               <span
                 class="material-symbols-outlined text-white text-[18px] font-bold"
-              >sentiment_very_satisfied</span>
+                >sentiment_very_satisfied</span
+              >
             </div>
             <span class="font-extrabold text-lg tracking-tight text-white">
               FilkxTech
@@ -77,18 +78,25 @@ const handleSubscribe = async () => {
           </p>
           <div class="space-y-2 pt-2">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-zinc-500 text-lg">call</span>
+              <span class="material-symbols-outlined text-zinc-500 text-lg"
+                >call</span
+              >
               <a
                 href="tel:0800300100"
                 class="text-sm font-black text-white hover:text-[#00a046] transition-colors"
-              >0 800 300 100</a>
+                >0 800 300 100</a
+              >
             </div>
             <p class="text-[10px] text-zinc-500 leading-none pl-7">
               {{ t("footer.freeCall") }}
             </p>
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-zinc-500 text-lg">schedule</span>
-              <span class="text-xs text-zinc-400">{{ t("footer.workingHours") }}</span>
+              <span class="material-symbols-outlined text-zinc-500 text-lg"
+                >schedule</span
+              >
+              <span class="text-xs text-zinc-400">{{
+                t("footer.workingHours")
+              }}</span>
             </div>
           </div>
         </div>
@@ -219,14 +227,17 @@ const handleSubscribe = async () => {
             {{ t("footer.categoriesHeading") }}
           </h4>
           <ul class="space-y-2.5 text-xs">
-            <li
-              v-for="category in footerCategories"
-              :key="category.slug"
-            >
+            <li v-for="category in footerCategories" :key="category.slug">
               <router-link
-                :to="{ name: 'catalog', query: { category: category.slug } }"
+                :to="{ name: 'category', params: { slug: category.slug } }"
                 class="hover:text-white transition-colors"
-              >{{ category.name?.[locale] || category.name?.uk || category.name?.en || category.name }}</router-link>
+                >{{
+                  category.name?.[locale] ||
+                  category.name?.uk ||
+                  category.name?.en ||
+                  category.name
+                }}</router-link
+              >
             </li>
           </ul>
         </div>
@@ -241,17 +252,14 @@ const handleSubscribe = async () => {
           <p class="text-xs text-zinc-400 leading-relaxed">
             {{ t("footer.newsletter.description") }}
           </p>
-          <form
-            class="flex gap-1.5"
-            @submit.prevent="handleSubscribe"
-          >
+          <form class="flex gap-1.5" @submit.prevent="handleSubscribe">
             <input
               v-model="email"
               class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-lg text-xs flex-grow focus:outline-none focus:ring-1 focus:ring-zinc-600 focus:bg-zinc-850 text-white transition-all"
               :placeholder="t('footer.newsletter.emailPlaceholder')"
               type="email"
               required
-            >
+            />
             <button
               class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 disabled:opacity-50"
               :disabled="isSubscribing"
@@ -267,10 +275,7 @@ const handleSubscribe = async () => {
               class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-[#00a046] hover:text-white border border-zinc-800 flex items-center justify-center transition-all"
               title="Facebook"
             >
-              <svg
-                class="w-4 h-4 fill-current"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path
                   d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"
                 />
@@ -281,10 +286,7 @@ const handleSubscribe = async () => {
               class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-[#00a046] hover:text-white border border-zinc-800 flex items-center justify-center transition-all"
               title="Instagram"
             >
-              <svg
-                class="w-4 h-4 fill-current"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path
                   d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
                 />
@@ -295,10 +297,7 @@ const handleSubscribe = async () => {
               class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-[#00a046] hover:text-white border border-zinc-800 flex items-center justify-center transition-all"
               title="YouTube"
             >
-              <svg
-                class="w-4 h-4 fill-current"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path
                   d="M23.498 6.163c-.272-1.025-1.077-1.83-2.101-2.102C19.531 3.5 12 3.5 12 3.5s-7.53 0-9.397.561c-1.024.272-1.83 1.077-2.102 2.102C0 8.03 0 12 0 12s0 3.97.501 5.837c.272 1.025 1.078 1.83 2.102 2.102C4.47 20.5 12 20.5 12 20.5s7.53 0 9.397-.561c1.024-.272 1.83-1.077 2.102-2.102C24 15.97 24 12 24 12s0-3.97-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
                 />
@@ -309,10 +308,7 @@ const handleSubscribe = async () => {
               class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-[#00a046] hover:text-white border border-zinc-800 flex items-center justify-center transition-all"
               title="Telegram"
             >
-              <svg
-                class="w-4 h-4 fill-current"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path
                   d="M22.05 1.577c-.39-.187-.85-.138-1.2.13L1.08 13.916c-.46.33-.61.94-.36 1.45.25.5.76.81 1.32.78l4.43-.24 3.73 4.88c.31.41.81.65 1.34.65.25 0 .5-.05.74-.16.59-.28.93-.83 1.05-1.46l2.12-11.45 6.07 4.77c.36.28.84.34 1.25.16.4-.17.67-.54.71-.97L24 2.87c.03-.49-.24-.95-.69-1.15l-1.26-.143zM9.54 14.86l.22-3.15 6.43-5.8c.2-.18.23-.48.06-.7-.17-.22-.48-.25-.7-.08l-8.08 5.6-3.66.2 14.07-9.76L9.54 14.86z"
                 />
@@ -321,7 +317,6 @@ const handleSubscribe = async () => {
           </div>
         </div>
       </div>
-
 
       <!-- Bottom Section: Legal & Payments -->
       <div
@@ -339,26 +334,16 @@ const handleSubscribe = async () => {
         <div
           class="flex flex-wrap justify-center gap-6 font-semibold uppercase tracking-wider text-[9px]"
         >
-          <router-link
-            to="/privacy"
-            class="hover:text-white transition-colors"
-          >
+          <router-link to="/privacy" class="hover:text-white transition-colors">
             {{ t("footer.legal.privacy") }}
           </router-link>
-          <router-link
-            to="/oferta"
-            class="hover:text-white transition-colors"
-          >
+          <router-link to="/oferta" class="hover:text-white transition-colors">
             {{ t("footer.legal.oferta") }}
           </router-link>
-          <a
-            href="#"
-            class="hover:text-white transition-colors"
-          >{{ t("footer.legal.sitemap") }}</a>
-          <router-link
-            to="/cookies"
-            class="hover:text-white transition-colors"
-          >
+          <a href="#" class="hover:text-white transition-colors">{{
+            t("footer.legal.sitemap")
+          }}</a>
+          <router-link to="/cookies" class="hover:text-white transition-colors">
             {{ t("footer.legal.cookies") }}
           </router-link>
         </div>
@@ -386,18 +371,8 @@ const handleSubscribe = async () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle
-              cx="6"
-              cy="6"
-              r="6"
-              fill="#EB001B"
-            />
-            <circle
-              cx="14"
-              cy="6"
-              r="6"
-              fill="#F79E1B"
-            />
+            <circle cx="6" cy="6" r="6" fill="#EB001B" />
+            <circle cx="14" cy="6" r="6" fill="#F79E1B" />
             <path
               d="M10 1.643a5.986 5.986 0 0 0 2.146 4.357A5.986 5.986 0 0 0 10 10.357a5.986 5.986 0 0 0-2.146-4.357A5.986 5.986 0 0 0 10 1.643z"
               fill="#FF5F00"
@@ -406,11 +381,13 @@ const handleSubscribe = async () => {
           <!-- Apple Pay -->
           <span
             class="text-[10px] font-black tracking-tighter text-white font-sans uppercase"
-          > Pay</span>
+            > Pay</span
+          >
           <!-- Google Pay -->
           <span
             class="text-[10px] font-black tracking-tighter text-white font-sans uppercase"
-          >Google Pay</span>
+            >Google Pay</span
+          >
         </div>
       </div>
     </div>
