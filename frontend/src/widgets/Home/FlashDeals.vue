@@ -16,15 +16,6 @@ interface FlashProduct {
   image: string;
   discount: string;
   leftCount?: number;
-  description?: string;
-  features?: string[];
-  specs?: {
-    availability?: string;
-    brand?: string;
-    sku?: string;
-    warranty?: string;
-    colors?: string[];
-  };
 }
 
 const props = defineProps<{
@@ -80,33 +71,6 @@ onUnmounted(() => {
 
 const formatNumber = (num: number) => {
   return num < 10 ? `0${num}` : num;
-};
-
-const showModal = ref(false);
-const activeProduct = ref<FlashProduct | null>(null);
-const selectedColor = ref(0);
-const quantity = ref(1);
-
-const openQuickView = (product: FlashProduct) => {
-  activeProduct.value = product;
-  selectedColor.value = 0;
-  quantity.value = 1;
-  showModal.value = true;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  activeProduct.value = null;
-};
-
-const incrementQty = () => {
-  quantity.value++;
-};
-
-const decrementQty = () => {
-  if (quantity.value > 1) {
-    quantity.value--;
-  }
 };
 </script>
 
@@ -278,289 +242,24 @@ const decrementQty = () => {
                 >shopping_cart</span
               >
             </button>
-            <div class="grid grid-cols-4 gap-2">
-              <button
-                class="col-span-3 py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-xs"
-                @click="openQuickView(prod)"
+            <button
+              class="w-full py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-xs flex items-center justify-center gap-1.5"
+              :class="{
+                'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]':
+                  cartStore.isInCompare(prod.id as any),
+              }"
+              @click="cartStore.toggleCompare(prod)"
+            >
+              <span
+                class="material-symbols-outlined text-[16px]"
+                :class="{ fill: cartStore.isInCompare(prod.id as any) }"
+                >compare_arrows</span
               >
-                {{ t("home.flashDeals.quickView") }}
-              </button>
-              <button
-                class="col-span-1 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center"
-                :class="{
-                  'bg-emerald-500/10 border-emerald-500/20 text-[#00a046]':
-                    cartStore.isInCompare(prod.id as any),
-                }"
-                :title="t('common.compare')"
-                @click="cartStore.toggleCompare(prod)"
-              >
-                <span
-                  class="material-symbols-outlined text-[16px]"
-                  :class="{ fill: cartStore.isInCompare(prod.id as any) }"
-                  >compare_arrows</span
-                >
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick View Modal -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade"
-    >
-      <div
-        class="bg-white dark:bg-zinc-900 rounded-xl max-w-2xl w-full relative shadow-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[90vh] overflow-y-auto"
-      >
-        <!-- Close -->
-        <button
-          class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors z-20"
-          @click="closeModal"
-        >
-          <span class="material-symbols-outlined text-[24px]">close</span>
-        </button>
-
-        <div v-if="activeProduct" class="p-6 md:p-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Image and Specs -->
-            <div>
-              <div
-                class="aspect-square bg-zinc-50 dark:bg-zinc-850 rounded-lg flex items-center justify-center p-3 relative mb-4"
-              >
-                <img
-                  class="w-full h-full object-contain"
-                  :src="activeProduct.image"
-                  :alt="activeProduct.name"
-                />
-                <span
-                  class="absolute top-3 left-3 bg-emerald-500/10 text-emerald-500 px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider border border-emerald-500/20"
-                >
-                  {{ activeProduct.specs?.availability }}
-                </span>
-              </div>
-
-              <div class="space-y-2 bg-zinc-50 dark:bg-zinc-850 p-4 rounded-lg">
-                <h4
-                  class="font-extrabold text-xs text-zinc-400 uppercase tracking-wider mb-2"
-                >
-                  {{ t("home.flashDeals.modal.specifications") }}
-                </h4>
-                <div
-                  class="flex justify-between text-sm py-1 border-b border-zinc-200/50 dark:border-zinc-800"
-                >
-                  <span class="text-zinc-500">{{
-                    t("home.flashDeals.modal.brand")
-                  }}</span>
-                  <span class="font-bold text-zinc-800 dark:text-zinc-200">{{
-                    activeProduct.specs?.brand
-                  }}</span>
-                </div>
-                <div
-                  class="flex justify-between text-sm py-1 border-b border-zinc-200/50 dark:border-zinc-800"
-                >
-                  <span class="text-zinc-500">{{
-                    t("home.flashDeals.modal.sku")
-                  }}</span>
-                  <span
-                    class="font-bold text-zinc-800 dark:text-zinc-200 font-mono text-xs"
-                    >{{ activeProduct.specs?.sku }}</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm py-1">
-                  <span class="text-zinc-500">{{
-                    t("home.flashDeals.modal.warranty")
-                  }}</span>
-                  <span class="font-bold text-zinc-800 dark:text-zinc-200">{{
-                    activeProduct.specs?.warranty
-                  }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Details and Actions -->
-            <div class="flex flex-col justify-between pb-2">
-              <div class="space-y-4">
-                <div>
-                  <span
-                    class="text-[#00a046] font-extrabold text-xs uppercase tracking-wider"
-                    >{{ activeProduct.category }}</span
-                  >
-                  <h3
-                    class="font-extrabold text-lg mt-1 text-zinc-900 dark:text-white leading-snug"
-                  >
-                    {{ activeProduct.name }}
-                  </h3>
-                  <div class="flex items-center gap-1.5 mt-2">
-                    <div class="flex">
-                      <span
-                        v-for="star in 5"
-                        :key="star"
-                        class="material-symbols-outlined text-[14px]"
-                        :class="
-                          star <= Math.round(activeProduct.rating)
-                            ? 'text-amber-400'
-                            : 'text-zinc-300 dark:text-zinc-600'
-                        "
-                        :style="
-                          star <= Math.round(activeProduct.rating)
-                            ? 'font-variation-settings: &quot;FILL&quot; 1'
-                            : ''
-                        "
-                        >star</span
-                      >
-                    </div>
-                    <span class="text-zinc-500 text-xs font-bold"
-                      >({{
-                        t("home.flashDeals.modal.reviewsCount", {
-                          count: activeProduct.reviews,
-                        })
-                      }})</span
-                    >
-                  </div>
-                </div>
-
-                <!-- Price -->
-                <div
-                  class="flex items-baseline gap-3 bg-zinc-50 dark:bg-zinc-850 px-4 py-3 rounded-lg w-fit"
-                >
-                  <span
-                    class="text-2xl font-black text-zinc-900 dark:text-white"
-                    >{{ formatPrice(activeProduct.price) }}</span
-                  >
-                  <span
-                    v-if="activeProduct.oldPrice"
-                    class="text-sm text-zinc-400 line-through"
-                    >{{ formatPrice(activeProduct.oldPrice) }}</span
-                  >
-                </div>
-
-                <!-- Description -->
-                <p
-                  class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed"
-                >
-                  {{ activeProduct.description }}
-                </p>
-
-                <!-- Color selector -->
-                <div v-if="activeProduct.specs?.colors" class="space-y-1.5">
-                  <span class="text-xs font-bold text-zinc-500">{{
-                    t("home.flashDeals.modal.color")
-                  }}</span>
-                  <div class="flex gap-2">
-                    <button
-                      v-for="(color, index) in activeProduct.specs.colors"
-                      :key="index"
-                      class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
-                      :class="
-                        selectedColor === index
-                          ? 'border-[#00a046]'
-                          : 'border-transparent'
-                      "
-                      @click="selectedColor = index"
-                    >
-                      <span
-                        class="w-4 h-4 rounded-full border border-black/10"
-                        :style="{ backgroundColor: color }"
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Features -->
-                <div
-                  v-if="
-                    activeProduct.features && activeProduct.features.length > 0
-                  "
-                  class="space-y-1.5"
-                >
-                  <span class="text-xs font-bold text-zinc-500">{{
-                    t("home.flashDeals.modal.features")
-                  }}</span>
-                  <ul class="space-y-1">
-                    <li
-                      v-for="(feat, fIdx) in activeProduct.features"
-                      :key="fIdx"
-                      class="text-xs text-zinc-600 dark:text-zinc-400 flex items-start gap-1.5 leading-relaxed"
-                    >
-                      <span
-                        class="material-symbols-outlined text-[#00a046] text-[13px] mt-0.5"
-                        >check_circle</span
-                      >
-                      {{ feat }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- Buy Actions -->
-              <div
-                class="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-5 flex flex-col gap-4"
-              >
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-bold text-zinc-500">{{
-                    t("home.flashDeals.modal.quantity")
-                  }}</span>
-                  <div
-                    class="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-zinc-50 dark:bg-zinc-850"
-                  >
-                    <button
-                      class="w-9 h-9 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                      @click="decrementQty"
-                    >
-                      <span class="material-symbols-outlined text-[16px]"
-                        >remove</span
-                      >
-                    </button>
-                    <span
-                      class="w-10 text-center font-bold text-sm text-zinc-800 dark:text-zinc-200"
-                      >{{ quantity }}</span
-                    >
-                    <button
-                      class="w-9 h-9 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                      @click="incrementQty"
-                    >
-                      <span class="material-symbols-outlined text-[16px]"
-                        >add</span
-                      >
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-3 rounded-lg text-sm font-extrabold transition-all flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/10"
-                  @click="
-                    cartStore.addToCart(activeProduct as any);
-                    closeModal();
-                  "
-                >
-                  {{ t("home.flashDeals.modal.addToCart") }}
-                  <span class="material-symbols-outlined text-[19px]"
-                    >shopping_cart</span
-                  >
-                </button>
-              </div>
-            </div>
+              {{ t("common.compare") }}
+            </button>
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
-
-<style scoped>
-.animate-fade {
-  animation: fadeIn 0.2s ease-out forwards;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

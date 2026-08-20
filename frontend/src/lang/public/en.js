@@ -214,18 +214,6 @@ export default {
       title: "Hot deals of the day",
       allDeals: "All deals",
       lowStock: "Only {count} left",
-      quickView: "Quick view",
-      modal: {
-        specifications: "Specifications",
-        brand: "Brand",
-        sku: "SKU",
-        warranty: "Warranty",
-        reviewsCount: "{count} reviews",
-        color: "Color:",
-        features: "Features:",
-        quantity: "Quantity:",
-        addToCart: "Add to cart",
-      },
     },
     recommended: {
       personalizedBadge: "Personal picks",

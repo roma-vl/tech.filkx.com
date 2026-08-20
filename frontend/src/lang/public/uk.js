@@ -217,18 +217,6 @@ export default {
       title: "Гарячі пропозиції дня",
       allDeals: "Всі акційні товари",
       lowStock: "Залишилось: {count} шт",
-      quickView: "Швидкий огляд",
-      modal: {
-        specifications: "Характеристики",
-        brand: "Бренд",
-        sku: "Артикул",
-        warranty: "Гарантія",
-        reviewsCount: "{count} відгуків",
-        color: "Колір:",
-        features: "Особливості:",
-        quantity: "Кількість:",
-        addToCart: "Додати в кошик",
-      },
     },
     recommended: {
       personalizedBadge: "Персональна підбірка",
