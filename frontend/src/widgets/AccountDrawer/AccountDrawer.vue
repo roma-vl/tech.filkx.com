@@ -39,7 +39,9 @@ interface NavItem {
 }
 
 const navItems = computed<NavItem[]>(() => {
-  const items: NavItem[] = [];
+  const items: NavItem[] = [
+    { name: "Каталог", icon: "category", routeName: "catalog" },
+  ];
 
   if (authStore.isAuthenticated) {
     const allowedRoles = [

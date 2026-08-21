@@ -51,6 +51,7 @@ const searchInput = ref<HTMLInputElement | null>(null);
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const isMegaMenuOpen = ref(false);
+const isPhoneMenuOpen = ref(false);
 
 const popularQueries = computed(() => tm("header.search.popular") as string[]);
 
@@ -198,6 +199,7 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === "Escape") {
     showDropdown.value = false;
     isMegaMenuOpen.value = false;
+    isPhoneMenuOpen.value = false;
   }
 };
 
@@ -214,6 +216,9 @@ const handleClickOutside = (e: MouseEvent) => {
     !(e.target as HTMLElement).closest(".burger-btn")
   ) {
     isMegaMenuOpen.value = false;
+  }
+  if (!(e.target as HTMLElement).closest(".phone-menu-wrapper")) {
+    isPhoneMenuOpen.value = false;
   }
 };
 
@@ -350,16 +355,51 @@ onUnmounted(() => {
 
         <!-- Right: phone, theme toggle, and language switcher -->
         <div class="flex items-center gap-5">
-          <!-- Phone link -->
-          <a
-            href="tel:0800330131"
-            class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300"
-          >
-            0 800 33-01-31
-            <span class="material-symbols-outlined text-[13px] select-none"
-              >keyboard_arrow_down</span
+          <!-- Phone Contact Dropdown -->
+          <div class="relative phone-menu-wrapper">
+            <button
+              type="button"
+              class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300"
+              @click="isPhoneMenuOpen = !isPhoneMenuOpen"
             >
-          </a>
+              0 800 33-01-31
+              <span
+                class="material-symbols-outlined text-[13px] select-none transition-transform duration-200"
+                :class="isPhoneMenuOpen ? 'rotate-180' : ''"
+                >keyboard_arrow_down</span
+              >
+            </button>
+
+            <div
+              v-if="isPhoneMenuOpen"
+              class="absolute right-0 top-full mt-2 w-60 bg-[#1c2229] border border-zinc-800 rounded-lg shadow-2xl p-3 z-[130] text-left animate-in fade-in slide-in-from-top-2 duration-200"
+            >
+              <a
+                href="tel:0800330131"
+                class="flex items-center gap-2 text-sm font-black text-white hover:text-[#00a046] transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-[16px] text-zinc-500"
+                  >call</span
+                >
+                0 800 33-01-31
+              </a>
+              <p class="text-[10px] text-zinc-500 pl-6 mt-0.5">
+                {{ t("footer.freeCall") }}
+              </p>
+              <div
+                class="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-white/[0.06]"
+              >
+                <span
+                  class="material-symbols-outlined text-[16px] text-zinc-500"
+                  >schedule</span
+                >
+                <span class="text-xs text-zinc-400">{{
+                  t("footer.workingHours")
+                }}</span>
+              </div>
+            </div>
+          </div>
 
           <!-- Theme Toggle Button -->
           <button
@@ -416,7 +456,7 @@ onUnmounted(() => {
       <!-- Left: Burger & Logo -->
       <div class="flex items-center gap-3">
         <button
-          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
+          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-1.5 justify-center shrink-0"
           :title="t('header.menu')"
           @click="cartStore.openDrawer('account')"
         >
@@ -428,6 +468,9 @@ onUnmounted(() => {
           <span v-else class="material-symbols-outlined text-2xl text-white"
             >menu</span
           >
+          <span class="md:hidden text-sm font-bold text-white">{{
+            t("header.menu")
+          }}</span>
         </button>
 
         <!-- Brand/Logo (Rozetka Green Smiley Style) -->
@@ -611,7 +654,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-4 md:gap-6 text-white">
         <!-- Notifications -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
           :title="t('header.actions.notifications')"
           @click="
             router.push({ name: 'account', query: { tab: 'notifications' } })
@@ -630,7 +673,7 @@ onUnmounted(() => {
 
         <!-- Compare -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
           :title="t('header.actions.compare')"
           @click="router.push({ name: 'account', query: { tab: 'compare' } })"
         >
@@ -647,7 +690,7 @@ onUnmounted(() => {
 
         <!-- Wishlist -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
           :title="t('header.actions.wishlist')"
           @click="router.push({ name: 'account', query: { tab: 'favorites' } })"
         >
