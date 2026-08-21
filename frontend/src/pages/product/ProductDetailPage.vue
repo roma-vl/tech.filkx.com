@@ -214,6 +214,53 @@
           </div>
         </div>
       </section>
+
+      <!-- Recently viewed -->
+      <section v-if="recentlyViewed.length > 0" class="mt-14">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <h2
+            class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight"
+          >
+            Нещодавно переглянуті
+          </h2>
+          <div v-if="recentlyViewed.length > 5" class="flex gap-2 shrink-0">
+            <button
+              class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+              type="button"
+              aria-label="Прокрутити ліворуч"
+              @click="scrollViewed('left')"
+            >
+              <span
+                class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400"
+                >chevron_left</span
+              >
+            </button>
+            <button
+              class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+              type="button"
+              aria-label="Прокрутити праворуч"
+              @click="scrollViewed('right')"
+            >
+              <span
+                class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400"
+                >chevron_right</span
+              >
+            </button>
+          </div>
+        </div>
+        <div
+          ref="viewedScrollRef"
+          class="flex overflow-x-auto gap-4 hide-scrollbar scroll-smooth snap-x snap-mandatory py-2"
+        >
+          <div
+            v-for="viewed in recentlyViewed"
+            :key="viewed.id"
+            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start border-t border-l border-zinc-200 dark:border-zinc-800"
+          >
+            <ProductCard :product="viewed" view-mode="grid" />
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Sticky Buy Bar -->
@@ -312,6 +359,7 @@ const {
   bundleSubtotal,
   bundleSavings,
   bundleTotal,
+  recentlyViewed,
   setSelectedImage,
   selectNextImage,
   selectPreviousImage,
@@ -325,6 +373,15 @@ const {
 const relatedScrollRef = ref<HTMLElement | null>(null);
 const scrollRelated = (direction: "left" | "right") => {
   const el = relatedScrollRef.value;
+  if (!el) return;
+  const cardWidth = el.firstElementChild?.clientWidth ?? 320;
+  const amount = (cardWidth + 16) * (direction === "left" ? -1 : 1);
+  el.scrollBy({ left: amount, behavior: "smooth" });
+};
+
+const viewedScrollRef = ref<HTMLElement | null>(null);
+const scrollViewed = (direction: "left" | "right") => {
+  const el = viewedScrollRef.value;
   if (!el) return;
   const cardWidth = el.firstElementChild?.clientWidth ?? 320;
   const amount = (cardWidth + 16) * (direction === "left" ? -1 : 1);

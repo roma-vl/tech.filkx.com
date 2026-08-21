@@ -88,7 +88,16 @@ Real, not aspirational: `Role`, `Permission` models with `roles`↔`permissions`
   with `toSearchableArray()` indexing uk/en name+description), `ProductVariant` (SKU, barcode,
   price/old_price, weight, JSON `dimensions` incl. images), `Attribute`/`AttributeValue`/
   `ProductAttributeValue` (EAV pattern for variant/product specs), `ProductReview` (with
-  `approvedReviews` scope-style relation, moderation status).
+  `approvedReviews` scope-style relation, moderation status, and a real `photos` JSON column — end
+  to end, not just a schema field: `ReviewController::store/update` (`Api/V1/Actions/Review/*`)
+  validate uploads with `image|mimes:jpeg,png,jpg,webp|max:5120` — same 5MB-image convention as blog
+  images — and `UploadReviewPhotosAction` stores them to the `public` disk under
+  `reviews/{productId}/`, matching the local-disk convention used elsewhere; URLs are returned in
+  every review read path (`ListProductReviewsAction`, `ListMyReviewsAction`, create/update
+  responses). Frontend submission form with a multi-file picker + previews + existing-photo removal
+  on edit lives in `widgets/Account/tabs/AccountOrdersTab.vue` (the "leave a review" modal opened
+  from an order's line items), not under `widgets/ProductDetail/` — `ProductTabs.vue`'s reviews tab
+  only *displays* reviews (incl. a photo lightbox), it has no submission form of its own).
 - **Inventory**: `Warehouse`, `Stock` (`variant_id`, `warehouse_id`, `quantity`, `reserved`) —
   `ProductVariant::getTotalQuantityAttribute()` computes `quantity - reserved`. Stock reservation on
   order placement is implemented in `CheckoutController`/`PlaceOrderAction` (see below), not just
@@ -222,6 +231,18 @@ render the same `CatalogPage.vue`/`useCatalog.ts`, so there's no duplicated list
 logic between them. Header mega-menu, footer category list, and hero-slider category links all point
 at `category/:slug` now; anything without a specific category (account-tab "continue shopping" CTAs,
 `FlashDeals`'s "all deals" link, etc.) correctly still points at bare `catalog`.
+
+**Recently-viewed products**: tracking itself already existed end to end before this widget was
+added — `cartStore.trackProductView()` (`entities/order/model/cartStore.ts`) is called from
+`useProductDetail.ts` on every product load, writing to `localStorage` for guests and, for a logged-in
+user, to `GET/POST /user/viewed-products*` (`Api/V1/Actions/User/ViewedProducts/*`, a
+`user_id`↔`product_id` pivot with `view_count`/`updated_at`, synced/merged on login via
+`SyncViewedProductsAction`). Previously the only place this history was ever *displayed* was
+`widgets/Account/tabs/AccountViewedTab.vue`. `pages/product/ProductDetailPage.vue` now also renders a
+"Нещодавно переглянуті" horizontal carousel (same bordered-grid `ProductCard` + scroll-button chrome
+as the existing "Схожі товари" section on the same page), sourced from
+`useProductDetail.ts`'s `recentlyViewed` computed (reads `cartStore.viewedDetailed`, excludes the
+product currently being viewed) — no new backend endpoint or store method was needed.
 
 ### State management (Pinia)
 Real stores live under FSD-style locations, with `src/stores/*.js` reduced to **re-export shims**

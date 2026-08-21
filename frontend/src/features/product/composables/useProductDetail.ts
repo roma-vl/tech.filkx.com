@@ -339,6 +339,29 @@ export function useProductDetail() {
     }
   };
 
+  // Sourced from cartStore.viewedDetailed (guest localStorage, synced to the
+  // backend for logged-in users) rather than a dedicated fetch — the store
+  // already keeps this list current, so it's just excluding the product being
+  // viewed right now and shaping it for ProductCard.
+  const recentlyViewed = computed(() => {
+    const currentProductId = rawProduct.value?.id;
+    return (cartStore.viewedDetailed || [])
+      .filter((item: any) => String(item.id) !== String(currentProductId))
+      .slice(0, 10)
+      .map((item: any) => ({
+        id: item.id,
+        slug: item.slug,
+        name: item.name,
+        brand: item.brand,
+        image: item.image,
+        price: item.price,
+        oldPrice: null,
+        rating: 0,
+        reviews: 0,
+        inStock: item.inStock !== false,
+      }));
+  });
+
   // Magnifying hover zoom state variables
   const isZoomed = ref(false);
   const zoomStyle = ref({
@@ -605,6 +628,7 @@ export function useProductDetail() {
     bundleSubtotal,
     bundleSavings,
     bundleTotal,
+    recentlyViewed,
     setSelectedImage,
     selectNextImage,
     selectPreviousImage,

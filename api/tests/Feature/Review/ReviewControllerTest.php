@@ -150,6 +150,40 @@ class ReviewControllerTest extends TestCase
             ->assertJsonCount(1, 'data.photos');
     }
 
+    public function test_store_rejects_an_oversized_photo(): void
+    {
+        Storage::fake('public');
+        $product = $this->makeProduct();
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->post("/api/v1/catalog/products/{$product->slug}/reviews", [
+                'rating' => 5,
+                'body' => 'A perfectly average review body.',
+                'photos' => [UploadedFile::fake()->image('photo.jpg')->size(5121)],
+            ]);
+
+        $response->assertStatus(422)->assertJsonPath('status', 'error');
+        $this->assertDatabaseMissing('product_reviews', ['product_id' => $product->id]);
+    }
+
+    public function test_store_rejects_a_non_image_photo(): void
+    {
+        Storage::fake('public');
+        $product = $this->makeProduct();
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->post("/api/v1/catalog/products/{$product->slug}/reviews", [
+                'rating' => 5,
+                'body' => 'A perfectly average review body.',
+                'photos' => [UploadedFile::fake()->create('document.pdf', 100)],
+            ]);
+
+        $response->assertStatus(422)->assertJsonPath('status', 'error');
+        $this->assertDatabaseMissing('product_reviews', ['product_id' => $product->id]);
+    }
+
     public function test_update_requires_authentication(): void
     {
         $product = $this->makeProduct();

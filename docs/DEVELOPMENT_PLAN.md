@@ -441,8 +441,36 @@ user impact, as originally written) with each item's resolution noted:
   (prices are plain decimals with no currency column) — add if international expansion is planned.
 - **Newsletter subscription** (new, commit `eaafd44`): `newsletter_subscribers` table,
   `POST /v1/newsletter/subscribe` (rate-limited 5/min), wired into Footer and Header.
+- ✅ **Abandoned-cart email reminders** (new, working tree on `develop`). A scheduled
+  `carts:send-abandoned-reminders` command (`Schedule::command(...)->hourly()->withoutOverlapping()`
+  in `routes/console.php`) runs `SendAbandonedCartRemindersAction`
+  (`app/Api/V1/Actions/Cart/SendAbandonedCartRemindersAction.php`), which finds carts with items
+  belonging to a registered user (`user_id` not null — guest carts have no email to send to),
+  untouched for `config('cart.abandoned_reminder_hours')` (default 4h, `CART_ABANDONED_REMINDER_HOURS`)
+  and not yet reminded, then sends one `AbandonedCartReminderNotification` per cart (queued —
+  `implements ShouldQueue`, processed by `tech-api-queue`) and stamps the new
+  `carts.reminder_sent_at` column so it's never sent twice. Checkout clearing the cart's items
+  (`PlaceOrderAction`/`PlaceQuickOrderAction`) is what naturally excludes checked-out carts — no
+  separate cart `status` field exists or is needed. Covered by
+  `tests/Unit/Actions/Cart/SendAbandonedCartRemindersActionTest.php` (threshold, no-items, guest,
+  already-reminded, checked-out cases via `Notification::fake()`).
 - **Load/scale testing**: none observed (no k6/Locust/Artillery config in the repo) — worth doing
   once payment + SSR + backups are in place, before any real marketing push.
+- ✅ **Recently-viewed products on the product detail page** (2026-08-21). The tracking mechanism
+  (guest `localStorage` + database-backed history for logged-in users, synced on login) already
+  existed and was already displayed on the account "viewed" tab — it just wasn't surfaced anywhere
+  during actual shopping. `ProductDetailPage.vue` now also renders it as a "Нещодавно переглянуті"
+  carousel, reusing the page's own existing "Схожі товари" carousel chrome and `ProductCard.vue`. No
+  backend change was needed. See `PROJECT_MAP.md` "Recently-viewed products" for the file-level detail.
+- ✅ **Review photo upload — confirmed already fully implemented, not a gap** (checked 2026-08-21).
+  Both ends were already real: `Api/V1/Actions/Review/*` validate/store uploads
+  (`image|mimes:jpeg,png,jpg,webp|max:5120`, local `public` disk under `reviews/{productId}/`) and
+  return photo URLs from every review read/write path; the frontend submission form
+  (`widgets/Account/tabs/AccountOrdersTab.vue`'s "leave a review" modal, opened from an order's line
+  items) already has a multi-file picker with previews and existing-photo removal on edit. The only
+  actual gap found was test coverage: `ReviewControllerTest` had a happy-path upload test but nothing
+  asserting rejection of an oversized or non-image file — added
+  `test_store_rejects_an_oversized_photo`/`test_store_rejects_a_non_image_photo`.
 
 ---
 

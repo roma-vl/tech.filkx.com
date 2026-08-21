@@ -320,3 +320,55 @@ describe("useProductDetail related products", () => {
     expect(result.relatedProducts.value).toEqual([]);
   });
 });
+
+describe("useProductDetail recently viewed", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setActivePinia(createPinia());
+    vi.mocked(productApi.catalogGetRandomProducts).mockResolvedValue({
+      data: { status: "success", data: [] },
+    } as any);
+    vi.mocked(productApi.catalogGetRelatedProducts).mockResolvedValue({
+      data: { status: "success", data: [] },
+    } as any);
+  });
+
+  it("excludes the product currently being viewed and maps the rest for ProductCard", async () => {
+    localStorage.setItem(
+      "electro_viewed_detailed",
+      JSON.stringify([
+        {
+          id: 99,
+          slug: "other-product",
+          name: "Інший товар",
+          price: 500,
+          viewCount: 1,
+          lastViewedAt: new Date().toISOString(),
+        },
+      ]),
+    );
+    vi.mocked(productApi.getProduct).mockResolvedValue({
+      data: { status: "success", data: apiProduct({ id: 10 }) },
+    } as any);
+
+    const { result } = await withSetup(() => useProductDetail());
+
+    expect(result.recentlyViewed.value).toHaveLength(1);
+    expect(result.recentlyViewed.value[0]).toMatchObject({
+      id: 99,
+      slug: "other-product",
+      name: "Інший товар",
+      price: 500,
+    });
+  });
+
+  it("is empty when there is no viewing history", async () => {
+    vi.mocked(productApi.getProduct).mockResolvedValue({
+      data: { status: "success", data: apiProduct() },
+    } as any);
+
+    const { result } = await withSetup(() => useProductDetail());
+
+    expect(result.recentlyViewed.value).toEqual([]);
+  });
+});
