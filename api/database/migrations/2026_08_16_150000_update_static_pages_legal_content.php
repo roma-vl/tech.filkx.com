@@ -19,8 +19,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $entity = 'ТОВ «FilksTech»';
-        $entityEn = 'FilksTech LLC';
+        $entity = 'ТОВ «FilkxTech»';
+        $entityEn = 'FilkxTech LLC';
 
         $pages = [
             'terms' => [
@@ -208,7 +208,7 @@ HTML,
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Продавець зобов'язується передати у власність Покупця товар, обраний на Сайті, а Покупець — прийняти та оплатити цей товар на умовах, зазначених у відповідному замовленні.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">2. Порядок оформлення замовлення</h3>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Замовлення оформлюється через кошик Сайту із зазначенням контактних даних та адреси доставки. Після оформлення Покупець отримує підтвердження замовлення з унікальним номером. Продавець залишає за собою право зв'язатися з Покупцем для уточнення деталей замовлення.</p>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Замовлення оформлюється через кошик Сайту із зазначенням контактних даних та адреси доставки. Після оформлення Покупець отримує підтвердження замовлення з унікальним номером. Продавець залишає за собою право зв'язатися з Покупцем для уточнення деталей замовлення. Загальні правила реєстрації облікового запису та користування Сайтом визначені <a href="/pages/terms" class="text-[#00a046] underline">Угодою користувача</a>.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">3. Ціна та оплата</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Ціна товару вказується у гривнях на сторінці товару і фіксується на момент оформлення замовлення. Доступні способи оплати:</p>
@@ -217,6 +217,7 @@ HTML,
   <li>Оплата готівкою або карткою кур'єру/у відділенні перевізника при отриманні (накладений платіж).</li>
   <li>Банківський переказ за реквізитами для юридичних та фізичних осіб.</li>
 </ul>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Персональні дані, надані під час оформлення та оплати замовлення, обробляються відповідно до нашої <a href="/pages/privacy" class="text-[#00a046] underline">Політики конфіденційності</a>.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">4. Доставка</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Доставка здійснюється службами Нова Пошта та Укрпошта на всю територію України. Строк доставки залежить від обраної служби та населеного пункту й орієнтовно повідомляється при оформленні замовлення. Право власності та ризик випадкової втрати товару переходять до Покупця з моменту отримання товару у перевізника.</p>
@@ -246,7 +247,7 @@ HTML,
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">The Seller agrees to transfer ownership of the selected product to the Buyer, and the Buyer agrees to accept and pay for it under the terms specified in the corresponding order.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">2. Placing an Order</h3>
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Orders are placed via the Site's cart with contact details and delivery address. The Buyer receives an order confirmation with a unique order number. The Seller may contact the Buyer to clarify order details.</p>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Orders are placed via the Site's cart with contact details and delivery address. The Buyer receives an order confirmation with a unique order number. The Seller may contact the Buyer to clarify order details. General rules for account registration and use of the Site are set out in our <a href="/pages/terms" class="text-[#00a046] underline">Terms of Use</a>.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">3. Price & Payment</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Prices are shown in hryvnia on the product page and fixed at the moment the order is placed. Available payment methods:</p>
@@ -255,6 +256,7 @@ HTML,
   <li>Cash or card on delivery, paid to the courier or at the carrier's branch.</li>
   <li>Bank transfer to the invoice details, for both individuals and legal entities.</li>
 </ul>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Personal data provided when placing and paying for an order is processed in accordance with our <a href="/pages/privacy" class="text-[#00a046] underline">Privacy Policy</a>.</p>
 
 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">4. Delivery</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Delivery is carried out by Nova Poshta and Ukrposhta across Ukraine. Delivery time depends on the chosen carrier and destination, and an estimate is shown during checkout. Title and risk of accidental loss pass to the Buyer once the item is handed to the carrier.</p>
@@ -282,11 +284,11 @@ HTML,
                 'content' => [
                     'uk' => <<<HTML
 <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Використання файлів cookie</h2>
-<p class="text-xs text-zinc-400 mb-6">Останнє оновлення: {$this->today('uk')}.</p>
+<p class="text-xs text-zinc-400 mb-6">Останнє оновлення: {$this->today('uk')}. Це чернетка документа — перед публічним запуском рекомендуємо перевірку юристом.</p>
 
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies — невеликі текстові файли, що зберігаються у вашому браузері. Ми використовуємо лише ті cookies, які необхідні для роботи Сайту; станом на зараз ми не використовуємо рекламні чи аналітичні cookies третіх сторін.</p>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies — невеликі текстові файли, що зберігаються у вашому браузері. Ми використовуємо лише ті cookies, які необхідні для роботи Сайту; станом на зараз ми не використовуємо рекламні чи аналітичні cookies третіх сторін. Загальні принципи обробки персональних даних описані в нашій <a href="/pages/privacy" class="text-[#00a046] underline">Політиці конфіденційності</a>.</p>
 
-<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">Які cookies ми використовуємо</h3>
+<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">1. Які cookies ми використовуємо</h3>
 <table class="w-full text-sm text-left text-zinc-600 dark:text-zinc-400 mb-6 border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden">
   <thead class="bg-zinc-50 dark:bg-zinc-900 text-xs uppercase">
     <tr>
@@ -306,15 +308,16 @@ HTML,
   </tbody>
 </table>
 
+<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">2. Керування cookies</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Ви можете видалити або заблокувати cookies в налаштуваннях вашого браузера. Врахуйте, що вимкнення обов'язкових cookies може порушити роботу кошика та авторизації на Сайті.</p>
 HTML,
                     'en' => <<<HTML
 <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6">Cookies Policy</h2>
-<p class="text-xs text-zinc-400 mb-6">Last updated: {$this->today('en')}.</p>
+<p class="text-xs text-zinc-400 mb-6">Last updated: {$this->today('en')}. This is a draft document — have it reviewed by a lawyer before relying on it in production.</p>
 
-<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies are small text files stored by your browser. We only use cookies required to operate the Site; we do not currently use third-party advertising or analytics cookies.</p>
+<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">Cookies are small text files stored by your browser. We only use cookies required to operate the Site; we do not currently use third-party advertising or analytics cookies. General principles for processing personal data are described in our <a href="/pages/privacy" class="text-[#00a046] underline">Privacy Policy</a>.</p>
 
-<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">Cookies We Use</h3>
+<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">1. Cookies We Use</h3>
 <table class="w-full text-sm text-left text-zinc-600 dark:text-zinc-400 mb-6 border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden">
   <thead class="bg-zinc-50 dark:bg-zinc-900 text-xs uppercase">
     <tr>
@@ -334,6 +337,7 @@ HTML,
   </tbody>
 </table>
 
+<h3 class="text-lg font-bold text-zinc-900 dark:text-white mt-8 mb-3">2. Managing Cookies</h3>
 <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">You can delete or block cookies in your browser settings. Note that disabling strictly necessary cookies may break cart and login functionality on the Site.</p>
 HTML,
                 ],
