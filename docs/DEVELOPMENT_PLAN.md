@@ -149,15 +149,18 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 - ❌ No APM/metrics collection found.
 
 ### 2.4 CI/CD
-- ❌ **No CI at all.** No `.github/` directory exists anywhere in the repo. `pint` (PHP lint),
-  `format` (frontend prettier+eslint), and `test-backend`/`test-frontend` all exist as Makefile
-  targets but nothing runs them automatically on push/PR.
-- ⚠️ Also note: `test-backend` itself is still **broken** (`Makefile:27-28` — missing `test`
-  argument to `php artisan`), so even a naive CI job that calls `make test-backend` would not
-  actually run tests today. This is now more worth fixing than before: real backend test coverage
-  exists to run (see below), it's just not reachable through the Makefile target.
-- **Action**: minimally, add a GitHub Actions workflow running `pint --test`, frontend `lint`, and
-  (once fixed) `test-backend`/`test-frontend` on every PR.
+- ✅ **CI pipeline added** (2026-08-21, commit `480d661`). `.github/workflows/ci.yml` runs on every
+  push/PR to `develop`/`master`: a backend job brings up the same `docker-compose.yml` stack local
+  dev uses and runs `pint --test` + the full `php artisan test` suite; a frontend job runs `npm ci` +
+  `npm run build` (a real compile-error gate) + Prettier/ESLint checks. The lint checks are
+  `continue-on-error` for now — see `PROJECT_MAP.md` "Known technical debt" #16 for the
+  now-quantified pre-existing repo-wide lint debt (223 files fail Prettier, ~80 ESLint parsing
+  errors from a missing TypeScript parser for `.vue` files) that makes them non-blocking until fixed.
+  `test-frontend`/vitest is deliberately not wired up — zero spec files exist anywhere (see below).
+- Note (corrects a stale claim earlier in this doc's history): `Makefile`'s `test-backend` target
+  already runs `php artisan test` correctly (`docker compose run --rm tech-api-php-cli php artisan test`)
+  — the "missing `test` argument" bug this section used to describe was already fixed by the time of
+  the 2026-08-17 pass; that fix just hadn't propagated to this paragraph until now.
 - 🟡 **Backend test coverage — no longer near-zero** (done 2026-08-16, commit `ca5ef97`, plus
   Feature tests added alongside the 2FA/newsletter/home-banner work; extended 2026-08-17 with cart/
   checkout/catalog/admin-order coverage). Beyond the framework stub, there's now real coverage of
@@ -457,14 +460,22 @@ user impact, as originally written) with each item's resolution noted:
    local-disk is acceptable or move to S3/R2), promotions engine hardening, shipping API integration
    if not already automated.
 4. ~~§2.9 catalog-filter bugs~~ ✅ **done** (2026-08-20, commit `6fabbee`) — all five fixed, see §2.9
-   for detail. One follow-up left from that pass: no seeded product currently has a color attribute
-   value assigned, so the color-filter fix's end-to-end effect is untested against real data — assign
-   one to close that gap.
-5. **Next up (recommended immediate priority)**: none currently queued — see §2 for open items by
-   area (CI, cookie consent, lawyer review of legal pages, Sentry project creation are the remaining
+   for detail. Its one follow-up (no seeded product had a color attribute value assigned, so the
+   color-filter fix was untested against real data) was closed 2026-08-21, commit `480d661` — see
+   item 5 below.
+5. ~~CI pipeline~~ ✅ **done** (2026-08-21, commit `480d661`, see §2.4) — plus two data-correctness
+   migrations found in the same pass (a color value assigned to real seeded products, seven
+   miscategorized products reassigned) and two home-page fixes: "Лідери продажу" cut from a
+   24-product/6-row paginated view down to a 5-product single-row teaser with a "view all" link
+   (commit `5889d74`), and "Гарячі пропозиції дня" changed from 4 genuinely random products
+   (reshuffling on every request — Postgres ignores `inRandomOrder()`'s seed argument, so the
+   "hourly rotation" was never real) to real, stable, discount-qualified picks (commit `061a59c`).
+6. **Next up (recommended immediate priority)**: none currently queued — see §2 for open items by
+   area (cookie consent, lawyer review of legal pages, Sentry project creation are the remaining
    launch blockers per phase 2 above; promotions engine hardening and image storage strategy are the
-   next launch-quality items per phase 3).
-6. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
+   next launch-quality items per phase 3; fixing the ESLint TypeScript-parser config — `PROJECT_MAP.md`
+   "Known technical debt" #16 — is the highest-leverage frontend-quality item now that CI surfaces it).
+7. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
    test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
    Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
    build frontend test infrastructure from scratch (still literally zero), external analytics, load

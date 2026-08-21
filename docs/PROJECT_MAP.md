@@ -185,8 +185,9 @@ auth/RBAC/2FA plus the core commerce flows (cart, checkout, catalog filtering, a
 management) — still untested: coupon validation via the live `/v1/coupons/validate` endpoint (the
 underlying `ValidateCouponAction`/`PriceCalculationService` are unit-tested), and the
 Meilisearch-search-keyword path in `ListProductsAction` (deliberately out of scope — see the
-Feature test file's `setUp()` for why). Run via `make test-backend` — but note the Makefile bug
-below, which means this suite can't actually be run through the documented command today.
+Feature test file's `setUp()` for why). Run via `make test-backend`, which is CI-wired now too
+(see "Known technical debt" #1 for its history — it's correct, despite older passes of this doc
+claiming otherwise).
 
 As of 2026-08-20 (commits `65af0c2`, `75a12d8`), the newly-extracted admin Actions above got the same
 treatment: `Unit/Actions/Admin/{Page,Stats,Team,Category,Blog}/*ActionTest.php` (54 tests — slug
@@ -325,10 +326,12 @@ What now exists (working tree, uncommitted as of 2026-08-17 on `add-new-logic`):
 `add-new-logic`, and again 2026-08-20 against `develop` — items below are corrected where later
 commits changed the picture; items 11-15 were found during the 2026-08-20 pass and fixed the same day)
 
-1. **`Makefile` `test-backend` target is broken**: `docker compose run --rm tech-api-php-cli php artisan`
-   — missing the `test` argument, so it runs `php artisan` (prints command list) instead of the test
-   suite. (`Makefile:27-28`) **Still broken** — and now higher-priority to fix, since a real test
-   suite exists to run (see "Testing (backend)" above) and currently can't be reached this way.
+1. ~~`Makefile` `test-backend` target is broken (missing the `test` argument to `php artisan`)~~ —
+   **stale claim, corrected 2026-08-21**: `Makefile:29-30` already reads
+   `docker compose run --rm tech-api-php-cli php artisan test`, correctly. This doc's own 2026-08-17
+   pass fixed it in the working tree at the time; this paragraph just never got updated to say so
+   until CI wiring (commit `480d661`) required actually verifying it end-to-end. It now also runs in
+   CI on every push/PR — see `DEVELOPMENT_PLAN.md` §2.4.
 2. **SSR is still a dangling reference** (`serve:ssr` script, no `server.js` — by design, static
    prerendering was chosen instead, see "SSR" above). **Sitemap generation is no longer dangling**:
    `frontend/scripts/generate-sitemap.cjs` and `frontend/scripts/prerender.mjs` now exist and are
@@ -362,8 +365,13 @@ commits changed the picture; items 11-15 were found during the 2026-08-20 pass a
 8. ~~No rate limiting~~ **Done** (commits `970661c`, `75517a9`, `eaafd44`) — `throttle:` now covers
    auth, checkout/payment, coupon validation, and newsletter subscribe. See `DEVELOPMENT_PLAN.md`
    §2.2 for the full list.
-9. **No CI**: no `.github/` directory anywhere in the repo — no GitHub Actions workflows exist.
-   Still true, unchanged.
+9. ~~No CI~~ **fixed 2026-08-21, commit `480d661`** — `.github/workflows/ci.yml` now runs Pint +
+   the full backend test suite (via the same `docker-compose.yml` stack local dev uses) and an
+   `npm run build` compile-error gate on every push/PR to `develop`/`master`. Prettier/ESLint checks
+   are included but `continue-on-error` for now — 223 files already fail Prettier and ESLint has
+   ~80 parsing errors repo-wide (no TypeScript parser configured for `.vue` files with `lang="ts"`),
+   neither introduced by this change; making them blocking today would redden every future PR
+   regardless of content. Drop `continue-on-error` once that debt is cleared.
 10. **Largest Vue files** (candidates for splitting, not re-measured this pass — line counts may
     have shifted slightly with the homepage/header/cart rewrites, but the same files are still the
     largest): `widgets/Account/tabs/AccountSettingsTab.vue` (1225 lines),
@@ -392,3 +400,14 @@ commits changed the picture; items 11-15 were found during the 2026-08-20 pass a
 15. ~~Catalog attribute filters are single-select in the UI despite the backend supporting
     comma-separated multi-value~~ **fixed 2026-08-20, commit `6fabbee`** — `selectedAttrs` is now
     `Record<string, string[]>`, live-verified accumulating and OR-matching two values at once.
+16. **Frontend lint tooling is repo-wide broken, quantified 2026-08-21 while wiring up CI**
+    (commit `480d661`): `npx prettier --check .` fails on 223 files; `npx eslint --config=eslint.config.js`
+    reports ~80 parsing errors (`eslint.config.js` never configures a TypeScript parser for `.vue`
+    files, so any `defineProps<{...}>()` generic in a `lang="ts"` component fails to parse) plus
+    ~8100 warnings. Neither is new — both predate this doc's tracking — but they were only ever
+    described qualitatively before ("a pre-existing repo-wide ESLint/TS-parsing misconfiguration");
+    now confirmed with real numbers. The new CI workflow runs both checks but marks them
+    `continue-on-error` because of this. Fixing the parser config is the higher-leverage first step
+    (it would likely resolve most of the 8100 warnings as a side effect, not just the 80 errors);
+    the Prettier pass is a separate, large, mechanical reformat once someone's ready to review a
+    223-file diff.
