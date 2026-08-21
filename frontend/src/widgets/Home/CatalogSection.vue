@@ -7,6 +7,7 @@ import {
   type HomeProduct,
 } from "@/entities/product/lib/mapHomeProduct";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
+import UiSectionLink from "@/shared/ui/UiSectionLink.vue";
 
 const props = defineProps({
   categories: {
@@ -17,18 +18,28 @@ const props = defineProps({
 
 const { locale, t } = useI18n();
 
+// Homepage teaser size — a single grid row at the widest breakpoint
+// (grid-cols-5). The backend's ListProductsAction currently ignores
+// per_page/page and always paginates at 24, so the cap is enforced here
+// client-side rather than relied upon from the API response.
+const TEASER_SIZE = 5;
+
 // Kept raw so the grid re-translates immediately on language switch, without refetching.
 const rawBestsellers = ref<any[]>([]);
 const bestsellers = computed(
   () =>
     rawBestsellers.value
+      .slice(0, TEASER_SIZE)
       .map((p) => mapHomeProduct(p, locale.value))
       .filter(Boolean) as HomeProduct[],
 );
 const selectedSlug = ref("");
 const isLoadingProds = ref(false);
-const page = ref(1);
-const lastPage = ref(1);
+
+const viewAllRoute = computed(() => ({
+  name: "category",
+  params: { slug: selectedSlug.value },
+}));
 
 const categoryName = (cat: any) =>
   cat.name?.[locale.value] || cat.name?.uk || cat.name?.en || cat.name || "";
@@ -39,12 +50,11 @@ const fetchProducts = async () => {
   try {
     const res = await productApi.catalogGetProducts({
       category: selectedSlug.value,
-      per_page: 10,
-      page: page.value,
+      per_page: TEASER_SIZE,
+      page: 1,
     });
     if (res.data?.success || res.data?.status === "success") {
       rawBestsellers.value = res.data?.data?.data || res.data?.data || [];
-      lastPage.value = res.data?.data?.lastPage || 1;
     }
   } catch (e) {
     console.error("CatalogSection: load products failed:", e);
@@ -56,20 +66,7 @@ const fetchProducts = async () => {
 const selectCategory = (slug: string) => {
   if (isLoadingProds.value || slug === selectedSlug.value) return;
   selectedSlug.value = slug;
-  page.value = 1;
   rawBestsellers.value = [];
-  fetchProducts();
-};
-
-const prevPage = () => {
-  if (isLoadingProds.value || page.value <= 1) return;
-  page.value -= 1;
-  fetchProducts();
-};
-
-const nextPage = () => {
-  if (isLoadingProds.value || page.value >= lastPage.value) return;
-  page.value += 1;
   fetchProducts();
 };
 
@@ -119,24 +116,9 @@ onServerPrefetch(async () => {
       >
         {{ t("home.catalogSection.title") }}
       </h2>
-      <div class="flex items-center gap-2">
-        <button
-          class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          :disabled="page <= 1 || isLoadingProds"
-          :aria-label="t('home.catalogSection.prevPage')"
-          @click="prevPage"
-        >
-          <span class="material-symbols-outlined text-sm">chevron_left</span>
-        </button>
-        <button
-          class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          :disabled="page >= lastPage || isLoadingProds"
-          :aria-label="t('home.catalogSection.nextPage')"
-          @click="nextPage"
-        >
-          <span class="material-symbols-outlined text-sm">chevron_right</span>
-        </button>
-      </div>
+      <UiSectionLink v-if="selectedSlug" :to="viewAllRoute">{{
+        t("home.catalogSection.viewAll")
+      }}</UiSectionLink>
     </div>
 
     <!-- Category Pill Chips -->
@@ -162,7 +144,7 @@ onServerPrefetch(async () => {
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
     >
       <div
-        v-for="i in 5"
+        v-for="i in TEASER_SIZE"
         :key="i"
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-4 space-y-4 animate-pulse"
       >

@@ -208,8 +208,7 @@ export default {
     },
     catalogSection: {
       title: "Лідери продажу",
-      prevPage: "Попередня сторінка",
-      nextPage: "Наступна сторінка",
+      viewAll: "Переглянути всі",
       empty: "У цій категорії поки що немає лідерів продажу",
     },
     flashDeals: {

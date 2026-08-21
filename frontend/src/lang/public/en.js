@@ -205,8 +205,7 @@ export default {
     },
     catalogSection: {
       title: "Bestsellers",
-      prevPage: "Previous page",
-      nextPage: "Next page",
+      viewAll: "View all",
       empty: "There are no bestsellers in this category yet",
     },
     flashDeals: {
