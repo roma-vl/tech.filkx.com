@@ -141,20 +141,25 @@ onServerPrefetch(async () => {
     <!-- Products Grid -->
     <div
       v-if="isLoadingProds"
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800"
     >
       <div
         v-for="i in TEASER_SIZE"
         :key="i"
-        class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl p-4 space-y-4 animate-pulse"
+        class="flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
       >
-        <div class="aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
-        <div class="h-3 w-16 bg-zinc-250 dark:bg-zinc-800 rounded" />
-        <div class="h-4 bg-zinc-250 dark:bg-zinc-800 rounded w-full" />
-        <div class="h-4 bg-zinc-250 dark:bg-zinc-800 rounded w-5/6" />
-        <div class="flex justify-between items-center pt-2">
-          <div class="h-6 bg-zinc-250 dark:bg-zinc-800 rounded w-20" />
-          <div class="w-9 h-9 rounded-full bg-zinc-250 dark:bg-zinc-800" />
+        <div class="aspect-square bg-zinc-200 dark:bg-zinc-800" />
+        <div class="h-3 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />
+        <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-full" />
+        <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-5/6" />
+        <div
+          class="flex justify-between items-center pt-3 mt-auto border-t border-zinc-100 dark:border-zinc-800"
+        >
+          <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-20" />
+          <div class="flex gap-1.5">
+            <div class="w-8 h-8 rounded-md bg-zinc-200 dark:bg-zinc-800" />
+            <div class="w-8 h-8 rounded-md bg-zinc-200 dark:bg-zinc-800" />
+          </div>
         </div>
       </div>
     </div>
