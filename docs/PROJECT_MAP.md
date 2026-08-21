@@ -316,9 +316,18 @@ What now exists (working tree, uncommitted as of 2026-08-17 on `add-new-logic`):
   behavior — `onServerPrefetch` hooks are simply never invoked outside SSR.
 
 ### Testing (frontend)
-`package.json` defines `test:unit` (vitest) and `test:e2e` (playwright), but there is **no
-`vitest.config.*`, no `playwright.config.*`, and zero `*.spec.*`/`*.test.*` files anywhere in
-`frontend/src`**. Frontend testing is entirely unset up, not just low-coverage.
+**Corrected 2026-08-21 — this section was stale.** `vitest.config.ts` exists (commit `89f0860`,
+2026-08-17) and `frontend/src` has 9 real spec files, 55 passing tests:
+`entities/product/lib/{resolveProductImage,mapCatalogProduct}.spec.ts`,
+`entities/order/model/cartStore.spec.ts`, `widgets/CookieConsent/CookieConsent.spec.ts`,
+`widgets/CartDrawer/CartDrawer.spec.ts`, `widgets/ShoppingCart/CheckoutForm.spec.ts`,
+`features/product/composables/useProductDetail.spec.ts`,
+`features/cart/composables/useShoppingCart.spec.ts`,
+`features/catalog/composables/useCatalog.spec.ts`. Run via `make test-frontend` or
+`npm run test:unit -- --run`; wired into CI (`.github/workflows/ci.yml`, commit `480d661`, fixed
+2026-08-21 to actually call it — the workflow's original comment claiming zero spec files existed
+was written from this same stale doc, not independently verified). `test:e2e` (Playwright) is still
+genuinely unset up — no `playwright.config.*`, no e2e test files — that part of the old claim holds.
 
 ---
 
@@ -337,8 +346,9 @@ commits changed the picture; items 11-15 were found during the 2026-08-20 pass a
    `frontend/scripts/generate-sitemap.cjs` and `frontend/scripts/prerender.mjs` now exist and are
    wired into `postbuild`, verified working end-to-end (uncommitted working-tree state as of
    2026-08-17 — see DEVELOPMENT_PLAN.md §2.6 for verification detail).
-3. **Frontend has zero test infrastructure** despite `test:unit`/`test:e2e` scripts existing. Still
-   true, unchanged.
+3. ~~Frontend has zero test infrastructure~~ **stale claim, corrected 2026-08-21**: it's had real
+   infrastructure and 9 spec files (55 tests) since commit `89f0860` (2026-08-17) — see "Testing
+   (frontend)" above. `test:e2e` (Playwright) is still genuinely unset up.
 4. ~~Backend has zero real test coverage~~ **No longer true** (commit `ca5ef97` + Feature tests
    added alongside 2FA/newsletter/home-banner work, plus a follow-up pass covering cart/checkout/
    catalog/admin-orders) — see "Testing (backend)" above for what's covered; still missing coverage

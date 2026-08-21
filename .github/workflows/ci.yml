@@ -43,7 +43,7 @@ jobs:
         run: docker compose run --rm tech-api-php-cli php artisan test
 
   frontend:
-    name: Frontend (lint + build)
+    name: Frontend (tests + lint + build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,6 +59,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run unit tests (Vitest)
+        run: npm run test:unit -- --run
 
       - name: Prettier check (advisory)
         # Check-only, never --write (unlike `make format`) - CI must never silently
@@ -81,9 +84,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-    # test:unit (vitest) is deliberately not run here - there are zero *.spec.*/*.test.*
-    # files anywhere in frontend/src today (see docs/PROJECT_MAP.md "Testing (frontend)"),
-    # so it would only ever fail with "no test files found". Wiring it up is a separate,
-    # bigger task (building frontend test infrastructure from scratch) - see
-    # docs/DEVELOPMENT_PLAN.md §4. Add a step here once real spec files exist.

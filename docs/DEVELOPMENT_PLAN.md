@@ -322,9 +322,10 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   reviewed by a lawyer** — facts the business must still supply are left as bracketed placeholders
   ([ЮРИДИЧНА АДРЕСА], [ЄДРПОУ], etc.). **Action before launch**: have a lawyer review, and fill in
   the remaining bracketed placeholders with real values.
-- ❌ No cookie-consent banner found — Footer only links to the `/cookies` policy page, there's no
-  actual consent UI (banner/popup). Unchanged from the original audit; verify before EU/UA traffic
-  if legally required.
+- ✅ **Cookie-consent banner exists** — stale claim corrected 2026-08-21. `widgets/CookieConsent/CookieConsent.vue`
+  (commit `89f0860`, 2026-08-17) is mounted in `App.vue`, accept-all/essential-only, persisted to
+  `localStorage`, links to the real `/cookies` policy page, 5 passing tests. This doc's "unchanged
+  from the original audit" note was simply never re-verified after that commit landed.
 
 ### 2.9 Catalog filter correctness (found 2026-08-20, **all five fixed 2026-08-20**, commit `6fabbee`)
 Found while auditing a user report that the catalog's filter sidebar "doesn't look logical" for the
@@ -451,9 +452,10 @@ user impact, as originally written) with each item's resolution noted:
 2. **Launch blockers — mostly done now**: ~~payment gateway~~ ✅, ~~rate limiting~~ ✅,
    ~~Postgres backups~~ ✅, ~~Terms/Privacy content~~ ✅ (drafts, needs lawyer review),
    ~~Sentry code integration~~ ✅ (needs an actual DSN/account before it does anything),
-   ~~broken transactional email links~~ ✅ (2026-08-20, §2.2). Still open: CI running lint+tests, a
-   cookie-consent banner if legally required, lawyer review of the legal pages, creating the Sentry
-   project.
+   ~~broken transactional email links~~ ✅ (2026-08-20, §2.2), ~~CI running lint+tests~~ ✅
+   (2026-08-21, §2.4), ~~cookie-consent banner~~ ✅ (already existed, commit `89f0860` — this doc
+   just hadn't caught up, corrected 2026-08-21, §2.8). Still open: lawyer review of the legal pages,
+   creating the Sentry project.
 3. **Launch-quality**: ~~SSR or prerendering + real sitemap generation for SEO~~ ✅ prerendering +
    sitemap generation now exist (see §2.6), ~~single flat catalog page~~ ✅ real category/subcategory
    routes now exist (2026-08-20, §2.6), Redis-backed caching, image storage strategy (confirm
@@ -471,12 +473,15 @@ user impact, as originally written) with each item's resolution noted:
    (reshuffling on every request — Postgres ignores `inRandomOrder()`'s seed argument, so the
    "hourly rotation" was never real) to real, stable, discount-qualified picks (commit `061a59c`).
 6. **Next up (recommended immediate priority)**: none currently queued — see §2 for open items by
-   area (cookie consent, lawyer review of legal pages, Sentry project creation are the remaining
-   launch blockers per phase 2 above; promotions engine hardening and image storage strategy are the
-   next launch-quality items per phase 3; fixing the ESLint TypeScript-parser config — `PROJECT_MAP.md`
-   "Known technical debt" #16 — is the highest-leverage frontend-quality item now that CI surfaces it).
+   area (lawyer review of legal pages and Sentry project creation are the remaining launch blockers
+   per phase 2 above — both need the business, not more code; promotions engine hardening and image
+   storage strategy are the next launch-quality items per phase 3; fixing the ESLint
+   TypeScript-parser config — `PROJECT_MAP.md` "Known technical debt" #16 — is the highest-leverage
+   frontend-quality item now that CI surfaces it).
 7. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
    test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
    Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
-   build frontend test infrastructure from scratch (still literally zero), external analytics, load
-   testing, multi-currency if expanding beyond Ukraine.
+   ~~build frontend test infrastructure from scratch~~ ✅ exists since commit `89f0860` (9 spec
+   files, 55 tests, now CI-wired — see §2.4/`PROJECT_MAP.md` "Testing (frontend)") — broaden its
+   coverage and add Playwright e2e (still genuinely unset up), external analytics, load testing,
+   multi-currency if expanding beyond Ukraine.
