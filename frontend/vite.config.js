@@ -11,11 +11,11 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
       injectRegister: "auto",
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
-        name: "Filkx - Premium Streaming",
-        short_name: "Filkx",
+        name: "FilkxTech",
+        short_name: "FilkxTech",
         description:
-          "Experience high-quality streaming and digital content on Filkx.",
-        theme_color: "#4f46e5",
+          "Інтернет-магазин електроніки FilkxTech: каталог, кошик і швидке оформлення замовлення.",
+        theme_color: "#00a046",
         background_color: "#030712",
         display: "standalone",
         start_url: "/",
@@ -40,7 +40,14 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,ico,png,svg,json}"], // Removed html from precache
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // The whole app (storefront + admin) ships as one unsplit bundle (Vite already
+        // warns "chunks larger than 500 kB" on every build) - it crossed the previous
+        // 5 MB limit here as more admin/catalog features were added, breaking the build
+        // outright (workbox refuses to precache an asset over the limit). Bumped with
+        // headroom; the real fix is route-based code splitting (at minimum, keeping the
+        // admin back-office out of the public storefront's bundle) - not done here, out
+        // of scope for unblocking the build.
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
