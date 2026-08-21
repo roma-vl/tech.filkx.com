@@ -109,7 +109,7 @@ const formatNumber = (num: number) => {
             </div>
           </div>
         </div>
-        <UiSectionLink :to="{ name: 'catalog' }">{{
+        <UiSectionLink :to="{ name: 'catalog', query: { discounts: '1' } }">{{
           t("home.flashDeals.allDeals")
         }}</UiSectionLink>
       </div>

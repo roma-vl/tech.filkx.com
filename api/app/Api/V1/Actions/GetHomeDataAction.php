@@ -21,23 +21,11 @@ class GetHomeDataAction
         // 1. Popular categories (6 categories with most active products)
         $categories = $this->categoryRepository->getPopularCategories(6);
 
-        // 2. Flash Deals (seeded by date/hour to rotate every hour randomly)
+        // 2. Flash Deals: real "hot" products only (is_hot flag or an actual discounted
+        // variant), rotated deterministically by date/hour so the set is stable for the
+        // hour the countdown timer promises rather than reshuffling on every request.
         $seed = (int) date('YmdH');
-        $flashDeals = Product::with([
-            'brand',
-            'categories',
-            'variants.stocks',
-            'attributeValues.attribute',
-            'attributeValues.attributeValue',
-            'variants.attributeValues.attribute',
-            'variants.attributeValues.attributeValue',
-        ])
-            ->withCount('approvedReviews')
-            ->withAvg('approvedReviews', 'rating')
-            ->where('status', 'active')
-            ->inRandomOrder($seed)
-            ->take(4)
-            ->get();
+        $flashDeals = $this->productRepository->getSeededHotDeals(4, $seed);
 
         // 3. Smart Recommendations Algorithm
         $recommendedIds = collect();

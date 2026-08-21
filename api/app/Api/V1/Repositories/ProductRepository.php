@@ -78,6 +78,40 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getHotDeals(int $limit = 8): Collection
     {
+        return $this->hotDealsQuery()->take($limit)->get();
+    }
+
+    /**
+     * Same "real deal" criteria as getHotDeals(), but rotated deterministically by
+     * $seed (typically the current year+month+day+hour) instead of relying on the
+     * database to shuffle. Postgres's grammar for inRandomOrder() ignores the seed
+     * argument entirely (only MySqlGrammar::compileRandom() honors it) and always
+     * compiles to a plain `ORDER BY RANDOM()`, so a DB-level seeded order would
+     * silently reshuffle on every request instead of staying stable for the hour.
+     */
+    public function getSeededHotDeals(int $limit, int $seed): Collection
+    {
+        $ids = $this->hotDealsQuery()->orderBy('id')->pluck('id')->all();
+
+        if (empty($ids)) {
+            return new Collection;
+        }
+
+        mt_srand($seed);
+        shuffle($ids);
+        mt_srand();
+
+        $selectedIds = array_slice($ids, 0, $limit);
+
+        return $this->hotDealsQuery()
+            ->whereIn('id', $selectedIds)
+            ->get()
+            ->sortBy(fn (Product $product) => array_search($product->id, $selectedIds))
+            ->values();
+    }
+
+    private function hotDealsQuery(): Builder
+    {
         return Product::with([
             'brand',
             'categories',
@@ -90,15 +124,13 @@ class ProductRepository implements ProductRepositoryInterface
             ->withCount('approvedReviews')
             ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
-            ->where(function ($q) {
+            ->where(function (Builder $q) {
                 $q->where('is_hot', true)
                     ->orWhereHas('variants', function ($varQ) {
                         $varQ->whereNotNull('old_price')
                             ->whereRaw('old_price > price');
                     });
-            })
-            ->take($limit)
-            ->get();
+            });
     }
 
     public function getRecommended(int $limit = 8): Collection

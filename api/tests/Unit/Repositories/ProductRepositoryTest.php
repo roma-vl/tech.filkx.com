@@ -223,6 +223,56 @@ class ProductRepositoryTest extends TestCase
         $this->assertCount(3, $result);
     }
 
+    public function test_get_seeded_hot_deals_applies_the_same_criteria_as_get_hot_deals(): void
+    {
+        $hot = $this->makeProduct(['is_hot' => true]);
+        $this->makeVariant($hot, 100);
+        $discounted = $this->makeProduct();
+        $this->makeVariant($discounted, 80, oldPrice: 100);
+        $regular = $this->makeProduct();
+        $this->makeVariant($regular, 100);
+
+        $result = $this->repository->getSeededHotDeals(10, seed: 12345);
+
+        $this->assertTrue($result->contains('id', $hot->id));
+        $this->assertTrue($result->contains('id', $discounted->id));
+        $this->assertFalse($result->contains('id', $regular->id));
+    }
+
+    public function test_get_seeded_hot_deals_respects_the_limit(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $product = $this->makeProduct(['is_hot' => true]);
+            $this->makeVariant($product, 100);
+        }
+
+        $result = $this->repository->getSeededHotDeals(3, seed: 12345);
+
+        $this->assertCount(3, $result);
+    }
+
+    public function test_get_seeded_hot_deals_is_deterministic_for_the_same_seed(): void
+    {
+        for ($i = 0; $i < 8; $i++) {
+            $product = $this->makeProduct(['is_hot' => true]);
+            $this->makeVariant($product, 100);
+        }
+
+        $first = $this->repository->getSeededHotDeals(4, seed: 2026081815)->pluck('id')->all();
+        $second = $this->repository->getSeededHotDeals(4, seed: 2026081815)->pluck('id')->all();
+
+        $this->assertSame($first, $second);
+    }
+
+    public function test_get_seeded_hot_deals_returns_an_empty_collection_when_nothing_qualifies(): void
+    {
+        $this->makeProduct();
+
+        $result = $this->repository->getSeededHotDeals(4, seed: 12345);
+
+        $this->assertCount(0, $result);
+    }
+
     public function test_get_recommended_includes_only_recommended_active_products(): void
     {
         $recommended = $this->makeProduct(['is_recommended' => true]);

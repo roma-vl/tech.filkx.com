@@ -22,7 +22,9 @@ export function useCatalog() {
   );
   const selectedAttrs = ref<Record<string, string[]>>({});
   const selectedRating = ref("");
-  const onlyDiscounts = ref(false);
+  const onlyDiscounts = ref(
+    route.query.discounts === "1" || route.query.discounts === "true",
+  );
   const onlyInStock = ref(false);
 
   const isMobileFilterOpen = ref(false);

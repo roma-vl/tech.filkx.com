@@ -6,6 +6,7 @@ use App\Api\V1\Actions\GetHomeDataAction;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -40,6 +41,16 @@ class GetHomeDataActionTest extends TestCase
     private function requestWith(array $query = []): Request
     {
         return Request::create('/api/v1/catalog/home', 'GET', $query);
+    }
+
+    private function makeVariant(Product $product, float $price, ?float $oldPrice = null): ProductVariant
+    {
+        return ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'sku-'.uniqid(),
+            'price' => $price,
+            'old_price' => $oldPrice,
+        ]);
     }
 
     public function test_execute_recommends_products_sharing_a_category_with_a_wishlisted_product(): void
@@ -120,6 +131,7 @@ class GetHomeDataActionTest extends TestCase
     public function test_execute_returns_active_banners_categories_and_flash_deals(): void
     {
         $product = $this->makeProduct();
+        $product->update(['is_hot' => true]);
 
         $result = $this->action->execute($this->requestWith());
 
@@ -128,5 +140,40 @@ class GetHomeDataActionTest extends TestCase
         $this->assertArrayHasKey('flash_deals', $result);
         $this->assertArrayHasKey('recommended', $result);
         $this->assertTrue($result['flash_deals']->pluck('id')->contains($product->id));
+    }
+
+    public function test_execute_only_includes_flash_deals_that_are_hot_or_genuinely_discounted(): void
+    {
+        $hot = $this->makeProduct();
+        $hot->update(['is_hot' => true]);
+        $this->makeVariant($hot, 100);
+
+        $discounted = $this->makeProduct();
+        $this->makeVariant($discounted, 80, 100);
+
+        $plain = $this->makeProduct();
+        $this->makeVariant($plain, 80);
+
+        $result = $this->action->execute($this->requestWith());
+
+        $flashDealIds = $result['flash_deals']->pluck('id')->all();
+        $this->assertContains($hot->id, $flashDealIds);
+        $this->assertContains($discounted->id, $flashDealIds);
+        $this->assertNotContains($plain->id, $flashDealIds);
+    }
+
+    public function test_execute_returns_the_same_flash_deals_on_repeated_calls_within_the_same_hour(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $product = $this->makeProduct();
+            $this->makeVariant($product, 80, 100);
+        }
+
+        $first = $this->action->execute($this->requestWith())['flash_deals']->pluck('id')->all();
+        $second = $this->action->execute($this->requestWith())['flash_deals']->pluck('id')->all();
+
+        // Guards against reintroducing DB-level inRandomOrder($seed) - Postgres ignores the
+        // seed argument and reshuffles on every call, which would make this flaky/fail here.
+        $this->assertSame($first, $second);
     }
 }
