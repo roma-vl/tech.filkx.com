@@ -39,7 +39,10 @@
             class="!p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             @click="showCurrentPassword = !showCurrentPassword"
           >
-            <EyeIcon v-if="showCurrentPassword" class="h-5 w-5" />
+            <EyeIcon
+              v-if="showCurrentPassword"
+              class="h-5 w-5"
+            />
             <svg
               v-else
               class="h-5 w-5"
@@ -68,7 +71,7 @@
           }}</span>
           {{
             $t("settings.set_password_notice") ||
-            "You are currently using Google to sign in. Set a password to be able to sign in with your email directly."
+              "You are currently using Google to sign in. Set a password to be able to sign in with your email directly."
           }}
         </p>
       </div>
@@ -93,7 +96,10 @@
                 class="!p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 @click="showNewPassword = !showNewPassword"
               >
-                <EyeIcon v-if="showNewPassword" class="h-5 w-5" />
+                <EyeIcon
+                  v-if="showNewPassword"
+                  class="h-5 w-5"
+                />
                 <svg
                   v-else
                   class="h-5 w-5"
@@ -112,7 +118,10 @@
             </template>
           </AppInput>
 
-          <div v-if="localForm.newPassword" class="mt-2">
+          <div
+            v-if="localForm.newPassword"
+            class="mt-2"
+          >
             <div class="flex gap-1 mb-1">
               <div
                 v-for="i in 4"
@@ -125,7 +134,10 @@
                 "
               />
             </div>
-            <p class="text-xs font-medium" :class="passwordStrength.textColor">
+            <p
+              class="text-xs font-medium"
+              :class="passwordStrength.textColor"
+            >
               {{ passwordStrength.label }}
             </p>
           </div>
@@ -153,7 +165,10 @@
               class="!p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               @click="showConfirmPassword = !showConfirmPassword"
             >
-              <EyeIcon v-if="showConfirmPassword" class="h-5 w-5" />
+              <EyeIcon
+                v-if="showConfirmPassword"
+                class="h-5 w-5"
+              />
               <svg
                 v-else
                 class="h-5 w-5"

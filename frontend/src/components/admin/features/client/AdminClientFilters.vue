@@ -40,13 +40,19 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <AppButton variant="secondary" @click="$emit('export')">
+        <AppButton
+          variant="secondary"
+          @click="$emit('export')"
+        >
           <template #prefix>
             <ArrowDownTrayIcon class="w-4 h-4" />
           </template>
           {{ $t("admin.users.exportCsv") }}
         </AppButton>
-        <AppButton variant="primary" @click="$emit('add')">
+        <AppButton
+          variant="primary"
+          @click="$emit('add')"
+        >
           <template #prefix>
             <PlusIcon class="w-4 h-4 stroke-[3px]" />
           </template>

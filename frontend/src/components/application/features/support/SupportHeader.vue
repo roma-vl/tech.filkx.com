@@ -26,8 +26,11 @@
             v-if="user?.avatar_url"
             :src="user.avatar_url"
             class="w-full h-full object-cover"
+          >
+          <UserIcon
+            v-else
+            class="w-5 h-5 opacity-80"
           />
-          <UserIcon v-else class="w-5 h-5 opacity-80" />
         </div>
         <button
           class="p-2 -mr-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 shadow-sm cursor-pointer transition-all hover:scale-105 active:scale-95"
@@ -45,7 +48,10 @@
           {{ t("support.description") }}
         </p>
       </div>
-      <div v-else-if="currentView === 'chat'" class="flex items-center gap-4">
+      <div
+        v-else-if="currentView === 'chat'"
+        class="flex items-center gap-4"
+      >
         <div
           class="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 bg-white/10 shadow-inner flex items-center justify-center shrink-0"
         >
@@ -57,7 +63,7 @@
             v-else
             src="https://ui-avatars.com/api/?name=Support&background=000&color=fff"
             class="w-full h-full object-cover"
-          />
+          >
         </div>
         <div>
           <h3 class="font-bold text-lg leading-tight dropshadow-sm">

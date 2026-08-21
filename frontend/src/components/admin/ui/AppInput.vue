@@ -27,7 +27,7 @@
         ]"
         v-bind="$attrs"
         @input="$emit('update:modelValue', $event.target.value)"
-      />
+      >
       <div
         v-if="$slots.append"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
@@ -35,7 +35,10 @@
         <slot name="append" />
       </div>
     </div>
-    <p v-if="error" class="mt-1 text-sm text-red-600">
+    <p
+      v-if="error"
+      class="mt-1 text-sm text-red-600"
+    >
       {{ error }}
     </p>
   </div>

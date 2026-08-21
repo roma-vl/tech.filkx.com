@@ -33,11 +33,14 @@
             type="checkbox"
             :value="category.id"
             class="w-3.5 h-3.5 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
-          />
+          >
           {{ category.nameUk }}
         </label>
       </div>
-      <p v-else class="text-xs text-gray-400 italic">
+      <p
+        v-else
+        class="text-xs text-gray-400 italic"
+      >
         Немає доступних категорій.
       </p>
     </div>
@@ -67,7 +70,10 @@
           Додати
         </AppButton>
       </div>
-      <div v-if="selectedProducts.length" class="flex flex-wrap gap-2 mt-3">
+      <div
+        v-if="selectedProducts.length"
+        class="flex flex-wrap gap-2 mt-3"
+      >
         <span
           v-for="product in selectedProducts"
           :key="product.id"

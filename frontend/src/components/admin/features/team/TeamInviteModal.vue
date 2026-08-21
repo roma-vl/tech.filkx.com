@@ -26,7 +26,10 @@
     </template>
 
     <div class="p-1">
-      <form class="space-y-6" @submit.prevent="$emit('submit')">
+      <form
+        class="space-y-6"
+        @submit.prevent="$emit('submit')"
+      >
         <div>
           <label
             class="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest px-1"
@@ -71,7 +74,10 @@
         </div>
 
         <div class="pt-6 flex justify-end gap-3">
-          <AppButton variant="white" @click="$emit('close')">
+          <AppButton
+            variant="white"
+            @click="$emit('close')"
+          >
             {{ t("admin.team.invite.cancel") }}
           </AppButton>
           <AppButton

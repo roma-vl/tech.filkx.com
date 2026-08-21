@@ -1,5 +1,8 @@
 <template>
-  <AppModal v-model="show" max-width="md">
+  <AppModal
+    v-model="show"
+    max-width="md"
+  >
     <div class="p-6">
       <div class="flex items-center gap-4 mb-6">
         <div
@@ -29,7 +32,11 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <AppButton variant="secondary" class="flex-1" @click="$emit('close')">
+        <AppButton
+          variant="secondary"
+          class="flex-1"
+          @click="$emit('close')"
+        >
           {{ $t("admin.impersonation.cancel", { defaultValue: "Cancel" }) }}
         </AppButton>
         <AppButton

@@ -17,7 +17,10 @@
       </slot>
     </div>
 
-    <div class="p-4" :class="bodyClass">
+    <div
+      class="p-4"
+      :class="bodyClass"
+    >
       <slot />
     </div>
 

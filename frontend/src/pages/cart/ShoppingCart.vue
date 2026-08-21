@@ -53,9 +53,7 @@
         <div
           class="w-20 h-20 mx-auto rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 mb-5"
         >
-          <span class="material-symbols-outlined text-[44px]"
-            >remove_shopping_cart</span
-          >
+          <span class="material-symbols-outlined text-[44px]">remove_shopping_cart</span>
         </div>
         <h2
           class="font-headline-md text-zinc-900 dark:text-white text-xl font-bold mb-2"
@@ -75,11 +73,17 @@
       </div>
 
       <!-- Cart Grid Layout -->
-      <div v-else class="cart-layout">
+      <div
+        v-else
+        class="cart-layout"
+      >
         <!-- Left Column -->
         <section class="space-y-stack-md">
           <!-- Checkout Details Form -->
-          <CheckoutForm v-if="isCheckoutMode" v-model="checkoutForm" />
+          <CheckoutForm
+            v-if="isCheckoutMode"
+            v-model="checkoutForm"
+          />
 
           <!-- Cart Item list -->
           <CartItemsList

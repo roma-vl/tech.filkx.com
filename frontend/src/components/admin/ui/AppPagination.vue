@@ -17,7 +17,10 @@
         <ArrowLeftIcon class="w-4 h-4 mr-1" />
         <span class="hidden sm:inline">{{ prevLabel }}</span>
       </AppButton>
-      <template v-for="page in pages" :key="page">
+      <template
+        v-for="page in pages"
+        :key="page"
+      >
         <span
           v-if="page === '...'"
           class="px-2 py-1 text-sm font-medium text-gray-400 dark:text-gray-500 self-center select-none"

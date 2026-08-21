@@ -15,7 +15,7 @@
         :placeholder="t('admin.support.actions.search_tickets')"
         class="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400 font-medium"
         @input="$emit('update:search', $event.target.value)"
-      />
+      >
     </div>
 
     <!-- Tag Filter -->

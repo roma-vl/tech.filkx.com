@@ -93,7 +93,10 @@
     <div
       class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"
     >
-      <div v-if="loading" class="flex items-center justify-center py-20">
+      <div
+        v-if="loading"
+        class="flex items-center justify-center py-20"
+      >
         <div
           class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]"
         />
@@ -114,7 +117,10 @@
         </p>
       </div>
 
-      <div v-else class="overflow-x-auto">
+      <div
+        v-else
+        class="overflow-x-auto"
+      >
         <table class="w-full text-sm">
           <thead
             class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700"
@@ -230,7 +236,10 @@
         v-if="pagination.last_page > 1"
         class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
       >
-        <AppPagination :pagination="pagination" @page-change="fetchPages" />
+        <AppPagination
+          :pagination="pagination"
+          @page-change="fetchPages"
+        />
       </div>
     </div>
   </div>

@@ -121,11 +121,11 @@
                 <span
                   v-if="brand.logoPath"
                   class="truncate max-w-[150px] inline-block font-mono text-xs"
-                  >{{ brand.logoPath }}</span
-                >
-                <span v-else class="text-gray-300 dark:text-gray-600"
-                  >немає</span
-                >
+                >{{ brand.logoPath }}</span>
+                <span
+                  v-else
+                  class="text-gray-300 dark:text-gray-600"
+                >немає</span>
               </td>
               <td
                 class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 truncate max-w-[200px]"
@@ -207,7 +207,10 @@
       :title="isEditing ? 'Редагувати бренд' : 'Додати бренд'"
       max-width="md"
     >
-      <form class="space-y-4" @submit.prevent="saveBrand">
+      <form
+        class="space-y-4"
+        @submit.prevent="saveBrand"
+      >
         <AppInput
           v-model="brandForm.name"
           required

@@ -21,9 +21,7 @@
               ? t("admin.users.suspendModal.confirmUnsuspend")
               : t("admin.users.suspendModal.confirmSuspend")
           }}
-          <span class="font-bold text-gray-900 dark:text-white"
-            >"{{ client?.name }}"</span
-          >?
+          <span class="font-bold text-gray-900 dark:text-white">"{{ client?.name }}"</span>?
         </p>
 
         <div
@@ -42,7 +40,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <AppButton variant="secondary" @click="closeModal">
+        <AppButton
+          variant="secondary"
+          @click="closeModal"
+        >
           {{ t("admin.users.suspendModal.cancel") }}
         </AppButton>
         <AppButton

@@ -40,7 +40,10 @@ async function logout() {
 </script>
 
 <template>
-  <Menu as="div" class="relative inline-block text-left">
+  <Menu
+    as="div"
+    class="relative inline-block text-left"
+  >
     <MenuButton
       class="profile-menu-button inline-flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors"
     >
@@ -48,7 +51,7 @@ async function logout() {
         :src="avatar"
         :alt="user?.name"
         class="h-8 w-8 md:h-9 md:w-9 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
-      />
+      >
       <span class="hidden md:inline truncate max-w-[120px]">
         {{ user?.name || $t("userMenu.profile.fallback") }}
       </span>
@@ -72,7 +75,7 @@ async function logout() {
               :src="avatar"
               :alt="user?.name"
               class="h-10 w-10 rounded-full object-cover"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="flex items-center">
                 <p

@@ -33,7 +33,7 @@
       type="file"
       class="hidden"
       @change="handleFileUpload"
-    />
+    >
 
     <div
       v-if="selectedFile"

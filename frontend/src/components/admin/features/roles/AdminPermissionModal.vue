@@ -107,7 +107,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3 p-2">
-        <AppButton variant="white" @click="$emit('update:modelValue', false)">
+        <AppButton
+          variant="white"
+          @click="$emit('update:modelValue', false)"
+        >
           {{ t("admin.roles.permission_modal.cancel") }}
         </AppButton>
         <AppButton

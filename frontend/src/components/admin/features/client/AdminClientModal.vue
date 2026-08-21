@@ -69,7 +69,7 @@
                 type="checkbox"
                 :value="role.slug"
                 class="sr-only"
-              />
+              >
               <span class="text-[11px] font-bold">{{ role.name }}</span>
             </label>
           </div>
@@ -79,10 +79,17 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <AppButton variant="secondary" @click="$emit('close')">
+        <AppButton
+          variant="secondary"
+          @click="$emit('close')"
+        >
           {{ $t("admin.users.modal.cancel") }}
         </AppButton>
-        <AppButton variant="primary" :loading="saving" @click="handleSave">
+        <AppButton
+          variant="primary"
+          :loading="saving"
+          @click="handleSave"
+        >
           {{
             saving
               ? $t("admin.users.modal.saving")

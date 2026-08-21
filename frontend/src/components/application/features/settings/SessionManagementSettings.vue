@@ -7,7 +7,10 @@
       {{ t("settings.sessions_description") }}
     </p>
 
-    <div v-if="loading" class="text-center py-8">
+    <div
+      v-if="loading"
+      class="text-center py-8"
+    >
       <div
         class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
       />
@@ -20,7 +23,10 @@
       {{ t("settings.sessions_none") }}
     </div>
 
-    <div v-else class="space-y-3">
+    <div
+      v-else
+      class="space-y-3"
+    >
       <div
         v-for="session in displayedSessions"
         :key="session.id"
@@ -58,10 +64,11 @@
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ session.platform }} • {{ session.device }}
-              <span v-if="session.ipAddress" class="ml-2"
-                >• {{ t("settings.sessions_ip") }}:
-                {{ session.ipAddress }}</span
-              >
+              <span
+                v-if="session.ipAddress"
+                class="ml-2"
+              >• {{ t("settings.sessions_ip") }}:
+                {{ session.ipAddress }}</span>
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ t("settings.sessions_last_active") }}:
@@ -71,7 +78,10 @@
         </div>
       </div>
 
-      <div v-if="sessions.length > 3" class="text-center pt-2">
+      <div
+        v-if="sessions.length > 3"
+        class="text-center pt-2"
+      >
         <button
           class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium focus:outline-none"
           @click="showAllSessions = !showAllSessions"

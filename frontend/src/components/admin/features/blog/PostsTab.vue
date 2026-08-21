@@ -102,7 +102,10 @@
     </transition>
 
     <!-- Posts grid -->
-    <div v-if="loading" class="flex items-center justify-center py-20">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-20"
+    >
       <div
         class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]"
       />
@@ -113,10 +116,15 @@
       class="text-center py-20 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm"
     >
       <DocumentTextIcon class="w-12 h-12 mx-auto mb-3 opacity-40" />
-      <p class="text-sm font-medium">Постів не знайдено</p>
+      <p class="text-sm font-medium">
+        Постів не знайдено
+      </p>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    <div
+      v-else
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+    >
       <div
         v-for="post in posts"
         :key="post.id"
@@ -131,8 +139,11 @@
             :src="post.coverImage"
             :alt="post.titleUk"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <div v-else class="absolute inset-0 flex items-center justify-center">
+          >
+          <div
+            v-else
+            class="absolute inset-0 flex items-center justify-center"
+          >
             <DocumentTextIcon class="w-12 h-12 text-emerald-300" />
           </div>
           <!-- Status badge -->
@@ -162,7 +173,10 @@
           </p>
 
           <div class="flex items-center gap-3 text-xs text-gray-400">
-            <span v-if="post.categoryName" class="flex items-center gap-1">
+            <span
+              v-if="post.categoryName"
+              class="flex items-center gap-1"
+            >
               <TagIcon class="w-3 h-3" />
               {{ post.categoryName }}
             </span>
@@ -200,7 +214,10 @@
       v-if="pagination.last_page > 1"
       class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
     >
-      <AppPagination :pagination="pagination" @page-change="fetchPosts" />
+      <AppPagination
+        :pagination="pagination"
+        @page-change="fetchPosts"
+      />
     </div>
   </div>
 </template>

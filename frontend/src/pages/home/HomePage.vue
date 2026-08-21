@@ -138,7 +138,10 @@
     </template>
 
     <template v-else>
-      <HeroSlider :categories="categories" :banners="banners" />
+      <HeroSlider
+        :categories="categories"
+        :banners="banners"
+      />
       <UspGrid />
       <CatalogSection :categories="popularCategories" />
       <FlashDeals

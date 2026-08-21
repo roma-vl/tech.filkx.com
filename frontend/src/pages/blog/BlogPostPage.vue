@@ -1,7 +1,10 @@
 <template>
   <main class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
     <!-- Loading state -->
-    <div v-if="loading" class="max-w-4xl mx-auto px-4 py-20">
+    <div
+      v-if="loading"
+      class="max-w-4xl mx-auto px-4 py-20"
+    >
       <div class="animate-pulse space-y-6">
         <div class="h-72 bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
         <div class="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-3/4" />
@@ -17,18 +20,27 @@
     </div>
 
     <!-- 404 -->
-    <div v-else-if="!post" class="max-w-4xl mx-auto px-4 py-32 text-center">
+    <div
+      v-else-if="!post"
+      class="max-w-4xl mx-auto px-4 py-32 text-center"
+    >
       <span class="text-6xl mb-4 block">📄</span>
       <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
         Статтю не знайдено
       </h1>
-      <RouterLink to="/blog" class="text-emerald-600 hover:underline">
+      <RouterLink
+        to="/blog"
+        class="text-emerald-600 hover:underline"
+      >
         ← Повернутися до блогу
       </RouterLink>
     </div>
 
     <!-- Post content -->
-    <article v-else class="pb-16">
+    <article
+      v-else
+      class="pb-16"
+    >
       <!-- Cover -->
       <div
         class="relative h-72 md:h-96 bg-gradient-to-br from-emerald-950 via-zinc-900 to-zinc-950 overflow-hidden"
@@ -38,7 +50,7 @@
           :src="post.coverImage"
           :alt="post.title?.uk || post.title?.en"
           class="absolute inset-0 w-full h-full object-cover opacity-60"
-        />
+        >
         <div
           class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent"
         />
@@ -46,7 +58,10 @@
           class="relative max-w-4xl mx-auto px-4 h-full flex flex-col justify-end pb-8"
         >
           <!-- Category -->
-          <div v-if="post.category" class="mb-3">
+          <div
+            v-if="post.category"
+            class="mb-3"
+          >
             <RouterLink
               :to="{ name: 'blog', query: { category: post.category.slug } }"
               class="inline-block px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
@@ -67,7 +82,10 @@
         <div
           class="max-w-4xl mx-auto px-4 py-4 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400"
         >
-          <div v-if="post.author" class="flex items-center gap-2">
+          <div
+            v-if="post.author"
+            class="flex items-center gap-2"
+          >
             <div
               class="w-7 h-7 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold"
             >
@@ -87,7 +105,11 @@
               viewBox="0 0 24 24"
             >
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+              />
             </svg>
             {{ post.views }} переглядів
           </span>
@@ -108,7 +130,10 @@
       <!-- Breadcrumb -->
       <div class="max-w-4xl mx-auto px-4 py-4">
         <nav class="flex items-center gap-2 text-xs text-gray-400">
-          <RouterLink to="/" class="hover:text-emerald-500 transition-colors">
+          <RouterLink
+            to="/"
+            class="hover:text-emerald-500 transition-colors"
+          >
             Головна
           </RouterLink>
           <span>/</span>

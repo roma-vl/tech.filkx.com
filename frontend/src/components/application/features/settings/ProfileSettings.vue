@@ -31,7 +31,7 @@
               :src="previewAvatar || localForm.avatarUrl"
               alt="Avatar"
               class="w-full h-full object-cover"
-            />
+            >
           </div>
           <div
             v-else
@@ -57,8 +57,11 @@
             accept="image/jpeg,image/png,image/jpg"
             class="hidden"
             @change="handleAvatarChange"
-          />
-          <AppButton variant="primary" @click="$refs.avatarInput.click()">
+          >
+          <AppButton
+            variant="primary"
+            @click="$refs.avatarInput.click()"
+          >
             {{
               localForm.avatarUrl
                 ? $t("settings.change_avatar")

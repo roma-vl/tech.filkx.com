@@ -86,7 +86,7 @@
                   :src="banner.imageUrl"
                   :alt="banner.title"
                   class="w-20 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
-                />
+                >
               </td>
               <td
                 class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate"
@@ -100,8 +100,7 @@
                 <span
                   v-if="banner.linkValue"
                   class="block text-xs text-gray-400 truncate max-w-[160px]"
-                  >{{ banner.linkValue }}</span
-                >
+                >{{ banner.linkValue }}</span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                 {{ banner.sortOrder }}
@@ -185,7 +184,10 @@
       :title="isEditing ? 'Редагувати банер' : 'Додати банер'"
       max-width="lg"
     >
-      <form class="space-y-4" @submit.prevent="saveBanner">
+      <form
+        class="space-y-4"
+        @submit.prevent="saveBanner"
+      >
         <div>
           <label
             class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
@@ -197,7 +199,10 @@
               v-if="form.imageUrl"
               class="relative rounded-xl overflow-hidden aspect-[21/9] mb-2 border border-gray-200 dark:border-gray-700"
             >
-              <img :src="form.imageUrl" class="w-full h-full object-cover" />
+              <img
+                :src="form.imageUrl"
+                class="w-full h-full object-cover"
+              >
               <AppButton
                 variant="ghost"
                 size="sm"
@@ -223,7 +228,7 @@
                 accept="image/*"
                 class="sr-only"
                 @change="uploadImage"
-              />
+              >
             </label>
           </div>
         </div>
@@ -233,9 +238,20 @@
           label="Бейдж"
           placeholder="напр. Новинка"
         />
-        <AppInput v-model="form.subtitle" label="Підзаголовок" />
-        <AppInput v-model="form.title" required label="Заголовок" />
-        <AppTextarea v-model="form.description" rows="3" label="Опис" />
+        <AppInput
+          v-model="form.subtitle"
+          label="Підзаголовок"
+        />
+        <AppInput
+          v-model="form.title"
+          required
+          label="Заголовок"
+        />
+        <AppTextarea
+          v-model="form.description"
+          rows="3"
+          label="Опис"
+        />
         <AppInput
           v-model="form.buttonLabel"
           label="Текст кнопки"
@@ -270,7 +286,11 @@
       </form>
 
       <template #footer>
-        <AppButton variant="secondary" class="mr-2" @click="showModal = false">
+        <AppButton
+          variant="secondary"
+          class="mr-2"
+          @click="showModal = false"
+        >
           Скасувати
         </AppButton>
         <AppButton

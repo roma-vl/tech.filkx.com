@@ -9,7 +9,10 @@
           bgClass,
         ]"
       >
-        <component :is="icon" class="w-6 h-6 text-white" />
+        <component
+          :is="icon"
+          class="w-6 h-6 text-white"
+        />
       </div>
       <span
         v-if="trend !== undefined"

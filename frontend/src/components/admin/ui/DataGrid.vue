@@ -9,13 +9,16 @@
       class="flex flex-col md:flex-row md:justify-between md:items-center gap-2"
     >
       <slot name="header">
-        <div v-if="searchable" class="flex-1 flex gap-2 items-center">
+        <div
+          v-if="searchable"
+          class="flex-1 flex gap-2 items-center"
+        >
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search..."
             class="flex-1 pl-3 pr-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:bg-gray-900 dark:text-gray-200"
-          />
+          >
         </div>
 
         <div class="flex gap-2 items-center">
@@ -35,7 +38,7 @@
                   v-model="visibleColumns"
                   type="checkbox"
                   :value="col.key"
-                />
+                >
                 {{ col.value }}
               </label>
             </template>
@@ -53,7 +56,11 @@
                 :key="n"
                 class="flex items-center gap-2 px-2 py-1"
               >
-                <input v-model="perPage" type="radio" :value="n" />
+                <input
+                  v-model="perPage"
+                  type="radio"
+                  :value="n"
+                >
                 {{ n }}
               </label>
             </template>
@@ -76,7 +83,10 @@
             >
               <div class="flex items-center gap-1">
                 {{ col.value }}
-                <ArrowUpDownIcon v-if="col.sortable" class="w-3 h-3" />
+                <ArrowUpDownIcon
+                  v-if="col.sortable"
+                  class="w-3 h-3"
+                />
               </div>
             </th>
           </tr>
@@ -87,8 +97,15 @@
             :key="item[uniqueKey]"
             class="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <td v-for="col in visibleHeadings" :key="col.key" class="px-4 py-2">
-              <slot :name="`column-${col.key}`" :row="item">
+            <td
+              v-for="col in visibleHeadings"
+              :key="col.key"
+              class="px-4 py-2"
+            >
+              <slot
+                :name="`column-${col.key}`"
+                :row="item"
+              >
                 {{ item[col.key] }}
               </slot>
             </td>

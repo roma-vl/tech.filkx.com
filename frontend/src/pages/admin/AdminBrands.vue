@@ -16,7 +16,10 @@
     </div>
 
     <div v-else>
-      <BrandsTab :brands="dbBrands" @refresh="fetchBrands" />
+      <BrandsTab
+        :brands="dbBrands"
+        @refresh="fetchBrands"
+      />
     </div>
   </div>
 </template>

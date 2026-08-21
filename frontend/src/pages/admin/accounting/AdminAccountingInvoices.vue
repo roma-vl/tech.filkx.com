@@ -1,6 +1,9 @@
 <template>
   <div class="space-y-6">
-    <AdminInvoiceFilters v-model:filters="filters" @reset="resetFilters" />
+    <AdminInvoiceFilters
+      v-model:filters="filters"
+      @reset="resetFilters"
+    />
 
     <!-- Table -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
@@ -43,7 +46,11 @@
           <td
             class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium"
           >
-            <AppButton variant="ghost" size="sm" @click="viewInvoice(item)">
+            <AppButton
+              variant="ghost"
+              size="sm"
+              @click="viewInvoice(item)"
+            >
               {{ $t("admin.common.view") }}
             </AppButton>
           </td>

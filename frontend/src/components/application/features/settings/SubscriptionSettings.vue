@@ -23,7 +23,10 @@
     </div>
 
     <div class="p-6 space-y-6">
-      <router-link to="/account/subscription" class="group block">
+      <router-link
+        to="/account/subscription"
+        class="group block"
+      >
         <div
           class="bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-primary-200 dark:border-primary-800 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
         >

@@ -30,7 +30,10 @@
         v-if="icon"
         class="p-2 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-400 dark:text-gray-500 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/30 group-hover:text-primary-500 transition-all duration-300"
       >
-        <component :is="icon" class="w-5 h-5" />
+        <component
+          :is="icon"
+          class="w-5 h-5"
+        />
       </div>
     </div>
   </div>

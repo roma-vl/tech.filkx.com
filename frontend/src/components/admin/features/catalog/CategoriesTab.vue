@@ -157,7 +157,7 @@
                   <span
                     v-if="
                       getOwnAttributesCount(cat.id) === 0 &&
-                      getInheritedAttributesCount(cat.id) === 0
+                        getInheritedAttributesCount(cat.id) === 0
                     "
                     class="text-gray-400 dark:text-gray-500 text-xs italic"
                   >
@@ -264,7 +264,10 @@
       :title="isEditing ? 'Редагувати категорію' : 'Додати категорію'"
       max-width="md"
     >
-      <form class="space-y-4" @submit.prevent="saveCategory">
+      <form
+        class="space-y-4"
+        @submit.prevent="saveCategory"
+      >
         <AppInput
           v-model="categoryForm.nameUk"
           required

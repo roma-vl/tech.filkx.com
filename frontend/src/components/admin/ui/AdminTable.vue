@@ -1,6 +1,9 @@
 <template>
   <div class="overflow-hidden">
-    <div v-if="loading" class="text-center py-12">
+    <div
+      v-if="loading"
+      class="text-center py-12"
+    >
       <div class="flex flex-col items-center">
         <div
           class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-4"
@@ -21,7 +24,10 @@
       <slot name="empty-action" />
     </div>
 
-    <div v-else class="overflow-x-auto">
+    <div
+      v-else
+      class="overflow-x-auto"
+    >
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead>
           <tr class="bg-gray-50/50 dark:bg-gray-900/50">
@@ -43,7 +49,11 @@
             :key="item.id || index"
             class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
           >
-            <slot name="row" :item="item" :index="index" />
+            <slot
+              name="row"
+              :item="item"
+              :index="index"
+            />
           </tr>
         </tbody>
       </table>

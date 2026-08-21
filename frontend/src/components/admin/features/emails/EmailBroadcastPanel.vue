@@ -11,7 +11,10 @@
       </h3>
     </div>
 
-    <div v-if="selectedCampaign" class="space-y-8">
+    <div
+      v-if="selectedCampaign"
+      class="space-y-8"
+    >
       <div class="space-y-3">
         <label
           class="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest block"
@@ -60,12 +63,19 @@
           @click="$emit('preview')"
         >
           <template #prefix>
-            <EyeIcon v-if="!loadingPreview" class="w-5 h-5 mr-2" />
+            <EyeIcon
+              v-if="!loadingPreview"
+              class="w-5 h-5 mr-2"
+            />
           </template>
           <span>{{ t("admin.emails.preview") }}</span>
         </AppButton>
 
-        <AppButton :loading="loading" size="lg" @click="$emit('broadcast')">
+        <AppButton
+          :loading="loading"
+          size="lg"
+          @click="$emit('broadcast')"
+        >
           <template #prefix>
             <PaperAirplaneIcon
               v-if="!loading"
@@ -81,7 +91,10 @@
       </div>
     </div>
 
-    <div v-else class="text-center py-20">
+    <div
+      v-else
+      class="text-center py-20"
+    >
       <div
         class="w-20 h-20 bg-gray-50 dark:bg-gray-900/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-dashed border-gray-200 dark:border-gray-700"
       >

@@ -57,7 +57,11 @@ const open = ref(false);
       <slot name="trigger" />
     </div>
 
-    <div v-show="open" class="fixed inset-0 z-40" @click="open = false" />
+    <div
+      v-show="open"
+      class="fixed inset-0 z-40"
+      @click="open = false"
+    />
 
     <Transition
       enter-active-class="transition duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"

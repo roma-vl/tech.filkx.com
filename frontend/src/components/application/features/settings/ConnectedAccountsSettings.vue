@@ -46,14 +46,21 @@
             </svg>
           </div>
           <div>
-            <p class="font-medium text-gray-900 dark:text-white">Google</p>
+            <p class="font-medium text-gray-900 dark:text-white">
+              Google
+            </p>
             <p
               v-if="isConnected('google')"
               class="text-xs text-green-600 dark:text-green-400 font-medium"
             >
               Connected
             </p>
-            <p v-else class="text-xs text-gray-500">Not connected</p>
+            <p
+              v-else
+              class="text-xs text-gray-500"
+            >
+              Not connected
+            </p>
           </div>
         </div>
 
@@ -96,11 +103,21 @@
             </svg>
           </div>
           <div>
-            <p class="font-medium text-gray-900 dark:text-white">Facebook</p>
-            <p class="text-xs text-gray-500">Soon</p>
+            <p class="font-medium text-gray-900 dark:text-white">
+              Facebook
+            </p>
+            <p class="text-xs text-gray-500">
+              Soon
+            </p>
           </div>
         </div>
-        <AppButton disabled size="sm" variant="secondary"> Connect </AppButton>
+        <AppButton
+          disabled
+          size="sm"
+          variant="secondary"
+        >
+          Connect
+        </AppButton>
       </div>
     </div>
   </div>

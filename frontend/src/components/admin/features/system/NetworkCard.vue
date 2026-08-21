@@ -33,12 +33,10 @@
           <div class="flex flex-col">
             <span
               class="text-[9px] font-black text-indigo-400 uppercase tracking-widest leading-tight"
-              >{{ t("admin.system.network.incoming") }}</span
-            >
+            >{{ t("admin.system.network.incoming") }}</span>
             <span
               class="text-lg font-black text-indigo-600 dark:text-indigo-400 font-mono"
-              >{{ incoming }} Mbps</span
-            >
+            >{{ incoming }} Mbps</span>
           </div>
           <ArrowDownCircleIcon class="w-6 h-6 text-indigo-400 animate-bounce" />
         </div>
@@ -60,12 +58,10 @@
           <div class="flex flex-col">
             <span
               class="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-tight"
-              >{{ t("admin.system.network.outgoing") }}</span
-            >
+            >{{ t("admin.system.network.outgoing") }}</span>
             <span
               class="text-lg font-black text-purple-600 dark:text-purple-400 font-mono"
-              >{{ outgoing }} Mbps</span
-            >
+            >{{ outgoing }} Mbps</span>
           </div>
           <ArrowUpCircleIcon
             class="w-6 h-6 text-purple-400 -translate-y-1 animate-bounce"
@@ -89,17 +85,13 @@
         class="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest"
       >
         <span>{{ t("admin.system.network.incoming") }} (Total)</span>
-        <span class="text-gray-900 dark:text-white font-mono"
-          >{{ totalReceived }} GB</span
-        >
+        <span class="text-gray-900 dark:text-white font-mono">{{ totalReceived }} GB</span>
       </div>
       <div
         class="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest"
       >
         <span>{{ t("admin.system.network.outgoing") }} (Total)</span>
-        <span class="text-gray-900 dark:text-white font-mono"
-          >{{ totalSent }} GB</span
-        >
+        <span class="text-gray-900 dark:text-white font-mono">{{ totalSent }} GB</span>
       </div>
     </div>
   </div>

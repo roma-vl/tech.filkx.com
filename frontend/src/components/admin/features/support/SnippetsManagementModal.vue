@@ -1,6 +1,13 @@
 <template>
-  <TransitionRoot as="template" :show="show">
-    <Dialog as="div" class="relative z-50" @close="$emit('close')">
+  <TransitionRoot
+    as="template"
+    :show="show"
+  >
+    <Dialog
+      as="div"
+      class="relative z-50"
+      @close="$emit('close')"
+    >
       <TransitionChild
         as="template"
         enter="ease-out duration-300"
@@ -111,9 +118,18 @@
                       :key="snippet.id"
                       class="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl group hover:border-primary-200 dark:hover:border-primary-900/50 transition-all"
                     >
-                      <div v-if="editingId === snippet.id" class="space-y-2">
-                        <AppInput v-model="editForm.title" type="text" />
-                        <AppTextarea v-model="editForm.content" rows="3" />
+                      <div
+                        v-if="editingId === snippet.id"
+                        class="space-y-2"
+                      >
+                        <AppInput
+                          v-model="editForm.title"
+                          type="text"
+                        />
+                        <AppTextarea
+                          v-model="editForm.content"
+                          rows="3"
+                        />
                         <div class="flex gap-2">
                           <AppButton
                             variant="success"

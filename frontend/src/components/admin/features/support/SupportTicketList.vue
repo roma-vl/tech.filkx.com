@@ -33,7 +33,7 @@
               :src="ticket.user.avatar"
               class="w-full h-full object-cover"
               :alt="ticket.user.name"
-            />
+            >
             <template v-else>
               {{ ticket.user?.name?.charAt(0)?.toUpperCase() || "U" }}
             </template>
@@ -70,8 +70,7 @@
               <span
                 v-if="ticket.lastMessage?.isAdmin"
                 class="text-primary-500 font-black uppercase tracking-tighter mr-1"
-                >You:</span
-              >
+              >You:</span>
               {{ getMessagePreview(ticket) }}
             </p>
           </div>

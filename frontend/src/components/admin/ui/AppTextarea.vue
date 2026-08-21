@@ -21,7 +21,10 @@
         @input="$emit('update:modelValue', $event.target.value)"
       />
     </div>
-    <p v-if="error" class="mt-1 text-sm text-red-600">
+    <p
+      v-if="error"
+      class="mt-1 text-sm text-red-600"
+    >
       {{ error }}
     </p>
   </div>

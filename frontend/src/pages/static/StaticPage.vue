@@ -3,7 +3,10 @@
     <!-- Breadcrumb & Container -->
     <div class="max-w-4xl mx-auto px-4">
       <!-- Loading state -->
-      <div v-if="loading" class="space-y-6">
+      <div
+        v-if="loading"
+        class="space-y-6"
+      >
         <nav class="flex items-center gap-2 text-xs text-gray-400">
           <div
             class="h-4 w-12 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
@@ -32,7 +35,10 @@
       </div>
 
       <!-- 404 Page not found -->
-      <div v-else-if="!page" class="py-24 text-center">
+      <div
+        v-else-if="!page"
+        class="py-24 text-center"
+      >
         <span class="text-6xl mb-6 block">📄</span>
         <h1 class="text-2xl font-extrabold text-gray-800 dark:text-white mb-3">
           {{ locale === "uk" ? "Сторінку не знайдено" : "Page Not Found" }}
@@ -55,7 +61,10 @@
       </div>
 
       <!-- Page content -->
-      <div v-else class="space-y-4">
+      <div
+        v-else
+        class="space-y-4"
+      >
         <!-- Breadcrumbs -->
         <nav
           class="flex items-center gap-2 text-xs text-gray-450 dark:text-gray-400 px-1"
@@ -95,7 +104,7 @@
             </div>
           </header>
 
-          <hr class="border-zinc-100 dark:border-zinc-800 my-6" />
+          <hr class="border-zinc-100 dark:border-zinc-800 my-6">
 
           <!-- Page body -->
           <div

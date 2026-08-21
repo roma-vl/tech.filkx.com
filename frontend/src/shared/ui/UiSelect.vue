@@ -1,11 +1,17 @@
 <template>
-  <div ref="containerRef" class="w-full relative font-sans">
+  <div
+    ref="containerRef"
+    class="w-full relative font-sans"
+  >
     <label
       v-if="label"
       class="block text-sm font-semibold text-zinc-700 dark:text-zinc-350 mb-1.5"
     >
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span
+        v-if="required"
+        class="text-red-500"
+      >*</span>
     </label>
 
     <div class="relative">
@@ -72,7 +78,7 @@
               class="w-full px-3 py-1.5 text-sm border border-zinc-300 dark:border-zinc-800 rounded-md bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#00a046]/20 focus:border-[#00a046]"
               :placeholder="searchPlaceholder || 'Пошук...'"
               @click.stop
-            />
+            >
           </div>
 
           <div
@@ -89,7 +95,10 @@
             ]"
             @click="!option.disabled && selectOption(option)"
           >
-            <slot name="option" :option="option">
+            <slot
+              name="option"
+              :option="option"
+            >
               <span
                 class="block truncate"
                 :class="{ 'opacity-50': option.disabled }"
@@ -116,10 +125,16 @@
       </Transition>
     </div>
 
-    <p v-if="error" class="mt-1.5 text-xs text-red-500 font-medium">
+    <p
+      v-if="error"
+      class="mt-1.5 text-xs text-red-500 font-medium"
+    >
       {{ error }}
     </p>
-    <p v-if="hint" class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+    <p
+      v-if="hint"
+      class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400"
+    >
       {{ hint }}
     </p>
   </div>

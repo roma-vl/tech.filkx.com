@@ -6,7 +6,10 @@
         class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 z-10 shadow-lg border-2 border-white dark:border-gray-800 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-primary-500/20"
         :class="log.color"
       >
-        <component :is="log.icon" class="w-5 h-5 text-white" />
+        <component
+          :is="log.icon"
+          class="w-5 h-5 text-white"
+        />
       </div>
     </div>
 
@@ -58,7 +61,7 @@
                 :src="log.user.avatar"
                 :alt="log.user.name"
                 class="w-10 h-10 rounded-xl object-cover border-2 border-white dark:border-gray-800 shadow-sm"
-              />
+              >
             </template>
             <div
               v-else

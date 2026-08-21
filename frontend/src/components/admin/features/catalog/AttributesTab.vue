@@ -189,7 +189,10 @@
       :title="isEditing ? 'Редагувати атрибут' : 'Додати атрибут'"
       max-width="md"
     >
-      <form class="space-y-4" @submit.prevent="saveAttribute">
+      <form
+        class="space-y-4"
+        @submit.prevent="saveAttribute"
+      >
         <AppInput
           v-model="attributeForm.code"
           required
@@ -234,9 +237,7 @@
           class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700"
         >
           <div class="flex justify-between items-center">
-            <label class="block text-xs font-bold text-gray-500 uppercase"
-              >Список можливих значень</label
-            >
+            <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
             <AppButton
               type="button"
               variant="text"
@@ -262,28 +263,31 @@
                 type="text"
                 placeholder="#FF0000"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              />
+              >
               <input
                 v-model="val.value"
                 type="color"
                 class="w-8 h-8 rounded border cursor-pointer bg-transparent"
-              />
+              >
             </div>
-            <div v-else class="flex-1 flex gap-2">
+            <div
+              v-else
+              class="flex-1 flex gap-2"
+            >
               <input
                 v-model="val.valueUk"
                 required
                 type="text"
                 placeholder="Значення (UK)"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              />
+              >
               <input
                 v-model="val.valueEn"
                 required
                 type="text"
                 placeholder="Value (EN)"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              />
+              >
             </div>
 
             <AppButton

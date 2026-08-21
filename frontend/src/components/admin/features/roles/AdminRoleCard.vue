@@ -26,7 +26,10 @@
         </div>
 
         <div class="relative">
-          <Dropdown align="right" width="48">
+          <Dropdown
+            align="right"
+            width="48"
+          >
             <template #trigger>
               <button
                 class="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700"
