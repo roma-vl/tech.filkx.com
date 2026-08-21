@@ -82,11 +82,14 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   discounts but have no per-category/per-product targeting, stacking rules, or a
   `PriceCalculationService` to centralize "what does this variant cost right now" logic (currently
   computed ad hoc in controllers/frontend). Fine for launch, worth hardening before heavy marketing use.
-- ❓ **Shipping/delivery integration.** `Order` has `delivery_method` (seen value: `'nova_poshta'`),
-  `shipping_city`/`shipping_address`/`carrier`/`tracking_number` fields exist, but no evidence of
-  an actual Nova Poshta API integration (rate calculation, address autocomplete, label generation)
-  was found in this pass — worth a dedicated check before claiming it's automated vs. manually
-  entered by staff.
+- ✅ **Shipping/delivery integration is real** — stale claim corrected 2026-08-21.
+  `app/Services/Delivery/NovaPoshtaService.php` calls the actual `api.novaposhta.ua` API
+  (`isConfigured()` checks `services.nova_poshta.api_key`); `Api/V1/Actions/Delivery/{GetDeliveryAvailability,SearchDeliveryCities,SearchDeliveryWarehouses}Action`
+  expose it at `/v1/delivery/*`, consumed by `frontend/.../CheckoutForm.vue` (city/warehouse
+  autocomplete during checkout, with its own passing test). Not verified this pass: whether
+  `NOVA_POSHTA_API_KEY` is actually set in any real environment (`isConfigured()` existing implies a
+  graceful degraded path when it isn't, matching the LiqPay pattern) — confirm before assuming
+  autocomplete works in production, not just that the code path exists.
 - ✅ Stock reservation on order placement is real (`Stock.reserved`, `lockForUpdate` in
   `quickOrder`). Confirm `PlaceOrderAction` (the main checkout path) does the same locking —
   verify before shipping a high-traffic sale.
@@ -458,9 +461,9 @@ user impact, as originally written) with each item's resolution noted:
    creating the Sentry project.
 3. **Launch-quality**: ~~SSR or prerendering + real sitemap generation for SEO~~ ✅ prerendering +
    sitemap generation now exist (see §2.6), ~~single flat catalog page~~ ✅ real category/subcategory
-   routes now exist (2026-08-20, §2.6), Redis-backed caching, image storage strategy (confirm
-   local-disk is acceptable or move to S3/R2), promotions engine hardening, shipping API integration
-   if not already automated.
+   routes now exist (2026-08-20, §2.6), ~~shipping API integration~~ ✅ Nova Poshta is really
+   integrated, just needs a real API key (§2.1), Redis-backed caching, image storage strategy
+   (confirm local-disk is acceptable or move to S3/R2), promotions engine hardening.
 4. ~~§2.9 catalog-filter bugs~~ ✅ **done** (2026-08-20, commit `6fabbee`) — all five fixed, see §2.9
    for detail. Its one follow-up (no seeded product had a color attribute value assigned, so the
    color-filter fix was untested against real data) was closed 2026-08-21, commit `480d661` — see
