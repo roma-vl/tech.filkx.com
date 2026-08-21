@@ -3,7 +3,9 @@
     <CouponStats :data="statsData" />
 
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+    >
       <!-- Search bar & filters toggle button -->
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
@@ -73,13 +75,15 @@
             :options="[
               { id: '', name: 'Всі статуси' },
               { id: 'active', name: 'Активні' },
-              { id: 'inactive', name: 'Неактивні' }
+              { id: 'inactive', name: 'Неактивні' },
             ]"
             option-value="id"
             option-label="name"
           />
         </div>
-        <div class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700"
+        >
           <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
@@ -177,7 +181,7 @@ const showDeleteConfirm = computed({
   get: () => !!couponToDelete.value,
   set: (val) => {
     if (!val) couponToDelete.value = null;
-  }
+  },
 });
 
 const deleteConfirmMessage = computed(() => {

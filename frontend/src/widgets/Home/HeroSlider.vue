@@ -195,7 +195,7 @@ onUnmounted(() => {
             class="absolute inset-0 w-full h-full object-cover opacity-60"
             :src="slide.image"
             alt=""
-          >
+          />
           <div
             v-else
             class="absolute inset-0 bg-gradient-to-br from-[#1c2229] via-zinc-900 to-[#00a046]/20"
@@ -220,7 +220,8 @@ onUnmounted(() => {
               <span
                 v-if="slide.subtitle"
                 class="text-zinc-300 font-bold text-xs uppercase tracking-widest"
-              >• {{ slide.subtitle }}</span>
+                >• {{ slide.subtitle }}</span
+              >
             </div>
             <h1
               class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
@@ -234,12 +235,11 @@ onUnmounted(() => {
               {{ slide.description }}
             </p>
             <div class="flex items-center gap-3">
-              <UiButton
-                :to="slide.link"
-                size="md"
-              >
+              <UiButton :to="slide.link" size="md">
                 {{ slide.buttonLabel }}
-                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <span class="material-symbols-outlined text-[18px]"
+                  >arrow_forward</span
+                >
               </UiButton>
             </div>
           </div>
@@ -251,7 +251,9 @@ onUnmounted(() => {
             class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
             @click="prevSlide"
           >
-            <span class="material-symbols-outlined text-white text-[20px]">chevron_left</span>
+            <span class="material-symbols-outlined text-white text-[20px]"
+              >chevron_left</span
+            >
           </button>
           <button
             class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
@@ -262,7 +264,9 @@ onUnmounted(() => {
               }
             "
           >
-            <span class="material-symbols-outlined text-white text-[20px]">chevron_right</span>
+            <span class="material-symbols-outlined text-white text-[20px]"
+              >chevron_right</span
+            >
           </button>
 
           <!-- Counter -->
@@ -313,11 +317,7 @@ onUnmounted(() => {
               :key="colIdx"
               class="space-y-6 text-white"
             >
-              <div
-                v-for="(group, gIdx) in col"
-                :key="gIdx"
-                class="space-y-2"
-              >
+              <div v-for="(group, gIdx) in col" :key="gIdx" class="space-y-2">
                 <h4
                   class="font-extrabold text-[11.5px] uppercase tracking-wider"
                 >
@@ -365,7 +365,9 @@ onUnmounted(() => {
             v-else
             class="flex-grow flex flex-col items-center justify-center text-zinc-500 py-12"
           >
-            <span class="material-symbols-outlined text-4xl mb-2">category</span>
+            <span class="material-symbols-outlined text-4xl mb-2"
+              >category</span
+            >
             <p class="text-xs font-bold">
               {{ t("header.megaMenu.noSubcategories") }}
             </p>

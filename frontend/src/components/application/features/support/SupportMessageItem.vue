@@ -25,10 +25,7 @@
           {{ message.message }}
         </div>
 
-        <div
-          v-if="message.filePath"
-          class="mt-3"
-        >
+        <div v-if="message.filePath" class="mt-3">
           <div
             v-if="isImage(message.fileType)"
             class="group relative overflow-hidden rounded-[1rem] border border-black/5 dark:border-white/10 shadow-sm"
@@ -37,7 +34,7 @@
               :src="message.filePath"
               class="w-full h-auto cursor-pointer hover:scale-[1.03] transition-transform duration-500"
               @click="openFile(message.filePath)"
-            >
+            />
           </div>
           <video
             v-else-if="isVideo(message.fileType)"
@@ -71,13 +68,15 @@
                     message.isAdmin || message.isAi
                   ),
                 }"
-              >{{ message.fileName }}</span>
+                >{{ message.fileName }}</span
+              >
               <span
                 class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 block"
                 :class="{
                   '!text-white/70': !(message.isAdmin || message.isAi),
                 }"
-              >{{ (message.fileSize / 1024).toFixed(1) }} KB</span>
+                >{{ (message.fileSize / 1024).toFixed(1) }} KB</span
+              >
             </div>
           </a>
         </div>
@@ -91,10 +90,12 @@
         <span
           v-if="message.isAi"
           class="text-[9px] font-black uppercase text-primary-500 tracking-wider"
-        >AI Assistant</span>
+          >AI Assistant</span
+        >
         <span
           class="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest"
-        >{{ formatTime(message.createdAt) }}</span>
+          >{{ formatTime(message.createdAt) }}</span
+        >
       </div>
     </div>
   </div>

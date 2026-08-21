@@ -11,10 +11,7 @@
         <div
           class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 group-hover:text-primary-500 transition-all duration-500 shadow-sm"
         >
-          <component
-            :is="icon"
-            class="w-7 h-7"
-          />
+          <component :is="icon" class="w-7 h-7" />
         </div>
         <div>
           <h3
@@ -47,18 +44,17 @@
     </div>
 
     <!-- Progress Style (CPU, RAM) -->
-    <div
-      v-if="type === 'progress'"
-      class="space-y-6"
-    >
+    <div v-if="type === 'progress'" class="space-y-6">
       <div>
         <div class="flex justify-between items-end mb-3">
           <span
             class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-          >{{ label }}</span>
+            >{{ label }}</span
+          >
           <span
             class="text-lg font-black text-gray-900 dark:text-white font-mono"
-          >{{ value }}{{ unit }}</span>
+            >{{ value }}{{ unit }}</span
+          >
         </div>
         <div
           class="h-3 w-full bg-gray-100 dark:bg-gray-900/50 rounded-full overflow-hidden p-0.5 border border-gray-50 dark:border-gray-800"
@@ -113,10 +109,12 @@
         <div class="absolute flex flex-col items-center">
           <span
             class="text-3xl font-black text-gray-900 dark:text-white tracking-tighter"
-          >{{ percentage }}%</span>
+            >{{ percentage }}%</span
+          >
           <span
             class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1"
-          >{{ label }}</span>
+            >{{ label }}</span
+          >
         </div>
       </div>
       <div class="mt-8 grid grid-cols-2 gap-8 w-full">
@@ -125,27 +123,28 @@
         >
           <span
             class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1"
-          >{{ t("admin.system.resources.disk_used") }}</span>
+            >{{ t("admin.system.resources.disk_used") }}</span
+          >
           <span
             class="text-sm font-black text-gray-900 dark:text-white font-mono"
-          >{{ value }}{{ unit }}</span>
+            >{{ value }}{{ unit }}</span
+          >
         </div>
         <div class="flex flex-col text-right">
           <span
             class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1"
-          >{{ t("admin.system.resources.capacity") }}</span>
+            >{{ t("admin.system.resources.capacity") }}</span
+          >
           <span
             class="text-sm font-black text-gray-900 dark:text-white font-mono"
-          >{{ total }}{{ unit }}</span>
+            >{{ total }}{{ unit }}</span
+          >
         </div>
       </div>
     </div>
 
     <!-- Stats Style (Database, SaaS) -->
-    <div
-      v-else
-      class="space-y-4"
-    >
+    <div v-else class="space-y-4">
       <div
         v-for="stat in stats"
         :key="stat.label"
@@ -153,7 +152,8 @@
       >
         <span
           class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-        >{{ stat.label }}</span>
+          >{{ stat.label }}</span
+        >
         <span
           class="text-xs font-black uppercase tracking-tight"
           :class="

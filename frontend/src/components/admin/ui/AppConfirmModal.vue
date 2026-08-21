@@ -46,7 +46,9 @@
 
       <!-- Content -->
       <div class="space-y-2">
-        <p class="text-sm text-gray-650 dark:text-gray-300 font-medium leading-relaxed">
+        <p
+          class="text-sm text-gray-650 dark:text-gray-300 font-medium leading-relaxed"
+        >
           {{ message }}
         </p>
         <p

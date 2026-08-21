@@ -44,10 +44,7 @@
           </template>
         </AppButton>
 
-        <div
-          v-if="loadingList"
-          class="flex flex-col gap-2 p-2"
-        >
+        <div v-if="loadingList" class="flex flex-col gap-2 p-2">
           <div
             v-for="i in 5"
             :key="i"
@@ -71,10 +68,7 @@
           <div>
             <h3 class="font-bold text-gray-900 dark:text-white leading-tight">
               <span v-if="selectedFile">{{ selectedFile.name }}</span>
-              <span
-                v-else
-                class="text-gray-400"
-              >
+              <span v-else class="text-gray-400">
                 {{ $t("admin.logs.server_logs.select_file") }}
               </span>
             </h3>
@@ -88,10 +82,7 @@
           </div>
         </div>
 
-        <div
-          v-if="selectedFile"
-          class="flex items-center gap-2"
-        >
+        <div v-if="selectedFile" class="flex items-center gap-2">
           <AppButton
             variant="secondary"
             :loading="loadingDetails"
@@ -103,11 +94,7 @@
             {{ $t("admin.logs.server_logs.refresh") }}
           </AppButton>
 
-          <AppButton
-            variant="danger"
-            :loading="clearingLog"
-            @click="clearLog"
-          >
+          <AppButton variant="danger" :loading="clearingLog" @click="clearLog">
             <template #prefix>
               <TrashIcon class="w-3.5 h-3.5 mr-2" />
             </template>
@@ -132,10 +119,7 @@
           class="h-full flex items-center justify-center"
         />
 
-        <div
-          v-else
-          class="space-y-4"
-        >
+        <div v-else class="space-y-4">
           <div
             v-for="(entry, index) in parsedLogs"
             :key="index"
@@ -160,7 +144,8 @@
                 </div>
                 <span
                   class="text-[10px] font-black px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-700/30 text-gray-400 uppercase tracking-widest"
-                >{{ entry.env }}</span>
+                  >{{ entry.env }}</span
+                >
               </div>
             </div>
 

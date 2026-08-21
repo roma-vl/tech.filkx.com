@@ -86,10 +86,7 @@ const truncateText = (text, length = 100) => {
           </button>
         </div>
 
-        <div
-          v-if="notifications.length"
-          class="flex-1 overflow-y-auto"
-        >
+        <div v-if="notifications.length" class="flex-1 overflow-y-auto">
           <ul class="divide-y divide-gray-200 dark:divide-gray-700">
             <li
               v-for="notification in notifications"
@@ -155,10 +152,7 @@ const truncateText = (text, length = 100) => {
                       />
                     </svg>
                   </span>
-                  <span
-                    v-else
-                    class="text-indigo-500"
-                  >
+                  <span v-else class="text-indigo-500">
                     <BellIcon class="h-5 w-5" />
                   </span>
                 </div>
@@ -170,7 +164,7 @@ const truncateText = (text, length = 100) => {
                     >
                       {{
                         notification.data.title ||
-                          $t("notifications.new_notification")
+                        $t("notifications.new_notification")
                       }}
                     </p>
                     <time
@@ -197,10 +191,7 @@ const truncateText = (text, length = 100) => {
                         )
                       }}
                     </p>
-                    <div
-                      v-else
-                      class="whitespace-pre-wrap"
-                    >
+                    <div v-else class="whitespace-pre-wrap">
                       {{ notification.data.text || notification.data.message }}
                     </div>
                   </div>
@@ -209,7 +200,7 @@ const truncateText = (text, length = 100) => {
                     <button
                       v-if="
                         notification.data.text?.length > 80 ||
-                          notification.data.message?.length > 80
+                        notification.data.message?.length > 80
                       "
                       class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 focus:outline-none"
                       @click.stop="toggleExpand(notification)"

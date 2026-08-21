@@ -44,15 +44,18 @@ const rejectNonEssential = () => setConsent("essential");
         <div class="flex items-start gap-3 flex-grow">
           <span
             class="material-symbols-outlined text-[#00a046] text-[24px] shrink-0"
-          >cookie</span>
-          <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            >cookie</span
+          >
+          <p
+            class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed"
+          >
             {{ t("cookieConsent.message") }}
             <router-link
               to="/cookies"
               class="font-semibold text-[#00a046] hover:underline"
             >
-              {{ t("cookieConsent.policyLink") }}
-            </router-link>.
+              {{ t("cookieConsent.policyLink") }} </router-link
+            >.
           </p>
         </div>
 

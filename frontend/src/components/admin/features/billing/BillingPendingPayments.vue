@@ -57,8 +57,8 @@
                 <span class="font-bold text-gray-900 dark:text-gray-100">
                   {{
                     payment.purchaseDetails?.plan?.name ||
-                      payment.subscription?.plan?.name ||
-                      "N/A"
+                    payment.subscription?.plan?.name ||
+                    "N/A"
                   }}
                 </span>
               </div>
@@ -81,7 +81,7 @@
               <div
                 v-if="
                   payment.purchaseDetails?.campaign ||
-                    payment.purchaseDetails?.coupon
+                  payment.purchaseDetails?.coupon
                 "
                 class="flex items-center gap-2"
               >
@@ -92,7 +92,7 @@
                   <TagIcon class="w-2.5 h-2.5" />
                   {{
                     payment.purchaseDetails.campaign.name ||
-                      payment.purchaseDetails.campaign.slug
+                    payment.purchaseDetails.campaign.slug
                   }}
                 </span>
                 <span

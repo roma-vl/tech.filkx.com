@@ -12,7 +12,9 @@ interface VariantLike {
   };
 }
 
-const imagesOf = (variant: VariantLike | null | undefined): VariantImage[] | null => {
+const imagesOf = (
+  variant: VariantLike | null | undefined,
+): VariantImage[] | null => {
   const images = variant?.dimensions?.images;
   return images && images.length > 0 ? images : null;
 };
@@ -31,7 +33,8 @@ export function resolveProductImage(
   const own = imagesOf(variant);
   const images = own || siblingVariants.map(imagesOf).find((v) => v) || null;
   if (!images) return productPlaceholder;
-  const primary = images.find((img) => img.isPrimary || img.is_primary) || images[0];
+  const primary =
+    images.find((img) => img.isPrimary || img.is_primary) || images[0];
   return primary.url || productPlaceholder;
 }
 
@@ -48,5 +51,8 @@ export function resolveGalleryImages(
   if (!images) return [{ url: productPlaceholder, isPrimary: true }];
   return images
     .filter((img) => img.url)
-    .map((img) => ({ url: img.url, isPrimary: Boolean(img.isPrimary || img.is_primary) }));
+    .map((img) => ({
+      url: img.url,
+      isPrimary: Boolean(img.isPrimary || img.is_primary),
+    }));
 }

@@ -45,7 +45,9 @@
             :model-value="form.name"
             :placeholder="t('admin.roles.modal.role_name_placeholder')"
             class="w-full"
-            @update:model-value="$emit('update:form', { ...form, name: $event })"
+            @update:model-value="
+              $emit('update:form', { ...form, name: $event })
+            "
           />
         </div>
         <div class="md:col-span-2">
@@ -59,7 +61,9 @@
             rows="3"
             :placeholder="t('admin.roles.modal.description_placeholder')"
             class="w-full"
-            @update:model-value="$emit('update:form', { ...form, description: $event })"
+            @update:model-value="
+              $emit('update:form', { ...form, description: $event })
+            "
           />
         </div>
       </div>
@@ -74,8 +78,10 @@
             {{ t("admin.roles.modal.permissions_strategy") }}
           </label>
           <div class="flex items-center gap-4">
-            <span class="text-xs font-bold text-gray-400">{{ selectedPermissions.length }}
-              {{ t("admin.roles.modal.selected") }}</span>
+            <span class="text-xs font-bold text-gray-400"
+              >{{ selectedPermissions.length }}
+              {{ t("admin.roles.modal.selected") }}</span
+            >
             <button
               class="text-xs font-black text-[#00a046] uppercase tracking-widest hover:text-[#00b050] transition-colors"
               @click="$emit('toggle-all')"
@@ -166,7 +172,7 @@
                         : selectedPermissions.filter((s) => s !== perm.slug),
                     )
                   "
-                >
+                />
               </label>
             </div>
           </div>
@@ -176,10 +182,7 @@
 
     <template #footer>
       <div class="flex justify-end gap-3 p-2">
-        <AppButton
-          variant="white"
-          @click="$emit('update:modelValue', false)"
-        >
+        <AppButton variant="white" @click="$emit('update:modelValue', false)">
           {{ t("admin.roles.modal.cancel") }}
         </AppButton>
         <AppButton

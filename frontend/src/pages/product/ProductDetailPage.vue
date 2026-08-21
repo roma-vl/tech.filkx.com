@@ -6,11 +6,17 @@
   >
     <!-- Breadcrumb skeleton -->
     <div class="flex items-center gap-2 mb-6">
-      <div class="h-3 w-16 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div
+        class="h-3 w-16 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+      />
       <div class="h-3 w-3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
-      <div class="h-3 w-14 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div
+        class="h-3 w-14 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+      />
       <div class="h-3 w-3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
-      <div class="h-3 w-40 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+      <div
+        class="h-3 w-40 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+      />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -23,19 +29,33 @@
             class="w-20 h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse"
           />
         </div>
-        <div class="flex-1 aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        <div
+          class="flex-1 aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+        />
       </div>
 
       <!-- Purchase skeleton -->
       <div class="lg:col-span-5 space-y-4">
-        <div class="h-3 w-24 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div
+          class="h-3 w-24 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+        />
         <div class="h-8 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
-        <div class="h-5 w-2/3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
-        <div class="h-4 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse" />
+        <div
+          class="h-5 w-2/3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+        />
+        <div
+          class="h-4 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+        />
         <div class="h-px bg-zinc-100 dark:bg-zinc-800 mt-4" />
-        <div class="h-44 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-        <div class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-        <div class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        <div
+          class="h-44 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+        />
+        <div
+          class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+        />
+        <div
+          class="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+        />
       </div>
     </div>
   </div>
@@ -45,8 +65,12 @@
     v-else-if="!product"
     class="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 font-sans"
   >
-    <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
-      <span class="material-symbols-outlined text-[32px] text-zinc-400">search_off</span>
+    <div
+      class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4"
+    >
+      <span class="material-symbols-outlined text-[32px] text-zinc-400"
+        >search_off</span
+      >
     </div>
     <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">
       Товар не знайдено
@@ -54,18 +78,15 @@
     <p class="text-sm text-zinc-500 mb-6 max-w-sm">
       Перевірте правильність посилання або скористайтесь каталогом.
     </p>
-    <UiButton :to="{ name: 'catalog' }">
-      Перейти до каталогу
-    </UiButton>
+    <UiButton :to="{ name: 'catalog' }"> Перейти до каталогу </UiButton>
   </div>
 
   <!-- Product page -->
-  <div
-    v-else
-    class="font-sans"
-  >
+  <div v-else class="font-sans">
     <!-- Breadcrumbs -->
-    <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500">
+    <nav
+      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500"
+    >
       <router-link
         :to="{ name: 'home' }"
         class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
@@ -73,15 +94,24 @@
         <span class="material-symbols-outlined text-[15px]">home</span>
         Головна
       </router-link>
-      <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
+      <span
+        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+        >chevron_right</span
+      >
       <router-link
         :to="{ name: 'catalog' }"
         class="hover:text-[#00a046] transition-colors font-semibold"
       >
         Каталог
       </router-link>
-      <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
-      <span class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]">{{ product.name }}</span>
+      <span
+        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+        >chevron_right</span
+      >
+      <span
+        class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]"
+        >{{ product.name }}</span
+      >
     </nav>
 
     <main class="max-w-container-max mx-auto px-4 md:px-8 py-6">
@@ -139,25 +169,24 @@
       />
 
       <!-- Related products -->
-      <section
-        v-if="relatedProducts.length > 0"
-        class="mt-14"
-      >
+      <section v-if="relatedProducts.length > 0" class="mt-14">
         <div class="flex items-center justify-between gap-4 mb-6">
-          <h2 class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight">
+          <h2
+            class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight"
+          >
             Схожі товари
           </h2>
-          <div
-            v-if="relatedProducts.length > 5"
-            class="flex gap-2 shrink-0"
-          >
+          <div v-if="relatedProducts.length > 5" class="flex gap-2 shrink-0">
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
               type="button"
               aria-label="Прокрутити ліворуч"
               @click="scrollRelated('left')"
             >
-              <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_left</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400"
+                >chevron_left</span
+              >
             </button>
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
@@ -165,7 +194,10 @@
               aria-label="Прокрутити праворуч"
               @click="scrollRelated('right')"
             >
-              <span class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400">chevron_right</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-zinc-600 dark:text-zinc-400"
+                >chevron_right</span
+              >
             </button>
           </div>
         </div>
@@ -178,10 +210,7 @@
             :key="related.id"
             class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start border-t border-l border-zinc-200 dark:border-zinc-800"
           >
-            <ProductCard
-              :product="related"
-              view-mode="grid"
-            />
+            <ProductCard :product="related" view-mode="grid" />
           </div>
         </div>
       </section>
@@ -192,14 +221,18 @@
       class="fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-100 dark:border-zinc-800 bg-white/96 dark:bg-zinc-900/96 backdrop-blur-md shadow-xl transition-transform duration-300 ease-in-out"
       :class="showStickyBar ? 'translate-y-0' : 'translate-y-full'"
     >
-      <div class="max-w-container-max mx-auto px-4 md:px-8 h-[68px] flex items-center gap-4">
+      <div
+        class="max-w-container-max mx-auto px-4 md:px-8 h-[68px] flex items-center gap-4"
+      >
         <img
           alt="product"
           class="w-10 h-10 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 hidden sm:block shrink-0"
           :src="selectedImage"
-        >
+        />
         <div class="flex-1 min-w-0 text-left">
-          <p class="font-bold text-sm text-zinc-900 dark:text-white truncate leading-tight">
+          <p
+            class="font-bold text-sm text-zinc-900 dark:text-white truncate leading-tight"
+          >
             {{ product.name }}
           </p>
           <p class="text-[#00a046] font-black text-sm mt-0.5">
@@ -218,12 +251,11 @@
             </template>
             Швидке замовлення
           </UiButton>
-          <UiButton
-            size="sm"
-            @click="cartStore.addToCart(product)"
-          >
+          <UiButton size="sm" @click="cartStore.addToCart(product)">
             <template #prefix>
-              <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+              <span class="material-symbols-outlined text-[16px]"
+                >shopping_cart</span
+              >
             </template>
             В кошик
           </UiButton>

@@ -1,16 +1,22 @@
 <template>
-  <div class="p-4 bg-gray-50/50 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800 space-y-4">
+  <div
+    class="p-4 bg-gray-50/50 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800 space-y-4"
+  >
     <div>
       <span class="text-sm font-semibold text-gray-900 dark:text-white block">
         Цільова аудиторія
       </span>
-      <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+      <span
+        class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider"
+      >
         Нічого не обрано — знижка діє на весь каталог
       </span>
     </div>
 
     <div>
-      <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+      <label
+        class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
+      >
         Категорії
       </label>
       <div
@@ -27,20 +33,19 @@
             type="checkbox"
             :value="category.id"
             class="w-3.5 h-3.5 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
-          >
+          />
           {{ category.nameUk }}
         </label>
       </div>
-      <p
-        v-else
-        class="text-xs text-gray-400 italic"
-      >
+      <p v-else class="text-xs text-gray-400 italic">
         Немає доступних категорій.
       </p>
     </div>
 
     <div>
-      <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+      <label
+        class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
+      >
         Товари
       </label>
       <div class="flex gap-2">
@@ -62,10 +67,7 @@
           Додати
         </AppButton>
       </div>
-      <div
-        v-if="selectedProducts.length"
-        class="flex flex-wrap gap-2 mt-3"
-      >
+      <div v-if="selectedProducts.length" class="flex flex-wrap gap-2 mt-3">
         <span
           v-for="product in selectedProducts"
           :key="product.id"
@@ -109,12 +111,14 @@ const emit = defineEmits(["update:modelValue"]);
 
 const categoryIds = computed({
   get: () => props.modelValue.categoryIds || [],
-  set: (val) => emit("update:modelValue", { ...props.modelValue, categoryIds: val }),
+  set: (val) =>
+    emit("update:modelValue", { ...props.modelValue, categoryIds: val }),
 });
 
 const productIds = computed({
   get: () => props.modelValue.productIds || [],
-  set: (val) => emit("update:modelValue", { ...props.modelValue, productIds: val }),
+  set: (val) =>
+    emit("update:modelValue", { ...props.modelValue, productIds: val }),
 });
 
 const productToAdd = ref("");

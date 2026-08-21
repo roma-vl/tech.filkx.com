@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-6 animate-in fade-in duration-500">
     <!-- Header actions -->
-    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <div
+      class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
+    >
       <div class="flex gap-2">
         <button
           v-for="tab in tabs"
@@ -11,7 +13,7 @@
             'px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer',
             activeTab === tab.key
               ? 'bg-[#00a046] text-white shadow-lg shadow-emerald-500/20'
-              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-gray-700'
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-gray-700',
           ]"
           @click="activeTab = tab.key"
         >
@@ -110,7 +112,7 @@ const activeTab = ref("posts");
 const tabs = [
   { key: "posts", label: "Пости" },
   { key: "categories", label: "Категорії" },
-  { key: "tags", label: "Теги" }
+  { key: "tags", label: "Теги" },
 ];
 
 // Shared states

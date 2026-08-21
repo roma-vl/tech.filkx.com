@@ -77,25 +77,46 @@ onMounted(() => {
     <div class="flex-1 px-4 md:px-8 py-10 min-w-0">
       <!-- Page Header -->
       <header class="mb-8">
-        <div class="flex items-start justify-between gap-4 pb-5 border-b border-zinc-200 dark:border-zinc-800">
+        <div
+          class="flex items-start justify-between gap-4 pb-5 border-b border-zinc-200 dark:border-zinc-800"
+        >
           <div class="min-w-0">
-            <p class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1">Особистий кабінет</p>
-            <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight">
+            <p
+              class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1"
+            >
+              Особистий кабінет
+            </p>
+            <h1
+              class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
+            >
               {{ tabTitles[activeTab] || "Кабінет" }}
             </h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5">
-              Вітаємо, <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{ userName }}</span>! Керуйте профілем та замовленнями.
+              Вітаємо,
+              <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{
+                userName
+              }}</span
+              >! Керуйте профілем та замовленнями.
             </p>
           </div>
-          <div class="lg:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-            <span class="material-symbols-outlined text-[15px] text-[#00a046]">verified</span>
-            <span class="text-[10px] font-black text-[#00a046] uppercase tracking-widest">Клієнт</span>
+          <div
+            class="lg:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0"
+          >
+            <span class="material-symbols-outlined text-[15px] text-[#00a046]"
+              >verified</span
+            >
+            <span
+              class="text-[10px] font-black text-[#00a046] uppercase tracking-widest"
+              >Клієнт</span
+            >
           </div>
         </div>
       </header>
 
       <!-- Mobile Navigation Scroll Bar -->
-      <div class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1">
+      <div
+        class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1"
+      >
         <router-link
           v-for="item in navTabs"
           :key="item.tab"
@@ -109,8 +130,13 @@ onMounted(() => {
         >
           <span
             class="material-symbols-outlined text-[15px]"
-            :style="activeTab === item.tab ? 'font-variation-settings: \'FILL\' 1' : ''"
-          >{{ item.icon }}</span>
+            :style="
+              activeTab === item.tab
+                ? 'font-variation-settings: \'FILL\' 1'
+                : ''
+            "
+            >{{ item.icon }}</span
+          >
           {{ item.label }}
         </router-link>
       </div>

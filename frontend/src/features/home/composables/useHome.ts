@@ -18,10 +18,14 @@ export function useHome() {
   const rawRecommended = ref<any[]>([]);
 
   const flashDeals = computed(() =>
-    rawFlashDeals.value.map((p) => mapHomeProduct(p, locale.value)).filter(Boolean),
+    rawFlashDeals.value
+      .map((p) => mapHomeProduct(p, locale.value))
+      .filter(Boolean),
   );
   const recommended = computed(() =>
-    rawRecommended.value.map((p) => mapHomeProduct(p, locale.value)).filter(Boolean),
+    rawRecommended.value
+      .map((p) => mapHomeProduct(p, locale.value))
+      .filter(Boolean),
   );
 
   const loadHomeData = async () => {
@@ -46,13 +50,14 @@ export function useHome() {
           wishlist_ids: wishlistIds,
           viewed_ids: viewedIds,
         }),
-        productApi.catalogGetCategories()
+        productApi.catalogGetCategories(),
       ]);
 
       const data = homeRes.data;
       if (data && (data.success || data.status === "success")) {
         banners.value = data.data.banners || [];
-        rawFlashDeals.value = data.data.flashDeals || data.data.flash_deals || [];
+        rawFlashDeals.value =
+          data.data.flashDeals || data.data.flash_deals || [];
         rawRecommended.value = data.data.recommended || [];
         popularCategories.value = data.data.categories || [];
       }

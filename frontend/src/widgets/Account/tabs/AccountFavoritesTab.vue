@@ -20,14 +20,17 @@ const cartStore = useCartStore();
           class="p-4 bg-white dark:bg-zinc-800 relative flex justify-center items-center aspect-square border-b border-zinc-200 dark:border-zinc-800"
         >
           <router-link
-            :to="{ name: 'product-detail', params: { id: (product as any).slug || product.id } }"
+            :to="{
+              name: 'product-detail',
+              params: { id: (product as any).slug || product.id },
+            }"
             class="w-full h-full flex items-center justify-center"
           >
             <img
               :src="product.image"
               :alt="product.name"
               class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-            >
+            />
           </router-link>
           <button
             class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 dark:text-zinc-500 rounded-full transition-all"
@@ -44,20 +47,24 @@ const cartStore = useCartStore();
               {{ product.category }}
             </p>
             <router-link
-              :to="{ name: 'product-detail', params: { id: (product as any).slug || product.id } }"
+              :to="{
+                name: 'product-detail',
+                params: { id: (product as any).slug || product.id },
+              }"
               class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors"
             >
               {{ product.name }}
             </router-link>
           </div>
           <div class="flex items-center justify-between gap-2 mt-auto">
-            <span class="font-black text-[#00a046] text-lg">{{ product.price.toFixed(2) }} ₴</span>
-            <UiButton
-              size="sm"
-              @click="cartStore.addToCart(product as any)"
+            <span class="font-black text-[#00a046] text-lg"
+              >{{ product.price.toFixed(2) }} ₴</span
             >
+            <UiButton size="sm" @click="cartStore.addToCart(product as any)">
               <template #prefix>
-                <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+                <span class="material-symbols-outlined text-[16px]"
+                  >shopping_cart</span
+                >
               </template>
               Додати
             </UiButton>
@@ -76,7 +83,8 @@ const cartStore = useCartStore();
         <span
           class="material-symbols-outlined text-[32px]"
           style="font-variation-settings: &quot;FILL&quot; 1"
-        >favorite</span>
+          >favorite</span
+        >
       </div>
       <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
         Ваш список обраного порожній
@@ -86,10 +94,7 @@ const cartStore = useCartStore();
       >
         Натисніть на іконку серця біля будь-якого товару, щоб зберегти його тут.
       </p>
-      <UiButton
-        :to="{ name: 'catalog' }"
-        class="mt-6"
-      >
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">
         Перейти до товарів
       </UiButton>
     </div>

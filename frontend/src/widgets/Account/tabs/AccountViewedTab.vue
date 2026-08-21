@@ -143,7 +143,13 @@ const formatDate = (isoString: string) => {
         <div
           class="p-4 bg-white dark:bg-zinc-800 relative flex justify-center items-center aspect-square border-b border-zinc-200 dark:border-zinc-800"
         >
-          <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }" class="w-full h-full flex items-center justify-center">
+          <router-link
+            :to="{
+              name: 'product-detail',
+              params: { id: product.slug || product.id },
+            }"
+            class="w-full h-full flex items-center justify-center"
+          >
             <img
               :src="product.image"
               :alt="product.name"
@@ -162,12 +168,16 @@ const formatDate = (isoString: string) => {
           </button>
 
           <!-- View Counter & Last Viewed badge -->
-          <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-1">
+          <div
+            class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-1"
+          >
             <span
               class="bg-zinc-900/80 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded flex items-center gap-1 select-none shadow-sm shrink-0"
               :title="`Переглянуто разів: ${product.viewCount}`"
             >
-              <span class="material-symbols-outlined text-[10px]">visibility</span>
+              <span class="material-symbols-outlined text-[10px]"
+                >visibility</span
+              >
               <span>{{ product.viewCount }}×</span>
             </span>
             <span
@@ -175,8 +185,12 @@ const formatDate = (isoString: string) => {
               class="bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded flex items-center gap-1 select-none shadow-sm min-w-0 truncate"
               :title="`Останній перегляд: ${new Date(product.lastViewedAt).toLocaleString('uk-UA')}`"
             >
-              <span class="material-symbols-outlined text-[10px] shrink-0">schedule</span>
-              <span class="truncate">{{ formatDate(product.lastViewedAt) }}</span>
+              <span class="material-symbols-outlined text-[10px] shrink-0"
+                >schedule</span
+              >
+              <span class="truncate">{{
+                formatDate(product.lastViewedAt)
+              }}</span>
             </span>
           </div>
         </div>
@@ -197,7 +211,10 @@ const formatDate = (isoString: string) => {
               </span>
             </div>
             <router-link
-              :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
+              :to="{
+                name: 'product-detail',
+                params: { id: product.slug || product.id },
+              }"
               class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base line-clamp-2 leading-snug group-hover:text-[#00a046] transition-colors"
             >
               {{ product.name }}
@@ -210,7 +227,11 @@ const formatDate = (isoString: string) => {
               {{ formatPrice(product.price) }}
             </span>
             <UiButton size="sm" @click="cartStore.addToCart(product as any)">
-              <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
+              <template #prefix
+                ><span class="material-symbols-outlined text-[16px]"
+                  >shopping_cart</span
+                ></template
+              >
               Додати
             </UiButton>
           </div>
@@ -237,7 +258,9 @@ const formatDate = (isoString: string) => {
         Ви ще не переглянули жодного товару. Ваша історія переглядів
         відображатиметься тут.
       </p>
-      <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до товарів</UiButton>
+      <UiButton :to="{ name: 'catalog' }" class="mt-6"
+        >Перейти до товарів</UiButton
+      >
     </div>
   </div>
 </template>

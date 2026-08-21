@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-6 animate-in fade-in duration-500">
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+    >
       <!-- Search + view-mode toggle -->
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
@@ -15,7 +17,9 @@
         </AppInput>
 
         <!-- View-mode toggles -->
-        <div class="flex p-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm shrink-0">
+        <div
+          class="flex p-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm shrink-0"
+        >
           <button
             class="p-2 rounded-md transition-all"
             :class="
@@ -189,7 +193,9 @@ const fetchRoles = async () => {
     roles.value = data.data.data;
   } catch (e) {
     console.error("Failed to fetch roles", e);
-    toast.error(t("admin.roles.alerts.load_error") || "Помилка завантаження ролей");
+    toast.error(
+      t("admin.roles.alerts.load_error") || "Помилка завантаження ролей",
+    );
   } finally {
     loading.value = false;
   }
@@ -228,7 +234,11 @@ const openAddModal = () => {
 
 const openEditModal = (role) => {
   isEditing.value = true;
-  form.value = { id: role.id, name: role.name, description: role.description || "" };
+  form.value = {
+    id: role.id,
+    name: role.name,
+    description: role.description || "",
+  };
   selectedPermissions.value = role.permissions.map((p) => p.slug);
   showModal.value = true;
 };
@@ -252,17 +262,23 @@ const saveRole = async () => {
 
     if (isEditing.value) {
       await api.put(`/admin/roles/${form.value.id}`, payload);
-      toast.success(t("admin.roles.alerts.update_success") || "Роль оновлено успішно");
+      toast.success(
+        t("admin.roles.alerts.update_success") || "Роль оновлено успішно",
+      );
     } else {
       await api.post("/admin/roles", payload);
-      toast.success(t("admin.roles.alerts.create_success") || "Роль створено успішно");
+      toast.success(
+        t("admin.roles.alerts.create_success") || "Роль створено успішно",
+      );
     }
 
     showModal.value = false;
     await fetchRoles();
   } catch (e) {
     console.error("Failed to save role", e);
-    toast.error(e.response?.data?.message || t("admin.roles.alerts.save_error"));
+    toast.error(
+      e.response?.data?.message || t("admin.roles.alerts.save_error"),
+    );
   } finally {
     saving.value = false;
   }
@@ -278,13 +294,17 @@ const confirmDelete = async () => {
   deleteLoading.value = true;
   try {
     await api.delete(`/admin/roles/${roleIdToDelete.value}`);
-    toast.success(t("admin.roles.alerts.delete_success") || "Роль видалено успішно");
+    toast.success(
+      t("admin.roles.alerts.delete_success") || "Роль видалено успішно",
+    );
     showDeleteConfirm.value = false;
     roleIdToDelete.value = null;
     await fetchRoles();
   } catch (e) {
     console.error("Failed to delete role", e);
-    toast.error(e.response?.data?.message || t("admin.roles.alerts.delete_error"));
+    toast.error(
+      e.response?.data?.message || t("admin.roles.alerts.delete_error"),
+    );
   } finally {
     deleteLoading.value = false;
   }
@@ -293,7 +313,13 @@ const confirmDelete = async () => {
 // ─── Permission CRUD ──────────────────────────────────────────────────────────
 
 const openPermissionModal = () => {
-  permissionForm.value = { name: "", slug: "", resource: "", action: "", description: "" };
+  permissionForm.value = {
+    name: "",
+    slug: "",
+    resource: "",
+    action: "",
+    description: "",
+  };
   showPermissionModal.value = true;
 };
 
@@ -317,12 +343,18 @@ const savePermission = async () => {
   savingPermission.value = true;
   try {
     await api.post("/admin/permissions", permissionForm.value);
-    toast.success(t("admin.roles.alerts.permission_create_success") || "Дозвіл створено успішно");
+    toast.success(
+      t("admin.roles.alerts.permission_create_success") ||
+        "Дозвіл створено успішно",
+    );
     showPermissionModal.value = false;
     await fetchPermissions();
   } catch (e) {
     console.error("Failed to create permission", e);
-    toast.error(e.response?.data?.message || t("admin.roles.alerts.permission_create_error"));
+    toast.error(
+      e.response?.data?.message ||
+        t("admin.roles.alerts.permission_create_error"),
+    );
   } finally {
     savingPermission.value = false;
   }

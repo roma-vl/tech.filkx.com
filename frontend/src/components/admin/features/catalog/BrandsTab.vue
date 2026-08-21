@@ -5,7 +5,9 @@
       <div
         class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        <div class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3">
+        <div
+          class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3"
+        >
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="brandSearch"
@@ -119,11 +121,11 @@
                 <span
                   v-if="brand.logoPath"
                   class="truncate max-w-[150px] inline-block font-mono text-xs"
-                >{{ brand.logoPath }}</span>
-                <span
-                  v-else
-                  class="text-gray-300 dark:text-gray-600"
-                >немає</span>
+                  >{{ brand.logoPath }}</span
+                >
+                <span v-else class="text-gray-300 dark:text-gray-600"
+                  >немає</span
+                >
               </td>
               <td
                 class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 truncate max-w-[200px]"
@@ -189,7 +191,9 @@
         </table>
       </div>
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+      <div
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+      >
         <AppPagination
           :pagination="paginationMeta"
           @page-change="onPageChange"
@@ -203,10 +207,7 @@
       :title="isEditing ? 'Редагувати бренд' : 'Додати бренд'"
       max-width="md"
     >
-      <form
-        class="space-y-4"
-        @submit.prevent="saveBrand"
-      >
+      <form class="space-y-4" @submit.prevent="saveBrand">
         <AppInput
           v-model="brandForm.name"
           required
@@ -316,12 +317,9 @@ const onPageChange = (page) => {
   currentPage.value = page;
 };
 
-watch(
-  brandSearch,
-  () => {
-    currentPage.value = 1;
-  }
-);
+watch(brandSearch, () => {
+  currentPage.value = 1;
+});
 
 const brandForm = ref({
   id: null,

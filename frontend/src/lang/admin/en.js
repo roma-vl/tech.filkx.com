@@ -71,11 +71,13 @@ export default {
   },
   pages: {
     title: "Static Pages",
-    description: "Overview, creation, and editing of static pages (about us, warranty, shipping, etc.)",
+    description:
+      "Overview, creation, and editing of static pages (about us, warranty, shipping, etc.)",
   },
   homeBanners: {
     title: "Homepage Banners",
-    description: "Manage the hero slider slides shown on the storefront homepage",
+    description:
+      "Manage the hero slider slides shown on the storefront homepage",
   },
   accounting: {
     export: "Export CSV",

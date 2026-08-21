@@ -12,87 +12,87 @@
         @back="twoFactorChallengeToken = null"
       />
       <template v-else>
-      <h1
-        class="text-3xl md:text-4xl font-extrabold mb-2 text-gray-900 dark:text-white tracking-tight"
-      >
-        {{ $t("auth.login.title") }}
-      </h1>
-      <p class="text-gray-500 dark:text-gray-400 mb-8 text-lg">
-        {{ $t("auth.login.subtitle") }}
-      </p>
+        <h1
+          class="text-3xl md:text-4xl font-extrabold mb-2 text-gray-900 dark:text-white tracking-tight"
+        >
+          {{ $t("auth.login.title") }}
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 mb-8 text-lg">
+          {{ $t("auth.login.subtitle") }}
+        </p>
 
-      <form class="space-y-6" @submit.prevent="handleSubmit">
-        <UiInput
-          v-model="form.email"
-          :label="$t('auth.login.emailLabel')"
-          type="email"
-          :placeholder="
-            $t('auth.login.emailPlaceholder', { email: 'name@company.com' })
-          "
-          required
-          :error="errors.email"
-          :disabled="loading"
-        />
-
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label
-              class="block text-sm font-medium text-gray-900 dark:text-gray-300"
-            >
-              {{ $t("auth.login.passwordLabel") }}
-            </label>
-            <router-link
-              to="/forgot-password"
-              class="text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
-            >
-              {{ $t("auth.login.forgotPassword") }}
-            </router-link>
-          </div>
+        <form class="space-y-6" @submit.prevent="handleSubmit">
           <UiInput
-            v-model="form.password"
-            type="password"
-            :placeholder="$t('auth.login.passwordPlaceholder')"
+            v-model="form.email"
+            :label="$t('auth.login.emailLabel')"
+            type="email"
+            :placeholder="
+              $t('auth.login.emailPlaceholder', { email: 'name@company.com' })
+            "
             required
-            :error="errors.password"
+            :error="errors.email"
             :disabled="loading"
           />
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label
+                class="block text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                {{ $t("auth.login.passwordLabel") }}
+              </label>
+              <router-link
+                to="/forgot-password"
+                class="text-sm font-semibold text-[#00a046] hover:text-[#00b050] transition-colors"
+              >
+                {{ $t("auth.login.forgotPassword") }}
+              </router-link>
+            </div>
+            <UiInput
+              v-model="form.password"
+              type="password"
+              :placeholder="$t('auth.login.passwordPlaceholder')"
+              required
+              :error="errors.password"
+              :disabled="loading"
+            />
+          </div>
+
+          <div class="pt-2">
+            <UiButton
+              type="submit"
+              variant="primary"
+              size="lg"
+              class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
+              :loading="loading"
+            >
+              {{ $t("auth.login.submit") }}
+            </UiButton>
+          </div>
+        </form>
+
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300 dark:border-gray-700" />
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-[#1e293b] text-gray-400 font-medium">
+              {{ $t("auth.or_continue_with") }}
+            </span>
+          </div>
         </div>
 
-        <div class="pt-2">
-          <UiButton
-            type="submit"
-            variant="primary"
-            size="lg"
-            class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !text-white hover:!from-[#00b050] hover:!to-[#00c060] !rounded-xl !py-4 text-lg font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none"
-            :loading="loading"
+        <OAuthButtons @loading="loading = $event" />
+
+        <p class="text-center mt-10 text-gray-600 dark:text-gray-400">
+          {{ $t("auth.login.noAccount") }}
+          <router-link
+            to="/register"
+            class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
           >
-            {{ $t("auth.login.submit") }}
-          </UiButton>
-        </div>
-      </form>
-
-      <div class="relative my-8">
-        <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-gray-300 dark:border-gray-700" />
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-2 bg-[#1e293b] text-gray-400 font-medium">
-            {{ $t("auth.or_continue_with") }}
-          </span>
-        </div>
-      </div>
-
-      <OAuthButtons @loading="loading = $event" />
-
-      <p class="text-center mt-10 text-gray-600 dark:text-gray-400">
-        {{ $t("auth.login.noAccount") }}
-        <router-link
-          to="/register"
-          class="text-[#00a046] hover:text-[#00b050] font-bold transition-colors"
-        >
-          {{ $t("auth.login.createAccount") }}
-        </router-link>
-      </p>
+            {{ $t("auth.login.createAccount") }}
+          </router-link>
+        </p>
       </template>
     </div>
   </AuthLayout>

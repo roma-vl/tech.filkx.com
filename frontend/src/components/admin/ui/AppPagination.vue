@@ -17,10 +17,7 @@
         <ArrowLeftIcon class="w-4 h-4 mr-1" />
         <span class="hidden sm:inline">{{ prevLabel }}</span>
       </AppButton>
-      <template
-        v-for="page in pages"
-        :key="page"
-      >
+      <template v-for="page in pages" :key="page">
         <span
           v-if="page === '...'"
           class="px-2 py-1 text-sm font-medium text-gray-400 dark:text-gray-500 self-center select-none"
@@ -60,8 +57,20 @@ import ArrowRightIcon from "@/components/Icon/ArrowRightIcon.vue";
 
 const { t, te } = useI18n();
 
-const prevLabel = computed(() => te("admin.pagination.prev") ? t("admin.pagination.prev") : (te("pagination.prev") ? t("pagination.prev") : "Попередня"));
-const nextLabel = computed(() => te("admin.pagination.next") ? t("admin.pagination.next") : (te("pagination.next") ? t("pagination.next") : "Наступна"));
+const prevLabel = computed(() =>
+  te("admin.pagination.prev")
+    ? t("admin.pagination.prev")
+    : te("pagination.prev")
+      ? t("pagination.prev")
+      : "Попередня",
+);
+const nextLabel = computed(() =>
+  te("admin.pagination.next")
+    ? t("admin.pagination.next")
+    : te("pagination.next")
+      ? t("pagination.next")
+      : "Наступна",
+);
 const totalLabel = computed(() => {
   const total = meta.value.total;
   if (te("admin.pagination.total")) {
@@ -116,7 +125,7 @@ const pages = computed(() => {
   }
 
   const result = [];
-  
+
   if (current <= 4) {
     for (let i = 1; i <= 5; i++) {
       result.push(i);

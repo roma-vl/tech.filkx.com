@@ -1,6 +1,8 @@
 <template>
   <div class="space-y-4">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm"
+    >
       <div class="flex flex-1 items-center gap-3">
         <div class="flex-1 max-w-md">
           <UiInput
@@ -17,9 +19,11 @@
         <button
           type="button"
           class="relative h-[42px] px-3 rounded-lg border transition-all"
-          :class="showFilters
-            ? 'border-[#00a046] bg-emerald-50 dark:bg-emerald-900/20 text-[#00a046]'
-            : 'border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-500 hover:border-zinc-400'"
+          :class="
+            showFilters
+              ? 'border-[#00a046] bg-emerald-50 dark:bg-emerald-900/20 text-[#00a046]'
+              : 'border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-500 hover:border-zinc-400'
+          "
           title="Фільтри"
           @click="$emit('update:showFilters', !showFilters)"
         >
@@ -27,7 +31,8 @@
           <span
             v-if="activeFiltersCount > 0"
             class="absolute -top-1 -right-1 w-4 h-4 bg-[#00a046] text-white text-[9px] flex items-center justify-center rounded-full font-black"
-          >{{ activeFiltersCount }}</span>
+            >{{ activeFiltersCount }}</span
+          >
         </button>
       </div>
 
@@ -75,7 +80,9 @@
           />
         </div>
 
-        <div class="flex items-center justify-between pt-6 border-t border-zinc-200 dark:border-zinc-700">
+        <div
+          class="flex items-center justify-between pt-6 border-t border-zinc-200 dark:border-zinc-700"
+        >
           <UiButton variant="secondary" @click="$emit('reset')">
             Скинути фільтри
           </UiButton>

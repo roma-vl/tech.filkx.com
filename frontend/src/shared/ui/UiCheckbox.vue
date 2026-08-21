@@ -1,5 +1,8 @@
 <template>
-  <label class="inline-flex items-center gap-2.5 cursor-pointer select-none group" :class="disabled ? 'opacity-50 cursor-not-allowed' : ''">
+  <label
+    class="inline-flex items-center gap-2.5 cursor-pointer select-none group"
+    :class="disabled ? 'opacity-50 cursor-not-allowed' : ''"
+  >
     <input
       type="checkbox"
       class="sr-only"
@@ -14,7 +17,7 @@
         isRadio ? 'rounded-full' : 'rounded',
         isChecked
           ? 'bg-[#00a046] border-2 border-[#00a046]'
-          : 'bg-white dark:bg-zinc-900 border-2 border-zinc-300 dark:border-zinc-600 group-hover:border-[#00a046]'
+          : 'bg-white dark:bg-zinc-900 border-2 border-zinc-300 dark:border-zinc-600 group-hover:border-[#00a046]',
       ]"
     >
       <!-- Checkmark for checkbox mode -->
@@ -31,10 +34,16 @@
         <polyline points="1,4 3.5,6.5 9,1" />
       </svg>
       <!-- Dot for radio mode -->
-      <span v-if="isRadio && isChecked" class="w-1.5 h-1.5 rounded-full bg-white" />
+      <span
+        v-if="isRadio && isChecked"
+        class="w-1.5 h-1.5 rounded-full bg-white"
+      />
     </span>
     <slot>
-      <span v-if="label" class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+      <span
+        v-if="label"
+        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+      >
         {{ label }}
       </span>
     </slot>
@@ -58,8 +67,10 @@ const emit = defineEmits<{
 const isRadio = computed(() => typeof props.modelValue === "string");
 
 const isChecked = computed(() => {
-  if (Array.isArray(props.modelValue)) return props.modelValue.includes(props.value);
-  if (typeof props.modelValue === "string") return props.modelValue === props.value;
+  if (Array.isArray(props.modelValue))
+    return props.modelValue.includes(props.value);
+  if (typeof props.modelValue === "string")
+    return props.modelValue === props.value;
   return props.modelValue;
 });
 

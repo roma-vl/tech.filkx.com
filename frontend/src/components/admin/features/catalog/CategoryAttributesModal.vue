@@ -7,12 +7,11 @@
   >
     <div class="space-y-6">
       <!-- VIEW 1: ATTRIBUTES LIST & BINDINGS -->
-      <div
-        v-if="currentView === 'list'"
-        class="space-y-6"
-      >
+      <div v-if="currentView === 'list'" class="space-y-6">
         <!-- Top Toolbar: Bind Existing / Create New -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-800">
+        <div
+          class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-800"
+        >
           <!-- Bind existing attribute -->
           <div class="flex-1 flex items-end gap-2">
             <AppSelect
@@ -47,27 +46,43 @@
         </div>
 
         <!-- Category Attributes Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xs overflow-hidden">
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xs overflow-hidden"
+        >
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table
+              class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+            >
               <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     ID
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     Код
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     Назва (UK)
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     Тип
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     Варіанти
                   </th>
-                  <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th
+                    class="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
                     Дії
                   </th>
                 </tr>
@@ -78,14 +93,20 @@
                   :key="attr.id"
                   class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
-                  <td class="px-4 py-3 text-sm font-bold text-gray-950 dark:text-white">
+                  <td
+                    class="px-4 py-3 text-sm font-bold text-gray-950 dark:text-white"
+                  >
                     {{ attr.id }}
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono font-bold">
+                  <td
+                    class="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono font-bold"
+                  >
                     {{ attr.code }}
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-950 dark:text-white">
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                    <div
+                      class="flex flex-col sm:flex-row sm:items-center gap-1.5"
+                    >
                       <span class="font-semibold">{{ attr.nameUk }}</span>
                       <span
                         v-if="attr.isInherited"
@@ -99,16 +120,21 @@
                   <td class="px-4 py-3 text-sm">
                     <span
                       :class="{
-                        'bg-purple-155 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400': attr.type === 'select',
-                        'bg-blue-155 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': attr.type === 'color',
-                        'bg-gray-155 text-gray-800 dark:bg-gray-750 dark:text-gray-300': attr.type === 'text',
+                        'bg-purple-155 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400':
+                          attr.type === 'select',
+                        'bg-blue-155 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400':
+                          attr.type === 'color',
+                        'bg-gray-155 text-gray-800 dark:bg-gray-750 dark:text-gray-300':
+                          attr.type === 'text',
                       }"
                       class="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider"
                     >
                       {{ attr.type }}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                  <td
+                    class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                  >
                     <div class="flex flex-wrap gap-1">
                       <span
                         v-for="val in attr.values"
@@ -139,10 +165,7 @@
                       </svg>
                       Керування в {{ attr.sourceCategoryName }}
                     </div>
-                    <div
-                      v-else
-                      class="flex justify-end gap-1.5"
-                    >
+                    <div v-else class="flex justify-end gap-1.5">
                       <AppButton
                         variant="ghost"
                         size="sm"
@@ -224,13 +247,16 @@
       </div>
 
       <!-- VIEW 2: CREATE / EDIT ATTRIBUTE FORM -->
-      <div
-        v-else
-        class="space-y-6"
-      >
-        <div class="flex items-center justify-between border-b pb-3 border-gray-150 dark:border-gray-800">
+      <div v-else class="space-y-6">
+        <div
+          class="flex items-center justify-between border-b pb-3 border-gray-150 dark:border-gray-800"
+        >
           <h4 class="font-bold text-gray-950 dark:text-white">
-            {{ isEditing ? 'Редагувати характеристику' : 'Створити характеристику' }}
+            {{
+              isEditing
+                ? "Редагувати характеристику"
+                : "Створити характеристику"
+            }}
           </h4>
           <AppButton
             type="button"
@@ -243,10 +269,7 @@
           </AppButton>
         </div>
 
-        <form
-          class="grid grid-cols-1 gap-4"
-          @submit.prevent="saveAttribute"
-        >
+        <form class="grid grid-cols-1 gap-4" @submit.prevent="saveAttribute">
           <AppInput
             v-model="attributeForm.code"
             required
@@ -286,11 +309,15 @@
 
           <!-- Attributes preset values list -->
           <div
-            v-if="attributeForm.type === 'select' || attributeForm.type === 'color'"
+            v-if="
+              attributeForm.type === 'select' || attributeForm.type === 'color'
+            "
             class="space-y-2 mt-2 pt-4 border-t border-gray-150 dark:border-gray-800"
           >
             <div class="flex justify-between items-center">
-              <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase"
+                >Список можливих значень</label
+              >
               <AppButton
                 type="button"
                 variant="text"
@@ -316,31 +343,28 @@
                   type="text"
                   placeholder="#FF0000"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
                 <input
                   v-model="val.value"
                   type="color"
                   class="w-8 h-8 rounded border cursor-pointer bg-transparent"
-                >
+                />
               </div>
-              <div
-                v-else
-                class="flex-1 flex gap-2"
-              >
+              <div v-else class="flex-1 flex gap-2">
                 <input
                   v-model="val.valueUk"
                   required
                   type="text"
                   placeholder="Значення (UK)"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
                 <input
                   v-model="val.valueEn"
                   required
                   type="text"
                   placeholder="Value (EN)"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
               </div>
 
               <AppButton
@@ -431,7 +455,7 @@ const categoryAncestors = computed(() => {
   const ancestors = [];
   let currentParentId = props.category.parentId;
   while (currentParentId) {
-    const parent = props.categories.find(c => c.id === currentParentId);
+    const parent = props.categories.find((c) => c.id === currentParentId);
     if (parent) {
       ancestors.push(parent);
       currentParentId = parent.parentId;
@@ -445,27 +469,35 @@ const categoryAncestors = computed(() => {
 // Attributes assigned to the active category or inherited from ancestors
 const categoryAttributes = computed(() => {
   if (!props.category) return [];
-  
+
   // Direct attributes
   const own = props.attributes
-    .filter(a => a.categoryIds?.includes(props.category.id))
-    .map(a => ({
+    .filter((a) => a.categoryIds?.includes(props.category.id))
+    .map((a) => ({
       ...a,
       isInherited: false,
-      sourceCategoryName: ""
+      sourceCategoryName: "",
     }));
 
   // Inherited attributes
-  const ancestorIds = categoryAncestors.value.map(a => a.id);
+  const ancestorIds = categoryAncestors.value.map((a) => a.id);
   const inherited = props.attributes
-    .filter(a => !a.categoryIds?.includes(props.category.id) && a.categoryIds?.some(id => ancestorIds.includes(id)))
-    .map(a => {
-      const sourceCatId = a.categoryIds?.find(id => ancestorIds.includes(id));
-      const sourceCat = categoryAncestors.value.find(c => c.id === sourceCatId);
+    .filter(
+      (a) =>
+        !a.categoryIds?.includes(props.category.id) &&
+        a.categoryIds?.some((id) => ancestorIds.includes(id)),
+    )
+    .map((a) => {
+      const sourceCatId = a.categoryIds?.find((id) => ancestorIds.includes(id));
+      const sourceCat = categoryAncestors.value.find(
+        (c) => c.id === sourceCatId,
+      );
       return {
         ...a,
         isInherited: true,
-        sourceCategoryName: sourceCat ? sourceCat.nameUk : "Батьківська категорія"
+        sourceCategoryName: sourceCat
+          ? sourceCat.nameUk
+          : "Батьківська категорія",
       };
     });
 
@@ -475,10 +507,11 @@ const categoryAttributes = computed(() => {
 // Attributes NOT assigned to the active category or its ancestors
 const bindableAttributes = computed(() => {
   if (!props.category) return [];
-  const ancestorIds = categoryAncestors.value.map(a => a.id);
-  return props.attributes.filter(a => 
-    !a.categoryIds?.includes(props.category.id) && 
-    !a.categoryIds?.some(id => ancestorIds.includes(id))
+  const ancestorIds = categoryAncestors.value.map((a) => a.id);
+  return props.attributes.filter(
+    (a) =>
+      !a.categoryIds?.includes(props.category.id) &&
+      !a.categoryIds?.some((id) => ancestorIds.includes(id)),
   );
 });
 
@@ -523,7 +556,9 @@ const goToEdit = (attr) => {
 
 const bindAttribute = async () => {
   if (!selectedAttrToBind.value) return;
-  const attr = props.attributes.find(a => a.id === Number(selectedAttrToBind.value));
+  const attr = props.attributes.find(
+    (a) => a.id === Number(selectedAttrToBind.value),
+  );
   if (!attr) return;
 
   const payload = {
@@ -531,7 +566,7 @@ const bindAttribute = async () => {
     nameUk: attr.nameUk,
     nameEn: attr.nameEn,
     type: attr.type,
-    values: (attr.values || []).map(v => ({
+    values: (attr.values || []).map((v) => ({
       id: v.id,
       value: v.value || "",
       valueUk: v.valueUk || "",
@@ -555,13 +590,15 @@ const unbindAttribute = async (attr) => {
     nameUk: attr.nameUk,
     nameEn: attr.nameEn,
     type: attr.type,
-    values: (attr.values || []).map(v => ({
+    values: (attr.values || []).map((v) => ({
       id: v.id,
       value: v.value || "",
       valueUk: v.valueUk || "",
       valueEn: v.valueEn || "",
     })),
-    categoryIds: (attr.categoryIds || []).filter(id => id !== props.category.id),
+    categoryIds: (attr.categoryIds || []).filter(
+      (id) => id !== props.category.id,
+    ),
   };
 
   try {
@@ -594,7 +631,10 @@ const confirmDeleteAttribute = async () => {
 const saveAttribute = async () => {
   try {
     if (isEditing.value) {
-      await api.put(`/admin/attributes/${attributeForm.value.id}`, attributeForm.value);
+      await api.put(
+        `/admin/attributes/${attributeForm.value.id}`,
+        attributeForm.value,
+      );
     } else {
       await api.post("/admin/attributes", attributeForm.value);
     }

@@ -25,7 +25,9 @@
         v-if="saving"
         class="fixed bottom-8 right-8 z-30 flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-800 dark:bg-gray-700 text-white text-sm font-medium shadow-xl"
       >
-        <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        <div
+          class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+        />
         {{ $t("admin.settings.saving") }}
       </div>
     </Transition>
@@ -82,8 +84,10 @@ const fetchSettings = async () => {
         const val = groupData[snakeKey] ?? groupData[camelKey];
 
         if (val !== undefined) {
-          if (val === "true" || val === true) allSettings.value[group][camelKey] = true;
-          else if (val === "false" || val === false) allSettings.value[group][camelKey] = false;
+          if (val === "true" || val === true)
+            allSettings.value[group][camelKey] = true;
+          else if (val === "false" || val === false)
+            allSettings.value[group][camelKey] = false;
           else allSettings.value[group][camelKey] = val;
         }
       });
@@ -133,7 +137,9 @@ onMounted(() => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .fade-enter-from,
 .fade-leave-to {

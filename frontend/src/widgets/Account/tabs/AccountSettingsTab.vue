@@ -162,7 +162,8 @@ const handleAvatarFileChange = async (event: Event) => {
     }
   } catch (error: any) {
     console.error("Avatar upload failed:", error);
-    const msg = error.response?.data?.message || "Не вдалося завантажити аватар.";
+    const msg =
+      error.response?.data?.message || "Не вдалося завантажити аватар.";
     cartStore.addToast(msg, "error");
   } finally {
     isUploadingAvatar.value = false;
@@ -458,7 +459,9 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <!-- Avatar Section -->
-        <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80">
+        <div
+          class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80"
+        >
           <div class="relative group">
             <img
               v-if="authStore.user?.avatarUrl"
@@ -471,12 +474,14 @@ const inputClass =
             >
               {{ userInitials }}
             </div>
-            
+
             <div
               v-if="isUploadingAvatar"
               class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center"
             >
-              <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div
+                class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              />
             </div>
           </div>
 
@@ -484,10 +489,14 @@ const inputClass =
             <h4 class="font-extrabold text-sm text-zinc-800 dark:text-zinc-200">
               Ваш аватар
             </h4>
-            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal">
+            <p
+              class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal"
+            >
               Дозволені формати: JPG, PNG, GIF. Максимальний розмір файлу: 2 МБ.
             </p>
-            <div class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start">
+            <div
+              class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start"
+            >
               <input
                 ref="avatarFileInput"
                 type="file"
@@ -540,7 +549,10 @@ const inputClass =
               type="email"
               required
               disabled
-              :class="[inputClass, '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed']"
+              :class="[
+                inputClass,
+                '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed',
+              ]"
             />
           </div>
           <div class="space-y-1.5">

@@ -246,7 +246,13 @@
               >
                 {{ variantErrors[vIdx].price }}
               </p>
-              <template v-if="isEditing && getPriceChange(v) !== null && getPriceChange(v) !== 0">
+              <template
+                v-if="
+                  isEditing &&
+                  getPriceChange(v) !== null &&
+                  getPriceChange(v) !== 0
+                "
+              >
                 <p
                   v-if="getPriceChange(v)! > 0"
                   class="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400"
@@ -415,7 +421,8 @@
               v-if="!productForm.categoryId"
               class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/50 p-3 rounded-xl"
             >
-              ⚠️ Оберіть категорію товару в розділі 1, щоб налаштувати характеристики.
+              ⚠️ Оберіть категорію товару в розділі 1, щоб налаштувати
+              характеристики.
             </div>
 
             <div
@@ -426,7 +433,11 @@
             </div>
 
             <div
-              v-if="productForm.categoryId && v.attributes && v.attributes.length > 0"
+              v-if="
+                productForm.categoryId &&
+                v.attributes &&
+                v.attributes.length > 0
+              "
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
             >
               <div
@@ -436,7 +447,9 @@
               >
                 <!-- Display attribute name as a strong label -->
                 <div class="space-y-2">
-                  <span class="block text-xs font-black uppercase text-gray-400">
+                  <span
+                    class="block text-xs font-black uppercase text-gray-400"
+                  >
                     {{ getAttributeName(attr.attributeId) }}
                   </span>
 
@@ -521,8 +534,8 @@
             <div
               class="p-3 bg-gray-50 dark:bg-gray-950/30 rounded-xl text-xs text-gray-400 dark:text-gray-500 italic"
             >
-              Тут ви зможете зв'язати товари для рекомендацій «Разом дешевше» або
-              «З цим товаром також купують».
+              Тут ви зможете зв'язати товари для рекомендацій «Разом дешевше»
+              або «З цим товаром також купують».
             </div>
             <AppSelect
               disabled
@@ -584,7 +597,9 @@
           >
             Сповістити клієнтів вішліста
           </span>
-          <span class="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+          <span
+            class="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap"
+          >
             (при зниженні &gt;5%)
           </span>
         </label>
@@ -747,19 +762,25 @@ const productForm = ref<{
 const availableAttributes = computed(() => {
   const catId = Number(productForm.value.categoryId);
   if (!catId) {
-    return props.attributes.filter(attr => !attr.categoryIds || attr.categoryIds.length === 0);
+    return props.attributes.filter(
+      (attr) => !attr.categoryIds || attr.categoryIds.length === 0,
+    );
   }
 
   const ancestorIds: number[] = [];
   let currentId: number | null = catId;
   while (currentId) {
     ancestorIds.push(currentId);
-    const cat = props.categories.find(c => c.id === currentId);
+    const cat = props.categories.find((c) => c.id === currentId);
     currentId = cat ? cat.parentId : null;
   }
 
-  return props.attributes.filter(attr => {
-    return !attr.categoryIds || attr.categoryIds.length === 0 || attr.categoryIds.some((id: number) => ancestorIds.includes(id));
+  return props.attributes.filter((attr) => {
+    return (
+      !attr.categoryIds ||
+      attr.categoryIds.length === 0 ||
+      attr.categoryIds.some((id: number) => ancestorIds.includes(id))
+    );
   });
 });
 
@@ -773,12 +794,13 @@ const getPriceChange = (v: ProductVariantForm): number | null => {
   return Math.round(pct * 10) / 10;
 };
 
-const hasAnyPriceDrop = computed(() =>
-  isEditing.value &&
-  productForm.value.variants.some((v) => {
-    const ch = getPriceChange(v);
-    return ch !== null && ch > 0;
-  })
+const hasAnyPriceDrop = computed(
+  () =>
+    isEditing.value &&
+    productForm.value.variants.some((v) => {
+      const ch = getPriceChange(v);
+      return ch !== null && ch > 0;
+    }),
 );
 
 watch(
@@ -795,14 +817,16 @@ watch(
       const syncedAttrs: any[] = [];
 
       availableAttributes.value.forEach((avail: any) => {
-        const existing = currentAttrs.find(a => Number(a.attributeId) === Number(avail.id));
+        const existing = currentAttrs.find(
+          (a) => Number(a.attributeId) === Number(avail.id),
+        );
         if (existing) {
           syncedAttrs.push(existing);
         } else {
           syncedAttrs.push({
             attributeId: avail.id,
             valueId: null,
-            value: ""
+            value: "",
           });
         }
       });
@@ -810,7 +834,7 @@ watch(
       v.attributes = syncedAttrs;
     });
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 watch(
@@ -947,15 +971,24 @@ const buildPayload = () => {
           if (!a.attributeId) return false;
           const type = getAttributeType(a.attributeId);
           if (type === "select" || type === "color") {
-            return a.valueId !== null && a.valueId !== undefined && a.valueId !== "";
+            return (
+              a.valueId !== null && a.valueId !== undefined && a.valueId !== ""
+            );
           } else {
-            return a.value !== null && a.value !== undefined && String(a.value).trim() !== "";
+            return (
+              a.value !== null &&
+              a.value !== undefined &&
+              String(a.value).trim() !== ""
+            );
           }
         })
         .map((a: any) => ({
           attributeId: Number(a.attributeId),
           valueId: a.valueId ? Number(a.valueId) : null,
-          value: a.value !== null && a.value !== undefined ? String(a.value).trim() : null,
+          value:
+            a.value !== null && a.value !== undefined
+              ? String(a.value).trim()
+              : null,
         })),
     })),
   };

@@ -7,9 +7,7 @@
     >
       <span class="material-symbols-outlined text-[44px]">check_circle</span>
     </div>
-    <h2
-      class="text-zinc-900 dark:text-white text-2xl font-bold mb-2"
-    >
+    <h2 class="text-zinc-900 dark:text-white text-2xl font-bold mb-2">
       {{ t("cart.success.title") }}
     </h2>
     <p class="mb-6 text-zinc-500 dark:text-zinc-400">
@@ -24,7 +22,9 @@
       class="bg-zinc-50 dark:bg-zinc-900/60 rounded-xl p-6 mb-8 text-left space-y-4 border border-zinc-200 dark:border-zinc-800"
     >
       <div class="flex justify-between text-sm">
-        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.amountDue") }}</span>
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.success.amountDue")
+        }}</span>
         <span class="font-black text-[#00a046]">{{
           formatPrice(
             orderSuccessData?.totalPrice || orderSuccessData?.total_price || 0,
@@ -32,13 +32,17 @@
         }}</span>
       </div>
       <div class="flex justify-between text-sm">
-        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.customer") }}</span>
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.success.customer")
+        }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           orderSuccessData?.customerName || orderSuccessData?.customer_name
         }}</span>
       </div>
       <div class="flex justify-between text-sm">
-        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.paymentMethod") }}</span>
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.success.paymentMethod")
+        }}</span>
         <span class="font-semibold text-zinc-700 dark:text-zinc-300">
           {{
             getPaymentMethodLabel(
@@ -52,75 +56,118 @@
       <!-- Bank Transfer Manual Invoice Card -->
       <div
         v-if="
-          (orderSuccessData?.paymentMethod || orderSuccessData?.payment_method) === 'bank'
+          (orderSuccessData?.paymentMethod ||
+            orderSuccessData?.payment_method) === 'bank'
         "
         class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-4"
       >
-        <div class="bg-[#00a046]/5 dark:bg-[#00a046]/10 border border-[#00a046]/20 p-4 rounded-xl">
-          <h4 class="font-extrabold text-xs text-[#00a046] uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[18px]">account_balance</span>
+        <div
+          class="bg-[#00a046]/5 dark:bg-[#00a046]/10 border border-[#00a046]/20 p-4 rounded-xl"
+        >
+          <h4
+            class="font-extrabold text-xs text-[#00a046] uppercase tracking-wider mb-3 flex items-center gap-1.5"
+          >
+            <span class="material-symbols-outlined text-[18px]"
+              >account_balance</span
+            >
             {{ t("cart.success.bankDetails") }}
           </h4>
 
           <div class="space-y-3 text-xs">
             <!-- Receiver -->
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.receiver") }}</span>
-              <span class="font-bold text-zinc-900 dark:text-white">ТОВ «FilksTech»</span>
+            <div
+              class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1"
+            >
+              <span class="text-zinc-500 dark:text-zinc-400">{{
+                t("cart.success.receiver")
+              }}</span>
+              <span class="font-bold text-zinc-900 dark:text-white"
+                >ТОВ «FilksTech»</span
+              >
             </div>
 
             <!-- IBAN -->
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.iban") }}</span>
+            <div
+              class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1"
+            >
+              <span class="text-zinc-500 dark:text-zinc-400">{{
+                t("cart.success.iban")
+              }}</span>
               <div class="flex items-center gap-2">
-                <code class="font-mono font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-800 dark:text-zinc-200">{{ bankDetails.iban }}</code>
+                <code
+                  class="font-mono font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-800 dark:text-zinc-200"
+                  >{{ bankDetails.iban }}</code
+                >
                 <button
                   class="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors text-[#00a046]"
                   type="button"
                   :title="t('cart.success.copyIban')"
                   @click="copyToClipboard(bankDetails.iban, 'iban')"
                 >
-                  <span class="material-symbols-outlined text-[16px]">{{ copiedField === 'iban' ? 'done' : 'content_copy' }}</span>
+                  <span class="material-symbols-outlined text-[16px]">{{
+                    copiedField === "iban" ? "done" : "content_copy"
+                  }}</span>
                 </button>
               </div>
             </div>
 
             <!-- EDRPOU -->
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.edrpou") }}</span>
+            <div
+              class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1"
+            >
+              <span class="text-zinc-500 dark:text-zinc-400">{{
+                t("cart.success.edrpou")
+              }}</span>
               <div class="flex items-center gap-2">
-                <code class="font-mono font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-800 dark:text-zinc-200">{{ bankDetails.edrpou }}</code>
+                <code
+                  class="font-mono font-bold bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-800 dark:text-zinc-200"
+                  >{{ bankDetails.edrpou }}</code
+                >
                 <button
                   class="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors text-[#00a046]"
                   type="button"
                   :title="t('cart.success.copyEdrpou')"
                   @click="copyToClipboard(bankDetails.edrpou, 'edrpou')"
                 >
-                  <span class="material-symbols-outlined text-[16px]">{{ copiedField === 'edrpou' ? 'done' : 'content_copy' }}</span>
+                  <span class="material-symbols-outlined text-[16px]">{{
+                    copiedField === "edrpou" ? "done" : "content_copy"
+                  }}</span>
                 </button>
               </div>
             </div>
 
             <!-- Purpose -->
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.success.purpose") }}</span>
+            <div
+              class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1"
+            >
+              <span class="text-zinc-500 dark:text-zinc-400">{{
+                t("cart.success.purpose")
+              }}</span>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-zinc-900 dark:text-white">{{ paymentPurpose }}</span>
+                <span class="font-bold text-zinc-900 dark:text-white">{{
+                  paymentPurpose
+                }}</span>
                 <button
                   class="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors text-[#00a046]"
                   type="button"
                   :title="t('cart.success.copyPurpose')"
                   @click="copyToClipboard(paymentPurpose, 'purpose')"
                 >
-                  <span class="material-symbols-outlined text-[16px]">{{ copiedField === 'purpose' ? 'done' : 'content_copy' }}</span>
+                  <span class="material-symbols-outlined text-[16px]">{{
+                    copiedField === "purpose" ? "done" : "content_copy"
+                  }}</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <p class="text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-start gap-1.5 leading-normal">
-          <span class="material-symbols-outlined text-[18px] shrink-0">info</span>
+        <p
+          class="text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-start gap-1.5 leading-normal"
+        >
+          <span class="material-symbols-outlined text-[18px] shrink-0"
+            >info</span
+          >
           <span>{{ t("cart.success.bankNotice") }}</span>
         </p>
       </div>

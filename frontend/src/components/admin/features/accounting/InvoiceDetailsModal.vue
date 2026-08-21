@@ -9,10 +9,7 @@
     max-width="lg"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div
-      v-if="invoice"
-      class="space-y-4"
-    >
+    <div v-if="invoice" class="space-y-4">
       <!-- Header Info -->
       <div class="grid grid-cols-2 gap-4 text-sm">
         <div>
@@ -77,10 +74,7 @@
               <p class="text-gray-900 dark:text-white">
                 {{ item.description }}
               </p>
-              <p
-                v-if="item.quantity > 1"
-                class="text-xs text-gray-500"
-              >
+              <p v-if="item.quantity > 1" class="text-xs text-gray-500">
                 x{{ item.quantity }}
               </p>
             </div>
@@ -111,10 +105,7 @@
     </div>
 
     <template #footer>
-      <AppButton
-        variant="secondary"
-        @click="$emit('update:modelValue', false)"
-      >
+      <AppButton variant="secondary" @click="$emit('update:modelValue', false)">
         {{ $t("common.close") || "Close" }}
       </AppButton>
     </template>

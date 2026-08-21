@@ -13,7 +13,7 @@ export const getCategoryIcon = (slug: string): string => {
     kids: "child_care",
     "sports-tourism": "sports_soccer",
     "electrotransport-auto": "electric_scooter",
-    "used-tech": "recycling"
+    "used-tech": "recycling",
   };
   const s = slug ? slug.toLowerCase() : "";
   return mapping[s] || "grid_view";
@@ -31,7 +31,10 @@ const pickLocalized = (value: any, locale: string): string => {
   return value || "";
 };
 
-export const mapDbCategoriesToMenu = (dbCats: any[], locale: string = "uk"): any[] => {
+export const mapDbCategoriesToMenu = (
+  dbCats: any[],
+  locale: string = "uk",
+): any[] => {
   if (!dbCats || dbCats.length === 0) return [];
   return dbCats.map((cat: any) => {
     const label = pickLocalized(cat.name, locale);
@@ -53,7 +56,7 @@ export const mapDbCategoriesToMenu = (dbCats: any[], locale: string = "uk"): any
         if (hasSubchildren) {
           links = subchildren.slice(0, 3).map((sub: any) => ({
             name: pickLocalized(sub.name, locale),
-            slug: sub.slug
+            slug: sub.slug,
           }));
         }
 
@@ -61,7 +64,7 @@ export const mapDbCategoriesToMenu = (dbCats: any[], locale: string = "uk"): any
           title: pickLocalized(child.name, locale),
           slug: child.slug,
           showMoreSlug: subchildren.length > 3 ? child.slug : undefined,
-          links
+          links,
         });
       }
     });
@@ -71,7 +74,7 @@ export const mapDbCategoriesToMenu = (dbCats: any[], locale: string = "uk"): any
       slug: cat.slug,
       label,
       icon,
-      columns: columns.filter((col: any[]) => col.length > 0)
+      columns: columns.filter((col: any[]) => col.length > 0),
     };
   });
 };

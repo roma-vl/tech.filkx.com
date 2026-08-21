@@ -7,13 +7,16 @@
       @click="isOpen = !isOpen"
     >
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+        <span
+          class="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 dark:text-zinc-500"
+        >
           {{ title }}
         </span>
         <span
           v-if="activeCount"
           class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#00a046] text-white text-[11px] font-black"
-        >{{ activeCount }}</span>
+          >{{ activeCount }}</span
+        >
       </div>
       <div class="flex items-center gap-2">
         <button
@@ -28,7 +31,8 @@
         <span
           class="material-symbols-outlined text-[18px] text-zinc-400 transition-transform duration-200"
           :class="isOpen ? 'rotate-180' : ''"
-        >expand_more</span>
+          >expand_more</span
+        >
       </div>
     </button>
 
@@ -51,16 +55,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const props = withDefaults(defineProps<{
-  title: string;
-  defaultOpen?: boolean;
-  activeCount?: number;
-  showReset?: boolean;
-}>(), {
-  defaultOpen: true,
-  activeCount: 0,
-  showReset: true,
-});
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    defaultOpen?: boolean;
+    activeCount?: number;
+    showReset?: boolean;
+  }>(),
+  {
+    defaultOpen: true,
+    activeCount: 0,
+    showReset: true,
+  },
+);
 
 const emit = defineEmits<{
   (e: "reset"): void;

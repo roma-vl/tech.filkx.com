@@ -1,13 +1,6 @@
 <template>
-  <TransitionRoot
-    as="template"
-    :show="isOpen"
-  >
-    <Dialog
-      as="div"
-      class="relative z-50"
-      @close="$emit('close')"
-    >
+  <TransitionRoot as="template" :show="isOpen">
+    <Dialog as="div" class="relative z-50" @close="$emit('close')">
       <TransitionChild
         as="template"
         enter="ease-out duration-300"
@@ -74,10 +67,7 @@
                   </template>
                   {{ t("admin.emails.confirm_send") }}
                 </AppButton>
-                <AppButton
-                  variant="white"
-                  @click="$emit('close')"
-                >
+                <AppButton variant="white" @click="$emit('close')">
                   {{ t("admin.emails.cancel") }}
                 </AppButton>
               </div>

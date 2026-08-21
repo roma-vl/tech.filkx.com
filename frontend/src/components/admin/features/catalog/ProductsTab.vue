@@ -196,7 +196,7 @@
                   v-model="productHotFilter"
                   type="checkbox"
                   class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
-                >
+                />
                 Гарячі 🔥
               </label>
 
@@ -207,7 +207,7 @@
                   v-model="productRecommendedFilter"
                   type="checkbox"
                   class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
-                >
+                />
                 Рекомендовані 👍
               </label>
             </div>
@@ -276,7 +276,7 @@
                     :src="product.image"
                     alt=""
                     class="w-12 h-12 rounded-xl object-cover border border-gray-200 dark:border-gray-700 bg-gray-100"
-                  >
+                  />
                   <div>
                     <div class="flex items-center gap-1.5">
                       <div class="font-bold text-gray-900 dark:text-white">
@@ -286,12 +286,14 @@
                         v-if="product.isHot"
                         title="Гаряча пропозиція"
                         class="text-xs"
-                      >🔥</span>
+                        >🔥</span
+                      >
                       <span
                         v-if="product.isRecommended"
                         title="Рекомендовано"
                         class="text-xs"
-                      >👍</span>
+                        >👍</span
+                      >
                     </div>
                     <div class="text-xs text-gray-400">
                       {{ product.nameEn }}
@@ -318,7 +320,8 @@
                   >
                     <span
                       class="font-mono bg-gray-100 dark:bg-gray-950 px-1 py-0.5 rounded text-[10px]"
-                    >{{ v.sku }}</span>:
+                      >{{ v.sku }}</span
+                    >:
                     <span class="font-bold text-gray-900 dark:text-white">{{
                       formatPrice(v.price)
                     }}</span>
@@ -406,7 +409,9 @@
         </table>
       </div>
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+      <div
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+      >
         <AppPagination
           :pagination="paginationMeta"
           @page-change="onPageChange"
@@ -516,7 +521,7 @@ watch(
   ],
   () => {
     currentPage.value = 1;
-  }
+  },
 );
 
 const activeFiltersCount = computed(() => {

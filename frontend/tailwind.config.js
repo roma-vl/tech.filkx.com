@@ -105,7 +105,13 @@ export default {
         gutter: "24px",
       },
       fontFamily: {
-        sans: ["Inter Variable", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: [
+          "Inter Variable",
+          "Inter",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
         "headline-md": ["Inter Variable", "Inter", "sans-serif"],
         "body-lg": ["Inter Variable", "Inter", "sans-serif"],
         "title-md": ["Inter Variable", "Inter", "sans-serif"],

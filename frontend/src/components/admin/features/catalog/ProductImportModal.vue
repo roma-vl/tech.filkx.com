@@ -29,7 +29,7 @@
           class="hidden"
           accept=".csv"
           @change="handleFileSelect"
-        >
+        />
         <svg
           class="mx-auto h-12 w-12 text-gray-400"
           stroke="currentColor"
@@ -46,13 +46,8 @@
         <p class="mt-2 text-sm font-bold text-gray-700 dark:text-gray-300">
           Перетягніть файл сюди або натисніть для вибору
         </p>
-        <p class="text-xs text-gray-400 mt-1">
-          Тільки файли .csv
-        </p>
-        <p
-          v-if="selectedFile"
-          class="mt-2 text-xs font-bold text-emerald-500"
-        >
+        <p class="text-xs text-gray-400 mt-1">Тільки файли .csv</p>
+        <p v-if="selectedFile" class="mt-2 text-xs font-bold text-emerald-500">
           Обрано: {{ selectedFile.name }} ({{
             (selectedFile.size / 1024).toFixed(1)
           }}
@@ -78,7 +73,8 @@
           <li>
             <strong class="text-gray-800 dark:text-gray-200">Назва (UK)</strong>
             та
-            <strong class="text-gray-800 dark:text-gray-200">Назва (EN)</strong>: Обов'язкові текстові поля.
+            <strong class="text-gray-800 dark:text-gray-200">Назва (EN)</strong
+            >: Обов'язкові текстові поля.
           </li>
           <li>
             <strong class="text-gray-800 dark:text-gray-200">Категорія</strong>:
@@ -89,21 +85,32 @@
             Назва бренду (буде підібрано автоматично з існуючих).
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">SKU / Ціна / Кількість</strong>: Формат:
+            <strong class="text-gray-800 dark:text-gray-200"
+              >SKU / Ціна / Кількість</strong
+            >: Формат:
             <code
               class="bg-gray-200 dark:bg-gray-800 px-1 py-0.5 rounded font-mono text-gray-700 dark:text-gray-300"
-            >sku1 (price, stock) | sku2 (price2, stock2)</code>.
+              >sku1 (price, stock) | sku2 (price2, stock2)</code
+            >.
           </li>
           <li>
             <strong class="text-gray-800 dark:text-gray-200">Статус</strong>:
-            <code class="font-mono text-gray-700 dark:text-gray-300">active</code>,
-            <code class="font-mono text-gray-700 dark:text-gray-300">draft</code>
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >active</code
+            >,
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >draft</code
+            >
             або
-            <code class="font-mono text-gray-700 dark:text-gray-300">hidden</code>.
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >hidden</code
+            >.
           </li>
           <li>
             <strong class="text-gray-800 dark:text-gray-200">Гаряча</strong> та
-            <strong class="text-gray-800 dark:text-gray-200">Рекомендовано</strong>:
+            <strong class="text-gray-800 dark:text-gray-200"
+              >Рекомендовано</strong
+            >:
             <code class="font-mono text-gray-700 dark:text-gray-300">Так</code>
             або
             <code class="font-mono text-gray-700 dark:text-gray-300">Ні</code>.

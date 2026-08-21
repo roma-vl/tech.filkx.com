@@ -5,10 +5,7 @@
     max-width="md"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <form
-      class="space-y-4"
-      @submit.prevent="saveCategory"
-    >
+    <form class="space-y-4" @submit.prevent="saveCategory">
       <AppInput
         v-model="categoryForm.nameUk"
         label="Назва (УК) *"
@@ -77,7 +74,7 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const props = defineProps({
   modelValue: Boolean,
-  category: Object
+  category: Object,
 });
 
 const emit = defineEmits(["update:modelValue", "refresh"]);
@@ -90,7 +87,7 @@ const defaultCategoryForm = () => ({
   nameEn: "",
   descriptionUk: "",
   descriptionEn: "",
-  order: 0
+  order: 0,
 });
 
 const categoryForm = ref(defaultCategoryForm());
@@ -104,13 +101,13 @@ watch(
         nameEn: newCat.nameEn || "",
         descriptionUk: newCat.descriptionUk || "",
         descriptionEn: newCat.descriptionEn || "",
-        order: newCat.order || 0
+        order: newCat.order || 0,
       };
     } else {
       categoryForm.value = defaultCategoryForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const saveCategory = async () => {
@@ -121,7 +118,10 @@ const saveCategory = async () => {
   saving.value = true;
   try {
     if (props.category) {
-      await api.put(`/admin/blog/categories/${props.category.id}`, categoryForm.value);
+      await api.put(
+        `/admin/blog/categories/${props.category.id}`,
+        categoryForm.value,
+      );
     } else {
       await api.post("/admin/blog/categories", categoryForm.value);
     }

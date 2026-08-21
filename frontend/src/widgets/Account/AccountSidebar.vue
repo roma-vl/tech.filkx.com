@@ -41,9 +41,17 @@ const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
 
   if (authStore.isAuthenticated) {
-    const allowedRoles = ["admin", "administrator", "support", "owner", "moderator"];
+    const allowedRoles = [
+      "admin",
+      "administrator",
+      "support",
+      "owner",
+      "moderator",
+    ];
     const userRoles = authStore.user?.roles || [];
-    const hasAdminAccess = allowedRoles.some((role) => userRoles.includes(role));
+    const hasAdminAccess = allowedRoles.some((role) =>
+      userRoles.includes(role),
+    );
 
     if (hasAdminAccess) {
       items.push({
@@ -139,22 +147,50 @@ const getRouteTo = (item: NavItem) => {
   >
     <!-- Promo Banners -->
     <div class="flex flex-col gap-2">
-      <div class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all cursor-pointer">
-        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-[17px] text-[#00a046]">verified_user</span>
+      <div
+        class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all cursor-pointer"
+      >
+        <div
+          class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-[17px] text-[#00a046]"
+            >verified_user</span
+          >
         </div>
         <div class="min-w-0">
-          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight">Верифікований клієнт</h4>
-          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5">Доступ до ексклюзивних акцій</p>
+          <h4
+            class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
+          >
+            Верифікований клієнт
+          </h4>
+          <p
+            class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
+          >
+            Доступ до ексклюзивних акцій
+          </p>
         </div>
       </div>
-      <div class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all cursor-pointer">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-[17px] text-amber-500">star</span>
+      <div
+        class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all cursor-pointer"
+      >
+        <div
+          class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-[17px] text-amber-500"
+            >star</span
+          >
         </div>
         <div class="min-w-0">
-          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight">Програма лояльності</h4>
-          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5">Бонуси з кожного замовлення</p>
+          <h4
+            class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
+          >
+            Програма лояльності
+          </h4>
+          <p
+            class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
+          >
+            Бонуси з кожного замовлення
+          </p>
         </div>
       </div>
     </div>

@@ -7,10 +7,17 @@ import { flushPromises } from "@vue/test-utils";
 vi.mock("@/shared/services/api/productApi", () => ({
   productApi: {
     catalogGetProducts: vi.fn(),
-    catalogGetCategories: vi.fn().mockResolvedValue({ data: { status: "success", data: [] } }),
-    catalogGetBrands: vi.fn().mockResolvedValue({ data: { status: "success", data: [] } }),
+    catalogGetCategories: vi
+      .fn()
+      .mockResolvedValue({ data: { status: "success", data: [] } }),
+    catalogGetBrands: vi
+      .fn()
+      .mockResolvedValue({ data: { status: "success", data: [] } }),
     catalogGetFiltersSchema: vi.fn().mockResolvedValue({
-      data: { status: "success", data: { attributes: [], price: { min: 0, max: 200000 } } },
+      data: {
+        status: "success",
+        data: { attributes: [], price: { min: 0, max: 200000 } },
+      },
     }),
   },
 }));
@@ -23,7 +30,9 @@ function withSetup<T>(composable: () => T) {
   let result!: T;
   const router = createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: "/", name: "catalog", component: { template: "<div />" } }],
+    routes: [
+      { path: "/", name: "catalog", component: { template: "<div />" } },
+    ],
   });
 
   const TestComponent = defineComponent({
@@ -66,7 +75,12 @@ describe("useCatalog product mapping", () => {
     (productApi.catalogGetProducts as any).mockResolvedValue({
       data: {
         status: "success",
-        data: { data: [apiProductWithNoRealAttributes()], currentPage: 1, lastPage: 1, total: 1 },
+        data: {
+          data: [apiProductWithNoRealAttributes()],
+          currentPage: 1,
+          lastPage: 1,
+          total: 1,
+        },
       },
     });
 

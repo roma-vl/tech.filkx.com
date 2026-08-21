@@ -5,10 +5,7 @@
     max-width="sm"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <form
-      class="space-y-4"
-      @submit.prevent="saveTag"
-    >
+    <form class="space-y-4" @submit.prevent="saveTag">
       <AppInput
         v-model="tagForm.nameUk"
         label="Назва (УК) *"
@@ -55,7 +52,7 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 
 const props = defineProps({
   modelValue: Boolean,
-  tag: Object
+  tag: Object,
 });
 
 const emit = defineEmits(["update:modelValue", "refresh"]);
@@ -65,7 +62,7 @@ const saving = ref(false);
 
 const defaultTagForm = () => ({
   nameUk: "",
-  nameEn: ""
+  nameEn: "",
 });
 
 const tagForm = ref(defaultTagForm());
@@ -76,13 +73,13 @@ watch(
     if (newTag) {
       tagForm.value = {
         nameUk: newTag.nameUk || "",
-        nameEn: newTag.nameEn || ""
+        nameEn: newTag.nameEn || "",
       };
     } else {
       tagForm.value = defaultTagForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const saveTag = async () => {

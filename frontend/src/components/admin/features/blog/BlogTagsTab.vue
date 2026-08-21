@@ -18,13 +18,17 @@
     </div>
 
     <!-- Tag list content -->
-    <div class="flex flex-wrap gap-3 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div
+      class="flex flex-wrap gap-3 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm"
+    >
       <div
         v-for="tag in paginatedTags"
         :key="tag.id"
         class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/30 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2.5 shadow-sm"
       >
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ tag.nameUk || tag.nameEn }}</span>
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+          tag.nameUk || tag.nameEn
+        }}</span>
         <span class="text-xs text-gray-400">({{ tag.postsCount }})</span>
         <div class="flex items-center gap-1 ml-1">
           <AppButton
@@ -71,17 +75,13 @@ import { ref, computed, watch } from "vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
-import {
-  PlusIcon,
-  PencilIcon,
-  TrashIcon
-} from "@heroicons/vue/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
   tags: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 defineEmits(["add-tag", "edit-tag", "delete-tag"]);
@@ -110,7 +110,7 @@ const tagPaginationMeta = computed(() => ({
   current_page: currentPageTags.value,
   last_page: Math.ceil(filteredTags.value.length / perPageTags.value),
   per_page: perPageTags.value,
-  total: filteredTags.value.length
+  total: filteredTags.value.length,
 }));
 
 const onTagPageChange = (page) => {

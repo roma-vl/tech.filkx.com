@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+    >
       <!-- Search bar & filters toggle button -->
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
@@ -67,13 +69,15 @@
             :options="[
               { id: '', name: 'Всі статуси' },
               { id: 'published', name: 'Опубліковані' },
-              { id: 'draft', name: 'Чернетки' }
+              { id: 'draft', name: 'Чернетки' },
             ]"
             option-value="id"
             option-label="name"
           />
         </div>
-        <div class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700"
+        >
           <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
@@ -86,19 +90,22 @@
     </transition>
 
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-      <div
-        v-if="loading"
-        class="flex items-center justify-center py-20"
-      >
-        <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]" />
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"
+    >
+      <div v-if="loading" class="flex items-center justify-center py-20">
+        <div
+          class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]"
+        />
       </div>
 
       <div
         v-else-if="pages.length === 0"
         class="text-center py-20 text-gray-400 dark:text-gray-500"
       >
-        <DocumentTextIcon class="w-16 h-16 mx-auto mb-4 opacity-30 text-[#00a046]" />
+        <DocumentTextIcon
+          class="w-16 h-16 mx-auto mb-4 opacity-30 text-[#00a046]"
+        />
         <p class="text-base font-semibold text-gray-700 dark:text-gray-300">
           Сторінок не знайдено
         </p>
@@ -107,26 +114,35 @@
         </p>
       </div>
 
-      <div
-        v-else
-        class="overflow-x-auto"
-      >
+      <div v-else class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700">
+          <thead
+            class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700"
+          >
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Назва сторінки (UK / EN)
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Адреса (Slug)
               </th>
-              <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Статус
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Оновлено
               </th>
-              <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
                 Дії
               </th>
             </tr>
@@ -139,15 +155,17 @@
             >
               <td class="px-6 py-4">
                 <div class="font-semibold text-gray-800 dark:text-gray-100">
-                  {{ page.titleUk || 'Без назви' }}
+                  {{ page.titleUk || "Без назви" }}
                 </div>
                 <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  {{ page.titleEn || 'No title' }}
+                  {{ page.titleEn || "No title" }}
                 </div>
               </td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-1.5">
-                  <span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-650 dark:text-gray-300 rounded font-mono text-xs">
+                  <span
+                    class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-650 dark:text-gray-300 rounded font-mono text-xs"
+                  >
                     /pages/{{ page.slug }}
                   </span>
                   <button
@@ -165,10 +183,12 @@
                     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold',
                     page.status === 'published'
                       ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-400'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-400',
                   ]"
                 >
-                  {{ page.status === 'published' ? 'Опубліковано' : 'Чернетка' }}
+                  {{
+                    page.status === "published" ? "Опубліковано" : "Чернетка"
+                  }}
                 </span>
               </td>
               <td class="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">
@@ -210,10 +230,7 @@
         v-if="pagination.last_page > 1"
         class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
       >
-        <AppPagination
-          :pagination="pagination"
-          @page-change="fetchPages"
-        />
+        <AppPagination :pagination="pagination" @page-change="fetchPages" />
       </div>
     </div>
   </div>
@@ -233,7 +250,7 @@ import {
   PencilIcon,
   DocumentTextIcon,
   ArrowTopRightOnSquareIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
 } from "@heroicons/vue/24/outline";
 
 defineEmits(["add-page", "edit-page", "delete-page"]);
@@ -266,8 +283,8 @@ const fetchPages = async (page = 1) => {
       params: {
         page,
         search: search.value || undefined,
-        status: statusFilter.value || undefined
-      }
+        status: statusFilter.value || undefined,
+      },
     });
     pages.value = data.data.data;
     pagination.value = data.data.meta;
@@ -281,7 +298,8 @@ const fetchPages = async (page = 1) => {
 
 const copyLink = (slug) => {
   const url = `${window.location.origin}/pages/${slug}`;
-  navigator.clipboard.writeText(url)
+  navigator.clipboard
+    .writeText(url)
     .then(() => toast.success("Посилання скопійовано в буфер обміну"))
     .catch(() => toast.error("Не вдалося скопіювати посилання"));
 };
@@ -293,7 +311,7 @@ const formatDate = (d) => {
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 };
 
@@ -309,6 +327,6 @@ onMounted(() => {
 
 defineExpose({
   fetchPages,
-  pagination
+  pagination,
 });
 </script>

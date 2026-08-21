@@ -17,7 +17,9 @@
       <div class="space-y-4">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t("admin.users.deleteModal.confirmText") }}
-          <span class="font-bold text-gray-900 dark:text-white">"{{ client?.name }}"</span>?
+          <span class="font-bold text-gray-900 dark:text-white"
+            >"{{ client?.name }}"</span
+          >?
         </p>
 
         <div
@@ -38,17 +40,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <AppButton
-          variant="secondary"
-          @click="closeModal"
-        >
+        <AppButton variant="secondary" @click="closeModal">
           {{ t("admin.users.deleteModal.cancel") }}
         </AppButton>
-        <AppButton
-          variant="danger"
-          :loading="loading"
-          @click="submit"
-        >
+        <AppButton variant="danger" :loading="loading" @click="submit">
           {{ t("admin.users.deleteModal.confirm") }}
         </AppButton>
       </div>

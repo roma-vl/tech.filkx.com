@@ -2,14 +2,14 @@
   <div
     class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-200 dark:border-zinc-800 sticky top-24 shadow-sm"
   >
-    <h2
-      class="text-zinc-900 dark:text-white text-xl font-bold mb-6"
-    >
+    <h2 class="text-zinc-900 dark:text-white text-xl font-bold mb-6">
       {{ t("cart.summary.orderSummary") }}
     </h2>
     <div class="space-y-4 mb-6">
       <div class="flex justify-between">
-        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.summary.subtotal") }}</span>
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.summary.subtotal")
+        }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           formatPrice(cartTotal)
         }}</span>
@@ -33,15 +33,17 @@
         <span class="font-semibold">-{{ formatPrice(discount) }}</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-zinc-500 dark:text-zinc-400"
-          >{{ t("cart.summary.shippingEstimate") }}</span
-        >
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.summary.shippingEstimate")
+        }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           shipping === 0 ? t("cart.summary.free") : formatPrice(shipping)
         }}</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-zinc-500 dark:text-zinc-400">{{ t("cart.summary.taxEstimate") }}</span>
+        <span class="text-zinc-500 dark:text-zinc-400">{{
+          t("cart.summary.taxEstimate")
+        }}</span>
         <span class="font-semibold text-zinc-900 dark:text-white">{{
           formatPrice(tax)
         }}</span>
@@ -87,7 +89,9 @@
       v-if="hasOutOfStockItems"
       class="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 text-xs font-semibold p-3 rounded-lg border border-red-200 dark:border-red-900/50 mb-4 flex items-start gap-1.5"
     >
-      <span class="material-symbols-outlined text-[18px] shrink-0 text-red-500">warning</span>
+      <span class="material-symbols-outlined text-[18px] shrink-0 text-red-500"
+        >warning</span
+      >
       <span>{{ t("cart.summary.outOfStockWarning") }}</span>
     </div>
 

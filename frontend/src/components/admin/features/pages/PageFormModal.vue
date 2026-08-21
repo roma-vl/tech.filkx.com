@@ -7,16 +7,22 @@
   >
     <div class="space-y-6">
       <!-- Settings Panel (Slug) -->
-      <div class="bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50 space-y-4">
+      <div
+        class="bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50 space-y-4"
+      >
         <h3 class="text-xs font-bold uppercase tracking-wider text-[#00a046]">
           Налаштування URL
         </h3>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-305 mb-1">
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-305 mb-1"
+          >
             Адреса сторінки (Slug)
           </label>
           <div class="relative rounded-lg shadow-sm">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+            >
               <span class="text-gray-400 text-sm font-mono">/pages/</span>
             </div>
             <input
@@ -24,10 +30,13 @@
               type="text"
               placeholder="наприклад: shipping-and-payment"
               class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2.5 pl-16 pr-3 text-sm focus:border-[#00a046] focus:ring-1 focus:ring-[#00a046] focus:outline-none text-gray-800 dark:text-gray-100 font-mono shadow-sm"
-            >
+            />
           </div>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
-            Лише латинські літери, цифри та дефіси. Якщо залишити порожнім, буде згенеровано автоматично з англійського заголовка.
+          <p
+            class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed"
+          >
+            Лише латинські літери, цифри та дефіси. Якщо залишити порожнім, буде
+            згенеровано автоматично з англійського заголовка.
           </p>
         </div>
       </div>
@@ -35,15 +44,23 @@
       <!-- Content Fields -->
       <div class="bg-white dark:bg-gray-800 rounded-xl space-y-5">
         <!-- Language tabs switcher -->
-        <div class="flex items-center justify-between border-b border-gray-150 dark:border-gray-700 pb-3">
+        <div
+          class="flex items-center justify-between border-b border-gray-150 dark:border-gray-700 pb-3"
+        >
           <h3 class="text-xs font-bold uppercase tracking-wider text-[#00a046]">
             Вміст сторінки
           </h3>
-          <div class="flex gap-1 bg-gray-105 dark:bg-gray-700 rounded-lg p-1 shrink-0">
+          <div
+            class="flex gap-1 bg-gray-105 dark:bg-gray-700 rounded-lg p-1 shrink-0"
+          >
             <AppButton
               variant="text"
               class="!px-3.5 !py-1 rounded-md text-xs font-semibold !no-underline"
-              :class="langTab === 'uk' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+              :class="
+                langTab === 'uk'
+                  ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              "
               @click="langTab = 'uk'"
             >
               🇺🇦 Українська
@@ -51,7 +68,11 @@
             <AppButton
               variant="text"
               class="!px-3.5 !py-1 rounded-md text-xs font-semibold !no-underline"
-              :class="langTab === 'en' ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+              :class="
+                langTab === 'en'
+                  ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              "
               @click="langTab = 'en'"
             >
               🇬🇧 English
@@ -60,10 +81,7 @@
         </div>
 
         <!-- UK Tab Content -->
-        <div
-          v-show="langTab === 'uk'"
-          class="space-y-4"
-        >
+        <div v-show="langTab === 'uk'" class="space-y-4">
           <AppInput
             v-model="pageForm.titleUk"
             label="Заголовок сторінки (Українська) *"
@@ -71,7 +89,9 @@
             class="font-bold text-base"
           />
           <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            <label
+              class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+            >
               Контент сторінки (Українська) *
             </label>
             <RichEditor
@@ -83,10 +103,7 @@
         </div>
 
         <!-- EN Tab Content -->
-        <div
-          v-show="langTab === 'en'"
-          class="space-y-4"
-        >
+        <div v-show="langTab === 'en'" class="space-y-4">
           <AppInput
             v-model="pageForm.titleEn"
             label="Page Title (English) *"
@@ -94,7 +111,9 @@
             class="font-bold text-base"
           />
           <div>
-            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            <label
+              class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+            >
               Page Content (English) *
             </label>
             <RichEditor
@@ -109,13 +128,15 @@
 
     <!-- Footer actions -->
     <template #footer>
-      <div class="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+      <div
+        class="flex flex-col sm:flex-row items-center justify-between w-full gap-4"
+      >
         <div class="flex items-center gap-3 w-full sm:w-auto">
           <AppSelect
             v-model="pageForm.status"
             :options="[
               { id: 'draft', name: 'Чернетка' },
-              { id: 'published', name: 'Опубліковано' }
+              { id: 'published', name: 'Опубліковано' },
             ]"
             option-value="id"
             option-label="name"
@@ -158,8 +179,8 @@ const props = defineProps({
   modelValue: Boolean,
   page: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "refresh"]);
@@ -174,7 +195,7 @@ const defaultPageForm = () => ({
   contentUk: "",
   contentEn: "",
   slug: "",
-  status: "published"
+  status: "published",
 });
 
 const pageForm = ref(defaultPageForm());
@@ -190,13 +211,13 @@ watch(
         contentUk: newPage.contentUk || "",
         contentEn: newPage.contentEn || "",
         slug: newPage.slug || "",
-        status: newPage.status || "published"
+        status: newPage.status || "published",
       };
     } else {
       pageForm.value = defaultPageForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const handleImageUpload = async (file, callback) => {
@@ -204,7 +225,7 @@ const handleImageUpload = async (file, callback) => {
   form.append("image", file);
   try {
     const { data } = await api.post("/admin/blog/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
     callback(data.data.url);
   } catch (e) {
@@ -230,7 +251,7 @@ const savePage = async () => {
       contentUk: pageForm.value.contentUk,
       contentEn: pageForm.value.contentEn,
       slug: pageForm.value.slug || undefined,
-      status: pageForm.value.status
+      status: pageForm.value.status,
     };
 
     if (props.page) {

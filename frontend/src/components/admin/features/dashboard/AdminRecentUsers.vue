@@ -53,10 +53,7 @@
         </div>
       </div>
 
-      <div
-        v-if="users.length === 0"
-        class="p-12 text-center"
-      >
+      <div v-if="users.length === 0" class="p-12 text-center">
         <div
           class="bg-gray-50 dark:bg-gray-900/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
         >

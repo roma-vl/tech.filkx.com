@@ -68,7 +68,10 @@ describe("cartStore toast queue", () => {
     store.addToast("First", "success");
     store.addToast("Second", "error");
     expect(store.toasts).toHaveLength(2);
-    expect(store.toasts[0]).toMatchObject({ message: "First", type: "success" });
+    expect(store.toasts[0]).toMatchObject({
+      message: "First",
+      type: "success",
+    });
     expect(store.toasts[1]).toMatchObject({ message: "Second", type: "error" });
     expect(store.toasts[0].id).not.toBe(store.toasts[1].id);
   });

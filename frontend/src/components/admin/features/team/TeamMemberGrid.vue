@@ -10,7 +10,7 @@
           <img
             :src="member.avatar || avatarPlaceholder"
             class="w-16 h-16 rounded-2xl border-2 border-primary-50 dark:border-primary-900/30 object-cover group-hover:scale-110 transition-transform duration-500"
-          >
+          />
           <div
             class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-white dark:border-gray-800"
             :class="member.status === 'Active' ? 'bg-green-500' : 'bg-red-500'"
@@ -34,17 +34,20 @@
         <div class="flex flex-col gap-1">
           <span
             class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-          >{{ t("admin.team.member.email") }}</span>
+            >{{ t("admin.team.member.email") }}</span
+          >
           <span
             class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate"
             :title="member.email"
-          >{{ member.email }}</span>
+            >{{ member.email }}</span
+          >
         </div>
 
         <div class="flex flex-col gap-1">
           <span
             class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-          >{{ t("admin.team.member.last_active") }}</span>
+            >{{ t("admin.team.member.last_active") }}</span
+          >
           <span class="text-sm font-bold text-gray-700 dark:text-gray-200">{{
             member.lastActive
           }}</span>

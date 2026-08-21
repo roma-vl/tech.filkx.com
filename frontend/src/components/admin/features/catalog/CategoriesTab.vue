@@ -5,7 +5,9 @@
       <div
         class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        <div class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3">
+        <div
+          class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3"
+        >
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="categorySearch"
@@ -33,7 +35,10 @@
             <AppSelect
               v-model="parentFilter"
               placeholder="Усі батьківські категорії"
-              :options="[{ id: '', nameUk: 'Усі батьківські категорії' }, ...categories]"
+              :options="[
+                { id: '', nameUk: 'Усі батьківські категорії' },
+                ...categories,
+              ]"
               option-value="id"
               option-label="nameUk"
             />
@@ -133,7 +138,9 @@
               >
                 {{ cat.slug }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350"
+              >
                 <div class="flex flex-col gap-1">
                   <span
                     v-if="getOwnAttributesCount(cat.id) > 0"
@@ -148,7 +155,10 @@
                     Успадкованих: {{ getInheritedAttributesCount(cat.id) }}
                   </span>
                   <span
-                    v-if="getOwnAttributesCount(cat.id) === 0 && getInheritedAttributesCount(cat.id) === 0"
+                    v-if="
+                      getOwnAttributesCount(cat.id) === 0 &&
+                      getInheritedAttributesCount(cat.id) === 0
+                    "
                     class="text-gray-400 dark:text-gray-500 text-xs italic"
                   >
                     —
@@ -238,7 +248,9 @@
         </table>
       </div>
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+      <div
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+      >
         <AppPagination
           :pagination="paginationMeta"
           @page-change="onPageChange"
@@ -252,10 +264,7 @@
       :title="isEditing ? 'Редагувати категорію' : 'Додати категорію'"
       max-width="md"
     >
-      <form
-        class="space-y-4"
-        @submit.prevent="saveCategory"
-      >
+      <form class="space-y-4" @submit.prevent="saveCategory">
         <AppInput
           v-model="categoryForm.nameUk"
           required
@@ -367,8 +376,7 @@ const filteredCategories = computed(() => {
       (cat.slug || "").toLowerCase().includes(query);
 
     const parentMatch =
-      !parentFilter.value ||
-      cat.parentId === parseInt(parentFilter.value);
+      !parentFilter.value || cat.parentId === parseInt(parentFilter.value);
 
     return nameMatch && parentMatch;
   });
@@ -390,12 +398,9 @@ const onPageChange = (page) => {
   currentPage.value = page;
 };
 
-watch(
-  [categorySearch, parentFilter],
-  () => {
-    currentPage.value = 1;
-  }
-);
+watch([categorySearch, parentFilter], () => {
+  currentPage.value = 1;
+});
 
 const openCategoryAttributesModal = (cat) => {
   selectedCategoryForAttributes.value = cat;
@@ -403,22 +408,23 @@ const openCategoryAttributesModal = (cat) => {
 };
 
 const getOwnAttributesCount = (catId) => {
-  return props.attributes.filter(a => a.categoryIds?.includes(catId)).length;
+  return props.attributes.filter((a) => a.categoryIds?.includes(catId)).length;
 };
 
 const getInheritedAttributesCount = (catId) => {
-  const cat = props.categories.find(c => c.id === catId);
+  const cat = props.categories.find((c) => c.id === catId);
   const ancestorIds = [];
   let currentParentId = cat ? cat.parentId : null;
   while (currentParentId) {
     ancestorIds.push(currentParentId);
-    const parent = props.categories.find(c => c.id === currentParentId);
+    const parent = props.categories.find((c) => c.id === currentParentId);
     currentParentId = parent ? parent.parentId : null;
   }
   if (ancestorIds.length === 0) return 0;
-  return props.attributes.filter(a => 
-    !a.categoryIds?.includes(catId) && 
-    a.categoryIds?.some(id => ancestorIds.includes(id))
+  return props.attributes.filter(
+    (a) =>
+      !a.categoryIds?.includes(catId) &&
+      a.categoryIds?.some((id) => ancestorIds.includes(id)),
   ).length;
 };
 

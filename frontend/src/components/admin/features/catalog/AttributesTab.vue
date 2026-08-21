@@ -189,10 +189,7 @@
       :title="isEditing ? 'Редагувати атрибут' : 'Додати атрибут'"
       max-width="md"
     >
-      <form
-        class="space-y-4"
-        @submit.prevent="saveAttribute"
-      >
+      <form class="space-y-4" @submit.prevent="saveAttribute">
         <AppInput
           v-model="attributeForm.code"
           required
@@ -237,7 +234,9 @@
           class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700"
         >
           <div class="flex justify-between items-center">
-            <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
+            <label class="block text-xs font-bold text-gray-500 uppercase"
+              >Список можливих значень</label
+            >
             <AppButton
               type="button"
               variant="text"
@@ -263,31 +262,28 @@
                 type="text"
                 placeholder="#FF0000"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              >
+              />
               <input
                 v-model="val.value"
                 type="color"
                 class="w-8 h-8 rounded border cursor-pointer bg-transparent"
-              >
+              />
             </div>
-            <div
-              v-else
-              class="flex-1 flex gap-2"
-            >
+            <div v-else class="flex-1 flex gap-2">
               <input
                 v-model="val.valueUk"
                 required
                 type="text"
                 placeholder="Значення (UK)"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              >
+              />
               <input
                 v-model="val.valueEn"
                 required
                 type="text"
                 placeholder="Value (EN)"
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
-              >
+              />
             </div>
 
             <AppButton
@@ -369,17 +365,17 @@ const attributeForm = ref({
 });
 
 const getCategoryName = (id) => {
-  const cat = props.categories.find(c => c.id === id);
+  const cat = props.categories.find((c) => c.id === id);
   return cat ? cat.nameUk : `ID: ${id}`;
 };
 
 const buildIndentedCategories = (cats, parentId = null, depth = 0) => {
   let result = [];
-  const children = cats.filter(c => c.parentId === parentId);
-  children.forEach(c => {
+  const children = cats.filter((c) => c.parentId === parentId);
+  children.forEach((c) => {
     result.push({
       ...c,
-      depth
+      depth,
     });
     result = result.concat(buildIndentedCategories(cats, c.id, depth + 1));
   });
@@ -387,17 +383,23 @@ const buildIndentedCategories = (cats, parentId = null, depth = 0) => {
 };
 
 const indentedCategories = computed(() => {
-  const rootIds = props.categories.filter(c => !c.parentId || !props.categories.some(parent => parent.id === c.parentId)).map(c => c.id);
-  
+  const rootIds = props.categories
+    .filter(
+      (c) =>
+        !c.parentId ||
+        !props.categories.some((parent) => parent.id === c.parentId),
+    )
+    .map((c) => c.id);
+
   let result = [];
-  const rootCats = props.categories.filter(c => rootIds.includes(c.id));
-  rootCats.forEach(c => {
+  const rootCats = props.categories.filter((c) => rootIds.includes(c.id));
+  rootCats.forEach((c) => {
     result.push({ ...c, depth: 0 });
     result = result.concat(buildIndentedCategories(props.categories, c.id, 1));
   });
 
   const seen = new Set();
-  return result.filter(item => {
+  return result.filter((item) => {
     if (seen.has(item.id)) return false;
     seen.add(item.id);
     return true;
@@ -409,10 +411,13 @@ const filteredFormCategories = computed(() => {
     return indentedCategories.value;
   }
   const query = categorySearchQuery.value.toLowerCase();
-  return props.categories.filter(c => 
-    c.nameUk.toLowerCase().includes(query) || 
-    c.nameEn.toLowerCase().includes(query)
-  ).map(c => ({ ...c, depth: 0 }));
+  return props.categories
+    .filter(
+      (c) =>
+        c.nameUk.toLowerCase().includes(query) ||
+        c.nameEn.toLowerCase().includes(query),
+    )
+    .map((c) => ({ ...c, depth: 0 }));
 });
 
 const openAddAttributeModal = () => {

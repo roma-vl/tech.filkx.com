@@ -66,9 +66,13 @@ async function main() {
         console.warn(`[prerender] FAILED ${route.url}:`, err?.message || err);
       }
     }
-    console.log(`[prerender] done: ${ok} ok, ${failed} failed, ${routes.length} total`);
+    console.log(
+      `[prerender] done: ${ok} ok, ${failed} failed, ${routes.length} total`,
+    );
     if (ok === 0) {
-      throw new Error("prerender produced zero pages — treat as a build failure");
+      throw new Error(
+        "prerender produced zero pages — treat as a build failure",
+      );
     }
   } finally {
     await vite.close();
@@ -90,7 +94,9 @@ async function collectRoutes({ productApi, apiClient }) {
   ];
 
   try {
-    const { data } = await productApi.catalogGetProducts({ per_page: MAX_PRODUCTS });
+    const { data } = await productApi.catalogGetProducts({
+      per_page: MAX_PRODUCTS,
+    });
     const products = data?.data?.data || [];
     for (const product of products) {
       const idOrSlug = product.slug || product.id;
@@ -129,7 +135,11 @@ async function renderRoute(route, { renderPage, template }) {
 
   const outPath = path.join(DIST, route.outFile);
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, injectIntoTemplate(template, appHtml, headTags), "utf-8");
+  await fs.writeFile(
+    outPath,
+    injectIntoTemplate(template, appHtml, headTags),
+    "utf-8",
+  );
 }
 
 /** Swaps the built index.html's static placeholder title/meta/app-root for

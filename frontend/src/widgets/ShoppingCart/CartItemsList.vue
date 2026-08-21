@@ -4,7 +4,10 @@
       v-for="item in cart"
       :key="item.id"
       class="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row gap-6 transition-all duration-300"
-      :class="{ 'opacity-65 grayscale bg-zinc-50 dark:bg-zinc-900/40 border-dashed': item.stock !== undefined && item.stock <= 0 }"
+      :class="{
+        'opacity-65 grayscale bg-zinc-50 dark:bg-zinc-900/40 border-dashed':
+          item.stock !== undefined && item.stock <= 0,
+      }"
     >
       <div
         class="w-full md:w-32 h-32 bg-zinc-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0 p-3"
@@ -20,21 +23,16 @@
           class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3"
         >
           <div>
-            <h3
-              class="text-zinc-900 dark:text-white font-bold text-lg"
-            >
+            <h3 class="text-zinc-900 dark:text-white font-bold text-lg">
               {{ item.name }}
             </h3>
-            <p
-              class="text-sm text-zinc-400 dark:text-zinc-500 mt-1"
-            >
+            <p class="text-sm text-zinc-400 dark:text-zinc-500 mt-1">
               {{ item.sku }}
             </p>
           </div>
-          <span
-            class="text-xl font-bold text-[#00a046]"
-            >{{ formatPrice(item.price * item.quantity) }}</span
-          >
+          <span class="text-xl font-bold text-[#00a046]">{{
+            formatPrice(item.price * item.quantity)
+          }}</span>
         </div>
         <div
           class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
@@ -42,7 +40,10 @@
           <div class="flex flex-wrap items-center gap-4">
             <div
               class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden h-9 bg-white dark:bg-zinc-800"
-              :class="{ 'opacity-50 pointer-events-none': item.stock !== undefined && item.stock <= 0 }"
+              :class="{
+                'opacity-50 pointer-events-none':
+                  item.stock !== undefined && item.stock <= 0,
+              }"
             >
               <button
                 class="px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
@@ -88,13 +89,16 @@
     </article>
   </div>
 
-  <div class="mt-stack-lg pt-stack-lg border-t border-zinc-200 dark:border-zinc-800 mt-10">
-    <h2
-      class="mb-6 text-zinc-900 dark:text-white font-bold text-xl"
-    >
+  <div
+    class="mt-stack-lg pt-stack-lg border-t border-zinc-200 dark:border-zinc-800 mt-10"
+  >
+    <h2 class="mb-6 text-zinc-900 dark:text-white font-bold text-xl">
       {{ t("cart.items.savedForLater", { count: wishlist.length }) }}
     </h2>
-    <div v-if="wishlist.length === 0" class="text-zinc-500 dark:text-zinc-400 text-sm p-6 text-center bg-zinc-50 dark:bg-zinc-900/10 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800">
+    <div
+      v-if="wishlist.length === 0"
+      class="text-zinc-500 dark:text-zinc-400 text-sm p-6 text-center bg-zinc-50 dark:bg-zinc-900/10 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800"
+    >
       {{ t("cart.items.noSavedItems") }}
     </div>
     <div v-else class="space-y-4">
@@ -113,9 +117,7 @@
           />
         </div>
         <div class="flex-grow">
-          <h4
-            class="text-zinc-800 dark:text-zinc-200 font-bold line-clamp-1"
-          >
+          <h4 class="text-zinc-800 dark:text-zinc-200 font-bold line-clamp-1">
             {{ item.name }}
           </h4>
           <p class="text-zinc-500 dark:text-zinc-400">

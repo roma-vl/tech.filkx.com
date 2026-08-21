@@ -28,7 +28,8 @@
         >
           <span
             class="truncate max-w-[250px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-tighter"
-          >{{ selectedFile.name }}</span>
+            >{{ selectedFile.name }}</span
+          >
           <AppButton
             variant="ghost"
             class="!text-rose-500 !font-black !ml-auto !p-1.5 hover:!bg-rose-50 dark:hover:!bg-rose-900/20 !rounded-xl !transition-all hover:scale-110"
@@ -45,7 +46,7 @@
               class="hidden"
               accept="image/*,video/*"
               @change="handleFileUpload"
-            >
+            />
             <AppButton
               variant="white"
               class="!p-3 !text-gray-400 hover:!text-primary-600 hover:!bg-primary-50 dark:hover:!bg-primary-900/10 !rounded-2xl !transition-all !border-none !shadow-none"
@@ -72,10 +73,7 @@
                 class="absolute bottom-full left-0 mb-4 w-72 max-h-[400px] overflow-y-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[1.5rem] shadow-2xl z-50 p-3 space-y-1.5 animate-in fade-in slide-in-from-bottom-2 duration-300 custom-scrollbar"
                 @click.stop
               >
-                <div
-                  v-if="snippets.length === 0"
-                  class="p-8 text-center"
-                >
+                <div v-if="snippets.length === 0" class="p-8 text-center">
                   <CommandLineIcon class="w-8 h-8 text-gray-200 mx-auto mb-2" />
                   <p
                     class="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none"

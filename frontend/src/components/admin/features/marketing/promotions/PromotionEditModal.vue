@@ -1,16 +1,19 @@
 <template>
   <AppModal
     :model-value="isOpen"
-    :title="isEditing ? t('admin.marketing.promotions.edit') : t('admin.marketing.promotions.new')"
+    :title="
+      isEditing
+        ? t('admin.marketing.promotions.edit')
+        : t('admin.marketing.promotions.new')
+    "
     max-width="3xl"
     @update:model-value="closeModal"
   >
-    <form
-      class="space-y-6"
-      @submit.prevent="submit"
-    >
+    <form class="space-y-6" @submit.prevent="submit">
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
           Основна інформація
         </h4>
@@ -38,7 +41,9 @@
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
           Налаштування знижки
         </h4>
@@ -48,8 +53,14 @@
             v-model="form.type"
             :label="t('admin.marketing.promotions.type')"
             :options="[
-              { id: 'percent', name: t('admin.marketing.promotions.types.percent') },
-              { id: 'fixed', name: t('admin.marketing.promotions.types.fixed') }
+              {
+                id: 'percent',
+                name: t('admin.marketing.promotions.types.percent'),
+              },
+              {
+                id: 'fixed',
+                name: t('admin.marketing.promotions.types.fixed'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -59,7 +70,10 @@
             type="number"
             step="0.01"
             min="0"
-            :label="t('admin.marketing.promotions.amount') + (form.type === 'percent' ? ' (%)' : ' (₴)')"
+            :label="
+              t('admin.marketing.promotions.amount') +
+              (form.type === 'percent' ? ' (%)' : ' (₴)')
+            "
             required
           />
         </div>
@@ -75,7 +89,9 @@
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
           Розклад акції
         </h4>
@@ -84,7 +100,9 @@
           <AppInput
             v-model="form.startsAt"
             type="datetime-local"
-            :label="t('admin.marketing.promotions.starts_at') + ' (Опціонально)'"
+            :label="
+              t('admin.marketing.promotions.starts_at') + ' (Опціонально)'
+            "
           />
           <AppInput
             v-model="form.endsAt"
@@ -95,30 +113,40 @@
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
           Параметри застосування
         </h4>
 
-        <div class="p-6 bg-gray-50/50 dark:bg-zinc-900/50 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-6">
+        <div
+          class="p-6 bg-gray-50/50 dark:bg-zinc-900/50 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-6"
+        >
           <AppSelect
             v-model="form.applicationType"
             label="Спосіб застосування"
             :options="[
               { id: 'code', name: 'За промокодом' },
               { id: 'auto', name: 'Автоматично' },
-              { id: 'url', name: 'За спеціальним посиланням' }
+              { id: 'url', name: 'За спеціальним посиланням' },
             ]"
             option-value="id"
             option-label="name"
           />
 
-          <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-zinc-800">
+          <div
+            class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-zinc-800"
+          >
             <div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white block">
+              <span
+                class="text-sm font-semibold text-gray-900 dark:text-white block"
+              >
                 {{ t("admin.marketing.promotions.sitewide") }}
               </span>
-              <span class="text-[10px] text-gray-405 dark:text-gray-500 uppercase tracking-wider">
+              <span
+                class="text-[10px] text-gray-405 dark:text-gray-500 uppercase tracking-wider"
+              >
                 Автоматично застосувати до всього каталогу
               </span>
             </div>
@@ -128,12 +156,16 @@
                 type="checkbox"
                 class="sr-only peer"
                 @change="handleSitewideChange"
-              >
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm" />
+              />
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
+              />
             </label>
           </div>
 
-          <div class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-zinc-800">
+          <div
+            class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-zinc-800"
+          >
             <AppInput
               v-model.number="form.usageLimit"
               type="number"
@@ -178,22 +210,26 @@
         :products="products"
       />
 
-      <div class="flex items-center justify-between p-4 bg-gray-55 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800">
+      <div
+        class="flex items-center justify-between p-4 bg-gray-55 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800"
+      >
         <div>
-          <span class="text-sm font-semibold text-gray-900 dark:text-white block">
+          <span
+            class="text-sm font-semibold text-gray-900 dark:text-white block"
+          >
             {{ t("admin.marketing.promotions.active") }}
           </span>
-          <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <span
+            class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider"
+          >
             {{ t("admin.marketing.promotions.active_hint") }}
           </span>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
-          <input
-            v-model="form.isActive"
-            type="checkbox"
-            class="sr-only peer"
-          >
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm" />
+          <input v-model="form.isActive" type="checkbox" class="sr-only peer" />
+          <div
+            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
+          />
         </label>
       </div>
 
@@ -228,7 +264,11 @@
           @click="submit"
         >
           <RocketLaunchIcon class="w-4 h-4 mr-1.5 inline" />
-          {{ isEditing ? t("admin.marketing.promotions.save") : t("admin.marketing.promotions.create") }}
+          {{
+            isEditing
+              ? t("admin.marketing.promotions.save")
+              : t("admin.marketing.promotions.create")
+          }}
         </AppButton>
       </div>
     </template>
@@ -254,7 +294,7 @@ const props = defineProps({
   isOpen: Boolean,
   promotion: {
     type: Object,
-    default: null
+    default: null,
   },
   categories: {
     type: Array,
@@ -293,7 +333,10 @@ const form = ref({
 });
 
 const targeting = computed({
-  get: () => ({ categoryIds: form.value.categoryIds, productIds: form.value.productIds }),
+  get: () => ({
+    categoryIds: form.value.categoryIds,
+    productIds: form.value.productIds,
+  }),
   set: (val) => {
     form.value.categoryIds = val.categoryIds;
     form.value.productIds = val.productIds;

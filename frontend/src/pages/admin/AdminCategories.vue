@@ -44,7 +44,7 @@ const fetchData = async () => {
   try {
     const [catsRes, attrsRes] = await Promise.all([
       api.get("/admin/categories"),
-      api.get("/admin/attributes")
+      api.get("/admin/attributes"),
     ]);
     dbCategories.value = catsRes.data.data;
     dbAttributes.value = attrsRes.data.data;

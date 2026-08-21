@@ -13,11 +13,13 @@
           <div class="flex items-center gap-3 mb-1">
             <span
               class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]"
-            >Ticket #{{ ticket.id }}</span>
+              >Ticket #{{ ticket.id }}</span
+            >
             <div class="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
             <span
               class="text-[11px] font-black text-gray-400 uppercase tracking-widest"
-            >{{ formatDate(ticket.createdAt) }}</span>
+              >{{ formatDate(ticket.createdAt) }}</span
+            >
           </div>
           <h2
             class="text-xl font-black text-gray-900 dark:text-white truncate tracking-tight uppercase leading-none"
@@ -40,11 +42,7 @@
           </template>
           {{ t("admin.support.ticket.take_over") }}
         </AppButton>
-        <AppButton
-          v-else
-          variant="secondary"
-          @click="$emit('transferToAi')"
-        >
+        <AppButton v-else variant="secondary" @click="$emit('transferToAi')">
           <template #prefix>
             <SparklesIcon
               class="w-4 h-4 group-hover:rotate-12 transition-transform mr-2"
@@ -80,7 +78,8 @@
       <div class="flex items-center gap-4">
         <span
           class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-        >{{ t("admin.support.ticket.opened_by") }}</span>
+          >{{ t("admin.support.ticket.opened_by") }}</span
+        >
         <div
           class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm"
         >
@@ -91,14 +90,15 @@
               v-if="ticket.user?.avatar"
               :src="ticket.user.avatar"
               class="w-full h-full object-cover"
-            >
+            />
             <template v-else>
               {{ ticket.user?.name?.charAt(0) || "U" }}
             </template>
           </div>
           <span
             class="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tight"
-          >{{ ticket.user?.name }}</span>
+            >{{ ticket.user?.name }}</span
+          >
         </div>
       </div>
 

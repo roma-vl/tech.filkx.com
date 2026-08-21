@@ -39,7 +39,7 @@ class RoleMiddlewareTest extends TestCase
 
     /**
      * @return array{0: Closure, 1: stdClass} the $next closure and a state object
-     *                                         whose `called` flag flips to true once $next runs
+     *                                        whose `called` flag flips to true once $next runs
      */
     private function nextSpy(Response $response): array
     {

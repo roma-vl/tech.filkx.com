@@ -121,12 +121,7 @@ defineProps({
   pagination: { type: Object, required: true },
 });
 
-defineEmits([
-  "edit",
-  "delete",
-  "sort",
-  "changePage",
-]);
+defineEmits(["edit", "delete", "sort", "changePage"]);
 
 const headers = [
   {

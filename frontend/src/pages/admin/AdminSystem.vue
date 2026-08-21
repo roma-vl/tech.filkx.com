@@ -18,10 +18,7 @@
     </div>
 
     <!-- Main Status Banner -->
-    <SystemHealthStatus
-      :uptime="health.server?.uptime"
-      :loading="loading"
-    />
+    <SystemHealthStatus :uptime="health.server?.uptime" :loading="loading" />
 
     <!-- Resource Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -8,7 +8,9 @@ import type { CartItem } from "@/entities/order/types";
 
 vi.mock("@/shared/services/api/productApi", () => ({
   productApi: {
-    catalogGetRandomProducts: vi.fn().mockResolvedValue({ data: { status: "success", data: [] } }),
+    catalogGetRandomProducts: vi
+      .fn()
+      .mockResolvedValue({ data: { status: "success", data: [] } }),
   },
 }));
 
@@ -114,6 +116,8 @@ describe("useShoppingCart shipping/tax/total math", () => {
 
     const expectedTax = (1000 - 100) * 0.075;
     const expectedShipping = 250; // below the 5000 threshold
-    expect(result.total.value).toBeCloseTo(1000 - 100 + expectedShipping + expectedTax);
+    expect(result.total.value).toBeCloseTo(
+      1000 - 100 + expectedShipping + expectedTax,
+    );
   });
 });

@@ -91,7 +91,9 @@ const confirmDelete = async () => {
 
 const refreshPagesList = () => {
   if (pagesTabRef.value) {
-    pagesTabRef.value.fetchPages(pagesTabRef.value.pagination.current_page || 1);
+    pagesTabRef.value.fetchPages(
+      pagesTabRef.value.pagination.current_page || 1,
+    );
   }
 };
 

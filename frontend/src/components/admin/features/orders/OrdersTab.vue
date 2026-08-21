@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+    >
       <div class="flex flex-1 items-center gap-3">
         <!-- Search -->
         <div class="flex-1 max-w-md">
@@ -104,7 +106,9 @@
           />
         </div>
 
-        <div class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700"
+        >
           <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
@@ -117,10 +121,14 @@
     </transition>
 
     <!-- Orders Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"
+    >
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
-          <thead class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700">
+          <thead
+            class="bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700"
+          >
             <tr>
               <th
                 scope="col"
@@ -174,7 +182,9 @@
                   {{ order.items?.length || 0 }} товари(ів)
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"
+              >
                 {{ formatDate(order.createdAt) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -185,7 +195,9 @@
                   {{ order.customerEmail }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white"
+              >
                 {{ formatPrice(order.totalPrice) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -198,7 +210,9 @@
                   {{ getStatusLabel(order.status) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
                 <div class="flex justify-end gap-2">
                   <AppButton
                     variant="secondary"
@@ -249,56 +263,56 @@ import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 const props = defineProps({
   orders: {
     type: Array,
-    required: true
+    required: true,
   },
   isLoading: {
     type: Boolean,
-    required: true
+    required: true,
   },
   searchQuery: {
     type: String,
-    required: true
+    required: true,
   },
   showFilters: {
     type: Boolean,
-    required: true
+    required: true,
   },
   statusFilter: {
     type: String,
-    required: true
+    required: true,
   },
   paymentFilter: {
     type: String,
-    required: true
+    required: true,
   },
   deliveryFilter: {
     type: String,
-    required: true
+    required: true,
   },
   sortFilter: {
     type: String,
-    required: true
+    required: true,
   },
   activeFiltersCount: {
     type: Number,
-    required: true
+    required: true,
   },
   formatDate: {
     type: Function,
-    required: true
+    required: true,
   },
   formatPrice: {
     type: Function,
-    required: true
+    required: true,
   },
   getStatusLabel: {
     type: Function,
-    required: true
+    required: true,
   },
   getStatusClass: {
     type: Function,
-    required: true
-  }
+    required: true,
+  },
 });
 
 defineEmits([
@@ -310,7 +324,7 @@ defineEmits([
   "update:sortFilter",
   "reset",
   "export",
-  "view"
+  "view",
 ]);
 
 // Client-side pagination state
@@ -326,15 +340,21 @@ const paginationMeta = computed(() => ({
   current_page: currentPage.value,
   last_page: Math.ceil(props.orders.length / perPage.value),
   per_page: perPage.value,
-  total: props.orders.length
+  total: props.orders.length,
 }));
 
 // Reset page to 1 when filters or search change
 watch(
-  () => [props.searchQuery, props.statusFilter, props.paymentFilter, props.deliveryFilter, props.sortFilter],
+  () => [
+    props.searchQuery,
+    props.statusFilter,
+    props.paymentFilter,
+    props.deliveryFilter,
+    props.sortFilter,
+  ],
   () => {
     currentPage.value = 1;
-  }
+  },
 );
 
 const statusOptions = [

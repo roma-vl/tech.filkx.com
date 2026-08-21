@@ -9,7 +9,10 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
-import { resolveProductImage, resolveGalleryImages } from "@/entities/product/lib/resolveProductImage";
+import {
+  resolveProductImage,
+  resolveGalleryImages,
+} from "@/entities/product/lib/resolveProductImage";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 export function useProductDetail() {
@@ -88,7 +91,8 @@ export function useProductDetail() {
 
       const ramVal = getAttrValue("memory") || getAttrValue("ram");
       const storageVal = getAttrValue("storage");
-      const subtitle = ramVal && storageVal ? `${ramVal} ОЗУ / ${storageVal}` : null;
+      const subtitle =
+        ramVal && storageVal ? `${ramVal} ОЗУ / ${storageVal}` : null;
 
       const specsList: any[] = [];
       const list: any[] = [];
@@ -154,8 +158,14 @@ export function useProductDetail() {
         price: price,
         oldPrice: oldPrice,
         image: image,
-        rating: rawProduct.value.approvedReviewsAvgRating != null ? parseFloat(rawProduct.value.approvedReviewsAvgRating) : 0,
-        reviews: rawProduct.value.approvedReviewsCount != null ? Number(rawProduct.value.approvedReviewsCount) : 0,
+        rating:
+          rawProduct.value.approvedReviewsAvgRating != null
+            ? parseFloat(rawProduct.value.approvedReviewsAvgRating)
+            : 0,
+        reviews:
+          rawProduct.value.approvedReviewsCount != null
+            ? Number(rawProduct.value.approvedReviewsCount)
+            : 0,
         description: description,
         specs: specsList,
         inStock: totalStock > 0,
@@ -166,7 +176,10 @@ export function useProductDetail() {
 
   const galleryImages = computed(() => {
     if (!rawProduct.value) return [];
-    const images = resolveGalleryImages(activeVariant.value, rawProduct.value.variants);
+    const images = resolveGalleryImages(
+      activeVariant.value,
+      rawProduct.value.variants,
+    );
     return images.map((img, idx) => ({
       label: img.isPrimary ? "Основний вигляд" : `Вигляд ${idx + 1}`,
       src: img.url,

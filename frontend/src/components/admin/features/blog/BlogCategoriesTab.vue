@@ -18,23 +18,35 @@
     </div>
 
     <!-- Table content -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm"
+    >
       <table class="w-full text-sm">
         <thead class="bg-gray-50 dark:bg-gray-700/50">
           <tr>
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
               Назва (УК)
             </th>
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
               Назва (EN)
             </th>
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
               Slug
             </th>
-            <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <th
+              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
               Пости
             </th>
-            <th class="px-5 py-3.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <th
+              class="px-5 py-3.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
               Дії
             </th>
           </tr>
@@ -53,17 +65,23 @@
             :key="cat.id"
             class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
           >
-            <td class="px-5 py-3.5 font-medium text-gray-800 dark:text-gray-200">
+            <td
+              class="px-5 py-3.5 font-medium text-gray-800 dark:text-gray-200"
+            >
               {{ cat.nameUk }}
             </td>
             <td class="px-5 py-3.5 text-gray-600 dark:text-gray-400">
               {{ cat.nameEn }}
             </td>
-            <td class="px-5 py-3.5 text-gray-500 dark:text-gray-500 font-mono text-xs">
+            <td
+              class="px-5 py-3.5 text-gray-500 dark:text-gray-500 font-mono text-xs"
+            >
               {{ cat.slug }}
             </td>
             <td class="px-5 py-3.5 text-center">
-              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+              <span
+                class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold"
+              >
                 {{ cat.postsCount }}
               </span>
             </td>
@@ -110,17 +128,13 @@ import { ref, computed, watch } from "vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
-import {
-  PlusIcon,
-  PencilIcon,
-  TrashIcon
-} from "@heroicons/vue/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
   categories: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 defineEmits(["add-category", "edit-category", "delete-category"]);
@@ -148,9 +162,11 @@ const paginatedCategories = computed(() => {
 
 const categoryPaginationMeta = computed(() => ({
   current_page: currentPageCategories.value,
-  last_page: Math.ceil(filteredCategories.value.length / perPageCategories.value),
+  last_page: Math.ceil(
+    filteredCategories.value.length / perPageCategories.value,
+  ),
   per_page: perPageCategories.value,
-  total: filteredCategories.value.length
+  total: filteredCategories.value.length,
 }));
 
 const onCategoryPageChange = (page) => {

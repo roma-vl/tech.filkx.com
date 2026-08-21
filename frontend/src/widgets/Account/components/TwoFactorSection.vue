@@ -94,8 +94,7 @@ async function submitDisable() {
   disabling.value = false;
 
   if (!result.ok) {
-    disableError.value =
-      result.errors?.password?.[0] || "Невірний пароль.";
+    disableError.value = result.errors?.password?.[0] || "Невірний пароль.";
     return;
   }
 
@@ -156,7 +155,9 @@ function copyRecoveryCodes() {
           <span class="material-symbols-outlined text-[22px]">shield</span>
         </div>
         <div>
-          <h3 class="font-black text-sm md:text-base text-zinc-900 dark:text-white">
+          <h3
+            class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
+          >
             Двофакторна автентифікація
           </h3>
           <p
@@ -181,7 +182,9 @@ function copyRecoveryCodes() {
       <!-- Enabled state -->
       <div v-if="isEnabled && !isEnrolling" class="space-y-4">
         <div class="flex items-center gap-2 text-sm font-bold text-[#00a046]">
-          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          <span class="material-symbols-outlined text-[18px]"
+            >check_circle</span
+          >
           Двофакторна автентифікація увімкнена
         </div>
         <div class="flex flex-wrap gap-3">
@@ -206,7 +209,8 @@ function copyRecoveryCodes() {
       <div v-else-if="!isEnrolling" class="space-y-4">
         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
           Захистіть свій акаунт додатковим кроком підтвердження під час входу за
-          допомогою застосунку-автентифікатора (Google Authenticator, Authy тощо).
+          допомогою застосунку-автентифікатора (Google Authenticator, Authy
+          тощо).
         </p>
         <p v-if="confirmError" class="text-xs text-red-500 font-semibold">
           {{ confirmError }}
@@ -238,7 +242,7 @@ function copyRecoveryCodes() {
             class="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white p-2"
             width="180"
             height="180"
-          >
+          />
         </div>
         <p class="text-xs text-center text-zinc-450 dark:text-zinc-500">
           Або введіть ключ вручну:
@@ -260,7 +264,7 @@ function copyRecoveryCodes() {
             maxlength="6"
             placeholder="123456"
             :class="inputClass"
-          >
+          />
           <p v-if="confirmError" class="text-xs text-red-500 font-semibold">
             {{ confirmError }}
           </p>
@@ -322,7 +326,7 @@ function copyRecoveryCodes() {
           type="password"
           placeholder="Поточний пароль"
           :class="inputClass"
-        >
+        />
         <p v-if="disableError" class="text-xs text-red-500 font-semibold">
           {{ disableError }}
         </p>
@@ -379,7 +383,7 @@ function copyRecoveryCodes() {
           maxlength="6"
           placeholder="123456"
           :class="inputClass"
-        >
+        />
         <p v-if="regenerateError" class="text-xs text-red-500 font-semibold">
           {{ regenerateError }}
         </p>
@@ -419,10 +423,12 @@ function copyRecoveryCodes() {
         </h3>
       </div>
       <div class="p-6 space-y-4">
-        <p class="text-xs md:text-sm text-amber-600 dark:text-amber-400 font-semibold">
+        <p
+          class="text-xs md:text-sm text-amber-600 dark:text-amber-400 font-semibold"
+        >
           Збережіть ці коди в надійному місці. Кожен код можна використати лише
-          один раз для входу, якщо ви втратите доступ до застосунку-автентифікатора.
-          Ми покажемо їх лише зараз.
+          один раз для входу, якщо ви втратите доступ до
+          застосунку-автентифікатора. Ми покажемо їх лише зараз.
         </p>
         <div
           class="grid grid-cols-2 gap-2 font-mono text-sm bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4"

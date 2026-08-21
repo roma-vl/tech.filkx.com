@@ -1,7 +1,9 @@
 <template>
   <main class="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans pb-16">
     <!-- Breadcrumbs -->
-    <nav class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center flex-wrap gap-1.5 text-xs text-zinc-450 dark:text-zinc-500">
+    <nav
+      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center flex-wrap gap-1.5 text-xs text-zinc-450 dark:text-zinc-500"
+    >
       <router-link
         :to="{ name: 'home' }"
         class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
@@ -9,23 +11,37 @@
         <span class="material-symbols-outlined text-[15px]">home</span>
         Головна
       </router-link>
-      <span class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700">chevron_right</span>
+      <span
+        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+        >chevron_right</span
+      >
       <span class="text-zinc-800 dark:text-zinc-200 font-bold">Блог</span>
     </nav>
 
     <!-- Page Header & Search -->
     <header class="max-w-container-max mx-auto px-4 md:px-8 pt-6 pb-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800"
+      >
         <div class="space-y-2">
-          <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">Журнал</span>
-          <h1 class="font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white tracking-tight leading-tight">
+          <span
+            class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest"
+            >Журнал</span
+          >
+          <h1
+            class="font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white tracking-tight leading-tight"
+          >
             {{ activeTitle }}
           </h1>
-          <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md">
+          <p
+            class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md"
+          >
             Корисні статті, огляди новинок та поради від експертів FilkxTech
           </p>
         </div>
-        <div class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto md:min-w-[400px]">
+        <div
+          class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto md:min-w-[400px]"
+        >
           <UiInput
             v-model="search"
             placeholder="Пошук статей..."
@@ -33,7 +49,9 @@
             @update:model-value="onSearchInput"
           >
             <template #prepend>
-              <span class="material-symbols-outlined text-[20px] text-zinc-400">search</span>
+              <span class="material-symbols-outlined text-[20px] text-zinc-400"
+                >search</span
+              >
             </template>
           </UiInput>
           <UiSelect
@@ -52,7 +70,10 @@
         v-if="activeCategory || activeTag || search"
         class="flex flex-wrap items-center gap-2 mb-6"
       >
-        <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-555 uppercase">Активні фільтри:</span>
+        <span
+          class="text-xs font-semibold text-zinc-400 dark:text-zinc-555 uppercase"
+          >Активні фільтри:</span
+        >
         <span
           v-if="activeCategoryName"
           class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] text-xs font-medium border border-[#00a046]/20"
@@ -84,7 +105,10 @@
           Пошук: "{{ search }}"
           <button
             class="hover:text-red-500 focus:outline-none flex items-center"
-            @click="search = ''; updateRouteQuery()"
+            @click="
+              search = '';
+              updateRouteQuery();
+            "
           >
             <span class="material-symbols-outlined text-[14px]">close</span>
           </button>
@@ -124,7 +148,10 @@
             v-else-if="posts.length === 0"
             class="text-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8"
           >
-            <span class="material-symbols-outlined text-5xl text-zinc-350 dark:text-zinc-650 mb-3">edit_note</span>
+            <span
+              class="material-symbols-outlined text-5xl text-zinc-350 dark:text-zinc-650 mb-3"
+              >edit_note</span
+            >
             <p class="text-zinc-555 dark:text-zinc-400 font-semibold mb-1">
               Статей не знайдено
             </p>
@@ -145,26 +172,30 @@
               class="group bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:shadow-lg hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 flex flex-col"
             >
               <!-- Cover image -->
-              <div class="aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
+              <div
+                class="aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative"
+              >
                 <img
                   v-if="post.coverImage"
                   :src="post.coverImage"
                   :alt="post.title?.uk || post.title?.en"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
-                >
+                />
                 <div
                   v-else
                   class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-850"
                 >
-                  <span class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-700">article</span>
+                  <span
+                    class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-700"
+                    >article</span
+                  >
                 </div>
                 <!-- Category badge -->
-                <div
-                  v-if="post.category"
-                  class="absolute top-3 left-3"
-                >
-                  <span class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide">
+                <div v-if="post.category" class="absolute top-3 left-3">
+                  <span
+                    class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
+                  >
                     {{ post.category.name?.uk || post.category.name?.en }}
                   </span>
                 </div>
@@ -172,22 +203,30 @@
 
               <!-- Content -->
               <div class="p-5 flex-grow flex flex-col gap-2.5">
-                <div class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
+                <div
+                  class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold"
+                >
                   <span>{{ formatDate(post.publishedAt) }}</span>
                   <span>·</span>
                   <span>{{ post.views }} переглядів</span>
                 </div>
 
-                <h3 class="font-extrabold text-base text-zinc-900 dark:text-white leading-snug line-clamp-2 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors">
+                <h3
+                  class="font-extrabold text-base text-zinc-900 dark:text-white leading-snug line-clamp-2 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors"
+                >
                   {{ post.title?.uk || post.title?.en }}
                 </h3>
 
-                <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed line-clamp-2 flex-grow">
+                <p
+                  class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed line-clamp-2 flex-grow"
+                >
                   {{ post.excerpt?.uk || post.excerpt?.en }}
                 </p>
 
                 <!-- Tags at the bottom of card -->
-                <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between mt-auto">
+                <div
+                  class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between mt-auto"
+                >
                   <div class="flex flex-wrap gap-1">
                     <span
                       v-for="tag in post.tags.slice(0, 2)"
@@ -197,9 +236,14 @@
                       #{{ tag.name?.uk || tag.name?.en }}
                     </span>
                   </div>
-                  <span class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1">
+                  <span
+                    class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1"
+                  >
                     Читати
-                    <span class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    <span
+                      class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
+                      >arrow_forward</span
+                    >
                   </span>
                 </div>
               </div>
@@ -217,7 +261,9 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 hover:border-[#00a046] disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
               @click="fetchPosts(meta.currentPage - 1)"
             >
-              <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+              <span class="material-symbols-outlined text-[18px]"
+                >chevron_left</span
+              >
             </button>
 
             <!-- Page numbers -->
@@ -228,7 +274,7 @@
                 'w-10 h-10 rounded-xl text-sm font-bold transition-all border cursor-pointer',
                 meta.currentPage === page
                   ? 'bg-[#00a046] text-white border-transparent shadow-lg shadow-[#00a046]/20'
-                  : 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-[#00a046]'
+                  : 'bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-[#00a046]',
               ]"
               @click="fetchPosts(page)"
             >
@@ -241,7 +287,9 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 hover:border-[#00a046] disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
               @click="fetchPosts(meta.currentPage + 1)"
             >
-              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+              <span class="material-symbols-outlined text-[18px]"
+                >chevron_right</span
+              >
             </button>
           </div>
         </div>
@@ -249,8 +297,12 @@
         <!-- Sidebar (Desktop) -->
         <aside class="w-full lg:w-72 shrink-0 space-y-6">
           <!-- Categories block -->
-          <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
-            <h3 class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider">
+          <div
+            class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm"
+          >
+            <h3
+              class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
+            >
               Категорії
             </h3>
             <div class="space-y-1">
@@ -259,12 +311,15 @@
                   'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
                   !activeCategory
                     ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
-                    : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                    : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
                 ]"
                 @click="selectCategory('')"
               >
                 <span>Всі статті</span>
-                <span class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold">{{ meta.total }}</span>
+                <span
+                  class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                  >{{ meta.total }}</span
+                >
               </button>
               <button
                 v-for="cat in categories"
@@ -273,19 +328,28 @@
                   'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
                   activeCategory === cat.slug
                     ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
-                    : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                    : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
                 ]"
                 @click="selectCategory(cat.slug)"
               >
-                <span class="truncate pr-2">{{ cat.name?.uk || cat.name?.en }}</span>
-                <span class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold">{{ cat.postsCount }}</span>
+                <span class="truncate pr-2">{{
+                  cat.name?.uk || cat.name?.en
+                }}</span>
+                <span
+                  class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                  >{{ cat.postsCount }}</span
+                >
               </button>
             </div>
           </div>
 
           <!-- Tags block -->
-          <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
-            <h3 class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider">
+          <div
+            class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm"
+          >
+            <h3
+              class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
+            >
               Теги
             </h3>
             <div class="flex flex-wrap gap-2">
@@ -296,12 +360,14 @@
                   'px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',
                   activeTag === tag.slug
                     ? 'bg-[#00a046] text-white border-transparent shadow-sm'
-                    : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50'
+                    : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
                 ]"
                 @click="selectTag(tag.slug)"
               >
                 #{{ tag.name?.uk || tag.name?.en }}
-                <span class="text-[10px] opacity-70 ml-0.5">({{ tag.postsCount }})</span>
+                <span class="text-[10px] opacity-70 ml-0.5"
+                  >({{ tag.postsCount }})</span
+                >
               </button>
             </div>
           </div>
@@ -312,23 +378,23 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onServerPrefetch, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { useHead } from '@vueuse/head';
-import api from '@/shared/services/api/apiClient';
-import { UiInput, UiSelect } from '@/shared/ui';
+import { ref, watch, onMounted, onServerPrefetch, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useHead } from "@vueuse/head";
+import api from "@/shared/services/api/apiClient";
+import { UiInput, UiSelect } from "@/shared/ui";
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 
 useHead({
-  title: computed(() => t('meta.blogTitle')),
+  title: computed(() => t("meta.blogTitle")),
   meta: computed(() => [
-    { name: 'description', content: t('meta.blogDescription') },
-    { property: 'og:title', content: t('meta.blogTitle') },
-    { property: 'og:description', content: t('meta.blogDescription') },
+    { name: "description", content: t("meta.blogDescription") },
+    { property: "og:title", content: t("meta.blogTitle") },
+    { property: "og:description", content: t("meta.blogDescription") },
   ]),
 });
 
@@ -339,12 +405,12 @@ const loading = ref(false);
 const meta = ref({ currentPage: 1, lastPage: 1, total: 0 });
 
 // Initialize filters from route queries
-const search = ref(route.query.search || '');
-const activeCategory = ref(route.query.category || '');
-const activeTag = ref(route.query.tag || '');
+const search = ref(route.query.search || "");
+const activeCategory = ref(route.query.category || "");
+const activeTag = ref(route.query.tag || "");
 
 const categoryOptions = computed(() => {
-  const list = [{ value: '', label: 'Всі категорії' }];
+  const list = [{ value: "", label: "Всі категорії" }];
   categories.value.forEach((cat) => {
     list.push({
       value: cat.slug,
@@ -363,23 +429,23 @@ const activeTitle = computed(() => {
     const t = tags.value.find((tg) => tg.slug === activeTag.value);
     if (t) return `Блог: #${t.name?.uk || t.name?.en}`;
   }
-  return 'Блог та огляди техніки';
+  return "Блог та огляди техніки";
 });
 
 const activeCategoryName = computed(() => {
   const cat = categories.value.find((c) => c.slug === activeCategory.value);
-  return cat ? (cat.name?.uk || cat.name?.en) : '';
+  return cat ? cat.name?.uk || cat.name?.en : "";
 });
 
 const activeTagName = computed(() => {
   const t = tags.value.find((tg) => tg.slug === activeTag.value);
-  return t ? (t.name?.uk || t.name?.en) : '';
+  return t ? t.name?.uk || t.name?.en : "";
 });
 
 const fetchPosts = async (page = 1) => {
   loading.value = true;
   try {
-    const { data } = await api.get('/v1/blog/posts', {
+    const { data } = await api.get("/v1/blog/posts", {
       params: {
         page,
         per_page: 9,
@@ -391,7 +457,7 @@ const fetchPosts = async (page = 1) => {
     posts.value = data.data.data;
     meta.value = data.data.meta;
   } catch (e) {
-    console.error('Failed to fetch posts:', e);
+    console.error("Failed to fetch posts:", e);
   } finally {
     loading.value = false;
   }
@@ -400,19 +466,19 @@ const fetchPosts = async (page = 1) => {
 const fetchSidebar = async () => {
   try {
     const [catsRes, tagsRes] = await Promise.all([
-      api.get('/v1/blog/categories'),
-      api.get('/v1/blog/tags'),
+      api.get("/v1/blog/categories"),
+      api.get("/v1/blog/tags"),
     ]);
     categories.value = catsRes.data.data;
     tags.value = tagsRes.data.data;
   } catch (e) {
-    console.error('Failed to fetch blog sidebar:', e);
+    console.error("Failed to fetch blog sidebar:", e);
   }
 };
 
 const updateRouteQuery = () => {
   router.push({
-    name: 'blog',
+    name: "blog",
     query: {
       search: search.value || undefined,
       category: activeCategory.value || undefined,
@@ -427,20 +493,24 @@ const selectCategory = (slug) => {
 };
 
 const selectTag = (slug) => {
-  activeTag.value = activeTag.value === slug ? '' : slug;
+  activeTag.value = activeTag.value === slug ? "" : slug;
   updateRouteQuery();
 };
 
 const clearAllFilters = () => {
-  search.value = '';
-  activeCategory.value = '';
-  activeTag.value = '';
+  search.value = "";
+  activeCategory.value = "";
+  activeTag.value = "";
   updateRouteQuery();
 };
 
 const formatDate = (d) => {
-  if (!d) return '';
-  return new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: 'long', year: 'numeric' });
+  if (!d) return "";
+  return new Date(d).toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 };
 
 // Sync search input with router queries (debounced)
@@ -456,21 +526,27 @@ const onSearchInput = () => {
 watch(
   () => route.query,
   (newQuery) => {
-    search.value = newQuery.search || '';
-    activeCategory.value = newQuery.category || '';
-    activeTag.value = newQuery.tag || '';
+    search.value = newQuery.search || "";
+    activeCategory.value = newQuery.category || "";
+    activeTag.value = newQuery.tag || "";
     fetchPosts(1);
   },
-  { deep: true }
+  { deep: true },
 );
 
 onMounted(async () => {
-  await Promise.all([fetchPosts(Number(route.query.page) || 1), fetchSidebar()]);
+  await Promise.all([
+    fetchPosts(Number(route.query.page) || 1),
+    fetchSidebar(),
+  ]);
 });
 
 // Prerendering has no DOM, so onMounted never runs — fetch the same data
 // here so the static build captures real blog listing content.
 onServerPrefetch(async () => {
-  await Promise.all([fetchPosts(Number(route.query.page) || 1), fetchSidebar()]);
+  await Promise.all([
+    fetchPosts(Number(route.query.page) || 1),
+    fetchSidebar(),
+  ]);
 });
 </script>

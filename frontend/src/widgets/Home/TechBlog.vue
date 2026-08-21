@@ -27,18 +27,29 @@ const fetchLatestPosts = async () => {
 
 const formatDate = (d) => {
   if (!d) return "";
-  return new Date(d).toLocaleDateString(locale.value === "uk" ? "uk-UA" : "en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  return new Date(d).toLocaleDateString(
+    locale.value === "uk" ? "uk-UA" : "en-US",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    },
+  );
 };
 
 const getTitle = (post) =>
-  post.title?.[locale.value] || post.title?.uk || post.title?.en || post.title || "";
+  post.title?.[locale.value] ||
+  post.title?.uk ||
+  post.title?.en ||
+  post.title ||
+  "";
 
 const getExcerpt = (post) =>
-  post.excerpt?.[locale.value] || post.excerpt?.uk || post.excerpt?.en || post.excerpt || "";
+  post.excerpt?.[locale.value] ||
+  post.excerpt?.uk ||
+  post.excerpt?.en ||
+  post.excerpt ||
+  "";
 
 onMounted(fetchLatestPosts);
 // Prerendering has no DOM, so onMounted never runs — fetch here so the
@@ -49,15 +60,22 @@ onServerPrefetch(fetchLatestPosts);
 <template>
   <section class="max-w-container-max mx-auto px-4 md:px-8 py-14 font-sans">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+    <div
+      class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10"
+    >
       <div class="space-y-2">
-        <span class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest">{{ t("home.blog.label") }}</span>
+        <span
+          class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest"
+          >{{ t("home.blog.label") }}</span
+        >
         <h2
           class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
         >
           {{ t("home.blog.title") }}
         </h2>
-        <p class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md">
+        <p
+          class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md"
+        >
           {{ t("home.blog.description") }}
         </p>
       </div>
@@ -67,10 +85,7 @@ onServerPrefetch(fetchLatestPosts);
     </div>
 
     <!-- Skeleton -->
-    <div
-      v-if="loading"
-      class="grid grid-cols-1 md:grid-cols-3 gap-6"
-    >
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div
         v-for="i in 3"
         :key="i"
@@ -90,47 +105,57 @@ onServerPrefetch(fetchLatestPosts);
       v-else-if="posts.length === 0"
       class="flex flex-col items-center justify-center py-16 text-zinc-500 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800"
     >
-      <span class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650">article</span>
+      <span
+        class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650"
+        >article</span
+      >
       <p class="text-sm font-bold">
         {{ loadFailed ? t("home.blog.loadFailed") : t("home.blog.empty") }}
       </p>
     </div>
 
     <!-- Posts grid -->
-    <div
-      v-else
-      class="grid grid-cols-1 md:grid-cols-3 gap-6"
-    >
+    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <router-link
         v-for="post in posts"
         :key="post.id"
-        :to="post.slug ? { name: 'blog-post', params: { slug: post.slug } } : { name: 'blog' }"
+        :to="
+          post.slug
+            ? { name: 'blog-post', params: { slug: post.slug } }
+            : { name: 'blog' }
+        "
         class="group bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 hover:shadow-lg hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 flex flex-col"
       >
         <!-- Image -->
-        <div class="aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
+        <div
+          class="aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative"
+        >
           <img
             v-if="post.coverImage"
             :src="post.coverImage"
             :alt="getTitle(post)"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          >
+          />
           <div
             v-else
             class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800"
           >
-            <span class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-600">article</span>
+            <span
+              class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-600"
+              >article</span
+            >
           </div>
 
           <!-- Category badge -->
-          <div
-            v-if="post.category"
-            class="absolute top-3 left-3"
-          >
+          <div v-if="post.category" class="absolute top-3 left-3">
             <span
               class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
             >
-              {{ post.category.name?.[locale] || post.category.name?.uk || post.category.name?.en }}
+              {{
+                post.category.name?.[locale] ||
+                post.category.name?.uk ||
+                post.category.name?.en
+              }}
             </span>
           </div>
         </div>
@@ -138,10 +163,17 @@ onServerPrefetch(fetchLatestPosts);
         <!-- Content -->
         <div class="p-5 flex-grow flex flex-col gap-2.5">
           <!-- Meta -->
-          <div class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
+          <div
+            class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 font-semibold"
+          >
             <span>{{ formatDate(post.publishedAt) }}</span>
             <span>·</span>
-            <span>{{ post.readTime || (post.views ? t("home.blog.viewsCount", { count: post.views }) : t("home.blog.defaultReadTime")) }}</span>
+            <span>{{
+              post.readTime ||
+              (post.views
+                ? t("home.blog.viewsCount", { count: post.views })
+                : t("home.blog.defaultReadTime"))
+            }}</span>
           </div>
 
           <!-- Title -->
@@ -159,14 +191,17 @@ onServerPrefetch(fetchLatestPosts);
           </p>
 
           <!-- Footer -->
-          <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-auto">
+          <div
+            class="pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-auto"
+          >
             <span
               class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1.5"
             >
               {{ t("home.blog.readArticle") }}
               <span
                 class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
-              >arrow_forward</span>
+                >arrow_forward</span
+              >
             </span>
           </div>
         </div>

@@ -111,14 +111,24 @@ const isEditMode = ref(false);
 const isSubmittingReview = ref(false);
 const isReviewOpen = ref(false);
 
-const totalPhotoCount = computed(() => existingPhotoUrls.value.length + reviewPhotos.value.length);
+const totalPhotoCount = computed(
+  () => existingPhotoUrls.value.length + reviewPhotos.value.length,
+);
 
 const filteredOrders = computed(() =>
   ordersList.value.filter((o) => {
     if (ordersFilter.value !== "all") {
       const status = o.statusCode;
       if (ordersFilter.value === "processing") {
-        if (!["pending_payment", "paid", "processing", "packed", "pending"].includes(status)) {
+        if (
+          ![
+            "pending_payment",
+            "paid",
+            "processing",
+            "packed",
+            "pending",
+          ].includes(status)
+        ) {
           return false;
         }
       } else if (ordersFilter.value === "shipped") {
@@ -154,14 +164,19 @@ const cancelOrderAction = async (order: Order) => {
       cartStore.addToast("Замовлення успішно скасовано", "success");
       await fetchOrders();
       if (selectedOrder.value && selectedOrder.value.id === order.id) {
-        selectedOrder.value = ordersList.value.find((o) => o.id === order.id) || null;
+        selectedOrder.value =
+          ordersList.value.find((o) => o.id === order.id) || null;
       }
     } else {
-      cartStore.addToast(response.data.message || "Помилка при скасуванні замовлення", "error");
+      cartStore.addToast(
+        response.data.message || "Помилка при скасуванні замовлення",
+        "error",
+      );
     }
   } catch (error: any) {
     console.error("Failed to cancel order:", error);
-    const msg = error.response?.data?.message || "Не вдалося скасувати замовлення";
+    const msg =
+      error.response?.data?.message || "Не вдалося скасувати замовлення";
     cartStore.addToast(msg, "error");
   } finally {
     isCancelling.value[order.id] = false;
@@ -208,7 +223,8 @@ const handleReviewPhotos = (e: Event) => {
   toAdd.forEach((file) => {
     reviewPhotos.value.push(file);
     const reader = new FileReader();
-    reader.onload = (ev) => reviewPhotoPreviews.value.push(ev.target?.result as string);
+    reader.onload = (ev) =>
+      reviewPhotoPreviews.value.push(ev.target?.result as string);
     reader.readAsDataURL(file);
   });
   input.value = "";
@@ -235,14 +251,21 @@ const submitReview = async () => {
     if (isEditMode.value) {
       // _method spoofing: POST with _method=PUT so PHP populates $_FILES
       formData.append("_method", "PUT");
-      existingPhotoUrls.value.forEach((url) => formData.append("existing_photos[]", url));
+      existingPhotoUrls.value.forEach((url) =>
+        formData.append("existing_photos[]", url),
+      );
     } else {
-      if (reviewOrderId.value) formData.append("order_id", String(reviewOrderId.value));
+      if (reviewOrderId.value)
+        formData.append("order_id", String(reviewOrderId.value));
     }
 
-    await api.post(`/v1/catalog/products/${reviewProduct.value.slug}/reviews`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    await api.post(
+      `/v1/catalog/products/${reviewProduct.value.slug}/reviews`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
 
     const successMsg = isEditMode.value
       ? "Відгук успішно оновлено."
@@ -401,7 +424,15 @@ const filterBtns = [
               Детальніше
             </button>
             <button
-              v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(order.statusCode)"
+              v-if="
+                [
+                  'pending_payment',
+                  'paid',
+                  'processing',
+                  'packed',
+                  'pending',
+                ].includes(order.statusCode)
+              "
               class="text-rose-500 hover:text-rose-600 font-extrabold text-[11px] md:text-xs hover:underline mt-1 disabled:opacity-50"
               :disabled="isCancelling[order.id]"
               @click="cancelOrderAction(order)"
@@ -416,7 +447,12 @@ const filterBtns = [
             :key="item.name"
             class="flex gap-6 flex-col sm:flex-row"
           >
-            <router-link :to="{ name: 'product-detail', params: { id: item.slug || item.id } }">
+            <router-link
+              :to="{
+                name: 'product-detail',
+                params: { id: item.slug || item.id },
+              }"
+            >
               <img
                 class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-2 hover:border-[#00a046]/40 transition-colors"
                 :src="item.image"
@@ -425,7 +461,10 @@ const filterBtns = [
             </router-link>
             <div class="flex-1">
               <router-link
-                :to="{ name: 'product-detail', params: { id: item.slug || item.id } }"
+                :to="{
+                  name: 'product-detail',
+                  params: { id: item.slug || item.id },
+                }"
                 class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-base md:text-lg leading-tight hover:text-[#00a046] transition-colors"
               >
                 {{ item.name }}
@@ -443,13 +482,37 @@ const filterBtns = [
                 {{ item.note }}
               </p>
               <div class="mt-5 flex gap-3 flex-wrap">
-                <UiButton size="sm" @click="buyItAgain(item)">Купити знову</UiButton>
-                <UiButton v-if="order.statusCode === 'delivered'" variant="secondary" size="sm" @click="openReview(item, order.id)">
-                  <template #prefix><span class="material-symbols-outlined text-[15px]">{{ userReviewsMap[item.slug] ? 'edit' : 'rate_review' }}</span></template>
-                  {{ userReviewsMap[item.slug] ? 'Редагувати відгук' : 'Написати відгук' }}
+                <UiButton size="sm" @click="buyItAgain(item)"
+                  >Купити знову</UiButton
+                >
+                <UiButton
+                  v-if="order.statusCode === 'delivered'"
+                  variant="secondary"
+                  size="sm"
+                  @click="openReview(item, order.id)"
+                >
+                  <template #prefix
+                    ><span class="material-symbols-outlined text-[15px]">{{
+                      userReviewsMap[item.slug] ? "edit" : "rate_review"
+                    }}</span></template
+                  >
+                  {{
+                    userReviewsMap[item.slug]
+                      ? "Редагувати відгук"
+                      : "Написати відгук"
+                  }}
                 </UiButton>
-                <UiButton v-if="order.statusCode !== 'cancelled'" variant="secondary" size="sm" @click="openTracking(order)">
-                  <template #prefix><span class="material-symbols-outlined text-[16px]">track_changes</span></template>
+                <UiButton
+                  v-if="order.statusCode !== 'cancelled'"
+                  variant="secondary"
+                  size="sm"
+                  @click="openTracking(order)"
+                >
+                  <template #prefix
+                    ><span class="material-symbols-outlined text-[16px]"
+                      >track_changes</span
+                    ></template
+                  >
                   Відстежити
                 </UiButton>
               </div>
@@ -474,7 +537,9 @@ const filterBtns = [
       >
         Спробуйте змінити фільтр або пошуковий запит.
       </p>
-      <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до каталогу</UiButton>
+      <UiButton :to="{ name: 'catalog' }" class="mt-6"
+        >Перейти до каталогу</UiButton
+      >
     </div>
   </div>
 
@@ -520,7 +585,12 @@ const filterBtns = [
             :key="item.name"
             class="flex gap-4 items-center"
           >
-            <router-link :to="{ name: 'product-detail', params: { id: item.slug || item.id } }">
+            <router-link
+              :to="{
+                name: 'product-detail',
+                params: { id: item.slug || item.id },
+              }"
+            >
               <img
                 :src="item.image"
                 :alt="item.name"
@@ -529,7 +599,10 @@ const filterBtns = [
             </router-link>
             <div class="flex-1">
               <router-link
-                :to="{ name: 'product-detail', params: { id: item.slug || item.id } }"
+                :to="{
+                  name: 'product-detail',
+                  params: { id: item.slug || item.id },
+                }"
                 class="block font-extrabold text-zinc-800 dark:text-zinc-200 line-clamp-1 hover:text-[#00a046] transition-colors"
               >
                 {{ item.name }}
@@ -540,7 +613,9 @@ const filterBtns = [
                 1x • {{ selectedOrder.total.toFixed(2) }} ₴
               </p>
             </div>
-            <UiButton size="sm" @click="buyItAgain(item)">Купити знову</UiButton>
+            <UiButton size="sm" @click="buyItAgain(item)"
+              >Купити знову</UiButton
+            >
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5">
@@ -605,15 +680,29 @@ const filterBtns = [
         class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-end gap-3"
       >
         <UiButton
-          v-if="['pending_payment', 'paid', 'processing', 'packed', 'pending'].includes(selectedOrder.statusCode)"
+          v-if="
+            [
+              'pending_payment',
+              'paid',
+              'processing',
+              'packed',
+              'pending',
+            ].includes(selectedOrder.statusCode)
+          "
           variant="danger"
           size="sm"
           :disabled="isCancelling[selectedOrder.id]"
           @click="cancelOrderAction(selectedOrder)"
         >
-          {{ isCancelling[selectedOrder.id] ? "Скасування..." : "Скасувати замовлення" }}
+          {{
+            isCancelling[selectedOrder.id]
+              ? "Скасування..."
+              : "Скасувати замовлення"
+          }}
         </UiButton>
-        <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false">Закрити</UiButton>
+        <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false"
+          >Закрити</UiButton
+        >
       </div>
     </div>
   </div>
@@ -712,41 +801,70 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
       >
-        <h3 class="font-black text-base text-zinc-900 dark:text-white">{{ isEditMode ? 'Редагувати відгук' : 'Написати відгук' }}</h3>
-        <button class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" @click="isReviewOpen = false">
+        <h3 class="font-black text-base text-zinc-900 dark:text-white">
+          {{ isEditMode ? "Редагувати відгук" : "Написати відгук" }}
+        </h3>
+        <button
+          class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+          @click="isReviewOpen = false"
+        >
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <form class="p-6 space-y-4 text-xs md:text-sm overflow-y-auto" @submit.prevent="submitReview">
+      <form
+        class="p-6 space-y-4 text-xs md:text-sm overflow-y-auto"
+        @submit.prevent="submitReview"
+      >
         <!-- Product preview -->
-        <div class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-100 dark:border-zinc-800">
+        <div
+          class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg border border-zinc-100 dark:border-zinc-800"
+        >
           <img
             :src="reviewProduct.image"
             :alt="reviewProduct.name"
             class="w-12 h-12 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 shrink-0"
           />
-          <p class="font-bold text-zinc-800 dark:text-zinc-200 line-clamp-2 text-xs leading-snug">{{ reviewProduct.name }}</p>
+          <p
+            class="font-bold text-zinc-800 dark:text-zinc-200 line-clamp-2 text-xs leading-snug"
+          >
+            {{ reviewProduct.name }}
+          </p>
         </div>
 
         <!-- Rating -->
         <div class="space-y-1.5">
-          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Оцінка *</label>
+          <label
+            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+            >Оцінка *</label
+          >
           <div class="flex gap-1 cursor-pointer">
             <span
               v-for="star in 5"
               :key="star"
               class="material-symbols-outlined text-[30px] transition-colors"
-              :class="star <= reviewRating ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700'"
-              :style="star <= reviewRating ? 'font-variation-settings: \'FILL\' 1;' : ''"
+              :class="
+                star <= reviewRating
+                  ? 'text-amber-400'
+                  : 'text-zinc-300 dark:text-zinc-700'
+              "
+              :style="
+                star <= reviewRating
+                  ? 'font-variation-settings: \'FILL\' 1;'
+                  : ''
+              "
               @click="reviewRating = star"
-            >star</span>
+              >star</span
+            >
           </div>
         </div>
 
         <!-- Title -->
         <div class="space-y-1.5">
-          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Заголовок</label>
+          <label
+            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+            >Заголовок</label
+          >
           <input
             v-model="reviewTitle"
             type="text"
@@ -758,7 +876,10 @@ const filterBtns = [
 
         <!-- Comment -->
         <div class="space-y-1.5">
-          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">Відгук *</label>
+          <label
+            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+            >Відгук *</label
+          >
           <textarea
             v-model="reviewComment"
             rows="4"
@@ -771,7 +892,9 @@ const filterBtns = [
 
         <!-- Photo upload -->
         <div class="space-y-2">
-          <label class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+          <label
+            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
+          >
             Фото (до 5 штук)
           </label>
 
@@ -789,7 +912,9 @@ const filterBtns = [
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
                 @click="removeExistingPhoto(idx)"
               >
-                <span class="material-symbols-outlined text-white text-[18px]">close</span>
+                <span class="material-symbols-outlined text-white text-[18px]"
+                  >close</span
+                >
               </button>
             </div>
 
@@ -805,7 +930,9 @@ const filterBtns = [
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
                 @click="removeNewPhoto(idx)"
               >
-                <span class="material-symbols-outlined text-white text-[18px]">close</span>
+                <span class="material-symbols-outlined text-white text-[18px]"
+                  >close</span
+                >
               </button>
             </div>
 
@@ -814,8 +941,16 @@ const filterBtns = [
               v-if="totalPhotoCount < 5"
               class="w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center cursor-pointer hover:border-[#00a046]/50 transition-colors"
             >
-              <span class="material-symbols-outlined text-zinc-400 text-[20px]">add_photo_alternate</span>
-              <input type="file" accept="image/*" multiple class="hidden" @change="handleReviewPhotos" />
+              <span class="material-symbols-outlined text-zinc-400 text-[20px]"
+                >add_photo_alternate</span
+              >
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="hidden"
+                @change="handleReviewPhotos"
+              />
             </label>
           </div>
 
@@ -824,27 +959,56 @@ const filterBtns = [
             v-else
             class="flex items-center gap-3 p-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer hover:border-[#00a046]/40 hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-all group"
           >
-            <div class="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors shrink-0">
-              <span class="material-symbols-outlined text-[18px] text-zinc-400 group-hover:text-[#00a046] transition-colors">add_photo_alternate</span>
+            <div
+              class="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors shrink-0"
+            >
+              <span
+                class="material-symbols-outlined text-[18px] text-zinc-400 group-hover:text-[#00a046] transition-colors"
+                >add_photo_alternate</span
+              >
             </div>
             <div>
-              <p class="font-bold text-zinc-600 dark:text-zinc-400 text-xs">Додати фото товару</p>
-              <p class="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">JPG, PNG, WebP · до 5 МБ кожне</p>
+              <p class="font-bold text-zinc-600 dark:text-zinc-400 text-xs">
+                Додати фото товару
+              </p>
+              <p class="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">
+                JPG, PNG, WebP · до 5 МБ кожне
+              </p>
             </div>
-            <input type="file" accept="image/*" multiple class="hidden" @change="handleReviewPhotos" />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden"
+              @change="handleReviewPhotos"
+            />
           </label>
         </div>
 
         <!-- Footer buttons -->
-        <div class="flex justify-end gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 mt-2">
-          <UiButton type="button" variant="secondary" size="sm" @click="isReviewOpen = false">Скасувати</UiButton>
+        <div
+          class="flex justify-end gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 mt-2"
+        >
+          <UiButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            @click="isReviewOpen = false"
+            >Скасувати</UiButton
+          >
           <UiButton
             type="submit"
             size="sm"
             :disabled="isSubmittingReview || !reviewComment.trim()"
             :loading="isSubmittingReview"
           >
-            {{ isSubmittingReview ? 'Надсилання...' : (isEditMode ? 'Зберегти зміни' : 'Опублікувати відгук') }}
+            {{
+              isSubmittingReview
+                ? "Надсилання..."
+                : isEditMode
+                  ? "Зберегти зміни"
+                  : "Опублікувати відгук"
+            }}
           </UiButton>
         </div>
       </form>

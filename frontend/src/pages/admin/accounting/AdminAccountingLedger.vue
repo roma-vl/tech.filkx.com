@@ -1,10 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Stats Cards -->
-    <div
-      v-if="stats"
-      class="grid grid-cols-1 md:grid-cols-3 gap-6"
-    >
+    <div v-if="stats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <AppStatCard
         :label="$t('admin.accounting.stats.revenue')"
         :value="formatMoney(stats.totalRevenueMinor)"

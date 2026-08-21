@@ -81,8 +81,14 @@ export function mapCatalogProduct(apiProduct: any) {
         : null,
     price: price,
     oldPrice: oldPrice,
-    rating: apiProduct.approvedReviewsAvgRating != null ? parseFloat(apiProduct.approvedReviewsAvgRating) : 0,
-    reviews: apiProduct.approvedReviewsCount != null ? Number(apiProduct.approvedReviewsCount) : 0,
+    rating:
+      apiProduct.approvedReviewsAvgRating != null
+        ? parseFloat(apiProduct.approvedReviewsAvgRating)
+        : 0,
+    reviews:
+      apiProduct.approvedReviewsCount != null
+        ? Number(apiProduct.approvedReviewsCount)
+        : 0,
     badge: oldPrice ? `-${Math.round((1 - price / oldPrice) * 100)}%` : null,
     badgeClass: oldPrice ? "bg-rose-600" : "",
     inStock: totalStock > 0,
@@ -93,7 +99,8 @@ export function mapCatalogProduct(apiProduct: any) {
       screen: getAttrValue("screen_size"),
       storage: getAttrValue("storage"),
       os: getAttrValue("os"),
-      weight: mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : "",
+      weight:
+        mainVariant && mainVariant.weight ? `${mainVariant.weight} кг` : "",
     },
   };
 }

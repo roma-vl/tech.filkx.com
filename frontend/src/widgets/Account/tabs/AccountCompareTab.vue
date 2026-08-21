@@ -247,9 +247,7 @@ watch(() => route.query.items, loadSharedItems);
                 >
                   {{ catName }}
                 </h3>
-                <p
-                  class="text-xs text-zinc-500 mt-1 font-bold"
-                >
+                <p class="text-xs text-zinc-500 mt-1 font-bold">
                   Кількість товарів: {{ products.length }}
                 </p>
               </div>
@@ -259,7 +257,10 @@ watch(() => route.query.items, loadSharedItems);
                 <router-link
                   v-for="prod in products"
                   :key="prod.id"
-                  :to="{ name: 'product-detail', params: { id: prod.slug || prod.id } }"
+                  :to="{
+                    name: 'product-detail',
+                    params: { id: prod.slug || prod.id },
+                  }"
                   class="w-14 h-14 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-1.5 flex items-center justify-center relative hover:scale-105 transition-transform hover:border-[#00a046]/40"
                   :title="prod.name"
                   @click.stop
@@ -330,7 +331,9 @@ watch(() => route.query.items, loadSharedItems);
           Додайте товари до порівняння, натиснувши кнопку порівняння на картках
           товарів.
         </p>
-        <UiButton :to="{ name: 'catalog' }" class="mt-6">Перейти до каталогу</UiButton>
+        <UiButton :to="{ name: 'catalog' }" class="mt-6"
+          >Перейти до каталогу</UiButton
+        >
       </div>
     </div>
 
@@ -437,7 +440,12 @@ watch(() => route.query.items, loadSharedItems);
                 class="p-5"
               >
                 <div class="flex flex-col gap-3 items-center">
-                  <router-link :to="{ name: 'product-detail', params: { id: product.slug || product.id } }">
+                  <router-link
+                    :to="{
+                      name: 'product-detail',
+                      params: { id: product.slug || product.id },
+                    }"
+                  >
                     <img
                       :src="product.image"
                       :alt="product.name"
@@ -445,7 +453,10 @@ watch(() => route.query.items, loadSharedItems);
                     />
                   </router-link>
                   <router-link
-                    :to="{ name: 'product-detail', params: { id: product.slug || product.id } }"
+                    :to="{
+                      name: 'product-detail',
+                      params: { id: product.slug || product.id },
+                    }"
                     class="block font-extrabold text-center text-xs md:text-sm line-clamp-2 text-zinc-800 dark:text-zinc-200 max-w-[180px] hover:text-[#00a046] transition-colors"
                   >
                     {{ product.name }}
@@ -548,8 +559,15 @@ watch(() => route.query.items, loadSharedItems);
                 :key="product.id"
                 class="p-5 text-center"
               >
-                <UiButton size="sm" @click="cartStore.addToCart(product as any)">
-                  <template #prefix><span class="material-symbols-outlined text-[16px]">shopping_cart</span></template>
+                <UiButton
+                  size="sm"
+                  @click="cartStore.addToCart(product as any)"
+                >
+                  <template #prefix
+                    ><span class="material-symbols-outlined text-[16px]"
+                      >shopping_cart</span
+                    ></template
+                  >
                   У кошик
                 </UiButton>
               </td>

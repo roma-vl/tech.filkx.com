@@ -21,9 +21,7 @@ const shipping = computed(() =>
     : shippingFee,
 );
 const tax = computed(() => cartStore.cartTotal * taxRate);
-const total = computed(
-  () => cartStore.cartTotal + shipping.value + tax.value,
-);
+const total = computed(() => cartStore.cartTotal + shipping.value + tax.value);
 
 const shippingProgress = computed(() =>
   Math.min(100, (cartStore.cartTotal / shippingThreshold) * 100),
@@ -68,7 +66,9 @@ const checkout = () => {
         class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between"
       >
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#00a046] text-[28px]">shopping_cart</span>
+          <span class="material-symbols-outlined text-[#00a046] text-[28px]"
+            >shopping_cart</span
+          >
           <h2 class="text-zinc-900 dark:text-white text-xl font-bold">
             {{ t("cart.title") }}
           </h2>
@@ -91,13 +91,16 @@ const checkout = () => {
           class="flex justify-between items-center text-xs font-semibold text-zinc-500 dark:text-zinc-400"
         >
           <span v-if="remainingForFreeShipping > 0">
-            {{ t("cart.drawer.freeShippingRemaining", { amount: formatPrice(remainingForFreeShipping) }) }}
+            {{
+              t("cart.drawer.freeShippingRemaining", {
+                amount: formatPrice(remainingForFreeShipping),
+              })
+            }}
           </span>
-          <span
-            v-else
-            class="text-[#00a046] flex items-center gap-1"
-          >
-            <span class="material-symbols-outlined text-[16px] text-[#00a046]">local_shipping</span>
+          <span v-else class="text-[#00a046] flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-[#00a046]"
+              >local_shipping</span
+            >
             {{ t("cart.drawer.freeShippingQualified") }}
           </span>
           <span>{{ Math.round(shippingProgress) }}%</span>
@@ -122,7 +125,9 @@ const checkout = () => {
           <div
             class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700"
           >
-            <span class="material-symbols-outlined text-[48px]">remove_shopping_cart</span>
+            <span class="material-symbols-outlined text-[48px]"
+              >remove_shopping_cart</span
+            >
           </div>
           <h3 class="text-zinc-900 dark:text-white text-lg font-bold">
             {{ t("cart.emptyTitle") }}
@@ -154,7 +159,7 @@ const checkout = () => {
               class="w-full h-full object-contain"
               :src="item.image"
               :alt="item.name"
-            >
+            />
           </div>
 
           <!-- Details -->
@@ -162,7 +167,8 @@ const checkout = () => {
             <div>
               <span
                 class="text-[10px] font-bold text-[#00a046] uppercase tracking-wider"
-              >{{ (item as any).category || t("common.product") }}</span>
+                >{{ (item as any).category || t("common.product") }}</span
+              >
               <h4
                 class="text-sm text-zinc-900 dark:text-white line-clamp-1 leading-tight font-bold"
               >
@@ -171,7 +177,9 @@ const checkout = () => {
             </div>
 
             <div class="flex items-center justify-between mt-2">
-              <span class="font-bold text-[#00a046] text-sm">{{ formatPrice(item.price * item.quantity) }}</span>
+              <span class="font-bold text-[#00a046] text-sm">{{
+                formatPrice(item.price * item.quantity)
+              }}</span>
 
               <!-- Quantity Selector -->
               <div
@@ -184,11 +192,14 @@ const checkout = () => {
                     cartStore.updateCartQuantity(item.id, item.quantity - 1)
                   "
                 >
-                  <span class="material-symbols-outlined text-[16px]">remove</span>
+                  <span class="material-symbols-outlined text-[16px]"
+                    >remove</span
+                  >
                 </button>
-                <span class="px-3 text-xs font-bold text-zinc-900 dark:text-white">{{
-                  item.quantity
-                }}</span>
+                <span
+                  class="px-3 text-xs font-bold text-zinc-900 dark:text-white"
+                  >{{ item.quantity }}</span
+                >
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
                   type="button"
@@ -223,13 +234,17 @@ const checkout = () => {
             class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
           >
             <span>{{ t("cart.summary.subtotal") }}</span>
-            <span class="text-zinc-900 dark:text-white font-bold">{{ formatPrice(cartStore.cartTotal) }}</span>
+            <span class="text-zinc-900 dark:text-white font-bold">{{
+              formatPrice(cartStore.cartTotal)
+            }}</span>
           </div>
           <div
             class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
           >
             <span>{{ t("cart.summary.taxEstimate") }}</span>
-            <span class="text-zinc-900 dark:text-white font-bold">{{ formatPrice(tax) }}</span>
+            <span class="text-zinc-900 dark:text-white font-bold">{{
+              formatPrice(tax)
+            }}</span>
           </div>
           <div
             class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
@@ -237,9 +252,15 @@ const checkout = () => {
             <span>{{ t("cart.summary.shippingEstimate") }}</span>
             <span
               class="font-bold"
-              :class="shipping === 0 ? 'text-[#00a046]' : 'text-zinc-900 dark:text-white'"
+              :class="
+                shipping === 0
+                  ? 'text-[#00a046]'
+                  : 'text-zinc-900 dark:text-white'
+              "
             >
-              {{ shipping === 0 ? t("cart.summary.free") : formatPrice(shipping) }}
+              {{
+                shipping === 0 ? t("cart.summary.free") : formatPrice(shipping)
+              }}
             </span>
           </div>
           <div class="h-px bg-zinc-200 dark:bg-zinc-800 my-1" />

@@ -42,9 +42,17 @@ const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
 
   if (authStore.isAuthenticated) {
-    const allowedRoles = ["admin", "administrator", "support", "owner", "moderator"];
+    const allowedRoles = [
+      "admin",
+      "administrator",
+      "support",
+      "owner",
+      "moderator",
+    ];
     const userRoles = authStore.user?.roles || [];
-    const hasAdminAccess = allowedRoles.some((role) => userRoles.includes(role));
+    const hasAdminAccess = allowedRoles.some((role) =>
+      userRoles.includes(role),
+    );
 
     if (hasAdminAccess) {
       items.push({

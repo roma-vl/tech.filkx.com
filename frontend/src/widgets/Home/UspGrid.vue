@@ -61,9 +61,7 @@ const items = computed(() => [
           >
             {{ item.title }}
           </h4>
-          <p
-            class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed"
-          >
+          <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
             {{ item.description }}
           </p>
         </div>

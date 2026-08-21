@@ -7,9 +7,14 @@
   >
     <div class="space-y-6">
       <!-- Status Changer -->
-      <div class="bg-gray-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div
+        class="bg-gray-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
         <div>
-          <span class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase">Поточний статус</span>
+          <span
+            class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase"
+            >Поточний статус</span
+          >
           <span
             :class="[
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mt-1',
@@ -33,22 +38,22 @@
 
       <!-- Customer Info -->
       <div>
-        <h4 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
+        <h4
+          class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3"
+        >
           Інформація про клієнта
         </h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-zinc-900/30 p-4 rounded-xl border border-gray-100 dark:border-zinc-800">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-zinc-900/30 p-4 rounded-xl border border-gray-100 dark:border-zinc-800"
+        >
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
-              Ім'я
-            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Ім'я</p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerName }}
             </p>
           </div>
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
-              Email
-            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Email</p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerEmail }}
             </p>
@@ -66,18 +71,24 @@
 
       <!-- Items List -->
       <div>
-        <h4 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
+        <h4
+          class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3"
+        >
           Товари у замовленні
         </h4>
-        <div class="divide-y divide-gray-100 dark:divide-gray-700 border border-gray-150 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+        <div
+          class="divide-y divide-gray-100 dark:divide-gray-700 border border-gray-150 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm"
+        >
           <div
             v-for="item in order.items"
             :key="item.id"
             class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
           >
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-750 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500 dark:text-gray-450">
-                {{ item.quantity || item['qty'] }}x
+              <div
+                class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-750 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500 dark:text-gray-450"
+              >
+                {{ item.quantity || item["qty"] }}x
               </div>
               <div>
                 <p class="text-sm font-bold text-gray-900 dark:text-white">
@@ -89,11 +100,16 @@
               </div>
             </div>
             <div class="text-sm font-bold text-gray-900 dark:text-white">
-              {{ formatPrice(item.price * (item.quantity || item['qty'])) }}
+              {{ formatPrice(item.price * (item.quantity || item["qty"])) }}
             </div>
           </div>
-          <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-zinc-900/50">
-            <span class="text-sm font-bold uppercase text-gray-500 dark:text-gray-450">Разом</span>
+          <div
+            class="flex justify-between items-center p-4 bg-gray-50 dark:bg-zinc-900/50"
+          >
+            <span
+              class="text-sm font-bold uppercase text-gray-500 dark:text-gray-450"
+              >Разом</span
+            >
             <span class="text-lg font-black text-gray-900 dark:text-white">
               {{ formatPrice(order.totalPrice) }}
             </span>
@@ -125,28 +141,28 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 defineProps({
   modelValue: {
     type: Boolean,
-    required: true
+    required: true,
   },
   order: {
     type: Object,
-    required: true
+    required: true,
   },
   formatDate: {
     type: Function,
-    required: true
+    required: true,
   },
   formatPrice: {
     type: Function,
-    required: true
+    required: true,
   },
   getStatusLabel: {
     type: Function,
-    required: true
+    required: true,
   },
   getStatusClass: {
     type: Function,
-    required: true
-  }
+    required: true,
+  },
 });
 
 defineEmits(["close", "updateStatus"]);

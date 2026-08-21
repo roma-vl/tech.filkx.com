@@ -54,36 +54,63 @@ export function useShoppingCart() {
 
   const mapProduct = (p: any) => {
     const mainVariant = p.variants?.[0];
-    const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
-    const oldPrice = mainVariant && mainVariant.old_price ? parseFloat(mainVariant.old_price) : (p.oldPrice || p.old_price || null);
-    
+    const price = mainVariant ? parseFloat(mainVariant.price) : p.price || 0;
+    const oldPrice =
+      mainVariant && mainVariant.old_price
+        ? parseFloat(mainVariant.old_price)
+        : p.oldPrice || p.old_price || null;
+
     let image = p.image || "";
-    if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-      const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+    if (
+      !image &&
+      mainVariant &&
+      mainVariant.dimensions &&
+      mainVariant.dimensions.images
+    ) {
+      const primary =
+        mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
+        mainVariant.dimensions.images[0];
       if (primary && primary.url) {
         image = primary.url;
       }
     }
     if (!image) {
-      image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+      image =
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
     }
 
     const category = p.categories?.[0]
-      ? (p.categories[0].name?.uk || p.categories[0].name?.en || p.categories[0].name)
-      : (p.category || "Electronics");
+      ? p.categories[0].name?.uk ||
+        p.categories[0].name?.en ||
+        p.categories[0].name
+      : p.category || "Electronics";
 
     const brandName = p.brand?.name || p.brand || "Brand";
 
     // Extract specs
-    const ram = p.attributeValues?.find((av: any) => av.attribute?.code === "ram")?.customValue || "8GB";
-    const screen = p.attributeValues?.find((av: any) => av.attribute?.code === "screen")?.customValue || "6.1\"";
-    const storage = p.attributeValues?.find((av: any) => av.attribute?.code === "storage")?.customValue || "128GB";
+    const ram =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "ram")
+        ?.customValue || "8GB";
+    const screen =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "screen")
+        ?.customValue || '6.1"';
+    const storage =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "storage")
+        ?.customValue || "128GB";
 
     const totalStock = mainVariant
-      ? (mainVariant.stocks
-          ? mainVariant.stocks.reduce((acc: number, s: any) => acc + (parseInt(s.quantity) - parseInt(s.reserved || 0)), 0)
-          : (mainVariant.stock !== undefined ? mainVariant.stock : 0))
-      : (p.stock !== undefined ? p.stock : 10);
+      ? mainVariant.stocks
+        ? mainVariant.stocks.reduce(
+            (acc: number, s: any) =>
+              acc + (parseInt(s.quantity) - parseInt(s.reserved || 0)),
+            0,
+          )
+        : mainVariant.stock !== undefined
+          ? mainVariant.stock
+          : 0
+      : p.stock !== undefined
+        ? p.stock
+        : 10;
 
     return {
       id: p.id,
@@ -100,8 +127,8 @@ export function useShoppingCart() {
       ram: ram,
       specs: {
         screen: screen,
-        storage: storage
-      }
+        storage: storage,
+      },
     };
   };
 
@@ -162,7 +189,9 @@ export function useShoppingCart() {
   };
 
   const hasOutOfStockItems = computed(() => {
-    return cartStore.cart.some(item => item.stock !== undefined && item.stock <= 0);
+    return cartStore.cart.some(
+      (item) => item.stock !== undefined && item.stock <= 0,
+    );
   });
 
   const formatPrice = (price: number) => {
@@ -217,7 +246,10 @@ export function useShoppingCart() {
       !checkoutForm.value.customerPhone ||
       !checkoutForm.value.shippingAddress
     ) {
-      cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "error");
+      cartStore.addToast(
+        "Будь ласка, заповніть усі обов'язкові поля.",
+        "error",
+      );
       return;
     }
 
@@ -240,7 +272,9 @@ export function useShoppingCart() {
         const order = response.data.data;
 
         if (checkoutForm.value.paymentMethod === "card") {
-          const payRes = await orderApi.initiateLiqPayPayment(order.orderNumber);
+          const payRes = await orderApi.initiateLiqPayPayment(
+            order.orderNumber,
+          );
           if (payRes.data && payRes.data.status === "success") {
             isRedirectingToPayment.value = true;
             const { data, signature, checkoutUrl } = payRes.data.data;
@@ -249,7 +283,8 @@ export function useShoppingCart() {
           }
 
           cartStore.addToast(
-            payRes.data?.message || "Онлайн-оплата тимчасово недоступна. Замовлення створено, зверніться до підтримки для оплати.",
+            payRes.data?.message ||
+              "Онлайн-оплата тимчасово недоступна. Замовлення створено, зверніться до підтримки для оплати.",
             "error",
           );
         } else {

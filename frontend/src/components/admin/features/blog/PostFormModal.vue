@@ -7,11 +7,11 @@
   >
     <div class="space-y-6">
       <!-- Top Action Controls inside Modal Header / Body boundary -->
-      <div class="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-700">
+      <div
+        class="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-700"
+      >
         <div>
-          <p class="text-xs text-gray-400">
-            Статус публікації та дата
-          </p>
+          <p class="text-xs text-gray-400">Статус публікації та дата</p>
         </div>
         <div class="flex items-center gap-3">
           <AppSelect
@@ -19,7 +19,7 @@
             :options="[
               { id: 'draft', name: 'Чернетка' },
               { id: 'published', name: 'Опублікувати' },
-              { id: 'archived', name: 'Архів' }
+              { id: 'archived', name: 'Архів' },
             ]"
             option-value="id"
             option-label="name"
@@ -41,11 +41,17 @@
         <!-- Main content area (Left columns) -->
         <div class="lg:col-span-2 space-y-5">
           <!-- Tabs for UK/EN -->
-          <div class="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit">
+          <div
+            class="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit"
+          >
             <AppButton
               variant="text"
               class="px-4 py-1.5 rounded-lg text-sm font-semibold !no-underline"
-              :class="langTab === 'uk' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500'"
+              :class="
+                langTab === 'uk'
+                  ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500'
+              "
               @click="langTab = 'uk'"
             >
               🇺🇦 Українська
@@ -53,7 +59,11 @@
             <AppButton
               variant="text"
               class="px-4 py-1.5 rounded-lg text-sm font-semibold !no-underline"
-              :class="langTab === 'en' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500'"
+              :class="
+                langTab === 'en'
+                  ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500'
+              "
               @click="langTab = 'en'"
             >
               🇬🇧 English
@@ -98,8 +108,10 @@
 
           <!-- Rich text editor -->
           <div class="rich-editor-container">
-            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {{ langTab === 'uk' ? 'Контент (UK)' : 'Content (EN)' }}
+            <label
+              class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+            >
+              {{ langTab === "uk" ? "Контент (UK)" : "Content (EN)" }}
             </label>
             <RichEditor
               v-if="langTab === 'uk'"
@@ -117,10 +129,15 @@
         </div>
 
         <!-- Sidebar options (Right column) -->
-        <div class="space-y-5 bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+        <div
+          class="space-y-5 bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50"
+        >
           <!-- Cover image -->
           <div>
-            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Обкладинка</label>
+            <label
+              class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+              >Обкладинка</label
+            >
             <div class="relative">
               <div
                 v-if="postForm.coverImage"
@@ -129,7 +146,7 @@
                 <img
                   :src="postForm.coverImage"
                   class="w-full h-full object-cover"
-                >
+                />
                 <AppButton
                   variant="ghost"
                   size="sm"
@@ -139,15 +156,19 @@
                   <XMarkIcon class="w-4 h-4" />
                 </AppButton>
               </div>
-              <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors">
-                <PhotoIcon class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-1" />
+              <label
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors"
+              >
+                <PhotoIcon
+                  class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-1"
+                />
                 <span class="text-xs text-gray-400">Завантажити фото</span>
                 <input
                   type="file"
                   accept="image/*"
                   class="sr-only"
                   @change="uploadCover"
-                >
+                />
               </label>
             </div>
           </div>
@@ -157,7 +178,10 @@
             v-model="postForm.categoryId"
             label="Категорія"
             placeholder="Без категорії"
-            :options="[{ id: null, nameUk: 'Без категорії', nameEn: 'Uncategorized' }, ...categories]"
+            :options="[
+              { id: null, nameUk: 'Без категорії', nameEn: 'Uncategorized' },
+              ...categories,
+            ]"
             option-value="id"
             option-label="nameUk"
           />
@@ -165,7 +189,10 @@
           <!-- Tags -->
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Теги</label>
+              <label
+                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                >Теги</label
+              >
               <AppButton
                 variant="text"
                 class="flex items-center gap-1 !text-xs !text-[#00a046] dark:!text-[#00b050] !no-underline"
@@ -215,7 +242,9 @@
             </div>
 
             <!-- Tags List Pills -->
-            <div class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-1 border border-gray-100 dark:border-gray-800 rounded-lg">
+            <div
+              class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-1 border border-gray-100 dark:border-gray-800 rounded-lg"
+            >
               <button
                 v-for="tag in tags"
                 :key="tag.id"
@@ -224,7 +253,7 @@
                   'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer',
                   postForm.tagIds.includes(tag.id)
                     ? 'bg-[#00a046] text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-250 dark:hover:bg-gray-650'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-250 dark:hover:bg-gray-650',
                 ]"
                 @click="toggleTag(tag.id)"
               >
@@ -233,7 +262,8 @@
               <span
                 v-if="tags.length === 0"
                 class="text-xs text-gray-400 italic p-1"
-              >Тегів ще немає — створіть перший</span>
+                >Тегів ще немає — створіть перший</span
+              >
             </div>
           </div>
 
@@ -261,23 +291,19 @@ import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import RichEditor from "@/components/admin/features/blog/RichEditor.vue";
-import {
-  XMarkIcon,
-  PhotoIcon,
-  PlusIcon
-} from "@heroicons/vue/24/outline";
+import { XMarkIcon, PhotoIcon, PlusIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
   modelValue: Boolean,
   post: Object,
   categories: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   tags: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "refresh", "tag-created"]);
@@ -297,7 +323,7 @@ const defaultPostForm = () => ({
   status: "draft",
   categoryId: null,
   tagIds: [],
-  publishedAt: ""
+  publishedAt: "",
 });
 
 const postForm = ref(defaultPostForm());
@@ -319,13 +345,15 @@ watch(
         status: newPost.status || "draft",
         categoryId: newPost.categoryId || null,
         tagIds: newPost.tags ? newPost.tags.map((t) => t.id) : [],
-        publishedAt: newPost.publishedAt ? newPost.publishedAt.slice(0, 16) : ""
+        publishedAt: newPost.publishedAt
+          ? newPost.publishedAt.slice(0, 16)
+          : "",
       };
     } else {
       postForm.value = defaultPostForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Inline tag creation
@@ -349,7 +377,7 @@ const saveInlineTag = async () => {
   try {
     const { data } = await api.post("/admin/blog/tags", {
       nameUk: inlineTagNameUk.value.trim(),
-      nameEn: inlineTagNameEn.value.trim()
+      nameEn: inlineTagNameEn.value.trim(),
     });
     const newTag = data.data;
     emit("tag-created", newTag);
@@ -380,7 +408,7 @@ const uploadCover = async (e) => {
   form.append("image", file);
   try {
     const { data } = await api.post("/admin/blog/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
     postForm.value.coverImage = data.data.url;
   } catch (e) {
@@ -393,7 +421,7 @@ const handleImageUpload = async (file, callback) => {
   form.append("image", file);
   try {
     const { data } = await api.post("/admin/blog/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
     callback(data.data.url);
   } catch (e) {
