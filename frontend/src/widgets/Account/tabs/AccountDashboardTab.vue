@@ -201,37 +201,31 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden"
         >
           <div
-            class="bg-zinc-50 dark:bg-zinc-800 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex gap-6"
+            class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:px-6 sm:py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-4"
           >
             <div
-              class="h-3 w-24 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
-            />
-            <div
-              class="h-3 w-20 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
+              class="h-3 w-32 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
             />
             <div
               class="h-4 w-16 bg-zinc-200 dark:bg-zinc-800 rounded-lg animate-pulse"
             />
           </div>
-          <div class="p-6 flex gap-4 items-center">
+          <div class="p-4 sm:p-6 flex gap-3 sm:gap-4">
             <div
-              class="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse shrink-0"
+              class="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse shrink-0"
             />
-            <div class="flex-1 space-y-2">
+            <div class="flex-1 space-y-2.5">
               <div
                 class="h-4 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse w-3/4"
               />
-              <div
-                class="h-3 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse w-1/3"
-              />
-            </div>
-            <div class="flex gap-2 shrink-0">
-              <div
-                class="h-8 w-20 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse"
-              />
-              <div
-                class="h-8 w-20 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse"
-              />
+              <div class="flex gap-2">
+                <div
+                  class="h-8 w-20 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse"
+                />
+                <div
+                  class="h-8 w-20 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -245,49 +239,26 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
         >
           <div
-            class="bg-zinc-50 dark:bg-zinc-800 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4"
+            class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:px-6 sm:py-4 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-x-4 gap-y-2"
           >
-            <div class="flex gap-6 flex-wrap">
-              <div>
-                <p
-                  class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
+            <div class="flex gap-4 sm:gap-6 flex-wrap items-center">
+              <p class="text-xs sm:text-sm">
+                <span class="text-zinc-400 dark:text-zinc-500">{{
+                  order.date
+                }}</span>
+                <span class="font-black text-zinc-900 dark:text-white ml-2"
+                  >{{ order.total.toFixed(2) }} ₴</span
                 >
-                  Дата оформлення
-                </p>
-                <p
-                  class="font-bold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5"
-                >
-                  {{ order.date }}
-                </p>
-              </div>
-              <div>
-                <p
-                  class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
-                >
-                  Сума замовлення
-                </p>
-                <p
-                  class="font-black text-zinc-900 dark:text-white text-sm mt-0.5"
-                >
-                  {{ order.total.toFixed(2) }} ₴
-                </p>
-              </div>
-              <div>
-                <p
-                  class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5"
-                >
-                  Статус
-                </p>
-                <span
-                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider"
-                  :class="order.statusClass"
-                >
-                  <span class="material-symbols-outlined text-[12px]">{{
-                    order.statusIcon
-                  }}</span>
-                  {{ order.status }}
-                </span>
-              </div>
+              </p>
+              <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider"
+                :class="order.statusClass"
+              >
+                <span class="material-symbols-outlined text-[12px]">{{
+                  order.statusIcon
+                }}</span>
+                {{ order.status }}
+              </span>
             </div>
             <router-link
               :to="{ name: 'account', query: { tab: 'orders' } }"
@@ -296,53 +267,54 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
               Детальніше
             </router-link>
           </div>
-          <div class="p-6">
+          <div class="p-4 sm:p-6">
             <div
               v-for="item in order.items"
               :key="item.name"
-              class="flex gap-4 flex-col sm:flex-row items-center sm:items-start"
+              class="flex gap-3 sm:gap-4"
             >
               <router-link
                 :to="{
                   name: 'product-detail',
                   params: { id: (item as any).slug || (item as any).id },
                 }"
+                class="shrink-0"
               >
                 <img
-                  class="w-16 h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 hover:border-[#00a046]/40 transition-colors"
+                  class="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 hover:border-[#00a046]/40 transition-colors"
                   :src="item.image"
                   :alt="item.name"
                 />
               </router-link>
-              <div class="flex-1 text-center sm:text-left">
+              <div class="flex-1 min-w-0">
                 <router-link
                   :to="{
                     name: 'product-detail',
                     params: { id: (item as any).slug || (item as any).id },
                   }"
-                  class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm md:text-base leading-snug line-clamp-2 hover:text-[#00a046] transition-colors"
+                  class="block font-extrabold text-zinc-800 dark:text-zinc-200 text-sm leading-snug line-clamp-2 hover:text-[#00a046] transition-colors"
                 >
                   {{ item.name }}
                 </router-link>
                 <p
                   v-if="(item as any).returnWindow"
-                  class="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5"
+                  class="text-xs text-zinc-500 dark:text-zinc-400 mt-1"
                 >
                   Повернення можливе до {{ (item as any).returnWindow }}
                 </p>
-              </div>
-              <div class="flex gap-2.5">
-                <UiButton
-                  v-if="order.statusCode !== 'cancelled'"
-                  variant="secondary"
-                  size="sm"
-                  @click="go('orders')"
-                >
-                  Відстежити
-                </UiButton>
-                <UiButton size="sm" @click="cartStore.addToCart(item as any)">
-                  Повторити
-                </UiButton>
+                <div class="flex flex-wrap gap-2 mt-2.5">
+                  <UiButton
+                    v-if="order.statusCode !== 'cancelled'"
+                    variant="secondary"
+                    size="sm"
+                    @click="go('orders')"
+                  >
+                    Відстежити
+                  </UiButton>
+                  <UiButton size="sm" @click="cartStore.addToCart(item as any)">
+                    Повторити
+                  </UiButton>
+                </div>
               </div>
             </div>
           </div>

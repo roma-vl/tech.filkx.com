@@ -74,11 +74,11 @@ onMounted(() => {
     <AccountSidebar />
 
     <!-- Content Workspace -->
-    <div class="flex-1 px-4 md:px-8 py-10 min-w-0">
+    <div class="flex-1 px-4 md:px-8 py-5 sm:py-8 lg:py-10 min-w-0">
       <!-- Page Header -->
-      <header class="mb-8">
+      <header class="mb-5 sm:mb-8">
         <div
-          class="flex items-start justify-between gap-4 pb-5 border-b border-zinc-200 dark:border-zinc-800"
+          class="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b border-zinc-200 dark:border-zinc-800"
         >
           <div class="min-w-0">
             <p
@@ -87,11 +87,13 @@ onMounted(() => {
               Особистий кабінет
             </p>
             <h1
-              class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
+              class="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
             >
               {{ tabTitles[activeTab] || "Кабінет" }}
             </h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5">
+            <p
+              class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1.5"
+            >
               Вітаємо,
               <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{
                 userName

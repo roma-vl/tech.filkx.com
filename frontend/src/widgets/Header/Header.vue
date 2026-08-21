@@ -456,7 +456,7 @@ onUnmounted(() => {
       <!-- Left: Burger & Logo -->
       <div class="flex items-center gap-3">
         <button
-          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-1.5 justify-center shrink-0"
+          class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
           :title="t('header.menu')"
           @click="cartStore.openDrawer('account')"
         >
@@ -468,9 +468,6 @@ onUnmounted(() => {
           <span v-else class="material-symbols-outlined text-2xl text-white"
             >menu</span
           >
-          <span class="md:hidden text-sm font-bold text-white">{{
-            t("header.menu")
-          }}</span>
         </button>
 
         <!-- Brand/Logo (Rozetka Green Smiley Style) -->
@@ -510,12 +507,14 @@ onUnmounted(() => {
       <!-- Center: Rozetka Styled Search Input -->
       <div class="flex-grow max-w-3xl search-container relative z-40">
         <form
-          class="flex items-center bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm h-10 border border-transparent dark:border-zinc-700/80 focus-within:border-zinc-500 dark:focus-within:border-zinc-400"
+          class="flex items-center bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm h-9 md:h-10 border border-transparent dark:border-zinc-700/80 focus-within:border-zinc-500 dark:focus-within:border-zinc-400"
           @submit.prevent="triggerSearch"
         >
-          <div class="relative flex-grow flex items-center h-full px-3">
+          <div
+            class="relative flex-grow flex items-center h-full px-2.5 md:px-3"
+          >
             <span
-              class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 mr-2 text-[20px]"
+              class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 mr-1.5 md:mr-2 text-[18px] md:text-[20px]"
               >search</span
             >
             <input
@@ -535,21 +534,27 @@ onUnmounted(() => {
             >
               <span class="material-symbols-outlined text-[16px]">close</span>
             </button>
-            <!-- Microphone Voice Search Button -->
+            <!-- Microphone Voice Search Button (hidden on mobile - the input
+                 needs the room more than this does at that width) -->
             <button
               type="button"
-              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex items-center justify-center"
+              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 hidden sm:flex items-center justify-center"
               @click="triggerVoiceSearch"
             >
               <span class="material-symbols-outlined text-[20px]">mic</span>
             </button>
           </div>
-          <!-- Rozetka Green Find Button -->
+          <!-- Rozetka Green Find Button - icon-only on mobile, same reason -->
           <button
             type="submit"
-            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
+            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-3 md:px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
           >
-            {{ t("header.search.submit") }}
+            <span class="material-symbols-outlined text-[20px] md:hidden"
+              >search</span
+            >
+            <span class="hidden md:inline">{{
+              t("header.search.submit")
+            }}</span>
           </button>
         </form>
 

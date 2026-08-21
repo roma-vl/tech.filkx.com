@@ -87,13 +87,12 @@ export default {
         "surface-container-high": "#f4f4f5",
         "on-surface": "#09090b",
       },
-      borderRadius: {
-        DEFAULT: "0.375rem",
-        lg: "12px",
-        xl: "16px",
-        "2xl": "24px",
-        full: "9999px",
-      },
+      // Previously overridden to lg:12px/xl:16px/2xl:24px (well above Tailwind's
+      // own scale), which made rounded-lg/xl/2xl read as noticeably bulbous
+      // everywhere they're used site-wide. Reverted to Tailwind's stock scale
+      // (lg:8px/xl:12px/2xl:16px/3xl:24px) for a subtler, more standard look —
+      // no component classes need to change, since they still reference the
+      // same rounded-lg/xl/2xl utility names.
       spacing: {
         "stack-sm": "8px",
         "stack-xl": "64px",
