@@ -4,10 +4,7 @@
     :class="[classes]"
     role="alert"
   >
-    <div
-      v-if="$slots.icon || autoIcon"
-      class="shrink-0"
-    >
+    <div v-if="$slots.icon || autoIcon" class="shrink-0">
       <slot name="icon">
         <svg
           v-if="variant === 'warning'"
@@ -64,10 +61,7 @@
       </slot>
     </div>
     <div class="flex-1">
-      <h3
-        v-if="title"
-        class="font-medium mb-1"
-      >
+      <h3 v-if="title" class="font-medium mb-1">
         {{ title }}
       </h3>
       <div v-if="$slots.default || message">

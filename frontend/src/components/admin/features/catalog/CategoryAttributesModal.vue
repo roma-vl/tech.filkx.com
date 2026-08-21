@@ -7,10 +7,7 @@
   >
     <div class="space-y-6">
       <!-- VIEW 1: ATTRIBUTES LIST & BINDINGS -->
-      <div
-        v-if="currentView === 'list'"
-        class="space-y-6"
-      >
+      <div v-if="currentView === 'list'" class="space-y-6">
         <!-- Top Toolbar: Bind Existing / Create New -->
         <div
           class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-800"
@@ -168,10 +165,7 @@
                       </svg>
                       Керування в {{ attr.sourceCategoryName }}
                     </div>
-                    <div
-                      v-else
-                      class="flex justify-end gap-1.5"
-                    >
+                    <div v-else class="flex justify-end gap-1.5">
                       <AppButton
                         variant="ghost"
                         size="sm"
@@ -253,10 +247,7 @@
       </div>
 
       <!-- VIEW 2: CREATE / EDIT ATTRIBUTE FORM -->
-      <div
-        v-else
-        class="space-y-6"
-      >
+      <div v-else class="space-y-6">
         <div
           class="flex items-center justify-between border-b pb-3 border-gray-150 dark:border-gray-800"
         >
@@ -278,10 +269,7 @@
           </AppButton>
         </div>
 
-        <form
-          class="grid grid-cols-1 gap-4"
-          @submit.prevent="saveAttribute"
-        >
+        <form class="grid grid-cols-1 gap-4" @submit.prevent="saveAttribute">
           <AppInput
             v-model="attributeForm.code"
             required
@@ -327,7 +315,9 @@
             class="space-y-2 mt-2 pt-4 border-t border-gray-150 dark:border-gray-800"
           >
             <div class="flex justify-between items-center">
-              <label class="block text-xs font-bold text-gray-500 uppercase">Список можливих значень</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase"
+                >Список можливих значень</label
+              >
               <AppButton
                 type="button"
                 variant="text"
@@ -353,31 +343,28 @@
                   type="text"
                   placeholder="#FF0000"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
                 <input
                   v-model="val.value"
                   type="color"
                   class="w-8 h-8 rounded border cursor-pointer bg-transparent"
-                >
+                />
               </div>
-              <div
-                v-else
-                class="flex-1 flex gap-2"
-              >
+              <div v-else class="flex-1 flex gap-2">
                 <input
                   v-model="val.valueUk"
                   required
                   type="text"
                   placeholder="Значення (UK)"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
                 <input
                   v-model="val.valueEn"
                   required
                   type="text"
                   placeholder="Value (EN)"
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
-                >
+                />
               </div>
 
               <AppButton

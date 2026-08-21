@@ -46,12 +46,8 @@
           v-model="timeRange"
           class="bg-gray-50 dark:bg-gray-900 border-none rounded-lg text-[10px] font-black uppercase tracking-widest px-4 py-2 outline-none cursor-pointer"
         >
-          <option value="7d">
-            Last 7 Days
-          </option>
-          <option value="30d">
-            Last 30 Days
-          </option>
+          <option value="7d">Last 7 Days</option>
+          <option value="30d">Last 30 Days</option>
         </select>
       </div>
 

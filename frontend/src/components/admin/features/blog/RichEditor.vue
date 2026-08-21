@@ -126,17 +126,14 @@
       </ToolbarButton>
 
       <!-- Image upload -->
-      <label
-        class="toolbar-btn cursor-pointer"
-        title="Вставити зображення"
-      >
+      <label class="toolbar-btn cursor-pointer" title="Вставити зображення">
         <ImageIcon />
         <input
           type="file"
           accept="image/*"
           class="sr-only"
           @change="insertImage"
-        >
+        />
       </label>
 
       <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1" />

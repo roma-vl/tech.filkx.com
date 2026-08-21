@@ -64,7 +64,7 @@
         </div>
 
         <!-- Form State -->
-        <form v-else @submit.prevent="handleSubmit" class="space-y-5 text-left">
+        <form v-else class="space-y-5 text-left" @submit.prevent="handleSubmit">
           <!-- Product Preview -->
           <div
             class="flex gap-4 p-3 bg-zinc-50 dark:bg-zinc-850 rounded-lg border border-zinc-150 dark:border-zinc-800"

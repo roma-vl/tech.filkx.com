@@ -13,7 +13,8 @@
         <div>
           <span
             class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase"
-          >Поточний статус</span>
+            >Поточний статус</span
+          >
           <span
             :class="[
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mt-1',
@@ -46,17 +47,13 @@
           class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-zinc-900/30 p-4 rounded-xl border border-gray-100 dark:border-zinc-800"
         >
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
-              Ім'я
-            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Ім'я</p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerName }}
             </p>
           </div>
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
-              Email
-            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Email</p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerEmail }}
             </p>
@@ -111,7 +108,8 @@
           >
             <span
               class="text-sm font-bold uppercase text-gray-500 dark:text-gray-450"
-            >Разом</span>
+              >Разом</span
+            >
             <span class="text-lg font-black text-gray-900 dark:text-white">
               {{ formatPrice(order.totalPrice) }}
             </span>

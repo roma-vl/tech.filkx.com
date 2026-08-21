@@ -10,16 +10,10 @@
         :class="inputClass"
         v-bind="$attrs"
         @change="handleChange"
-      >
+      />
     </div>
-    <div
-      v-if="label || $slots.default"
-      class="ml-2 text-sm"
-    >
-      <label
-        :for="id"
-        class="font-medium text-gray-900 dark:text-gray-300"
-      >
+    <div v-if="label || $slots.default" class="ml-2 text-sm">
+      <label :for="id" class="font-medium text-gray-900 dark:text-gray-300">
         <slot>{{ label }}</slot>
       </label>
       <p

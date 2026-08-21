@@ -46,10 +46,12 @@
             <div class="flex items-center justify-between">
               <span
                 class="text-[10px] font-black text-gray-400 uppercase font-sans"
-              >Usage</span>
+                >Usage</span
+              >
               <span
                 class="text-[10px] font-black text-gray-900 dark:text-white font-sans"
-              >{{ item.usedCount || 0 }}/{{ item.usageLimit || "∞" }}</span>
+                >{{ item.usedCount || 0 }}/{{ item.usageLimit || "∞" }}</span
+              >
             </div>
             <div
               class="w-full h-1.5 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden"
@@ -59,9 +61,9 @@
                 :style="{
                   width: item.usageLimit
                     ? Math.min(
-                      ((item.usedCount || 0) / item.usageLimit) * 100,
-                      100,
-                    ) + '%'
+                        ((item.usedCount || 0) / item.usageLimit) * 100,
+                        100,
+                      ) + '%'
                     : (item.usedCount || 0) > 0
                       ? '100%'
                       : '0%',
@@ -74,7 +76,8 @@
           <div class="flex flex-col">
             <span
               class="text-xs font-bold text-gray-700 dark:text-gray-300 font-sans"
-            >{{ formatDate(item.expiresAt) }}</span>
+              >{{ formatDate(item.expiresAt) }}</span
+            >
             <span
               v-if="isExpired(item.expiresAt)"
               class="text-[10px] font-bold text-red-500/60 uppercase tracking-tighter font-sans"

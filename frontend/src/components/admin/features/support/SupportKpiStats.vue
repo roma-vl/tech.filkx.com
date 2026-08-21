@@ -16,10 +16,7 @@
           class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-sm"
           :class="stat.colorClass"
         >
-          <component
-            :is="stat.icon"
-            class="w-7 h-7"
-          />
+          <component :is="stat.icon" class="w-7 h-7" />
         </div>
         <div class="flex flex-col">
           <p
@@ -30,7 +27,8 @@
           <div class="flex items-baseline gap-2">
             <span
               class="text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-none"
-            >{{ stat.value }}</span>
+              >{{ stat.value }}</span
+            >
           </div>
         </div>
       </div>

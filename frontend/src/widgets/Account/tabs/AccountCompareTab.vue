@@ -331,9 +331,9 @@ watch(() => route.query.items, loadSharedItems);
           Додайте товари до порівняння, натиснувши кнопку порівняння на картках
           товарів.
         </p>
-        <UiButton :to="{ name: 'catalog' }" class="mt-6"
-          >Перейти до каталогу</UiButton
-        >
+        <UiButton :to="{ name: 'catalog' }" class="mt-6">
+          Перейти до каталогу
+        </UiButton>
       </div>
     </div>
 
@@ -563,11 +563,11 @@ watch(() => route.query.items, loadSharedItems);
                   size="sm"
                   @click="cartStore.addToCart(product as any)"
                 >
-                  <template #prefix
-                    ><span class="material-symbols-outlined text-[16px]"
+                  <template #prefix>
+                    <span class="material-symbols-outlined text-[16px]"
                       >shopping_cart</span
-                    ></template
-                  >
+                    >
+                  </template>
                   У кошик
                 </UiButton>
               </td>

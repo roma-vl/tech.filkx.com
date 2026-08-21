@@ -30,7 +30,7 @@
               type="text"
               placeholder="наприклад: shipping-and-payment"
               class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2.5 pl-16 pr-3 text-sm focus:border-[#00a046] focus:ring-1 focus:ring-[#00a046] focus:outline-none text-gray-800 dark:text-gray-100 font-mono shadow-sm"
-            >
+            />
           </div>
           <p
             class="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed"
@@ -81,10 +81,7 @@
         </div>
 
         <!-- UK Tab Content -->
-        <div
-          v-show="langTab === 'uk'"
-          class="space-y-4"
-        >
+        <div v-show="langTab === 'uk'" class="space-y-4">
           <AppInput
             v-model="pageForm.titleUk"
             label="Заголовок сторінки (Українська) *"
@@ -106,10 +103,7 @@
         </div>
 
         <!-- EN Tab Content -->
-        <div
-          v-show="langTab === 'en'"
-          class="space-y-4"
-        >
+        <div v-show="langTab === 'en'" class="space-y-4">
           <AppInput
             v-model="pageForm.titleEn"
             label="Page Title (English) *"

@@ -11,9 +11,7 @@
         class="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-700"
       >
         <div>
-          <p class="text-xs text-gray-400">
-            Статус публікації та дата
-          </p>
+          <p class="text-xs text-gray-400">Статус публікації та дата</p>
         </div>
         <div class="flex items-center gap-3">
           <AppSelect
@@ -138,7 +136,8 @@
           <div>
             <label
               class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
-            >Обкладинка</label>
+              >Обкладинка</label
+            >
             <div class="relative">
               <div
                 v-if="postForm.coverImage"
@@ -147,7 +146,7 @@
                 <img
                   :src="postForm.coverImage"
                   class="w-full h-full object-cover"
-                >
+                />
                 <AppButton
                   variant="ghost"
                   size="sm"
@@ -169,7 +168,7 @@
                   accept="image/*"
                   class="sr-only"
                   @change="uploadCover"
-                >
+                />
               </label>
             </div>
           </div>
@@ -192,7 +191,8 @@
             <div class="flex items-center justify-between mb-2">
               <label
                 class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >Теги</label>
+                >Теги</label
+              >
               <AppButton
                 variant="text"
                 class="flex items-center gap-1 !text-xs !text-[#00a046] dark:!text-[#00b050] !no-underline"
@@ -262,7 +262,8 @@
               <span
                 v-if="tags.length === 0"
                 class="text-xs text-gray-400 italic p-1"
-              >Тегів ще немає — створіть перший</span>
+                >Тегів ще немає — створіть перший</span
+              >
             </div>
           </div>
 

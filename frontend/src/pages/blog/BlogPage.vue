@@ -13,7 +13,8 @@
       </router-link>
       <span
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
-      >chevron_right</span>
+        >chevron_right</span
+      >
       <span class="text-zinc-800 dark:text-zinc-200 font-bold">Блог</span>
     </nav>
 
@@ -25,7 +26,8 @@
         <div class="space-y-2">
           <span
             class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest"
-          >Журнал</span>
+            >Журнал</span
+          >
           <h1
             class="font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white tracking-tight leading-tight"
           >
@@ -47,7 +49,9 @@
             @update:model-value="onSearchInput"
           >
             <template #prepend>
-              <span class="material-symbols-outlined text-[20px] text-zinc-400">search</span>
+              <span class="material-symbols-outlined text-[20px] text-zinc-400"
+                >search</span
+              >
             </template>
           </UiInput>
           <UiSelect
@@ -68,7 +72,8 @@
       >
         <span
           class="text-xs font-semibold text-zinc-400 dark:text-zinc-555 uppercase"
-        >Активні фільтри:</span>
+          >Активні фільтри:</span
+        >
         <span
           v-if="activeCategoryName"
           class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] text-xs font-medium border border-[#00a046]/20"
@@ -145,7 +150,8 @@
           >
             <span
               class="material-symbols-outlined text-5xl text-zinc-350 dark:text-zinc-650 mb-3"
-            >edit_note</span>
+              >edit_note</span
+            >
             <p class="text-zinc-555 dark:text-zinc-400 font-semibold mb-1">
               Статей не знайдено
             </p>
@@ -175,20 +181,18 @@
                   :alt="post.title?.uk || post.title?.en"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
-                >
+                />
                 <div
                   v-else
                   class="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-850"
                 >
                   <span
                     class="material-symbols-outlined text-5xl text-zinc-300 dark:text-zinc-700"
-                  >article</span>
+                    >article</span
+                  >
                 </div>
                 <!-- Category badge -->
-                <div
-                  v-if="post.category"
-                  class="absolute top-3 left-3"
-                >
+                <div v-if="post.category" class="absolute top-3 left-3">
                   <span
                     class="px-2.5 py-1 rounded bg-[#00a046]/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wide"
                   >
@@ -238,7 +242,8 @@
                     Читати
                     <span
                       class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
-                    >arrow_forward</span>
+                      >arrow_forward</span
+                    >
                   </span>
                 </div>
               </div>
@@ -256,7 +261,9 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 hover:border-[#00a046] disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
               @click="fetchPosts(meta.currentPage - 1)"
             >
-              <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+              <span class="material-symbols-outlined text-[18px]"
+                >chevron_left</span
+              >
             </button>
 
             <!-- Page numbers -->
@@ -280,7 +287,9 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 hover:border-[#00a046] disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
               @click="fetchPosts(meta.currentPage + 1)"
             >
-              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+              <span class="material-symbols-outlined text-[18px]"
+                >chevron_right</span
+              >
             </button>
           </div>
         </div>
@@ -309,7 +318,8 @@
                 <span>Всі статті</span>
                 <span
                   class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
-                >{{ meta.total }}</span>
+                  >{{ meta.total }}</span
+                >
               </button>
               <button
                 v-for="cat in categories"
@@ -327,7 +337,8 @@
                 }}</span>
                 <span
                   class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
-                >{{ cat.postsCount }}</span>
+                  >{{ cat.postsCount }}</span
+                >
               </button>
             </div>
           </div>
@@ -354,7 +365,9 @@
                 @click="selectTag(tag.slug)"
               >
                 #{{ tag.name?.uk || tag.name?.en }}
-                <span class="text-[10px] opacity-70 ml-0.5">({{ tag.postsCount }})</span>
+                <span class="text-[10px] opacity-70 ml-0.5"
+                  >({{ tag.postsCount }})</span
+                >
               </button>
             </div>
           </div>

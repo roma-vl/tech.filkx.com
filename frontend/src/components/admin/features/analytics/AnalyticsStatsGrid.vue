@@ -12,10 +12,7 @@
             stat.bgClass,
           ]"
         >
-          <component
-            :is="getIcon(stat.icon)"
-            class="w-6 h-6"
-          />
+          <component :is="getIcon(stat.icon)" class="w-6 h-6" />
         </div>
         <div
           v-if="stat.trend !== undefined"
@@ -25,14 +22,8 @@
           ]"
         >
           <span>{{ stat.trend >= 0 ? "+" : "" }}{{ stat.trend }}%</span>
-          <TrendingUpIcon
-            v-if="stat.trend >= 0"
-            class="w-4 h-4"
-          />
-          <TrendingDownIcon
-            v-else
-            class="w-4 h-4"
-          />
+          <TrendingUpIcon v-if="stat.trend >= 0" class="w-4 h-4" />
+          <TrendingDownIcon v-else class="w-4 h-4" />
         </div>
       </div>
       <p

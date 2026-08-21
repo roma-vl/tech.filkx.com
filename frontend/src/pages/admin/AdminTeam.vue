@@ -4,11 +4,7 @@
     <div
       class="flex flex-col md:flex-row md:items-center justify-between gap-4"
     >
-      <AppButton
-        variant="primary"
-        size="lg"
-        @click="showInviteModal = true"
-      >
+      <AppButton variant="primary" size="lg" @click="showInviteModal = true">
         <template #prefix>
           <UserPlusIcon class="w-5 h-5 mr-3" />
         </template>
@@ -17,10 +13,7 @@
     </div>
 
     <div class="relative min-h-[400px]">
-      <AppLoadingOverlay
-        :loading="loading"
-        :text="t('admin.team.loading')"
-      />
+      <AppLoadingOverlay :loading="loading" :text="t('admin.team.loading')" />
 
       <div
         class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"

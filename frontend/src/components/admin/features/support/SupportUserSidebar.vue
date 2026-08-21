@@ -17,11 +17,12 @@
               v-if="user?.avatar"
               :src="user.avatar"
               class="w-full h-full object-cover"
-            >
+            />
             <span
               v-else
               class="text-2xl font-black text-primary-600 uppercase"
-            >{{ user?.name?.charAt(0) || "U" }}</span>
+              >{{ user?.name?.charAt(0) || "U" }}</span
+            >
           </div>
         </div>
         <div
@@ -60,20 +61,24 @@
           >
             <span
               class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"
-            >{{ t("admin.support.user.role") }}</span>
+              >{{ t("admin.support.user.role") }}</span
+            >
             <span
               class="text-[10px] font-black text-gray-700 dark:text-gray-300 uppercase"
-            >{{ user?.role || "User" }}</span>
+              >{{ user?.role || "User" }}</span
+            >
           </div>
           <div
             class="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700/50"
           >
             <span
               class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"
-            >{{ t("admin.support.user.joined") }}</span>
+              >{{ t("admin.support.user.joined") }}</span
+            >
             <span
               class="text-[10px] font-black text-gray-700 dark:text-gray-300"
-            >{{ formatDate(user?.createdAt) }}</span>
+              >{{ formatDate(user?.createdAt) }}</span
+            >
           </div>
         </div>
       </section>
@@ -87,20 +92,14 @@
           {{ t("admin.support.user.history") }}
         </h4>
 
-        <div
-          v-if="historyLoading"
-          class="space-y-3"
-        >
+        <div v-if="historyLoading" class="space-y-3">
           <div
             v-for="i in 3"
             :key="i"
             class="h-12 bg-gray-50 dark:bg-gray-900/40 rounded-xl animate-pulse"
           />
         </div>
-        <div
-          v-else-if="userTickets.length > 0"
-          class="space-y-2"
-        >
+        <div v-else-if="userTickets.length > 0" class="space-y-2">
           <AppButton
             v-for="hTicket in userTickets"
             :key="hTicket.id"
@@ -114,7 +113,9 @@
             @click="$emit('select-ticket', hTicket.id)"
           >
             <div class="flex items-center justify-between mb-1">
-              <span class="text-[9px] font-black text-gray-400">#{{ hTicket.id }}</span>
+              <span class="text-[9px] font-black text-gray-400"
+                >#{{ hTicket.id }}</span
+              >
               <span
                 :class="[
                   'text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md',
@@ -133,10 +134,7 @@
             </p>
           </AppButton>
         </div>
-        <div
-          v-else
-          class="text-center py-6"
-        >
+        <div v-else class="text-center py-6">
           <p
             class="text-[10px] font-black uppercase text-gray-300 tracking-widest"
           >

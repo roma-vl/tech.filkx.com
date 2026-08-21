@@ -18,21 +18,13 @@
             v-if="searchable"
             class="flex-1 flex gap-2 items-center max-w-sm"
           >
-            <AppInput
-              v-model="searchQuery"
-              placeholder="Search..."
-            />
+            <AppInput v-model="searchQuery" placeholder="Search..." />
           </div>
 
           <div class="flex gap-2 items-center">
             <AppDropdown v-if="headings?.length">
               <template #trigger>
-                <AppButton
-                  variant="secondary"
-                  size="sm"
-                >
-                  Columns
-                </AppButton>
+                <AppButton variant="secondary" size="sm"> Columns </AppButton>
               </template>
               <template #content>
                 <div class="p-2 space-y-1 max-h-60 overflow-y-auto">
@@ -42,10 +34,7 @@
                     class="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded"
                     @click.stop
                   >
-                    <AppCheckbox
-                      v-model="visibleColumns"
-                      :value="col.key"
-                    />
+                    <AppCheckbox v-model="visibleColumns" :value="col.key" />
                     <span class="text-sm text-gray-700 dark:text-gray-200">{{
                       col.value
                     }}</span>
@@ -56,10 +45,7 @@
 
             <AppDropdown v-if="paginationEnabled">
               <template #trigger>
-                <AppButton
-                  variant="secondary"
-                  size="sm"
-                >
+                <AppButton variant="secondary" size="sm">
                   {{ perPage }} / page
                 </AppButton>
               </template>
@@ -131,10 +117,7 @@
                 :key="col.key"
                 class="px-6 py-4"
               >
-                <slot
-                  :name="`column-${col.key}`"
-                  :row="item"
-                >
+                <slot :name="`column-${col.key}`" :row="item">
                   {{ item[col.key] }}
                 </slot>
               </td>
@@ -156,10 +139,7 @@
         v-if="paginationEnabled && pagination"
         class="px-6 py-4 border-t border-gray-200/50 dark:border-gray-700/50"
       >
-        <AppPagination
-          :pagination="pagination"
-          @page-change="changePage"
-        />
+        <AppPagination :pagination="pagination" @page-change="changePage" />
       </div>
     </div>
   </div>

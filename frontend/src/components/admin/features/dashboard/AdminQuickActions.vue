@@ -13,10 +13,7 @@
             action.bg,
           ]"
         >
-          <component
-            :is="action.icon"
-            class="w-5 h-5"
-          />
+          <component :is="action.icon" class="w-5 h-5" />
         </div>
         <div>
           <p

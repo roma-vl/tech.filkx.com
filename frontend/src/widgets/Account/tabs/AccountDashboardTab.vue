@@ -364,9 +364,9 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         <p class="text-zinc-400 dark:text-zinc-500 text-xs mt-1">
           Оформіть своє перше замовлення в магазині!
         </p>
-        <UiButton :to="{ name: 'catalog' }" class="mt-4"
-          >Перейти до каталогу</UiButton
-        >
+        <UiButton :to="{ name: 'catalog' }" class="mt-4">
+          Перейти до каталогу
+        </UiButton>
       </div>
     </section>
   </div>

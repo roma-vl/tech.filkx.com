@@ -231,13 +231,14 @@ const handleSubscribe = async () => {
               <router-link
                 :to="{ name: 'category', params: { slug: category.slug } }"
                 class="hover:text-white transition-colors"
-                >{{
+              >
+                {{
                   category.name?.[locale] ||
                   category.name?.uk ||
                   category.name?.en ||
                   category.name
-                }}</router-link
-              >
+                }}
+              </router-link>
             </li>
           </ul>
         </div>

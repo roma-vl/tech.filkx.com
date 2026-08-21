@@ -17,23 +17,19 @@
             <div
               class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/40 dark:to-primary-800/20 text-primary-600 dark:text-primary-400 flex items-center justify-center shrink-0 shadow-inner border border-primary-200/50 dark:border-primary-700/50 group-hover:scale-105 transition-transform"
             >
-              <SparklesIcon
-                v-if="ticket.handled_by === 'ai'"
-                class="w-6 h-6"
-              />
-              <UserIcon
-                v-else
-                class="w-6 h-6"
-              />
+              <SparklesIcon v-if="ticket.handled_by === 'ai'" class="w-6 h-6" />
+              <UserIcon v-else class="w-6 h-6" />
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between mb-1">
                 <span
                   class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate pr-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
-                >{{ ticket.subject }}</span>
+                  >{{ ticket.subject }}</span
+                >
                 <span
                   class="text-[10px] text-gray-400 dark:text-gray-500 font-bold whitespace-nowrap"
-                >{{ formatRelativeTime(ticket.updatedAt) }}</span>
+                  >{{ formatRelativeTime(ticket.updatedAt) }}</span
+                >
               </div>
               <p
                 class="text-xs text-gray-500 dark:text-gray-400 truncate leading-snug font-medium"
@@ -122,7 +118,8 @@
           </div>
           <span
             class="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
-          >{{ t("support.viber") }}</span>
+            >{{ t("support.viber") }}</span
+          >
         </a>
         <a
           href="https://t.me/filkx_support"
@@ -138,7 +135,8 @@
           </div>
           <span
             class="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
-          >{{ t("support.telegram") }}</span>
+            >{{ t("support.telegram") }}</span
+          >
         </a>
       </div>
     </div>

@@ -10,10 +10,7 @@
     />
 
     <div class="relative min-h-[400px]">
-      <AppLoadingOverlay
-        :loading="loading"
-        :text="$t('admin.users.loading')"
-      />
+      <AppLoadingOverlay :loading="loading" :text="$t('admin.users.loading')" />
 
       <AdminClientTable
         :clients="clients"

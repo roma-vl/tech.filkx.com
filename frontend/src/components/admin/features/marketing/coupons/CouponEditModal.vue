@@ -9,10 +9,7 @@
     max-width="lg"
     @update:model-value="closeModal"
   >
-    <form
-      class="space-y-6"
-      @submit.prevent="submit"
-    >
+    <form class="space-y-6" @submit.prevent="submit">
       <div>
         <label
           class="block text-sm font-medium text-gray-705 dark:text-gray-300 mb-1"
@@ -26,7 +23,7 @@
             class="flex-1 px-4 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-655 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-[#00a046] focus:ring-1 focus:ring-[#00a046] focus:outline-none outline-none transition-all shadow-sm"
             placeholder="SUMMER2026"
             required
-          >
+          />
           <AppButton
             type="button"
             class="!px-5 rounded-lg !bg-[#00a046] hover:!bg-[#00b050] text-white font-semibold text-xs border-none shadow-sm transition-all"
@@ -55,7 +52,7 @@
           min="0"
           :label="
             t('admin.marketing.coupons.amount') +
-              (form.type === 'percent' ? ' (%)' : ' (₴)')
+            (form.type === 'percent' ? ' (%)' : ' (₴)')
           "
           required
         />
@@ -98,11 +95,7 @@
           </span>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
-          <input
-            v-model="form.isActive"
-            type="checkbox"
-            class="sr-only peer"
-          >
+          <input v-model="form.isActive" type="checkbox" class="sr-only peer" />
           <div
             class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
           />

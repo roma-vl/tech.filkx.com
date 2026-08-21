@@ -125,19 +125,12 @@ const transitionClasses = computed(() => {
 
 <template>
   <div class="relative inline-block">
-    <div
-      ref="triggerRef"
-      @click.stop="toggle"
-    >
+    <div ref="triggerRef" @click.stop="toggle">
       <slot name="trigger" />
     </div>
 
     <Teleport to="body">
-      <div
-        v-if="open"
-        class="fixed inset-0 z-[60]"
-        @click="open = false"
-      />
+      <div v-if="open" class="fixed inset-0 z-[60]" @click="open = false" />
 
       <Transition
         :enter-active-class="transitionClasses.enter"
@@ -158,10 +151,7 @@ const transitionClasses = computed(() => {
           }"
           @click="open = false"
         >
-          <div
-            class="overflow-hidden"
-            :class="contentClasses"
-          >
+          <div class="overflow-hidden" :class="contentClasses">
             <slot name="content" />
           </div>
         </div>

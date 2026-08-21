@@ -101,10 +101,18 @@
             )
           "
         >
-          <option value="nova_poshta">{{ t("cart.form.novaPoshta") }}</option>
-          <option value="ukr_poshta">{{ t("cart.form.ukrPoshta") }}</option>
-          <option value="courier">{{ t("cart.form.courier") }}</option>
-          <option value="pickup">{{ t("cart.form.pickup") }}</option>
+          <option value="nova_poshta">
+            {{ t("cart.form.novaPoshta") }}
+          </option>
+          <option value="ukr_poshta">
+            {{ t("cart.form.ukrPoshta") }}
+          </option>
+          <option value="courier">
+            {{ t("cart.form.courier") }}
+          </option>
+          <option value="pickup">
+            {{ t("cart.form.pickup") }}
+          </option>
         </select>
       </div>
       <div class="flex flex-col gap-1.5">
@@ -124,9 +132,15 @@
             )
           "
         >
-          <option value="cod">{{ t("cart.paymentMethods.cod") }}</option>
-          <option value="card">{{ t("cart.paymentMethods.card") }}</option>
-          <option value="bank">{{ t("cart.paymentMethods.bank") }}</option>
+          <option value="cod">
+            {{ t("cart.paymentMethods.cod") }}
+          </option>
+          <option value="card">
+            {{ t("cart.paymentMethods.card") }}
+          </option>
+          <option value="bank">
+            {{ t("cart.paymentMethods.bank") }}
+          </option>
         </select>
       </div>
     </div>

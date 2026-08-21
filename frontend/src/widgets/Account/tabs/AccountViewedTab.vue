@@ -227,11 +227,11 @@ const formatDate = (isoString: string) => {
               {{ formatPrice(product.price) }}
             </span>
             <UiButton size="sm" @click="cartStore.addToCart(product as any)">
-              <template #prefix
-                ><span class="material-symbols-outlined text-[16px]"
+              <template #prefix>
+                <span class="material-symbols-outlined text-[16px]"
                   >shopping_cart</span
-                ></template
-              >
+                >
+              </template>
               Додати
             </UiButton>
           </div>
@@ -258,9 +258,9 @@ const formatDate = (isoString: string) => {
         Ви ще не переглянули жодного товару. Ваша історія переглядів
         відображатиметься тут.
       </p>
-      <UiButton :to="{ name: 'catalog' }" class="mt-6"
-        >Перейти до товарів</UiButton
-      >
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">
+        Перейти до товарів
+      </UiButton>
     </div>
   </div>
 </template>

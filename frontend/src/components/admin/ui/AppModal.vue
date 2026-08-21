@@ -96,10 +96,7 @@ const panelClass = computed(() => {
       />
     </transition>
 
-    <div
-      v-if="modelValue"
-      class="fixed inset-0 overflow-y-auto"
-    >
+    <div v-if="modelValue" class="fixed inset-0 overflow-y-auto">
       <div
         class="flex min-h-full justify-center p-4 text-center sm:p-6"
         :class="alignmentClass"

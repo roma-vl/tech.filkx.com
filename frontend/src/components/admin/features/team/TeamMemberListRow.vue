@@ -7,7 +7,7 @@
         <img
           :src="member.avatar || avatarPlaceholder"
           class="w-12 h-12 rounded-full border-2 border-gray-100 dark:border-gray-700 object-cover group-hover:scale-110 transition-transform"
-        >
+        />
         <div
           class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800"
           :class="member.status === 'Active' ? 'bg-green-500' : 'bg-red-500'"

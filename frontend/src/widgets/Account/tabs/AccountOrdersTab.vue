@@ -482,20 +482,20 @@ const filterBtns = [
                 {{ item.note }}
               </p>
               <div class="mt-5 flex gap-3 flex-wrap">
-                <UiButton size="sm" @click="buyItAgain(item)"
-                  >Купити знову</UiButton
-                >
+                <UiButton size="sm" @click="buyItAgain(item)">
+                  Купити знову
+                </UiButton>
                 <UiButton
                   v-if="order.statusCode === 'delivered'"
                   variant="secondary"
                   size="sm"
                   @click="openReview(item, order.id)"
                 >
-                  <template #prefix
-                    ><span class="material-symbols-outlined text-[15px]">{{
+                  <template #prefix>
+                    <span class="material-symbols-outlined text-[15px]">{{
                       userReviewsMap[item.slug] ? "edit" : "rate_review"
-                    }}</span></template
-                  >
+                    }}</span>
+                  </template>
                   {{
                     userReviewsMap[item.slug]
                       ? "Редагувати відгук"
@@ -508,11 +508,11 @@ const filterBtns = [
                   size="sm"
                   @click="openTracking(order)"
                 >
-                  <template #prefix
-                    ><span class="material-symbols-outlined text-[16px]"
+                  <template #prefix>
+                    <span class="material-symbols-outlined text-[16px]"
                       >track_changes</span
-                    ></template
-                  >
+                    >
+                  </template>
                   Відстежити
                 </UiButton>
               </div>
@@ -537,9 +537,9 @@ const filterBtns = [
       >
         Спробуйте змінити фільтр або пошуковий запит.
       </p>
-      <UiButton :to="{ name: 'catalog' }" class="mt-6"
-        >Перейти до каталогу</UiButton
-      >
+      <UiButton :to="{ name: 'catalog' }" class="mt-6">
+        Перейти до каталогу
+      </UiButton>
     </div>
   </div>
 
@@ -613,9 +613,9 @@ const filterBtns = [
                 1x • {{ selectedOrder.total.toFixed(2) }} ₴
               </p>
             </div>
-            <UiButton size="sm" @click="buyItAgain(item)"
-              >Купити знову</UiButton
-            >
+            <UiButton size="sm" @click="buyItAgain(item)">
+              Купити знову
+            </UiButton>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5">
@@ -700,9 +700,9 @@ const filterBtns = [
               : "Скасувати замовлення"
           }}
         </UiButton>
-        <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false"
-          >Закрити</UiButton
-        >
+        <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false">
+          Закрити
+        </UiButton>
       </div>
     </div>
   </div>
@@ -784,7 +784,7 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
       >
-        <UiButton size="sm" @click="isTrackingOpen = false">Готово</UiButton>
+        <UiButton size="sm" @click="isTrackingOpen = false"> Готово </UiButton>
       </div>
     </div>
   </div>
@@ -994,8 +994,9 @@ const filterBtns = [
             variant="secondary"
             size="sm"
             @click="isReviewOpen = false"
-            >Скасувати</UiButton
           >
+            Скасувати
+          </UiButton>
           <UiButton
             type="submit"
             size="sm"

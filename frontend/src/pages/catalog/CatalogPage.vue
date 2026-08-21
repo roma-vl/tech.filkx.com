@@ -144,13 +144,13 @@
         <CatalogFiltersWidget
           v-model:price-min="priceMin"
           v-model:price-max="priceMax"
-          :initial-price-min="initialPriceMin"
-          :initial-price-max="initialPriceMax"
           v-model:selected-brands="selectedBrands"
           v-model:selected-attrs="selectedAttrs"
           v-model:selected-rating="selectedRating"
           v-model:only-discounts="onlyDiscounts"
           v-model:only-in-stock="onlyInStock"
+          :initial-price-min="initialPriceMin"
+          :initial-price-max="initialPriceMax"
           :products="rawProducts"
           :brands="brands"
           :dynamic-attributes="dynamicAttributes"
@@ -263,7 +263,7 @@
         >
           Спробуйте змінити фільтри або скинути пошук
         </p>
-        <UiButton @click="clearFilters">Скинути фільтри</UiButton>
+        <UiButton @click="clearFilters"> Скинути фільтри </UiButton>
       </div>
 
       <!-- Pagination -->
@@ -366,13 +366,13 @@
           <CatalogFiltersWidget
             v-model:price-min="priceMin"
             v-model:price-max="priceMax"
-            :initial-price-min="initialPriceMin"
-            :initial-price-max="initialPriceMax"
             v-model:selected-brands="selectedBrands"
             v-model:selected-attrs="selectedAttrs"
             v-model:selected-rating="selectedRating"
             v-model:only-discounts="onlyDiscounts"
             v-model:only-in-stock="onlyInStock"
+            :initial-price-min="initialPriceMin"
+            :initial-price-max="initialPriceMax"
             :products="rawProducts"
             :brands="brands"
             :dynamic-attributes="dynamicAttributes"
@@ -387,12 +387,12 @@
         <div
           class="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-3"
         >
-          <UiButton variant="secondary" class="flex-1" @click="clearFilters"
-            >Скинути</UiButton
-          >
-          <UiButton class="flex-1" @click="isMobileFilterOpen = false"
-            >Застосувати</UiButton
-          >
+          <UiButton variant="secondary" class="flex-1" @click="clearFilters">
+            Скинути
+          </UiButton>
+          <UiButton class="flex-1" @click="isMobileFilterOpen = false">
+            Застосувати
+          </UiButton>
         </div>
       </div>
     </div>

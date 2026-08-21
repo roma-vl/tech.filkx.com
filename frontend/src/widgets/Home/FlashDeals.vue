@@ -109,9 +109,9 @@ const formatNumber = (num: number) => {
             </div>
           </div>
         </div>
-        <UiSectionLink :to="{ name: 'catalog', query: { discounts: '1' } }">{{
-          t("home.flashDeals.allDeals")
-        }}</UiSectionLink>
+        <UiSectionLink :to="{ name: 'catalog', query: { discounts: '1' } }">
+          {{ t("home.flashDeals.allDeals") }}
+        </UiSectionLink>
       </div>
 
       <!-- Products Grid -->
@@ -173,8 +173,9 @@ const formatNumber = (num: number) => {
             <router-link
               :to="{ name: 'product-detail', params: { id: prod.slug } }"
               class="block font-bold text-[15px] text-zinc-800 dark:text-zinc-100 line-clamp-3 mb-2 leading-snug min-h-[66px] hover:text-[#00a046] transition-colors"
-              >{{ prod.name }}</router-link
             >
+              {{ prod.name }}
+            </router-link>
 
             <!-- Rating -->
             <div class="flex items-center gap-1 mb-2.5 mt-auto">

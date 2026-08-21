@@ -310,38 +310,42 @@ onUnmounted(() => {
           <router-link
             to="/shipping-payment"
             class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.shippingPayment") }}</router-link
           >
+            {{ t("header.topLinks.shippingPayment") }}
+          </router-link>
           <router-link
             to="/warranty-returns"
             class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.warrantyReturns") }}</router-link
           >
-          <router-link
-            to="/service"
-            class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.service") }}</router-link
-          >
+            {{ t("header.topLinks.warrantyReturns") }}
+          </router-link>
+          <router-link to="/service" class="hover:text-white transition-colors">
+            {{ t("header.topLinks.service") }}
+          </router-link>
           <router-link
             to="/services"
             class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.services") }}</router-link
           >
+            {{ t("header.topLinks.services") }}
+          </router-link>
           <router-link
             to="/installments"
             class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.installments") }}</router-link
           >
+            {{ t("header.topLinks.installments") }}
+          </router-link>
           <router-link
             to="/filkx-exchange"
             class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors"
-            >{{ t("header.topLinks.filkxExchange") }}</router-link
           >
+            {{ t("header.topLinks.filkxExchange") }}
+          </router-link>
           <router-link
             to="/contacts"
             class="hover:text-white transition-colors"
-            >{{ t("header.topLinks.contacts") }}</router-link
           >
+            {{ t("header.topLinks.contacts") }}
+          </router-link>
         </div>
 
         <!-- Right: phone, theme toggle, and language switcher -->
@@ -361,12 +365,12 @@ onUnmounted(() => {
           <button
             type="button"
             class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
-            @click="toggleDarkMode"
             :title="
               isDark
                 ? t('header.switchToLightTheme')
                 : t('header.switchToDarkTheme')
             "
+            @click="toggleDarkMode"
           >
             <span class="material-symbols-outlined text-[16px]">
               {{ isDark ? "light_mode" : "dark_mode" }}

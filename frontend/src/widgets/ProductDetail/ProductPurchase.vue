@@ -193,11 +193,11 @@
           class="w-full"
           @click="cartStore.addToCart(product)"
         >
-          <template #prefix
-            ><span class="material-symbols-outlined text-[19px]"
+          <template #prefix>
+            <span class="material-symbols-outlined text-[19px]"
               >shopping_cart</span
-            ></template
-          >
+            >
+          </template>
           Додати в кошик
         </UiButton>
         <UiButton
@@ -206,11 +206,9 @@
           class="w-full"
           @click="$emit('quick-order')"
         >
-          <template #prefix
-            ><span class="material-symbols-outlined text-[17px]"
-              >bolt</span
-            ></template
-          >
+          <template #prefix>
+            <span class="material-symbols-outlined text-[17px]">bolt</span>
+          </template>
           Швидке замовлення
         </UiButton>
       </div>

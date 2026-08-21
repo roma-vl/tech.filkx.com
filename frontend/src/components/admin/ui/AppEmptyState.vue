@@ -17,10 +17,7 @@
       {{ title }}
     </p>
 
-    <p
-      v-if="description"
-      class="text-sm mt-1 max-w-sm"
-    >
+    <p v-if="description" class="text-sm mt-1 max-w-sm">
       {{ description }}
     </p>
 

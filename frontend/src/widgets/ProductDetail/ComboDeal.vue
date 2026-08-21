@@ -69,7 +69,9 @@
             >
               {{ item.name }}
             </p>
-            <p class="text-[10px] text-zinc-400 mt-0.5">{{ item.category }}</p>
+            <p class="text-[10px] text-zinc-400 mt-0.5">
+              {{ item.category }}
+            </p>
             <p class="text-sm font-extrabold text-[#00a046] mt-1.5">
               {{ formatPrice(item.price) }}
             </p>
@@ -108,11 +110,11 @@
           </span>
         </div>
         <UiButton class="w-full" @click="$emit('add-bundle')">
-          <template #prefix
-            ><span class="material-symbols-outlined text-[17px]"
+          <template #prefix>
+            <span class="material-symbols-outlined text-[17px]"
               >shopping_bag</span
-            ></template
-          >
+            >
+          </template>
           Додати комплект
         </UiButton>
       </div>

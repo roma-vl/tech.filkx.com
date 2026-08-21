@@ -14,7 +14,9 @@
       <div class="space-y-6">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t("admin.billing.pending.rejectModal.confirmText") }}
-          <span class="font-bold text-gray-900 dark:text-white">"{{ payment?.user?.name }}"</span>?
+          <span class="font-bold text-gray-900 dark:text-white"
+            >"{{ payment?.user?.name }}"</span
+          >?
         </p>
 
         <div class="text-left">

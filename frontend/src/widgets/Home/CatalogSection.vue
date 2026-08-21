@@ -116,9 +116,9 @@ onServerPrefetch(async () => {
       >
         {{ t("home.catalogSection.title") }}
       </h2>
-      <UiSectionLink v-if="selectedSlug" :to="viewAllRoute">{{
-        t("home.catalogSection.viewAll")
-      }}</UiSectionLink>
+      <UiSectionLink v-if="selectedSlug" :to="viewAllRoute">
+        {{ t("home.catalogSection.viewAll") }}
+      </UiSectionLink>
     </div>
 
     <!-- Category Pill Chips -->
@@ -185,7 +185,9 @@ onServerPrefetch(async () => {
         class="material-symbols-outlined text-5xl mb-3 text-zinc-400 dark:text-zinc-650"
         >inventory_2</span
       >
-      <p class="text-sm font-bold">{{ t("home.catalogSection.empty") }}</p>
+      <p class="text-sm font-bold">
+        {{ t("home.catalogSection.empty") }}
+      </p>
     </div>
   </section>
 </template>

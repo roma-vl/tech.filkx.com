@@ -329,11 +329,11 @@
             потреби.
           </p>
           <UiButton class="w-full">
-            <template #prefix
-              ><span class="material-symbols-outlined text-[16px]"
+            <template #prefix>
+              <span class="material-symbols-outlined text-[16px]"
                 >chat_bubble</span
-              ></template
-            >
+              >
+            </template>
             Почати чат
           </UiButton>
         </div>

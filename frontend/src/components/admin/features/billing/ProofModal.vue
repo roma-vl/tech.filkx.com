@@ -12,7 +12,9 @@
         <div
           class="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2"
         >
-          <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.user") }}:</span>
+          <span class="font-bold text-gray-900 dark:text-gray-200"
+            >{{ t("admin.billing.proof.user") }}:</span
+          >
           <div class="text-right">
             <p class="font-bold text-gray-900 dark:text-gray-100">
               {{ payment.user?.name }}
@@ -24,21 +26,29 @@
         </div>
 
         <div class="flex justify-between items-center">
-          <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.amount") }}:</span>
-          <span class="font-black text-primary-600 dark:text-primary-400">${{ payment.amount }} {{ payment.currency }}</span>
+          <span class="font-bold text-gray-900 dark:text-gray-200"
+            >{{ t("admin.billing.proof.amount") }}:</span
+          >
+          <span class="font-black text-primary-600 dark:text-primary-400"
+            >${{ payment.amount }} {{ payment.currency }}</span
+          >
         </div>
 
         <div class="flex justify-between items-center">
-          <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.plan") }}:</span>
+          <span class="font-bold text-gray-900 dark:text-gray-200"
+            >{{ t("admin.billing.proof.plan") }}:</span
+          >
           <span class="font-medium text-gray-800 dark:text-gray-300">{{
             payment.subscription?.name ||
-              payment.subscription?.plan?.name ||
-              "N/A"
+            payment.subscription?.plan?.name ||
+            "N/A"
           }}</span>
         </div>
 
         <div class="flex justify-between items-center">
-          <span class="font-bold text-gray-900 dark:text-gray-200">{{ t("admin.billing.proof.created") }}:</span>
+          <span class="font-bold text-gray-900 dark:text-gray-200"
+            >{{ t("admin.billing.proof.created") }}:</span
+          >
           <span class="text-xs text-gray-500">{{
             formatDate(payment.createdAt)
           }}</span>
@@ -54,7 +64,7 @@
           :src="proofUrl"
           class="max-h-[600px] w-full object-contain rounded-xl shadow-lg"
           alt="Payment Proof"
-        >
+        />
 
         <iframe
           v-else-if="isPdf"
@@ -62,10 +72,7 @@
           class="w-full h-[600px] border-none rounded-xl"
         />
 
-        <div
-          v-else
-          class="py-12 text-center"
-        >
+        <div v-else class="py-12 text-center">
           <AppButton
             variant="primary"
             size="lg"
