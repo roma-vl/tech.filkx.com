@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\Catalog\ProductAttributeFacetCodec;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,10 +57,40 @@ class Product extends Model
     /**
      * Get the indexable data array for the model.
      *
+     * Eager-load the relationships this reads via makeAllSearchableUsing() -
+     * see that method for what it covers and why.
+     *
      * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
+        $variantPrices = $this->variants
+            ->pluck('price')
+            ->filter(fn ($price) => $price !== null)
+            ->map(fn ($price) => (float) $price)
+            ->values();
+
+        $attributeAssignments = $this->attributeValues
+            ->concat($this->variants->flatMap(fn (ProductVariant $variant) => $variant->attributeValues));
+
+        $facetCodec = app(ProductAttributeFacetCodec::class);
+
+        $attributeTokens = $attributeAssignments
+            ->map(function (ProductAttributeValue $assignment) use ($facetCodec) {
+                if ($assignment->attribute_value_id !== null) {
+                    return $facetCodec->encodeAttributeValue($assignment->attribute->code, $assignment->attribute_value_id);
+                }
+
+                if (! empty($assignment->custom_value)) {
+                    return $facetCodec->encodeCustomValue($assignment->attribute->code, $assignment->custom_value);
+                }
+
+                return null;
+            })
+            ->filter()
+            ->unique()
+            ->values();
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
@@ -67,7 +99,41 @@ class Product extends Model
             'description_uk' => $this->description['uk'] ?? '',
             'description_en' => $this->description['en'] ?? '',
             'status' => $this->status,
+            'brand_id' => $this->brand_id,
+            'category_ids' => $this->categories
+                ->flatMap(fn (Category $category) => array_merge([$category->id], $category->getAncestorIds()))
+                ->unique()
+                ->values()
+                ->all(),
+            'price_min' => $variantPrices->min(),
+            'price_max' => $variantPrices->max(),
+            'variant_prices' => $variantPrices->all(),
+            'has_discount' => $this->variants->contains(fn (ProductVariant $variant) => $variant->old_price !== null),
+            'in_stock' => $this->variants
+                ->flatMap(fn (ProductVariant $variant) => $variant->stocks)
+                ->contains(fn (Stock $stock) => $stock->quantity > $stock->reserved),
+            'attributes' => $attributeTokens->all(),
+            'views_count' => $this->views_count ?? 0,
+            'created_at' => $this->created_at?->getTimestamp() ?? 0,
         ];
+    }
+
+    /**
+     * Eager-load everything toSearchableArray() reads so `scout:import`/bulk
+     * reindexing doesn't N+1 per product. `categories.parent` only covers one
+     * level up the category tree - correct for deeper trees too (getAncestorIds()
+     * lazy-loads the rest), just not pre-loaded; the current catalog is at most
+     * two levels deep.
+     */
+    public function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->with([
+            'brand',
+            'categories.parent',
+            'variants.stocks',
+            'variants.attributeValues.attribute',
+            'attributeValues.attribute',
+        ]);
     }
 
     public function brand(): BelongsTo

@@ -9,11 +9,12 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Concerns\InteractsWithMeilisearch;
 use Tests\TestCase;
 
 class ListProductsActionTest extends TestCase
 {
-    use RefreshDatabase;
+    use InteractsWithMeilisearch, RefreshDatabase;
 
     private ListProductsAction $action;
 
@@ -21,10 +22,11 @@ class ListProductsActionTest extends TestCase
     {
         parent::setUp();
 
-        // Filters exercised here never use the `search` keyword, so Scout/Meilisearch is
-        // never reached; the driver is still nulled to keep product creation off the network,
-        // mirroring api/tests/Feature/Catalog/CatalogControllerTest.php.
-        config(['scout.driver' => 'null']);
+        // execute() is now Meilisearch-backed by default (see ListProductsAction) even
+        // for non-search filters, so fixtures must be indexed for real rather than
+        // nulling the driver - see InteractsWithMeilisearch for why the index needs
+        // explicit flushing/reindexing around RefreshDatabase's rolled-back transaction.
+        $this->flushMeilisearchIndex();
 
         $this->action = app(ListProductsAction::class);
     }
@@ -70,6 +72,7 @@ class ListProductsActionTest extends TestCase
         $this->makeVariant($nonMatching, 100);
         $this->attachProductAttribute($nonMatching, $attribute, 'blue');
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['attrs' => ['color' => 'red']]);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -89,6 +92,7 @@ class ListProductsActionTest extends TestCase
         $nonMatchingVariant = $this->makeVariant($nonMatching, 100);
         $this->attachProductAttribute($nonMatching, $attribute, '16GB', $nonMatchingVariant->id);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['attrs' => ['ram' => '8GB']]);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -104,6 +108,7 @@ class ListProductsActionTest extends TestCase
         $this->makeVariant($green, 100);
         $this->attachProductAttribute($green, $attribute, 'green');
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['attrs' => ['color' => 'red,green']]);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -115,6 +120,7 @@ class ListProductsActionTest extends TestCase
         $product = $this->makeProduct();
         $this->makeVariant($product, 100);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['attrs' => ['color' => []]]);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -130,6 +136,7 @@ class ListProductsActionTest extends TestCase
         $newer = $this->makeProduct();
         $this->makeVariant($newer, 100);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['sort_by' => 'newest']);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -144,6 +151,7 @@ class ListProductsActionTest extends TestCase
         $cheap = $this->makeProduct();
         $this->makeVariant($cheap, 100);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['sort_by' => 'price-asc']);
 
         $slugs = collect($result->items())->pluck('slug')->all();
@@ -158,6 +166,7 @@ class ListProductsActionTest extends TestCase
         $expensive = $this->makeProduct();
         $this->makeVariant($expensive, 300);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute(['sort_by' => 'price-desc']);
 
         $slugs = collect($result->items())->pluck('slug')->all();

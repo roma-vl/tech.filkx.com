@@ -184,11 +184,21 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   `75a12d8`) with 54 unit tests for the newly-extracted admin Page/Stats/Team/Category/Blog Actions.
   Still 🟡 not ✅: the live `POST /coupons/validate` endpoint and admin marketing (coupon/promotion)
   CRUD remain untested at the Feature level (the underlying
-  `ValidateCouponAction`/`PriceCalculationService` are unit-tested), the Meilisearch-search-keyword
-  branch of `ListProductsAction` has no test coverage (deliberately out of scope — no test-driver
-  convention exists yet for Scout in this codebase; see the new Feature test's `setUp()`), and the
-  catalog-filters bugs in §2.9 below were found precisely because `GetCatalogFiltersAction` still has
-  no test coverage of its own.
+  `ValidateCouponAction`/`PriceCalculationService` are unit-tested).
+- ✅ **Catalog filtering is now Meilisearch-backed** (2026-08-21, working tree on `develop`).
+  `ListProductsAction`/`GetCatalogFiltersAction` query Meilisearch first (product listing +
+  facets), falling back to the original SQL implementation (kept verbatim) if Meilisearch throws.
+  `CatalogControllerTest`/`GetCatalogFiltersActionTest`/`ListProductsActionTest` were updated to
+  exercise the real `tech-meilisearch` container via a new `Tests\Concerns\InteractsWithMeilisearch`
+  trait (flush before each test, explicit `Product::all()->searchable()` reindex + wait-for-task
+  before asserting, since RefreshDatabase's rolled-back transaction never reaches an external
+  service). See `docs/PROJECT_MAP.md`'s "Catalog filtering is Meilisearch-backed" for the
+  implementation detail. One real bug was caught and fixed during review: a pre-existing test file
+  (`ListProductsActionTest`) forced `scout.driver = null` to keep fixture creation off the network —
+  that stopped working once `execute()` became Meilisearch-first, since Scout's null engine
+  returns an empty result set rather than throwing, so the SQL-fallback `catch` block was never
+  reached and all 7 of its tests failed; fixed by switching it to the same
+  `InteractsWithMeilisearch`-backed real-indexing approach as the other two test files.
 - ❌ **Frontend test infrastructure still doesn't exist** — no `vitest.config.*`, no `.spec.ts`/
   `.test.ts` files anywhere in `frontend/`, despite `test:unit`/`test:e2e` npm scripts. Unchanged
   from the original audit.

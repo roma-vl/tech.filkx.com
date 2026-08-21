@@ -10,11 +10,12 @@ use App\Models\Product;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\InteractsWithMeilisearch;
 use Tests\TestCase;
 
 class GetCatalogFiltersActionTest extends TestCase
 {
-    use RefreshDatabase;
+    use InteractsWithMeilisearch, RefreshDatabase;
 
     private GetCatalogFiltersAction $action;
 
@@ -23,6 +24,7 @@ class GetCatalogFiltersActionTest extends TestCase
         parent::setUp();
 
         $this->action = app(GetCatalogFiltersAction::class);
+        $this->flushMeilisearchIndex();
     }
 
     private function makeProduct(string $status = 'active'): Product
@@ -61,6 +63,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $expensive = $this->makeProduct();
         $this->makeVariant($expensive, 999.2);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute();
 
         $this->assertSame(50.0, $result['price']['min']);
@@ -75,6 +78,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $this->makeVariant($inactive, 5);
         $this->makeVariant($inactive, 5000);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute();
 
         $this->assertSame(100.0, $result['price']['min']);
@@ -83,6 +87,7 @@ class GetCatalogFiltersActionTest extends TestCase
 
     public function test_execute_defaults_the_price_range_when_no_active_products_exist(): void
     {
+        $this->reindexAllProducts();
         $result = $this->action->execute();
 
         $this->assertSame(0, $result['price']['min']);
@@ -96,6 +101,7 @@ class GetCatalogFiltersActionTest extends TestCase
 
         Attribute::create(['code' => 'empty-attr', 'name' => ['uk' => 'Порожній', 'en' => 'Empty'], 'type' => 'select']);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute();
 
         $codes = $result['attributes']->pluck('code')->all();
@@ -108,6 +114,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $attribute = Attribute::create(['code' => 'color', 'name' => ['uk' => 'Колір', 'en' => 'Color'], 'type' => 'select']);
         $value = AttributeValue::create(['attribute_id' => $attribute->id, 'value' => ['uk' => 'Червоний', 'en' => 'Red']]);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute();
 
         $attributePayload = $result['attributes']->firstWhere('code', 'color');
@@ -133,6 +140,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $outsideCategory->categories()->attach($otherCategory->id);
         $this->makeVariant($outsideCategory, 99);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute($category->slug);
 
         $this->assertSame(16700.0, $result['price']['min']);
@@ -148,6 +156,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $product->categories()->attach($child->id);
         $this->makeVariant($product, 500);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute($parent->slug);
 
         $this->assertSame(500.0, $result['price']['min']);
@@ -181,6 +190,7 @@ class GetCatalogFiltersActionTest extends TestCase
             'attribute_value_id' => $simValue->id,
         ]);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute($category->slug);
 
         $codes = $result['attributes']->pluck('code')->all();
@@ -193,6 +203,7 @@ class GetCatalogFiltersActionTest extends TestCase
         $product = $this->makeProduct();
         $this->makeVariant($product, 100);
 
+        $this->reindexAllProducts();
         $result = $this->action->execute('does-not-exist');
 
         $this->assertSame(100.0, $result['price']['min']);

@@ -45,4 +45,9 @@ class BrandRepository implements BrandRepositoryInterface
             }
         }])->orderBy('name')->get();
     }
+
+    public function findIdsBySlugs(array $slugs): array
+    {
+        return Brand::whereIn('slug', $slugs)->pluck('id')->all();
+    }
 }

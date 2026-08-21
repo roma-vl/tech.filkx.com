@@ -11,20 +11,23 @@ use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\Warehouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\InteractsWithMeilisearch;
 use Tests\TestCase;
 
 class CatalogControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use InteractsWithMeilisearch, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Filtering tests exercise plain SQL filters only (no `search` keyword), so the
-        // Meilisearch branch of ListProductsAction is never reached here — see the
-        // final report for why the search-keyword path itself is out of scope.
-        config(['scout.driver' => 'null']);
+        // Product fixtures created below are indexed into the real Meilisearch
+        // container synchronously (SCOUT_AFTER_COMMIT=false in phpunit.xml, since
+        // RefreshDatabase's transaction never commits). Meilisearch itself isn't
+        // part of that transaction, so leftover documents from a previous test
+        // must be cleared explicitly rather than relying on rollback.
+        $this->flushMeilisearchIndex();
     }
 
     private function makeProduct(string $status = 'active', ?Brand $brand = null): Product
@@ -70,6 +73,7 @@ class CatalogControllerTest extends TestCase
         $inactive = $this->makeProduct('inactive');
         $this->makeVariant($inactive, 100);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products');
 
         $response->assertOk();
@@ -91,6 +95,7 @@ class CatalogControllerTest extends TestCase
         $productB->categories()->attach($categoryB->id);
         $this->makeVariant($productB, 100);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products?category='.$categoryA->slug);
 
         $response->assertOk();
@@ -109,6 +114,7 @@ class CatalogControllerTest extends TestCase
         $productB = $this->makeProduct('active', $brandB);
         $this->makeVariant($productB, 100);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products?brand='.$brandA->slug);
 
         $response->assertOk();
@@ -124,6 +130,7 @@ class CatalogControllerTest extends TestCase
         $expensive = $this->makeProduct();
         $this->makeVariant($expensive, 500);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products?price_from=100&price_to=1000');
 
         $response->assertOk();
@@ -139,6 +146,7 @@ class CatalogControllerTest extends TestCase
         $regular = $this->makeProduct();
         $this->makeVariant($regular, 80);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products?discounts=true');
 
         $response->assertOk();
@@ -154,6 +162,7 @@ class CatalogControllerTest extends TestCase
         $outOfStock = $this->makeProduct();
         $this->makeVariant($outOfStock, 100, stock: 5, reserved: 5);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/products?in_stock=true');
 
         $response->assertOk();
@@ -280,6 +289,7 @@ class CatalogControllerTest extends TestCase
         $attribute = Attribute::create(['code' => 'color', 'name' => ['uk' => 'Колір', 'en' => 'Color'], 'type' => 'select']);
         AttributeValue::create(['attribute_id' => $attribute->id, 'value' => ['uk' => 'Червоний', 'en' => 'Red']]);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/filters');
 
         $response->assertOk()
@@ -302,6 +312,7 @@ class CatalogControllerTest extends TestCase
         $productB->categories()->attach($categoryB->id);
         $this->makeVariant($productB, 99);
 
+        $this->reindexAllProducts();
         $response = $this->getJson('/api/v1/catalog/filters?category='.$categoryA->slug);
 
         $response->assertOk()

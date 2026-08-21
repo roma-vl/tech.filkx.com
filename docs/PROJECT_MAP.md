@@ -192,11 +192,26 @@ price-range/discount/in-stock filters), `Admin/AdminOrderControllerTest.php` (st
 and their stock-adjustment side effects, role-gating). This is real, substantial coverage of
 auth/RBAC/2FA plus the core commerce flows (cart, checkout, catalog filtering, admin order
 management) — still untested: coupon validation via the live `/v1/coupons/validate` endpoint (the
-underlying `ValidateCouponAction`/`PriceCalculationService` are unit-tested), and the
-Meilisearch-search-keyword path in `ListProductsAction` (deliberately out of scope — see the
-Feature test file's `setUp()` for why). Run via `make test-backend`, which is CI-wired now too
-(see "Known technical debt" #1 for its history — it's correct, despite older passes of this doc
-claiming otherwise).
+underlying `ValidateCouponAction`/`PriceCalculationService` are unit-tested). `CatalogControllerTest`/
+`GetCatalogFiltersActionTest`/`ListProductsActionTest` now exercise the real Meilisearch container
+(see "Catalog filtering is Meilisearch-backed" below) via `Tests\Concerns\InteractsWithMeilisearch`,
+not a nulled Scout driver. Run via `make test-backend`, which is CI-wired now too (see "Known
+technical debt" #1 for its history — it's correct, despite older passes of this doc claiming
+otherwise).
+
+**Catalog filtering is Meilisearch-backed** (2026-08-21): `ListProductsAction` and
+`GetCatalogFiltersAction` now query Meilisearch first (via Scout's `Product::search()`) for both
+product listing and facet computation (price range, attribute values, brand counts) instead of
+SQL `WHERE`/`GROUP BY` chains, with the original SQL implementation preserved verbatim as a
+resilience fallback (`executeViaSql()`/`*ViaSql()` methods) if Meilisearch throws. `Product`
+indexes `category_ids` (self + ancestor categories, via `Category::getAncestorIds()`),
+`brand_id`, `price_min`/`price_max`/`variant_prices`, `has_discount`, `in_stock`, and an
+`attributes` array of tokens encoding both real `AttributeValue` assignments and free-text
+`custom_value` ones (`App\Services\Catalog\ProductAttributeFacetCodec`, since a purely numeric
+custom value must never be mistaken for an `AttributeValue` id). The response contract to the
+frontend is unchanged — only the backend query path changed. Index settings live in
+`config/scout.php`'s `meilisearch.index-settings`; run `php artisan scout:sync-index-settings`
+after changing them, and `php artisan scout:import "App\Models\Product"` to (re)populate the index.
 
 As of 2026-08-20 (commits `65af0c2`, `75a12d8`), the newly-extracted admin Actions above got the same
 treatment: `Unit/Actions/Admin/{Page,Stats,Team,Category,Blog}/*ActionTest.php` (54 tests — slug
