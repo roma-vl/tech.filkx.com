@@ -6502,12 +6502,6 @@
                         "items": {
                             "type": "object"
                         }
-                    },
-                    "cards": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
                     }
                 },
                 "type": "object"
@@ -6980,12 +6974,6 @@
                         }
                     },
                     "addresses": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    },
-                    "cards": {
                         "type": "array",
                         "items": {
                             "type": "object"

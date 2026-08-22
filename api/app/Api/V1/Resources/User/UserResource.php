@@ -51,7 +51,6 @@ class UserResource extends JsonResource
         items: new OA\Items(type: 'string', example: 'stream.start'),
     )]
     #[OA\Property(property: 'addresses', type: 'array', items: new OA\Items(type: 'object'))]
-    #[OA\Property(property: 'cards', type: 'array', items: new OA\Items(type: 'object'))]
     #[OA\Property(property: 'subscription', type: 'object', nullable: true, description: 'Subscription module not yet implemented')]
     public function toArray(Request $request): array
     {
@@ -80,7 +79,6 @@ class UserResource extends JsonResource
             'roles' => $this->relationLoaded('roles') ? $this->roles->pluck('slug') : $this->roles()->pluck('slug')->toArray(),
             'permissions' => $this->getPermissions(),
             'addresses' => $this->settings['addresses'] ?? [],
-            'cards' => $this->settings['cards'] ?? [],
             // Subscription module not yet implemented
             'subscription' => null,
         ];

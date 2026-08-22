@@ -14,7 +14,6 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'phone', type: 'string', nullable: true, example: '+380501234567'),
         new OA\Property(property: 'language', type: 'string', nullable: true, example: 'uk'),
         new OA\Property(property: 'addresses', type: 'array', items: new OA\Items(type: 'object')),
-        new OA\Property(property: 'cards', type: 'array', items: new OA\Items(type: 'object')),
     ],
 )]
 class UpdateUserProfileRequest extends FormRequest
@@ -32,7 +31,6 @@ class UpdateUserProfileRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:255'],
             'language' => ['nullable', 'string', 'max:255'],
             'addresses' => ['nullable', 'array'],
-            'cards' => ['nullable', 'array'],
         ];
     }
 }

@@ -52,7 +52,7 @@ class UpdateUserProfileActionTest extends TestCase
         $this->assertSame('old@example.com', $result->email);
     }
 
-    public function test_execute_stores_phone_language_addresses_and_cards_inside_settings(): void
+    public function test_execute_stores_phone_language_and_addresses_inside_settings(): void
     {
         $user = $this->makeUser(['settings' => null]);
 
@@ -60,13 +60,11 @@ class UpdateUserProfileActionTest extends TestCase
             'phone' => '+380000000000',
             'language' => 'uk',
             'addresses' => [['city' => 'Kyiv']],
-            'cards' => [['last4' => '1234']],
         ]);
 
         $this->assertSame('+380000000000', $result->settings['phone']);
         $this->assertSame('uk', $result->settings['language']);
         $this->assertSame([['city' => 'Kyiv']], $result->settings['addresses']);
-        $this->assertSame([['last4' => '1234']], $result->settings['cards']);
 
         $fresh = $user->fresh();
         $this->assertSame('+380000000000', $fresh->settings['phone']);
