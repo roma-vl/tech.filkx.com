@@ -73,12 +73,14 @@
       >
     </div>
     <h1 class="text-xl font-extrabold mb-2 text-zinc-800 dark:text-zinc-200">
-      Товар не знайдено
+      {{ t("product.page.notFound.title") }}
     </h1>
     <p class="text-sm text-zinc-500 mb-6 max-w-sm">
-      Перевірте правильність посилання або скористайтесь каталогом.
+      {{ t("product.page.notFound.description") }}
     </p>
-    <UiButton :to="{ name: 'catalog' }"> Перейти до каталогу </UiButton>
+    <UiButton :to="{ name: 'catalog' }">
+      {{ t("product.page.notFound.cta") }}
+    </UiButton>
   </div>
 
   <!-- Product page -->
@@ -92,7 +94,7 @@
         class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
       >
         <span class="material-symbols-outlined text-[15px]">home</span>
-        Головна
+        {{ t("product.page.breadcrumbs.home") }}
       </router-link>
       <span
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
@@ -102,7 +104,7 @@
         :to="{ name: 'catalog' }"
         class="hover:text-[#00a046] transition-colors font-semibold"
       >
-        Каталог
+        {{ t("product.page.breadcrumbs.catalog") }}
       </router-link>
       <span
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
@@ -174,13 +176,13 @@
           <h2
             class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight"
           >
-            Схожі товари
+            {{ t("product.page.related.title") }}
           </h2>
           <div v-if="relatedProducts.length > 5" class="flex gap-2 shrink-0">
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
               type="button"
-              aria-label="Прокрутити ліворуч"
+              :aria-label="t('product.page.scrollLeft')"
               @click="scrollRelated('left')"
             >
               <span
@@ -191,7 +193,7 @@
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
               type="button"
-              aria-label="Прокрутити праворуч"
+              :aria-label="t('product.page.scrollRight')"
               @click="scrollRelated('right')"
             >
               <span
@@ -221,13 +223,13 @@
           <h2
             class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight"
           >
-            Нещодавно переглянуті
+            {{ t("product.page.recentlyViewed.title") }}
           </h2>
           <div v-if="recentlyViewed.length > 5" class="flex gap-2 shrink-0">
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
               type="button"
-              aria-label="Прокрутити ліворуч"
+              :aria-label="t('product.page.scrollLeft')"
               @click="scrollViewed('left')"
             >
               <span
@@ -238,7 +240,7 @@
             <button
               class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
               type="button"
-              aria-label="Прокрутити праворуч"
+              :aria-label="t('product.page.scrollRight')"
               @click="scrollViewed('right')"
             >
               <span
@@ -272,7 +274,7 @@
         class="max-w-container-max mx-auto px-4 md:px-8 h-[68px] flex items-center gap-4"
       >
         <img
-          alt="product"
+          :alt="t('product.page.stickyBar.imageAlt')"
           class="w-10 h-10 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white p-1 hidden sm:block shrink-0"
           :src="selectedImage"
         />
@@ -296,7 +298,7 @@
             <template #prefix>
               <span class="material-symbols-outlined text-[15px]">bolt</span>
             </template>
-            Швидке замовлення
+            {{ t("product.page.stickyBar.quickOrder") }}
           </UiButton>
           <UiButton size="sm" @click="cartStore.addToCart(product)">
             <template #prefix>
@@ -304,7 +306,7 @@
                 >shopping_cart</span
               >
             </template>
-            В кошик
+            {{ t("product.page.stickyBar.addToCart") }}
           </UiButton>
         </div>
       </div>
@@ -322,6 +324,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useHead } from "@vueuse/head";
+import { useI18n } from "vue-i18n";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
@@ -369,6 +372,8 @@ const {
   openQuickOrder,
   closeQuickOrder,
 } = useProductDetail();
+
+const { t } = useI18n();
 
 const relatedScrollRef = ref<HTMLElement | null>(null);
 const scrollRelated = (direction: "left" | "right") => {

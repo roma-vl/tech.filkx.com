@@ -6,15 +6,15 @@
       <div>
         <span
           class="text-xs font-extrabold text-[#00a046] uppercase tracking-widest"
-          >Вигідний набір</span
+          >{{ t("product.comboDeal.badge") }}</span
         >
         <h2
           class="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-white tracking-tight mt-1"
         >
-          Краща ціна разом
+          {{ t("product.comboDeal.title") }}
         </h2>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Ми підібрали сумісні аксесуари для максимальної вигоди.
+          {{ t("product.comboDeal.description") }}
         </p>
       </div>
     </div>
@@ -93,20 +93,28 @@
           <p
             class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
           >
-            Загальна вартість
+            {{ t("product.comboDeal.totalLabel") }}
           </p>
           <p class="text-3xl font-extrabold text-[#00a046] tracking-tight">
             {{ formatPrice(bundleTotal) }}
           </p>
           <p class="text-xs text-zinc-400">
-            Окремо: {{ formatPrice(bundleSubtotal) }}
+            {{
+              t("product.comboDeal.separateLabel", {
+                price: formatPrice(bundleSubtotal),
+              })
+            }}
           </p>
           <span
             v-if="bundleSavings > 0"
             class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 font-bold text-xs px-2.5 py-1 rounded-full"
           >
             <span class="material-symbols-outlined text-[12px]">savings</span>
-            Економія {{ formatPrice(bundleSavings) }}
+            {{
+              t("product.comboDeal.savingsLabel", {
+                amount: formatPrice(bundleSavings),
+              })
+            }}
           </span>
         </div>
         <UiButton class="w-full" @click="$emit('add-bundle')">
@@ -115,7 +123,7 @@
               >shopping_bag</span
             >
           </template>
-          Додати комплект
+          {{ t("product.comboDeal.addBundle") }}
         </UiButton>
       </div>
     </div>
@@ -123,7 +131,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { UiButton } from "@/shared/ui";
+
+const { t } = useI18n();
 
 interface BundleItem {
   id: string;

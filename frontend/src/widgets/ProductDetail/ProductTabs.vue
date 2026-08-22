@@ -33,7 +33,7 @@
             <h3
               class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight"
             >
-              Опис товару
+              {{ t("product.tabs.overview.title") }}
             </h3>
             <p
               class="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-line"
@@ -57,7 +57,7 @@
             <span class="material-symbols-outlined text-[#00a046] text-[22px]"
               >terminal</span
             >
-            Технічні характеристики
+            {{ t("product.tabs.specs.title") }}
           </h3>
           <div
             class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
@@ -144,7 +144,11 @@
                   >
                 </div>
                 <p class="text-xs text-zinc-400 dark:text-zinc-500">
-                  Середня оцінка ({{ reviewStats.count }} відгуків)
+                  {{
+                    t("product.tabs.reviews.averageRating", {
+                      count: reviewStats.count,
+                    })
+                  }}
                 </p>
               </div>
               <div
@@ -157,7 +161,9 @@
                 >
                   <span
                     class="font-semibold w-14 text-right text-zinc-500 dark:text-zinc-400 shrink-0"
-                    >{{ 5 - idx }} зірок</span
+                    >{{
+                      t("product.tabs.reviews.starsLabel", { count: 5 - idx })
+                    }}</span
                   >
                   <div
                     class="flex-1 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"
@@ -244,12 +250,12 @@
                 >
               </div>
               <h3 class="font-bold text-sm text-zinc-700 dark:text-zinc-300">
-                Ще немає відгуків
+                {{ t("product.tabs.reviews.emptyTitle") }}
               </h3>
               <p
                 class="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-xs mx-auto"
               >
-                Будьте першим, хто залишить відгук про цей товар після покупки.
+                {{ t("product.tabs.reviews.emptyText") }}
               </p>
             </div>
           </template>
@@ -287,7 +293,7 @@
             <span class="material-symbols-outlined text-[#00a046] text-[17px]"
               >verified</span
             >
-            Гарантії якості
+            {{ t("product.tabs.guarantees.title") }}
           </h4>
           <ul class="space-y-4">
             <li
@@ -321,12 +327,11 @@
               >chat_bubble</span
             >
             <h4 class="font-bold text-sm text-zinc-800 dark:text-zinc-200">
-              Технічний радник
+              {{ t("product.tabs.advisor.title") }}
             </h4>
           </div>
           <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Наші інженери допоможуть обрати ідеальну конфігурацію під ваші
-            потреби.
+            {{ t("product.tabs.advisor.text") }}
           </p>
           <UiButton class="w-full">
             <template #prefix>
@@ -334,7 +339,7 @@
                 >chat_bubble</span
               >
             </template>
-            Почати чат
+            {{ t("product.tabs.advisor.startChat") }}
           </UiButton>
         </div>
       </aside>
@@ -395,8 +400,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import { UiButton } from "@/shared/ui";
+
+const { t } = useI18n();
 
 interface TabItem {
   id: string;
@@ -427,23 +435,23 @@ const props = defineProps<{
 
 defineEmits<{ (e: "change-tab", tabId: string): void }>();
 
-const supportCards = [
+const supportCards = computed(() => [
   {
     icon: "support_agent",
-    title: "Консультація експерта",
-    text: "Наші спеціалісти допоможуть з налаштуванням та перенесенням даних.",
+    title: t("product.tabs.support.expert.title"),
+    text: t("product.tabs.support.expert.text"),
   },
   {
     icon: "local_shipping",
-    title: "Доставка і заміна",
-    text: "Безкоштовна доставка та швидкий обмін товару за вашим запитом.",
+    title: t("product.tabs.support.delivery.title"),
+    text: t("product.tabs.support.delivery.text"),
   },
   {
     icon: "workspace_premium",
-    title: "Програма захисту",
-    text: "Продовження гарантії та страхування від випадкових пошкоджень.",
+    title: t("product.tabs.support.protection.title"),
+    text: t("product.tabs.support.protection.text"),
   },
-];
+]);
 
 const liveReviews = ref<LiveReview[]>([]);
 const reviewsLoading = ref(false);

@@ -12,7 +12,7 @@
       <div class="flex gap-1.5">
         <button
           class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-rose-500 hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
-          title="В обране"
+          :title="t('product.purchase.wishlist')"
           @click="cartStore.toggleWishlist(product)"
         >
           <span
@@ -32,7 +32,7 @@
             'text-[#00a046] border-[#00a046]/40 bg-emerald-50 dark:bg-emerald-900/20':
               cartStore.isInCompare(product.id),
           }"
-          title="Порівняти"
+          :title="t('product.purchase.compare')"
           @click="cartStore.toggleCompare(product)"
         >
           <span class="material-symbols-outlined text-[19px]"
@@ -83,12 +83,16 @@
         <span
           class="font-semibold text-zinc-700 dark:text-zinc-300 text-xs hover:text-[#00a046] transition-colors cursor-pointer"
         >
-          {{ product.reviews }} відгуків
+          {{ t("product.purchase.reviewsCount", { count: product.reviews }) }}
         </span>
       </div>
       <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700" />
       <span class="text-xs font-mono text-zinc-400 dark:text-zinc-500">
-        КОД: FLX-{{ product.productId || product.id }}
+        {{
+          t("product.purchase.skuLabel", {
+            code: product.productId || product.id,
+          })
+        }}
       </span>
     </div>
 
@@ -111,12 +115,12 @@
             <span
               class="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wide"
             >
-              Акція
+              {{ t("product.purchase.saleBadge") }}
             </span>
           </div>
         </div>
         <p class="text-xs text-zinc-400 dark:text-zinc-500">
-          Безвідсоткова оплата частинами від банків-партнерів
+          {{ t("product.purchase.installmentNote") }}
         </p>
       </div>
 
@@ -125,7 +129,7 @@
         <span
           class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
         >
-          Колір:
+          {{ t("product.purchase.colorLabel") }}
           <span
             class="text-zinc-800 dark:text-zinc-200 normal-case tracking-normal"
             >{{ selectedColor }}</span
@@ -167,7 +171,7 @@
       <div v-if="availableStorage.length > 0" class="space-y-2.5">
         <span
           class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
-          >Конфігурація</span
+          >{{ t("product.purchase.configLabel") }}</span
         >
         <div class="flex flex-wrap gap-2">
           <button
@@ -198,7 +202,7 @@
               >shopping_cart</span
             >
           </template>
-          Додати в кошик
+          {{ t("product.purchase.addToCart") }}
         </UiButton>
         <UiButton
           variant="secondary"
@@ -209,7 +213,7 @@
           <template #prefix>
             <span class="material-symbols-outlined text-[17px]">bolt</span>
           </template>
-          Швидке замовлення
+          {{ t("product.purchase.quickOrder") }}
         </UiButton>
       </div>
     </div>
@@ -227,10 +231,10 @@
         >
         <div>
           <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            В наявності
+            {{ t("product.purchase.delivery.inStockTitle") }}
           </p>
           <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
-            Відправка сьогодні
+            {{ t("product.purchase.delivery.inStockSubtitle") }}
           </p>
         </div>
       </div>
@@ -243,10 +247,10 @@
         >
         <div>
           <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            Доставка
+            {{ t("product.purchase.delivery.shippingTitle") }}
           </p>
           <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
-            Безкоштовно від 2000 ₴
+            {{ t("product.purchase.delivery.shippingSubtitle") }}
           </p>
         </div>
       </div>
@@ -259,9 +263,11 @@
         >
         <div>
           <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            Повернення
+            {{ t("product.purchase.delivery.returnsTitle") }}
           </p>
-          <p class="text-[11px] text-zinc-400 dark:text-zinc-500">14 днів</p>
+          <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
+            {{ t("product.purchase.delivery.returnsSubtitle") }}
+          </p>
         </div>
       </div>
     </div>
@@ -269,6 +275,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { UiButton } from "@/shared/ui";
 
@@ -287,4 +294,5 @@ defineEmits<{
 }>();
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 </script>

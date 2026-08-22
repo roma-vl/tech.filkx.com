@@ -46,7 +46,9 @@
           isZoomed ? "zoom_in" : "search"
         }}</span>
         <span class="text-[10px] font-semibold text-white">{{
-          isZoomed ? "Збільшено" : "Наведіть для наближення"
+          isZoomed
+            ? t("product.gallery.zoomedIn")
+            : t("product.gallery.zoomHint")
         }}</span>
       </div>
 
@@ -83,6 +85,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 defineProps<{
   galleryImages: Array<{ label: string; src: string }>;
   selectedImageIndex: number;
