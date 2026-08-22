@@ -31,7 +31,7 @@ class PriceDropNotification extends Notification
 
         $dropPercent = round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
         $saving = round($this->oldPrice - $this->newPrice, 2);
-        $productUrl = config('app.frontend_url', config('app.url')).'/products/'.$this->product->slug;
+        $productUrl = config('app.frontend_url', config('app.url')).'/product/'.$this->product->slug;
 
         return (new MailMessage)
             ->subject("↓ Знижка {$dropPercent}% на «{$productName}»")
@@ -58,7 +58,7 @@ class PriceDropNotification extends Notification
             'type' => 'price_drop',
             'title' => "Знижка {$dropPercent}% на «{$productName}»",
             'content' => "Ціна знизилась з {$this->oldPrice} до {$this->newPrice} грн",
-            'link' => '/products/'.$this->product->slug,
+            'link' => '/product/'.$this->product->slug,
         ];
     }
 
