@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen flex flex-col justify-center items-center">
     <h1 class="text-6xl font-bold mb-4">404</h1>
-    <p class="text-xl mb-6">Сторінку не знайдено</p>
+    <p class="text-xl mb-6">{{ t("errors.notFound.message") }}</p>
     <div ref="container" class="w-[500px]" />
     <router-link to="/" class="text-blue-600 hover:underline">
-      Повернутися на головну
+      {{ t("errors.notFound.backToHome") }}
     </router-link>
   </div>
 </template>
@@ -12,8 +12,10 @@
 <script setup lang="ts">
 import lottie from "lottie-web";
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import CheckedAnimation from "@/assets/animation/404blue.json";
 
+const { t } = useI18n();
 const container = ref<HTMLDivElement | null>(null);
 
 onMounted(() => {

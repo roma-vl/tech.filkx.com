@@ -9,13 +9,15 @@
         class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
       >
         <span class="material-symbols-outlined text-[15px]">home</span>
-        Головна
+        {{ t("blog.list.breadcrumb.home") }}
       </router-link>
       <span
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
         >chevron_right</span
       >
-      <span class="text-zinc-800 dark:text-zinc-200 font-bold">Блог</span>
+      <span class="text-zinc-800 dark:text-zinc-200 font-bold">{{
+        t("blog.list.breadcrumb.current")
+      }}</span>
     </nav>
 
     <!-- Page Header & Search -->
@@ -26,7 +28,7 @@
         <div class="space-y-2">
           <span
             class="text-[#00a046] font-extrabold text-xs uppercase tracking-widest"
-            >Журнал</span
+            >{{ t("blog.list.header.label") }}</span
           >
           <h1
             class="font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white tracking-tight leading-tight"
@@ -36,7 +38,7 @@
           <p
             class="text-sm md:text-[15px] text-zinc-500 dark:text-zinc-400 max-w-md"
           >
-            Корисні статті, огляди новинок та поради від експертів FilkxTech
+            {{ t("blog.list.header.description") }}
           </p>
         </div>
         <div
@@ -44,7 +46,7 @@
         >
           <UiInput
             v-model="search"
-            placeholder="Пошук статей..."
+            :placeholder="t('blog.list.search.placeholder')"
             class="flex-1"
             @update:model-value="onSearchInput"
           >
@@ -72,13 +74,13 @@
       >
         <span
           class="text-xs font-semibold text-zinc-400 dark:text-zinc-555 uppercase"
-          >Активні фільтри:</span
+          >{{ t("blog.list.filters.activeLabel") }}</span
         >
         <span
           v-if="activeCategoryName"
           class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] text-xs font-medium border border-[#00a046]/20"
         >
-          Категорія: {{ activeCategoryName }}
+          {{ t("blog.list.filters.category", { name: activeCategoryName }) }}
           <button
             class="hover:text-red-500 focus:outline-none flex items-center"
             @click="selectCategory('')"
@@ -90,7 +92,7 @@
           v-if="activeTagName"
           class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] text-xs font-medium border border-[#00a046]/20"
         >
-          Тег: #{{ activeTagName }}
+          {{ t("blog.list.filters.tag", { name: activeTagName }) }}
           <button
             class="hover:text-red-500 focus:outline-none flex items-center"
             @click="selectTag(activeTag)"
@@ -102,7 +104,7 @@
           v-if="search"
           class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] text-xs font-medium border border-[#00a046]/20"
         >
-          Пошук: "{{ search }}"
+          {{ t("blog.list.filters.search", { query: search }) }}
           <button
             class="hover:text-red-500 focus:outline-none flex items-center"
             @click="
@@ -117,7 +119,7 @@
           class="text-xs text-red-500 hover:text-red-600 dark:hover:text-red-400 font-bold hover:underline transition-all"
           @click="clearAllFilters"
         >
-          Скинути все
+          {{ t("blog.list.filters.clearAll") }}
         </button>
       </div>
 
@@ -153,10 +155,10 @@
               >edit_note</span
             >
             <p class="text-zinc-555 dark:text-zinc-400 font-semibold mb-1">
-              Статей не знайдено
+              {{ t("blog.list.emptyState.title") }}
             </p>
             <p class="text-xs text-zinc-450 dark:text-zinc-500">
-              Спробуйте змінити фільтри або пошуковий запит
+              {{ t("blog.list.emptyState.subtitle") }}
             </p>
           </div>
 
@@ -208,7 +210,9 @@
                 >
                   <span>{{ formatDate(post.publishedAt) }}</span>
                   <span>·</span>
-                  <span>{{ post.views }} переглядів</span>
+                  <span>{{
+                    t("blog.list.card.viewsCount", { count: post.views })
+                  }}</span>
                 </div>
 
                 <h3
@@ -239,7 +243,7 @@
                   <span
                     class="text-sm font-extrabold text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] dark:group-hover:text-[#00b050] transition-colors flex items-center gap-1"
                   >
-                    Читати
+                    {{ t("blog.list.card.readMore") }}
                     <span
                       class="material-symbols-outlined text-[15px] group-hover:translate-x-1 transition-transform"
                       >arrow_forward</span
@@ -303,7 +307,7 @@
             <h3
               class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
             >
-              Категорії
+              {{ t("blog.list.sidebar.categoriesTitle") }}
             </h3>
             <div class="space-y-1">
               <button
@@ -315,7 +319,7 @@
                 ]"
                 @click="selectCategory('')"
               >
-                <span>Всі статті</span>
+                <span>{{ t("blog.list.sidebar.allPosts") }}</span>
                 <span
                   class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
                   >{{ meta.total }}</span
@@ -350,7 +354,7 @@
             <h3
               class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
             >
-              Теги
+              {{ t("blog.list.sidebar.tagsTitle") }}
             </h3>
             <div class="flex flex-wrap gap-2">
               <button
@@ -410,7 +414,7 @@ const activeCategory = ref(route.query.category || "");
 const activeTag = ref(route.query.tag || "");
 
 const categoryOptions = computed(() => {
-  const list = [{ value: "", label: "Всі категорії" }];
+  const list = [{ value: "", label: t("blog.list.filters.allCategories") }];
   categories.value.forEach((cat) => {
     list.push({
       value: cat.slug,
@@ -423,13 +427,21 @@ const categoryOptions = computed(() => {
 const activeTitle = computed(() => {
   if (activeCategory.value) {
     const cat = categories.value.find((c) => c.slug === activeCategory.value);
-    if (cat) return `Блог: ${cat.name?.uk || cat.name?.en}`;
+    if (cat) {
+      return t("blog.list.header.categoryTitle", {
+        name: cat.name?.uk || cat.name?.en,
+      });
+    }
   }
   if (activeTag.value) {
-    const t = tags.value.find((tg) => tg.slug === activeTag.value);
-    if (t) return `Блог: #${t.name?.uk || t.name?.en}`;
+    const tag = tags.value.find((tg) => tg.slug === activeTag.value);
+    if (tag) {
+      return t("blog.list.header.tagTitle", {
+        name: tag.name?.uk || tag.name?.en,
+      });
+    }
   }
-  return "Блог та огляди техніки";
+  return t("blog.list.header.defaultTitle");
 });
 
 const activeCategoryName = computed(() => {

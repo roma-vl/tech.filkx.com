@@ -35,22 +35,18 @@
       <div v-else-if="!page" class="py-24 text-center">
         <span class="text-6xl mb-6 block">📄</span>
         <h1 class="text-2xl font-extrabold text-gray-800 dark:text-white mb-3">
-          {{ locale === "uk" ? "Сторінку не знайдено" : "Page Not Found" }}
+          {{ t("staticPage.notFound.title") }}
         </h1>
         <p
           class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto"
         >
-          {{
-            locale === "uk"
-              ? "Можливо, вона була видалена або адреса вказана неправильно."
-              : "The page you are looking for might have been removed or the address is incorrect."
-          }}
+          {{ t("staticPage.notFound.message") }}
         </p>
         <RouterLink
           to="/"
           class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-all shadow-md shadow-emerald-500/10"
         >
-          {{ locale === "uk" ? "На головну" : "Go to Homepage" }}
+          {{ t("staticPage.notFound.goHome") }}
         </RouterLink>
       </div>
 
@@ -64,7 +60,7 @@
             to="/"
             class="hover:text-emerald-600 dark:hover:text-emerald-450 transition-colors"
           >
-            {{ locale === "uk" ? "Головна" : "Home" }}
+            {{ t("staticPage.breadcrumb.home") }}
           </RouterLink>
           <span>/</span>
           <span
@@ -90,7 +86,7 @@
               {{ page.title?.[locale] || page.title?.uk || page.title?.en }}
             </h1>
             <div class="flex items-center gap-2 mt-3 text-xs text-gray-400">
-              <span>{{ locale === "uk" ? "Оновлено" : "Updated" }}:</span>
+              <span>{{ t("staticPage.updatedLabel") }}:</span>
               <span>{{ formatDate(page.updatedAt) }}</span>
             </div>
           </header>
@@ -124,7 +120,7 @@ const props = defineProps({
 });
 
 const route = useRoute();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 const page = ref(null);
 const loading = ref(true);

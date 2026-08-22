@@ -20,10 +20,10 @@
     <div v-else-if="!post" class="max-w-4xl mx-auto px-4 py-32 text-center">
       <span class="text-6xl mb-4 block">📄</span>
       <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-        Статтю не знайдено
+        {{ t("blog.post.notFound.title") }}
       </h1>
       <RouterLink to="/blog" class="text-emerald-600 hover:underline">
-        ← Повернутися до блогу
+        {{ t("blog.post.notFound.backToBlog") }}
       </RouterLink>
     </div>
 
@@ -89,7 +89,7 @@
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            {{ post.views }} переглядів
+            {{ t("blog.post.viewsCount", { count: post.views }) }}
           </span>
           <!-- Tags -->
           <div class="flex flex-wrap gap-1.5 ml-auto">
@@ -109,14 +109,14 @@
       <div class="max-w-4xl mx-auto px-4 py-4">
         <nav class="flex items-center gap-2 text-xs text-gray-400">
           <RouterLink to="/" class="hover:text-emerald-500 transition-colors">
-            Головна
+            {{ t("blog.post.breadcrumb.home") }}
           </RouterLink>
           <span>/</span>
           <RouterLink
             to="/blog"
             class="hover:text-emerald-500 transition-colors"
           >
-            Блог
+            {{ t("blog.post.breadcrumb.blog") }}
           </RouterLink>
           <span>/</span>
           <span class="text-gray-600 dark:text-gray-300 truncate max-w-xs">{{
@@ -149,7 +149,7 @@
             to="/blog"
             class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
           >
-            ← Всі статті
+            {{ t("blog.post.allArticles") }}
           </RouterLink>
         </div>
       </div>
@@ -160,10 +160,12 @@
 <script setup>
 import { ref, computed, onMounted, onServerPrefetch, watch } from "vue";
 import { useRoute, RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useHead } from "@vueuse/head";
 import api from "@/shared/services/api/apiClient";
 
 const route = useRoute();
+const { t } = useI18n();
 const post = ref(null);
 const loading = ref(true);
 
