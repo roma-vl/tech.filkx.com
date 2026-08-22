@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/shared/services/api/apiClient";
+import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
 const cartStore = useCartStore();
 
@@ -14,17 +15,17 @@ interface TicketItem {
   id: string | number;
   subject: string;
   status: string;
-  created_at: string;
+  createdAt: string;
   [key: string]: any;
 }
 
 interface TicketMessage {
   id: string | number;
   message: string;
-  is_admin: boolean;
-  created_at: string;
-  file_path?: string;
-  file_name?: string;
+  isAdmin: boolean;
+  createdAt: string;
+  filePath?: string;
+  fileName?: string;
 }
 
 const activeFaqIndex = ref<number | null>(null);
@@ -56,6 +57,13 @@ const ticketForm = ref({
   category: "Проблеми із замовленням",
   message: "",
 });
+
+const ticketCategoryOptions = [
+  "Проблеми із замовленням",
+  "Гарантія та повернення",
+  "Технічна підтримка",
+  "Оплата та рахунки",
+];
 
 const ticketsList = ref<TicketItem[]>([]);
 const loadingTickets = ref(false);
@@ -290,7 +298,7 @@ onMounted(() => {
                 >
                   <span>ID: #{{ ticket.id }}</span>
                   <span>•</span>
-                  <span>Створено: {{ formatDate(ticket.created_at) }}</span>
+                  <span>Створено: {{ formatDate(ticket.createdAt) }}</span>
                 </p>
               </div>
               <span
@@ -324,15 +332,11 @@ onMounted(() => {
               class="text-[10px] font-extrabold text-zinc-455 dark:text-zinc-500 uppercase tracking-wider"
               >Категорія</label
             >
-            <select
+            <UiDropdown
               v-model="ticketForm.category"
-              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
-            >
-              <option>Проблеми із замовленням</option>
-              <option>Гарантія та повернення</option>
-              <option>Технічна підтримка</option>
-              <option>Оплата та рахунки</option>
-            </select>
+              :options="ticketCategoryOptions"
+              trigger-class="w-full"
+            />
           </div>
           <div class="space-y-1.5">
             <label
@@ -410,7 +414,7 @@ onMounted(() => {
             </div>
             <p class="text-[11px] text-zinc-400 mt-1">
               ID звернення: #{{ selectedTicket.id }} • Створено:
-              {{ formatDate(selectedTicket.created_at) }}
+              {{ formatDate(selectedTicket.createdAt) }}
             </p>
           </div>
           <button
@@ -429,20 +433,20 @@ onMounted(() => {
             v-for="msg in selectedTicketMessages"
             :key="msg.id"
             class="flex flex-col"
-            :class="msg.is_admin ? 'items-start' : 'items-end'"
+            :class="msg.isAdmin ? 'items-start' : 'items-end'"
           >
             <div class="flex items-center gap-2 mb-1">
               <span class="text-[10px] font-extrabold uppercase text-zinc-400">
-                {{ msg.is_admin ? "Підтримка" : "Ви" }}
+                {{ msg.isAdmin ? "Підтримка" : "Ви" }}
               </span>
               <span class="text-[9px] text-zinc-400">
-                {{ formatTime(msg.created_at) }}
+                {{ formatTime(msg.createdAt) }}
               </span>
             </div>
             <div
               class="max-w-[85%] px-4 py-3 rounded-2xl text-xs md:text-sm shadow-sm"
               :class="
-                msg.is_admin
+                msg.isAdmin
                   ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-tl-none'
                   : 'bg-[#00a046] text-white rounded-tr-none'
               "
@@ -453,18 +457,18 @@ onMounted(() => {
 
               <!-- Attachment if any -->
               <div
-                v-if="msg.file_path"
+                v-if="msg.filePath"
                 class="mt-2 pt-2 border-t border-white/10 dark:border-zinc-700/50 flex items-center gap-2 text-xs"
               >
                 <span class="material-symbols-outlined text-[16px]"
                   >attachment</span
                 >
                 <a
-                  :href="msg.file_path"
+                  :href="msg.filePath"
                   target="_blank"
                   class="underline hover:opacity-80 truncate max-w-[150px]"
                 >
-                  {{ msg.file_name || "Файл" }}
+                  {{ msg.fileName || "Файл" }}
                 </a>
               </div>
             </div>

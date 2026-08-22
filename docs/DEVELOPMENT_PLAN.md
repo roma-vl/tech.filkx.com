@@ -199,6 +199,18 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   returns an empty result set rather than throwing, so the SQL-fallback `catch` block was never
   reached and all 7 of its tests failed; fixed by switching it to the same
   `InteractsWithMeilisearch`-backed real-indexing approach as the other two test files.
+  **Post-deploy incident (2026-08-22, since fixed):** after this change shipped, the live
+  `dev.tech.filkx.com` catalog/category pages briefly returned zero products for every category
+  (facets/price-range still worked, since those degrade gracefully to defaults) — root cause was
+  that the real (non-test) Meilisearch `products` index still held the *old* pre-migration
+  documents (only `id`/`slug`/`name_*`/`description_*`/`status` — no `category_ids`, `brand_id`,
+  etc.), because Scout only pushes a document on model `save()`/`delete()`, not retroactively when
+  `toSearchableArray()`'s shape changes in code. Filtering on a field absent from the indexed
+  documents returns zero matches, not an exception, so the SQL fallback never triggered. Fixed by
+  running `php artisan scout:import "App\Models\Product"` once against the real index. **Any future
+  change to `Product::toSearchableArray()` (new/renamed/removed field) must be followed by a real
+  `scout:import` run in every environment with existing data** — Scout's auto-sync only covers
+  documents touched after the change, not the ones already indexed.
 - ❌ **Frontend test infrastructure still doesn't exist** — no `vitest.config.*`, no `.spec.ts`/
   `.test.ts` files anywhere in `frontend/`, despite `test:unit`/`test:e2e` npm scripts. Unchanged
   from the original audit.
