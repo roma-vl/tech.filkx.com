@@ -19,7 +19,6 @@ const authStore = useAuthStore();
 const cartStore = useCartStore();
 
 const activeTab = computed(() => (route.query.tab as string) || "dashboard");
-const userName = computed(() => authStore.user?.name || "Клієнт");
 
 const tabTitles: Record<string, string> = {
   dashboard: "Панель керування",
@@ -77,41 +76,17 @@ onMounted(() => {
     <div class="flex-1 px-4 md:px-8 py-5 sm:py-8 lg:py-10 min-w-0">
       <!-- Page Header -->
       <header class="mb-5 sm:mb-8">
-        <div
-          class="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b border-zinc-200 dark:border-zinc-800"
-        >
-          <div class="min-w-0">
-            <p
-              class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1"
-            >
-              Особистий кабінет
-            </p>
-            <h1
-              class="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
-            >
-              {{ tabTitles[activeTab] || "Кабінет" }}
-            </h1>
-            <p
-              class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1.5"
-            >
-              Вітаємо,
-              <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{
-                userName
-              }}</span
-              >! Керуйте профілем та замовленнями.
-            </p>
-          </div>
-          <div
-            class="lg:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0"
+        <div class="pb-4 sm:pb-5 border-b border-zinc-200 dark:border-zinc-800">
+          <p
+            class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1"
           >
-            <span class="material-symbols-outlined text-[15px] text-[#00a046]"
-              >verified</span
-            >
-            <span
-              class="text-[10px] font-black text-[#00a046] uppercase tracking-widest"
-              >Клієнт</span
-            >
-          </div>
+            Особистий кабінет
+          </p>
+          <h1
+            class="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
+          >
+            {{ tabTitles[activeTab] || "Кабінет" }}
+          </h1>
         </div>
       </header>
 

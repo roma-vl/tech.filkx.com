@@ -355,9 +355,9 @@ const filterBtns = [
         class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
       >
         <div
-          class="bg-zinc-50 dark:bg-zinc-800 px-6 py-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-4"
+          class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:px-6 sm:py-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-wrap justify-between items-start sm:items-center gap-3 sm:gap-4"
         >
-          <div class="flex gap-8 flex-wrap">
+          <div class="flex gap-4 sm:gap-8 flex-wrap">
             <div>
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
@@ -441,25 +441,26 @@ const filterBtns = [
             </button>
           </div>
         </div>
-        <div class="p-6 space-y-6">
+        <div class="p-4 sm:p-6 space-y-6">
           <div
             v-for="item in order.items"
             :key="item.name"
-            class="flex gap-6 flex-col sm:flex-row"
+            class="flex gap-4 sm:gap-6"
           >
             <router-link
               :to="{
                 name: 'product-detail',
                 params: { id: item.slug || item.id },
               }"
+              class="w-24 sm:w-28 self-stretch shrink-0"
             >
               <img
-                class="w-24 h-24 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-2 hover:border-[#00a046]/40 transition-colors"
+                class="w-full h-full object-cover rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 hover:border-[#00a046]/40 transition-colors"
                 :src="item.image"
                 :alt="item.name"
               />
             </router-link>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <router-link
                 :to="{
                   name: 'product-detail',

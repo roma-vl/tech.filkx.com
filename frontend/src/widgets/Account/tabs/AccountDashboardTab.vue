@@ -212,7 +212,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           </div>
           <div class="p-4 sm:p-6 flex gap-3 sm:gap-4">
             <div
-              class="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse shrink-0"
+              class="w-20 sm:w-24 self-stretch bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse shrink-0"
             />
             <div class="flex-1 space-y-2.5">
               <div
@@ -278,10 +278,10 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                   name: 'product-detail',
                   params: { id: (item as any).slug || (item as any).id },
                 }"
-                class="shrink-0"
+                class="w-20 sm:w-24 self-stretch shrink-0"
               >
                 <img
-                  class="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 p-1 hover:border-[#00a046]/40 transition-colors"
+                  class="w-full h-full object-cover rounded-lg border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-850 hover:border-[#00a046]/40 transition-colors"
                   :src="item.image"
                   :alt="item.name"
                 />
