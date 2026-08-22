@@ -1,7 +1,10 @@
 <template>
   <div>
     <!-- Categories -->
-    <UiFilterSection v-if="showCategories" title="Категорія">
+    <UiFilterSection
+      v-if="showCategories"
+      :title="t('catalog.filters.sections.category')"
+    >
       <div class="space-y-0.5 -mx-1">
         <button
           :class="
@@ -13,7 +16,7 @@
           @click="emit('select-category', '')"
         >
           <span class="material-symbols-outlined text-[16px]">list</span>
-          Всі товари
+          {{ t("catalog.filters.allProducts") }}
         </button>
         <button
           v-for="cat in categoriesList"
@@ -44,7 +47,7 @@
 
     <!-- Quick Switches -->
     <UiFilterSection
-      title="Швидкий вибір"
+      :title="t('catalog.filters.sections.quickSwitches')"
       :active-count="quickCount"
       :show-reset="false"
     >
@@ -54,7 +57,7 @@
         >
           <span
             class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
-            >В наявності</span
+            >{{ t("catalog.filters.inStock") }}</span
           >
           <UiCheckbox v-model="localStock" />
         </label>
@@ -63,7 +66,7 @@
         >
           <span
             class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-[#00a046] transition-colors"
-            >Зі знижкою</span
+            >{{ t("catalog.filters.onlyDiscounts") }}</span
           >
           <UiCheckbox v-model="localDiscounts" />
         </label>
@@ -71,7 +74,7 @@
     </UiFilterSection>
 
     <!-- Price Range -->
-    <UiFilterSection title="Ціна">
+    <UiFilterSection :title="t('catalog.filters.sections.price')">
       <PriceRangeSlider
         v-model:min-val="localPriceMin"
         v-model:max-val="localPriceMax"
@@ -83,7 +86,7 @@
 
     <!-- Brand Filter -->
     <UiFilterSection
-      title="Бренд"
+      :title="t('catalog.filters.sections.brand')"
       :active-count="localBrands.length"
       @reset="localBrands = []"
     >
@@ -154,7 +157,7 @@
 
     <!-- Rating Filter -->
     <UiFilterSection
-      title="Рейтинг"
+      :title="t('catalog.filters.sections.rating')"
       :active-count="localRating ? 1 : 0"
       @reset="localRating = ''"
     >
@@ -168,7 +171,7 @@
           <span
             class="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1"
           >
-            від {{ rate }}
+            {{ t("catalog.filters.ratingFrom", { rate }) }}
             <span
               class="material-symbols-outlined text-[13px] text-amber-400"
               style="font-variation-settings: &quot;FILL&quot; 1"
@@ -188,7 +191,7 @@
         <span class="material-symbols-outlined text-[15px]"
           >filter_list_off</span
         >
-        Скинути всі фільтри
+        {{ t("catalog.filters.clearAllButton") }}
       </button>
     </div>
   </div>
@@ -196,9 +199,12 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import PriceRangeSlider from "./PriceRangeSlider.vue";
 import UiCheckbox from "@/shared/ui/UiCheckbox.vue";
 import UiFilterSection from "@/shared/ui/UiFilterSection.vue";
+
+const { t } = useI18n();
 
 interface BrandInfo {
   name: string;

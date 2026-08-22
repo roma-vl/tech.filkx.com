@@ -150,7 +150,11 @@
             <span class="material-symbols-outlined text-[11px]">{{
               product.inStock ? "check_circle" : "cancel"
             }}</span>
-            {{ product.inStock ? "В наявності" : "Немає" }}
+            {{
+              product.inStock
+                ? t("catalog.filters.inStock")
+                : t("catalog.productCard.outOfStock")
+            }}
           </span>
         </div>
 
@@ -200,7 +204,11 @@
             <div
               class="absolute bottom-full right-0 mb-1.5 px-2 py-1 bg-zinc-800 dark:bg-zinc-700 text-white text-[11px] rounded opacity-0 pointer-events-none group-hover/cart:opacity-100 transition-opacity whitespace-nowrap z-10 font-semibold"
             >
-              {{ product.inStock ? "Купити" : "Немає в наявності" }}
+              {{
+                product.inStock
+                  ? t("catalog.productCard.buyTooltip")
+                  : t("catalog.productCard.outOfStockTooltip")
+              }}
             </div>
           </div>
 
@@ -223,7 +231,9 @@
               class="absolute bottom-full right-0 mb-1.5 px-2 py-1 bg-zinc-800 dark:bg-zinc-700 text-white text-[11px] rounded opacity-0 pointer-events-none group-hover/cmp:opacity-100 transition-opacity whitespace-nowrap z-10 font-semibold"
             >
               {{
-                cartStore.isInCompare(product.id) ? "У порівнянні" : "Порівняти"
+                cartStore.isInCompare(product.id)
+                  ? t("catalog.productCard.inCompareTooltip")
+                  : t("common.compare")
               }}
             </div>
           </div>
@@ -244,7 +254,9 @@
             v-if="product.specs?.processor"
             class="flex justify-between gap-3"
           >
-            <dt class="text-zinc-400">Процесор</dt>
+            <dt class="text-zinc-400">
+              {{ t("catalog.productCard.specs.processor") }}
+            </dt>
             <dd
               class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate"
             >
@@ -252,7 +264,9 @@
             </dd>
           </div>
           <div v-if="product.specs?.os" class="flex justify-between gap-3">
-            <dt class="text-zinc-400">ОС</dt>
+            <dt class="text-zinc-400">
+              {{ t("catalog.productCard.specs.os") }}
+            </dt>
             <dd
               class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate"
             >
@@ -260,7 +274,9 @@
             </dd>
           </div>
           <div v-if="product.specs?.weight" class="flex justify-between gap-3">
-            <dt class="text-zinc-400">Вага</dt>
+            <dt class="text-zinc-400">
+              {{ t("catalog.productCard.specs.weight") }}
+            </dt>
             <dd
               class="text-zinc-700 dark:text-zinc-300 font-semibold text-right truncate"
             >
@@ -275,6 +291,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
 const props = defineProps<{
@@ -282,6 +299,7 @@ const props = defineProps<{
   viewMode?: string;
 }>();
 
+const { t } = useI18n();
 const cartStore = useCartStore();
 
 const hasExtraSpecs = computed(() =>

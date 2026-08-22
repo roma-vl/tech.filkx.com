@@ -8,7 +8,7 @@
       class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
     >
       <span class="material-symbols-outlined text-[15px]">home</span>
-      Головна
+      {{ t("catalog.breadcrumbs.home") }}
     </router-link>
     <template v-if="currentCategoryPath.length">
       <template
@@ -36,7 +36,9 @@
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
         >chevron_right</span
       >
-      <span class="text-zinc-800 dark:text-zinc-200 font-bold">Каталог</span>
+      <span class="text-zinc-800 dark:text-zinc-200 font-bold">{{
+        t("catalog.breadcrumbs.catalog")
+      }}</span>
     </template>
   </nav>
 
@@ -62,7 +64,7 @@
       class="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mr-auto hidden sm:block"
     >
       <template v-if="!isLoading">
-        Знайдено {{ pagination.total }} товарів
+        {{ t("catalog.toolbar.resultsCount", { count: pagination.total }) }}
       </template>
     </span>
 
@@ -77,7 +79,7 @@
             : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
         "
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-        title="4 товари в рядок"
+        :title="t('catalog.toolbar.grid4Title')"
         @click="
           viewMode = 'grid';
           gridDensity = 4;
@@ -92,7 +94,7 @@
             : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
         "
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-        title="5 товарів в рядок"
+        :title="t('catalog.toolbar.grid5Title')"
         @click="
           viewMode = 'grid';
           gridDensity = 5;
@@ -107,7 +109,7 @@
             : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
         "
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-        title="Список"
+        :title="t('catalog.toolbar.listViewTitle')"
         @click="viewMode = 'list'"
       >
         <span class="material-symbols-outlined text-[18px]">view_list</span>
@@ -125,7 +127,7 @@
       @click="isMobileFilterOpen = true"
     >
       <span class="material-symbols-outlined text-[18px]">tune</span>
-      Фільтри
+      {{ t("catalog.filters.title") }}
       <span
         v-if="activeFilters.length"
         class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#00a046] text-white text-[10px] font-black rounded-full flex items-center justify-center"
@@ -187,7 +189,7 @@
           <span class="material-symbols-outlined text-[14px]"
             >filter_list_off</span
           >
-          Скинути все
+          {{ t("catalog.activeFilters.clearAll") }}
         </UiButton>
       </div>
 
@@ -256,14 +258,16 @@
           >
         </div>
         <h2 class="font-extrabold text-base text-zinc-900 dark:text-white mb-2">
-          Товари не знайдено
+          {{ t("catalog.empty.title") }}
         </h2>
         <p
           class="text-sm text-zinc-400 dark:text-zinc-500 mb-6 max-w-xs mx-auto"
         >
-          Спробуйте змінити фільтри або скинути пошук
+          {{ t("catalog.empty.description") }}
         </p>
-        <UiButton @click="clearFilters"> Скинути фільтри </UiButton>
+        <UiButton @click="clearFilters">
+          {{ t("catalog.empty.resetButton") }}
+        </UiButton>
       </div>
 
       <!-- Pagination -->
@@ -345,7 +349,7 @@
               >tune</span
             >
             <h2 class="font-extrabold text-base text-zinc-900 dark:text-white">
-              Фільтри
+              {{ t("catalog.filters.title") }}
             </h2>
             <span
               v-if="activeFilters.length"
@@ -388,10 +392,10 @@
           class="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-3"
         >
           <UiButton variant="secondary" class="flex-1" @click="clearFilters">
-            Скинути
+            {{ t("catalog.filters.resetButton") }}
           </UiButton>
           <UiButton class="flex-1" @click="isMobileFilterOpen = false">
-            Застосувати
+            {{ t("catalog.filters.applyButton") }}
           </UiButton>
         </div>
       </div>
@@ -471,12 +475,12 @@ const gridClass = computed(
     `grid grid-cols-1 sm:grid-cols-2 ${densityColumnsClass[gridDensity.value]} border-t border-l border-zinc-200 dark:border-zinc-800`,
 );
 
-const sortOptions = [
-  { value: "popularity", label: "За популярністю" },
-  { value: "newest", label: "Новинки" },
-  { value: "price-asc", label: "Ціна: дешевші спочатку" },
-  { value: "price-desc", label: "Ціна: дорожчі спочатку" },
-];
+const sortOptions = computed(() => [
+  { value: "popularity", label: t("catalog.sort.byPopularity") },
+  { value: "newest", label: t("catalog.sort.newest") },
+  { value: "price-asc", label: t("catalog.sort.priceAsc") },
+  { value: "price-desc", label: t("catalog.sort.priceDesc") },
+]);
 
 const paginationPages = computed(() => {
   const total = pagination.value.lastPage;

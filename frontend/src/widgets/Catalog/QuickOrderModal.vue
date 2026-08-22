@@ -13,12 +13,12 @@
         <div class="text-left">
           <span
             class="text-[9px] font-black text-[#00a046] uppercase bg-emerald-500/10 px-2.5 py-0.5 rounded tracking-wider"
-            >Швидке замовлення</span
+            >{{ t("catalog.quickOrder.badge") }}</span
           >
           <h3
             class="font-extrabold text-base text-zinc-900 dark:text-white mt-1"
           >
-            Замовлення в один клік
+            {{ t("catalog.quickOrder.title") }}
           </h3>
         </div>
         <button
@@ -42,24 +42,28 @@
           </div>
           <div class="space-y-1">
             <h4 class="font-extrabold text-lg text-zinc-900 dark:text-white">
-              Замовлення успішно створено!
+              {{ t("catalog.quickOrder.successTitle") }}
             </h4>
             <p v-if="orderNumber" class="text-xs text-[#00a046] font-bold">
-              Номер замовлення: {{ orderNumber }}
+              {{
+                t("catalog.quickOrder.orderNumberLabel", {
+                  number: orderNumber,
+                })
+              }}
             </p>
           </div>
           <p
             class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm mx-auto"
           >
-            Дякуємо за покупку! Наш менеджер зв'яжеться з вами найближчим часом
-            за телефоном <span class="font-extrabold">{{ phone }}</span> для
-            підтвердження деталей відправки.
+            {{ t("catalog.quickOrder.successMessagePrefix") }}
+            <span class="font-extrabold">{{ phone }}</span>
+            {{ t("catalog.quickOrder.successMessageSuffix") }}
           </p>
           <button
             class="w-full bg-[#00a046] hover:bg-[#00b050] text-white py-2.5 rounded-md font-extrabold text-xs transition-all uppercase tracking-wider shadow-sm font-bold"
             @click="closeModal"
           >
-            Зрозуміло
+            {{ t("catalog.quickOrder.gotItButton") }}
           </button>
         </div>
 
@@ -105,13 +109,14 @@
               <label
                 class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Ваше ім'я <span class="text-rose-500">*</span>
+                {{ t("catalog.quickOrder.nameLabel") }}
+                <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="name"
                 type="text"
                 required
-                placeholder="Введіть ваше ім'я"
+                :placeholder="t('catalog.quickOrder.namePlaceholder')"
                 class="w-full h-10 px-3.5 border border-zinc-200 dark:border-zinc-700 rounded-md bg-zinc-50 dark:bg-zinc-800 text-xs font-bold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
               />
             </div>
@@ -120,13 +125,14 @@
               <label
                 class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Номер телефону <span class="text-rose-500">*</span>
+                {{ t("catalog.quickOrder.phoneLabel") }}
+                <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="phone"
                 type="tel"
                 required
-                placeholder="+380"
+                :placeholder="t('catalog.quickOrder.phonePlaceholder')"
                 class="w-full h-10 px-3.5 border border-zinc-200 dark:border-zinc-700 rounded-md bg-zinc-50 dark:bg-zinc-800 text-xs font-bold focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none text-zinc-800 dark:text-zinc-200"
               />
             </div>
@@ -135,7 +141,7 @@
               <label
                 class="block text-[11px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Оплата
+                {{ t("catalog.quickOrder.paymentLabel") }}
               </label>
               <div class="grid grid-cols-2 gap-2">
                 <button
@@ -148,7 +154,7 @@
                   "
                   @click="paymentMethod = 'cod'"
                 >
-                  Післяплата
+                  {{ t("catalog.quickOrder.paymentCod") }}
                 </button>
                 <button
                   type="button"
@@ -160,7 +166,7 @@
                   "
                   @click="paymentMethod = 'card'"
                 >
-                  Карткою онлайн
+                  {{ t("catalog.quickOrder.paymentCard") }}
                 </button>
               </div>
             </div>
@@ -178,10 +184,10 @@
             />
             <span>{{
               isRedirectingToPayment
-                ? "Перенаправлення на оплату..."
+                ? t("catalog.quickOrder.submitRedirecting")
                 : isSubmitting
-                  ? "Надсилання..."
-                  : "Оформити замовлення"
+                  ? t("catalog.quickOrder.submitSending")
+                  : t("catalog.quickOrder.submitButton")
             }}</span>
           </button>
         </form>
@@ -192,6 +198,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { orderApi } from "@/shared/services/api/orderApi";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { redirectToLiqPay } from "@/shared/utils/liqpay";
@@ -203,6 +210,7 @@ const props = defineProps<{
 
 const emit = defineEmits(["close", "success"]);
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 
 const name = ref("");
@@ -245,7 +253,7 @@ const formatPrice = (price: number) => {
 
 const handleSubmit = async () => {
   if (!name.value.trim() || !phone.value.trim()) {
-    errorMsg.value = "Будь ласка, заповніть обов'язкові поля.";
+    errorMsg.value = t("catalog.quickOrder.errorRequiredFields");
     return;
   }
 
@@ -275,7 +283,7 @@ const handleSubmit = async () => {
 
         errorMsg.value =
           payRes.data?.message ||
-          "Онлайн-оплата тимчасово недоступна. Замовлення створено, наш менеджер зв'яжеться з вами для оплати.";
+          t("catalog.quickOrder.errorPaymentUnavailable");
       }
 
       isSuccess.value = true;
@@ -285,8 +293,7 @@ const handleSubmit = async () => {
   } catch (error: any) {
     console.error("Quick order failed:", error);
     errorMsg.value =
-      error.response?.data?.message ||
-      "Не вдалося оформити замовлення. Спробуйте пізніше.";
+      error.response?.data?.message || t("catalog.quickOrder.errorGeneric");
   } finally {
     isSubmitting.value = false;
   }
