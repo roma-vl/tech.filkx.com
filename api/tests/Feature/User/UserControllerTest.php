@@ -217,6 +217,17 @@ class UserControllerTest extends TestCase
         $response->assertOk()->assertJsonCount(1, 'data');
     }
 
+    public function test_sync_compares_ignores_ids_that_do_not_exist(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->makeProduct();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->postJson('/api/user/compares/sync', ['product_ids' => [$product->id, 999999]]);
+
+        $response->assertOk()->assertJsonCount(1, 'data');
+    }
+
     // --- Viewed products ---
 
     public function test_track_viewed_product_requires_a_product_id(): void
@@ -744,6 +755,22 @@ class UserControllerTest extends TestCase
         $response->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.viewCount', 5);
+    }
+
+    public function test_sync_viewed_products_ignores_ids_that_do_not_exist(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->makeProduct();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->postJson('/api/user/viewed-products/sync', [
+                'items' => [
+                    ['id' => $product->id, 'view_count' => 1],
+                    ['id' => 999999, 'view_count' => 1],
+                ],
+            ]);
+
+        $response->assertOk()->assertJsonCount(1, 'data');
     }
 
     public function test_sync_viewed_products_merges_an_existing_entry_keeping_the_higher_view_count(): void

@@ -2,6 +2,7 @@
 
 use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
+use App\Api\Admin\Controllers\AdminAuditLogController;
 use App\Api\Admin\Controllers\AdminBlogController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
@@ -303,6 +304,9 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::get('server-logs', [AdminServerLogController::class, 'index']);
         Route::get('server-logs/{filename}', [AdminServerLogController::class, 'show']);
         Route::delete('server-logs/{filename}', [AdminServerLogController::class, 'clear']);
+
+        // Audit Log (activity feed - AdminLogs.vue)
+        Route::get('logs', [AdminAuditLogController::class, 'index']);
 
         // Product Management
         Route::get('products', [AdminProductController::class, 'index']);

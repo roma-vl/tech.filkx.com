@@ -86,7 +86,7 @@ class AdminBlogController extends BaseApiController
         );
 
         return self::successfulResponseWithData([
-            'data' => AdminBlogPostResource::collection($paginated),
+            'data' => AdminBlogPostResource::collection($paginated->items()),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),

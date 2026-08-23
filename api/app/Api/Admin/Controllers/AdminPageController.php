@@ -74,7 +74,7 @@ class AdminPageController extends BaseApiController
         $paginated = $action->execute($request->string('search')->value() ?: null, (int) $request->input('per_page', 20));
 
         return self::successfulResponseWithData([
-            'data' => PageResource::collection($paginated),
+            'data' => PageResource::collection($paginated->items()),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),
