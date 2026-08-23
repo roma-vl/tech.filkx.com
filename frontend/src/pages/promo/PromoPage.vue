@@ -4,9 +4,9 @@
     <div v-if="loading" class="max-w-container-max mx-auto px-4 md:px-8 py-10">
       <div class="animate-pulse space-y-8">
         <div class="h-64 md:h-80 bg-zinc-200 dark:bg-zinc-800 rounded-2xl" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div
-            v-for="i in 8"
+            v-for="i in 10"
             :key="i"
             class="h-72 bg-zinc-200 dark:bg-zinc-800 rounded-xl"
           />
@@ -73,7 +73,7 @@
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-10">
         <div
           v-if="products.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-zinc-200 dark:border-zinc-800"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800"
         >
           <ProductCard
             v-for="product in products"

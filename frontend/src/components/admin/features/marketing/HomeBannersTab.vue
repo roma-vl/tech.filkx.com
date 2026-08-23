@@ -90,7 +90,7 @@
               <td
                 class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate"
               >
-                {{ banner.title }}
+                {{ banner.title || t("admin.homeBanners.table.noTitle") }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                 <span class="font-mono text-xs">{{
@@ -234,6 +234,9 @@
           </div>
         </div>
 
+        <p class="text-xs text-gray-400 dark:text-gray-500 italic">
+          {{ t("admin.homeBanners.form.overlayHint") }}
+        </p>
         <AppInput
           v-model="form.badge"
           :label="t('admin.homeBanners.form.badgeLabel')"
@@ -245,7 +248,6 @@
         />
         <AppInput
           v-model="form.title"
-          required
           :label="t('admin.homeBanners.table.title')"
         />
         <AppTextarea
@@ -328,9 +330,7 @@
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           :disabled="
-            !form.title ||
-            !form.imagePath ||
-            (form.linkType !== 'catalog' && !form.linkValue)
+            !form.imagePath || (form.linkType !== 'catalog' && !form.linkValue)
           "
           @click="saveBanner"
         >
@@ -505,7 +505,7 @@ const uploadImage = async (e) => {
 };
 
 const saveBanner = async () => {
-  if (!form.value.title || !form.value.imagePath) return;
+  if (!form.value.imagePath) return;
   if (form.value.linkType !== "catalog" && !form.value.linkValue) {
     toast.warning(t("admin.homeBanners.alerts.linkValueRequired"));
     return;

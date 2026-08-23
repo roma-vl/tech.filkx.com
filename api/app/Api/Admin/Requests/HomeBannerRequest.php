@@ -17,7 +17,9 @@ class HomeBannerRequest extends FormRequest
         return [
             'badge' => 'nullable|string|max:100',
             'subtitle' => 'nullable|string|max:255',
-            'title' => 'required|string|max:255',
+            // Optional: a banner image can already carry its own baked-in
+            // design/copy, in which case no text is overlaid on top of it.
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'imagePath' => 'required|string',
             'buttonLabel' => 'nullable|string|max:100',

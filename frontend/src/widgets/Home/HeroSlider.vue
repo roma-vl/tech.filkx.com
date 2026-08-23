@@ -55,6 +55,13 @@ const slides = computed(() => {
       subtitle: banner.subtitle,
       title: banner.title,
       description: banner.description,
+      // A banner image can already carry its own baked-in design and copy -
+      // in that case every overlay field is left blank, and the dark
+      // gradient + text block below would only wash out the image's own
+      // design for nothing.
+      hasOverlayText: Boolean(
+        banner.badge || banner.subtitle || banner.title || banner.description,
+      ),
       image: banner.imageUrl,
       buttonLabel: banner.buttonLabel || t("home.hero.viewButton"),
       link: getBannerLink(banner),
@@ -69,6 +76,7 @@ const slides = computed(() => {
       subtitle: "",
       title: t("home.hero.welcomeTitle"),
       description: t("home.hero.welcomeDescription"),
+      hasOverlayText: true,
       image: null,
       buttonLabel: t("home.hero.goToCatalog"),
       link: { name: "catalog" },
@@ -198,7 +206,8 @@ onUnmounted(() => {
         >
           <img
             v-if="slide.image"
-            class="absolute inset-0 w-full h-full object-cover opacity-60"
+            class="absolute inset-0 w-full h-full object-cover"
+            :class="slide.hasOverlayText ? 'opacity-60' : ''"
             :src="slide.image"
             alt=""
           />
@@ -207,6 +216,7 @@ onUnmounted(() => {
             class="absolute inset-0 bg-gradient-to-br from-[#1c2229] via-zinc-900 to-[#00a046]/20"
           />
           <div
+            v-if="slide.hasOverlayText"
             class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
           />
 
@@ -230,6 +240,7 @@ onUnmounted(() => {
               >
             </div>
             <h1
+              v-if="slide.title"
               class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
             >
               {{ slide.title }}

@@ -93,6 +93,25 @@ class AdminHomeBannerControllerTest extends TestCase
         $this->assertDatabaseMissing('home_banners', ['id' => $bannerId]);
     }
 
+    public function test_admin_can_create_a_banner_with_no_overlay_text(): void
+    {
+        // A banner image can already carry its own baked-in design and copy,
+        // so title (and every other overlay field) is optional.
+        $admin = $this->makeAdmin();
+
+        $response = $this->withHeaders($this->authHeader($admin))->postJson('/api/admin/home-banners', [
+            'imagePath' => 'banners/fully-designed.jpg',
+            'linkType' => 'catalog',
+        ]);
+
+        $response->assertCreated()->assertJsonPath('data.title', '');
+
+        $this->assertDatabaseHas('home_banners', [
+            'id' => $response->json('data.id'),
+            'title' => '',
+        ]);
+    }
+
     public function test_updating_a_missing_banner_returns_404(): void
     {
         $admin = $this->makeAdmin();

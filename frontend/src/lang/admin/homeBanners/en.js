@@ -8,6 +8,7 @@ export default {
   table: {
     preview: "Preview",
     title: "Title",
+    noTitle: "(no overlay text)",
     link: "Link",
     order: "Order",
     status: "Status",
@@ -24,6 +25,8 @@ export default {
     imageLabel: "Image",
     uploading: "Uploading...",
     uploadPrompt: "Upload image (required)",
+    overlayHint:
+      "Badge/subtitle/title/description are overlaid on top of the image and all optional. Leave them blank if the image already has its own design and text - fill them in only for a plain background image.",
     badgeLabel: "Badge",
     badgePlaceholder: "e.g. New",
     subtitleLabel: "Subtitle",
