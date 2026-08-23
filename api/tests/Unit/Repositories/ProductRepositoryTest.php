@@ -91,14 +91,38 @@ class ProductRepositoryTest extends TestCase
         $this->assertDatabaseHas('products', ['id' => $product->id, 'status' => 'active']);
     }
 
-    public function test_delete_removes_the_product_and_returns_true(): void
+    public function test_delete_soft_deletes_the_product_and_returns_true(): void
     {
         $product = $this->makeProduct();
 
         $result = $this->repository->delete($product);
 
         $this->assertTrue($result);
-        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+        $this->assertNull(Product::find($product->id));
+        $this->assertNotNull(Product::withTrashed()->find($product->id)->deleted_at);
+    }
+
+    public function test_delete_also_soft_deletes_the_products_variants(): void
+    {
+        $product = $this->makeProduct();
+        $variant = $this->makeVariant($product, 100);
+
+        $this->repository->delete($product);
+
+        $this->assertNull(ProductVariant::find($variant->id));
+        $this->assertNotNull(ProductVariant::withTrashed()->find($variant->id)->deleted_at);
+    }
+
+    public function test_delete_frees_up_the_slug_for_reuse(): void
+    {
+        $product = $this->makeProduct(['slug' => 'discontinued-product']);
+
+        $this->repository->delete($product);
+
+        $this->assertFalse($this->repository->slugExists('discontinued-product'));
+
+        $reusedSlugProduct = $this->makeProduct(['slug' => 'discontinued-product']);
+        $this->assertSame('discontinued-product', $reusedSlugProduct->slug);
     }
 
     public function test_slug_exists_returns_true_when_a_product_has_the_slug(): void

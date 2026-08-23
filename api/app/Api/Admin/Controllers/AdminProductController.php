@@ -2,12 +2,18 @@
 
 namespace App\Api\Admin\Controllers;
 
+use App\Api\Admin\Actions\Product\BulkDeleteAdminProductsAction;
+use App\Api\Admin\Actions\Product\BulkUpdateProductCategoryAction;
+use App\Api\Admin\Actions\Product\BulkUpdateProductStatusAction;
 use App\Api\Admin\Actions\Product\CreateAdminProductAction;
 use App\Api\Admin\Actions\Product\DeleteAdminProductAction;
 use App\Api\Admin\Actions\Product\ListAdminProductsAction;
 use App\Api\Admin\Actions\Product\UpdateAdminProductAction;
 use App\Api\Admin\Actions\Product\UploadProductImageAction;
 use App\Api\Admin\Dto\ProductDto;
+use App\Api\Admin\Requests\BulkDeleteProductsRequest;
+use App\Api\Admin\Requests\BulkUpdateProductCategoryRequest;
+use App\Api\Admin\Requests\BulkUpdateProductStatusRequest;
 use App\Api\Admin\Requests\StoreProductRequest;
 use App\Api\Admin\Requests\UpdateProductRequest;
 use App\Api\Admin\Requests\UploadProductImageRequest;
@@ -50,5 +56,26 @@ class AdminProductController extends BaseApiController
         $result = $action->execute($request->file('image'));
 
         return self::successfulResponseWithData($result);
+    }
+
+    public function bulkDestroy(BulkDeleteProductsRequest $request, BulkDeleteAdminProductsAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'));
+
+        return self::successfulResponseWithData(['deleted' => $count]);
+    }
+
+    public function bulkUpdateStatus(BulkUpdateProductStatusRequest $request, BulkUpdateProductStatusAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'), $request->input('status'));
+
+        return self::successfulResponseWithData(['updated' => $count]);
+    }
+
+    public function bulkUpdateCategory(BulkUpdateProductCategoryRequest $request, BulkUpdateProductCategoryAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'), (int) $request->input('categoryId'));
+
+        return self::successfulResponseWithData(['updated' => $count]);
     }
 }

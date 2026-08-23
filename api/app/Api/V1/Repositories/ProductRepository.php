@@ -38,6 +38,14 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function delete(Product $product): bool
     {
+        // Both products and product_variants are soft-deleted so an order
+        // placed against this product keeps order_items.variant_id pointing
+        // at a real (if hidden) row instead of losing the reference - but
+        // the products -> product_variants foreign key's cascadeOnDelete is
+        // a hard-delete trigger, so it never fires for a soft delete. The
+        // variants have to be soft-deleted explicitly here.
+        $product->variants()->delete();
+
         return (bool) $product->delete();
     }
 
@@ -89,7 +97,7 @@ class ProductRepository implements ProductRepositoryInterface
      * compiles to a plain `ORDER BY RANDOM()`, so a DB-level seeded order would
      * silently reshuffle on every request instead of staying stable for the hour.
      */
-    public function getSeededHotDeals(int $limit, int $seed): Collection
+    public function getSeededHotDeals(int $limit, int $seed): \Illuminate\Support\Collection
     {
         $ids = $this->hotDealsQuery()->orderBy('id')->pluck('id')->all();
 
@@ -106,7 +114,7 @@ class ProductRepository implements ProductRepositoryInterface
         return $this->hotDealsQuery()
             ->whereIn('id', $selectedIds)
             ->get()
-            ->sortBy(fn (Product $product) => array_search($product->id, $selectedIds))
+            ->sortBy(fn (Product $product) => array_search($product->id, $selectedIds, true))
             ->values();
     }
 
@@ -189,7 +197,7 @@ class ProductRepository implements ProductRepositoryInterface
         if ($related->count() < $limit) {
             $excludeIds = $related->pluck('id')->push($product->id)->all();
             $related = $related->concat(
-                $this->getRandomFallback($excludeIds, $limit - $related->count())
+                (array)$this->getRandomFallback($excludeIds, $limit - $related->count())
             );
         }
 
