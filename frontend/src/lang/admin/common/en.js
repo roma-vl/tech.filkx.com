@@ -2,7 +2,15 @@ export default {
   aboutPage: "About this page",
   filter: "Filter",
   no_data: "No Data Found",
+  no_data_filters: "Try adjusting your filters",
   loadingData: "Loading data...",
+  close: "Close",
+  hide_stack: "Hide details",
+  show_stack: "Show details",
+  actions: {
+    edit: "Edit",
+    delete: "Delete",
+  },
   view: "View",
   confirmModal: {
     title: "Confirmation",

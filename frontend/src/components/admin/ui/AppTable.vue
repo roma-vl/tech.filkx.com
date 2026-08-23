@@ -3,7 +3,7 @@
     <div
       class="md:hidden text-xs text-gray-500 dark:text-gray-400 px-4 mb-2 text-center"
     >
-      {{ $t("ui.swipe_hint", "← Swipe to see more →") }}
+      {{ $t("admin.common.dataGrid.swipeHint") }}
     </div>
 
     <div
@@ -125,8 +125,8 @@
             <tr v-if="processedItems.length === 0">
               <td :colspan="visibleHeadings.length">
                 <AppEmptyState
-                  :title="emptyText || $t('ui.no_data')"
-                  :description="$t('ui.no_data_filters')"
+                  :title="emptyText || $t('admin.common.no_data')"
+                  :description="$t('admin.common.no_data_filters')"
                   class="py-12"
                 />
               </td>

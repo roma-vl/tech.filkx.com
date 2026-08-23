@@ -86,7 +86,7 @@
             v-if="!invoice.items || invoice.items.length === 0"
             class="text-center text-gray-500 text-sm italic"
           >
-            {{ $t("common.no_data") }}
+            {{ $t("admin.common.no_data") }}
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@
 
     <template #footer>
       <AppButton variant="secondary" @click="$emit('update:modelValue', false)">
-        {{ $t("common.close") || "Close" }}
+        {{ $t("admin.common.close") }}
       </AppButton>
     </template>
   </AppModal>

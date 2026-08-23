@@ -191,8 +191,8 @@ export default {
       name: "admin-promotions",
       component: AdminPromotions,
       meta: {
-        titleKey: "admin.promotions.title",
-        descriptionKey: "admin.promotions.description",
+        titleKey: "admin.marketing.promotions.title",
+        descriptionKey: "admin.marketing.promotions.description",
       },
     },
     {

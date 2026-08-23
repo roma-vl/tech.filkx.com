@@ -36,7 +36,7 @@
         :headers="columns"
         :items="ledgerData.data"
         :loading="loading"
-        :empty-text="$t('common.no_data')"
+        :empty-text="$t('admin.common.no_data')"
       >
         <template #row="{ item }">
           <td

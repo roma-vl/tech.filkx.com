@@ -8,6 +8,8 @@ import accounting from "./accounting/en";
 import common from "./common/en";
 import notifications from "./notifications/en";
 import products from "./products/en";
+import categories from "./categories/en";
+import brands from "./brands/en";
 import orders from "./orders/en";
 import users from "./users/en";
 import impersonation from "./impersonation/en";
@@ -34,6 +36,8 @@ export default {
   common,
   notifications,
   products,
+  categories,
+  brands,
   orders,
   users,
   impersonation,

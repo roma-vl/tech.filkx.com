@@ -5,6 +5,8 @@ export default {
   create_permission: "Create Permission",
   create_role: "Create New Role",
   delete_role: "Delete",
+  view_grid: "Grid view",
+  view_list: "List view",
   loading_roles: "Loading roles and permissions...",
   table: {
     role_name: "Role Name",
