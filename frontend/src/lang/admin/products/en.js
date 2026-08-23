@@ -161,11 +161,14 @@ export default {
       },
       alerts: {
         deleteSuccess: "Deleted {count} products",
-        deleteError: "Failed to delete the selected products. Please try again.",
+        deleteError:
+          "Failed to delete the selected products. Please try again.",
         statusSuccess: "Updated status for {count} products",
-        statusError: "Failed to update the status of the selected products. Please try again.",
+        statusError:
+          "Failed to update the status of the selected products. Please try again.",
         categorySuccess: "Updated category for {count} products",
-        categoryError: "Failed to update the category of the selected products. Please try again.",
+        categoryError:
+          "Failed to update the category of the selected products. Please try again.",
       },
     },
     export: {

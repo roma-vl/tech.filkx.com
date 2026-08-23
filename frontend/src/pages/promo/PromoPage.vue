@@ -36,7 +36,9 @@
     <!-- Content -->
     <template v-else>
       <!-- Hero header -->
-      <section class="relative aspect-video md:aspect-auto md:h-80 overflow-hidden">
+      <section
+        class="relative aspect-video md:aspect-auto md:h-80 overflow-hidden"
+      >
         <img
           class="absolute inset-0 w-full h-full object-cover opacity-60"
           :src="promoPage.imageUrl"

@@ -246,8 +246,14 @@
               :placeholder="t('admin.products.list.filters.allStock')"
               :options="[
                 { id: '', name: t('admin.products.list.filters.allStock') },
-                { id: 'inStock', name: t('admin.products.list.filters.inStock') },
-                { id: 'outOfStock', name: t('admin.products.list.filters.outOfStock') },
+                {
+                  id: 'inStock',
+                  name: t('admin.products.list.filters.inStock'),
+                },
+                {
+                  id: 'outOfStock',
+                  name: t('admin.products.list.filters.outOfStock'),
+                },
               ]"
               option-value="id"
               option-label="name"
@@ -259,8 +265,14 @@
               :placeholder="t('admin.products.list.filters.allImages')"
               :options="[
                 { id: '', name: t('admin.products.list.filters.allImages') },
-                { id: 'with', name: t('admin.products.list.filters.withImage') },
-                { id: 'without', name: t('admin.products.list.filters.withoutImage') },
+                {
+                  id: 'with',
+                  name: t('admin.products.list.filters.withImage'),
+                },
+                {
+                  id: 'without',
+                  name: t('admin.products.list.filters.withoutImage'),
+                },
               ]"
               option-value="id"
               option-label="name"
@@ -312,8 +324,14 @@
           v-if="selectedIds.length > 0"
           class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl border border-primary-200 dark:border-primary-800 flex flex-wrap items-center gap-3"
         >
-          <span class="text-sm font-bold text-primary-700 dark:text-primary-300">
-            {{ t("admin.products.list.bulk.selectedCount", { count: selectedIds.length }) }}
+          <span
+            class="text-sm font-bold text-primary-700 dark:text-primary-300"
+          >
+            {{
+              t("admin.products.list.bulk.selectedCount", {
+                count: selectedIds.length,
+              })
+            }}
           </span>
 
           <AppButton
@@ -352,9 +370,18 @@
               class="min-w-[160px]"
               :placeholder="t('admin.products.list.bulk.statusPlaceholder')"
               :options="[
-                { id: 'active', name: t('admin.products.list.filters.statusActive') },
-                { id: 'draft', name: t('admin.products.list.filters.statusDraft') },
-                { id: 'hidden', name: t('admin.products.list.filters.statusHidden') },
+                {
+                  id: 'active',
+                  name: t('admin.products.list.filters.statusActive'),
+                },
+                {
+                  id: 'draft',
+                  name: t('admin.products.list.filters.statusDraft'),
+                },
+                {
+                  id: 'hidden',
+                  name: t('admin.products.list.filters.statusHidden'),
+                },
               ]"
               option-value="id"
               option-label="name"
@@ -725,7 +752,10 @@ const deletingProduct = ref(false);
 // Pagination logic
 const currentPage = ref(1);
 const perPage = ref(15);
-const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({ id: n, name: String(n) }));
+const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({
+  id: n,
+  name: String(n),
+}));
 
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * perPage.value;
@@ -734,7 +764,10 @@ const paginatedProducts = computed(() => {
 
 const paginationMeta = computed(() => ({
   current_page: currentPage.value,
-  last_page: Math.max(1, Math.ceil(filteredProducts.value.length / perPage.value)),
+  last_page: Math.max(
+    1,
+    Math.ceil(filteredProducts.value.length / perPage.value),
+  ),
   per_page: perPage.value,
   total: filteredProducts.value.length,
 }));
@@ -821,7 +854,9 @@ const confirmBulkDelete = async () => {
     clearSelection();
     showBulkDeleteModal.value = false;
     emit("refresh");
-    toast.success(t("admin.products.list.bulk.alerts.deleteSuccess", { count }));
+    toast.success(
+      t("admin.products.list.bulk.alerts.deleteSuccess", { count }),
+    );
   } catch (error) {
     console.error("Failed to bulk delete products:", error);
     toast.error(t("admin.products.list.bulk.alerts.deleteError"));
@@ -842,7 +877,9 @@ const applyBulkStatus = async () => {
     clearSelection();
     bulkStatusValue.value = "";
     emit("refresh");
-    toast.success(t("admin.products.list.bulk.alerts.statusSuccess", { count }));
+    toast.success(
+      t("admin.products.list.bulk.alerts.statusSuccess", { count }),
+    );
   } catch (error) {
     console.error("Failed to bulk update product status:", error);
     toast.error(t("admin.products.list.bulk.alerts.statusError"));
@@ -863,7 +900,9 @@ const applyBulkCategory = async () => {
     clearSelection();
     bulkCategoryValue.value = "";
     emit("refresh");
-    toast.success(t("admin.products.list.bulk.alerts.categorySuccess", { count }));
+    toast.success(
+      t("admin.products.list.bulk.alerts.categorySuccess", { count }),
+    );
   } catch (error) {
     console.error("Failed to bulk update product category:", error);
     toast.error(t("admin.products.list.bulk.alerts.categoryError"));

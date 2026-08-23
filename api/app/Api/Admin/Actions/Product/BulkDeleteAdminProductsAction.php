@@ -14,7 +14,7 @@ class BulkDeleteAdminProductsAction
     /**
      * @param  array<int>  $ids
      * @return int Number of products actually deleted (ids that no longer
-     *              existed are silently skipped rather than failing the batch).
+     *             existed are silently skipped rather than failing the batch).
      */
     public function execute(array $ids): int
     {

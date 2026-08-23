@@ -16,6 +16,7 @@ class RestoreAdminProductActionTest extends TestCase
     use RefreshDatabase;
 
     private RestoreAdminProductAction $action;
+
     private ProductRepository $repository;
 
     protected function setUp(): void

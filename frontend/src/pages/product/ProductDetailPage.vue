@@ -212,7 +212,11 @@
             :key="related.id"
             class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start"
           >
-            <ProductCard :product="related" view-mode="grid" :scale-on-hover="false" />
+            <ProductCard
+              :product="related"
+              view-mode="grid"
+              :scale-on-hover="false"
+            />
           </div>
         </div>
       </section>
@@ -259,7 +263,11 @@
             :key="viewed.id"
             class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start"
           >
-            <ProductCard :product="viewed" view-mode="grid" :scale-on-hover="false" />
+            <ProductCard
+              :product="viewed"
+              view-mode="grid"
+              :scale-on-hover="false"
+            />
           </div>
         </div>
       </section>
