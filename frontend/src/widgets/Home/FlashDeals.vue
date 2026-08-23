@@ -123,8 +123,9 @@ const formatNumber = (num: number) => {
           :key="prod.id"
           class="bg-white dark:bg-zinc-900 group relative flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:border hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10] hover:shadow-2xl transition-all duration-200"
         >
-          <!-- Sale Badge -->
-          <div class="absolute top-3 left-3 z-10">
+          <!-- Sale Badge (only for products with an actual discount - is_hot alone
+               doesn't imply one) -->
+          <div v-if="prod.discount" class="absolute top-3 left-3 z-10">
             <span
               class="bg-rose-600 text-white px-2.5 py-0.5 rounded font-black text-xs shadow-sm"
             >
