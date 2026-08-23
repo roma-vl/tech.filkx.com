@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -17,30 +18,47 @@ import AccountNotificationsTab from "@/widgets/Account/tabs/AccountNotifications
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const activeTab = computed(() => (route.query.tab as string) || "dashboard");
 
-const tabTitles: Record<string, string> = {
-  dashboard: "Панель керування",
-  orders: "Історія замовлень",
-  favorites: "Моє обране",
-  compare: "Порівняння товарів",
-  viewed: "Історія переглядів",
-  settings: "Налаштування профілю",
-  support: "Служба підтримки",
-  notifications: "Сповіщення та новини",
-};
+const tabTitles = computed<Record<string, string>>(() => ({
+  dashboard: t("account.nav.dashboard"),
+  orders: t("account.nav.orders"),
+  favorites: t("account.nav.favorites"),
+  compare: t("account.nav.compare"),
+  viewed: t("account.nav.viewed"),
+  settings: t("account.page.titles.settings"),
+  support: t("account.page.titles.support"),
+  notifications: t("account.page.titles.notifications"),
+}));
 
-const navTabs = [
-  { label: "Панель", icon: "dashboard", tab: "dashboard" },
-  { label: "Замовлення", icon: "shopping_bag", tab: "orders" },
-  { label: "Обране", icon: "favorite", tab: "favorites" },
-  { label: "Порівняння", icon: "compare_arrows", tab: "compare" },
-  { label: "Перегляди", icon: "history", tab: "viewed" },
-  { label: "Сповіщення", icon: "notifications", tab: "notifications" },
-  { label: "Налаштування", icon: "settings", tab: "settings" },
-  { label: "Підтримка", icon: "help", tab: "support" },
-];
+const navTabs = computed(() => [
+  {
+    label: t("account.nav.dashboardShort"),
+    icon: "dashboard",
+    tab: "dashboard",
+  },
+  { label: t("account.nav.ordersShort"), icon: "shopping_bag", tab: "orders" },
+  {
+    label: t("account.nav.favoritesShort"),
+    icon: "favorite",
+    tab: "favorites",
+  },
+  {
+    label: t("account.nav.compareShort"),
+    icon: "compare_arrows",
+    tab: "compare",
+  },
+  { label: t("account.nav.viewedShort"), icon: "history", tab: "viewed" },
+  {
+    label: t("account.nav.notifications"),
+    icon: "notifications",
+    tab: "notifications",
+  },
+  { label: t("account.nav.settings"), icon: "settings", tab: "settings" },
+  { label: t("account.nav.support"), icon: "help", tab: "support" },
+]);
 
 const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
@@ -80,12 +98,12 @@ onMounted(() => {
           <p
             class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1"
           >
-            Особистий кабінет
+            {{ t("account.page.eyebrow") }}
           </p>
           <h1
             class="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
           >
-            {{ tabTitles[activeTab] || "Кабінет" }}
+            {{ tabTitles[activeTab] || t("account.page.fallbackTitle") }}
           </h1>
         </div>
       </header>

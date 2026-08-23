@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter, useRoute, RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -8,14 +9,17 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
-const userName = computed(() => authStore.user?.name || "Гість");
+const userName = computed(
+  () => authStore.user?.name || t("account.drawer.guestName"),
+);
 const userEmail = computed(
-  () => authStore.user?.email || "Авторизуйтесь для доступу",
+  () => authStore.user?.email || t("account.drawer.guestEmailPrompt"),
 );
 const userInitials = computed(() => {
   const name = authStore.user?.name || "";
-  if (!name) return "Г";
+  if (!name) return t("account.drawer.guestInitial");
   return name
     .split(" ")
     .map((n) => n[0])
@@ -41,7 +45,7 @@ interface NavItem {
 const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [
     {
-      name: "Кошик",
+      name: t("account.drawer.cart"),
       icon: "shopping_cart",
       action: () => cartStore.openDrawer("cart"),
       badgeKey: "cartCount",
@@ -64,7 +68,7 @@ const navItems = computed<NavItem[]>(() => {
 
     if (hasAdminAccess) {
       items.push({
-        name: "Адмін панель",
+        name: t("account.nav.adminPanel"),
         icon: "admin_panel_settings",
         routeName: "admin-dashboard",
       });
@@ -72,12 +76,12 @@ const navItems = computed<NavItem[]>(() => {
 
     items.push(
       {
-        name: "Панель керування",
+        name: t("account.nav.dashboard"),
         icon: "dashboard",
         query: { tab: "dashboard" },
       },
       {
-        name: "Історія замовлень",
+        name: t("account.nav.orders"),
         icon: "shopping_bag",
         query: { tab: "orders" },
       },
@@ -87,23 +91,27 @@ const navItems = computed<NavItem[]>(() => {
   // These work for both guests and authenticated users
   items.push(
     {
-      name: "Моє обране",
+      name: t("account.nav.favorites"),
       icon: "favorite",
       query: { tab: "favorites" },
       badgeKey: "wishlistCount",
     },
     {
-      name: "Порівняння товарів",
+      name: t("account.nav.compare"),
       icon: "compare_arrows",
       query: { tab: "compare" },
       badgeKey: "compareCount",
     },
-    { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
+    {
+      name: t("account.nav.viewed"),
+      icon: "history",
+      query: { tab: "viewed" },
+    },
   );
 
   if (authStore.isAuthenticated) {
     items.push({
-      name: "Сповіщення",
+      name: t("account.nav.notifications"),
       icon: "notifications",
       query: { tab: "notifications" },
       badgeKey: "unreadNotificationsCount",
@@ -118,7 +126,7 @@ const footerItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
   if (authStore.isAuthenticated) {
     items.push({
-      name: "Налаштування",
+      name: t("account.nav.settings"),
       icon: "settings",
       query: { tab: "settings" },
     });
@@ -210,7 +218,7 @@ const getRouteTo = (item: NavItem) => {
             @click="closeDrawer()"
           >
             <span class="material-symbols-outlined text-[20px]">category</span>
-            Каталог товарів
+            {{ t("account.drawer.catalogCta") }}
           </RouterLink>
 
           <!-- Perk Cards (same promos as the desktop account sidebar) -->
@@ -230,12 +238,12 @@ const getRouteTo = (item: NavItem) => {
                 <h4
                   class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
                 >
-                  Верифікований клієнт
+                  {{ t("account.sidebar.perks.verifiedClient.title") }}
                 </h4>
                 <p
                   class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
                 >
-                  Доступ до ексклюзивних акцій
+                  {{ t("account.sidebar.perks.verifiedClient.subtitle") }}
                 </p>
               </div>
             </div>
@@ -254,12 +262,12 @@ const getRouteTo = (item: NavItem) => {
                 <h4
                   class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
                 >
-                  Програма лояльності
+                  {{ t("account.sidebar.perks.loyaltyProgram.title") }}
                 </h4>
                 <p
                   class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
                 >
-                  Бонуси з кожного замовлення
+                  {{ t("account.sidebar.perks.loyaltyProgram.subtitle") }}
                 </p>
               </div>
             </div>
@@ -274,9 +282,9 @@ const getRouteTo = (item: NavItem) => {
             <span class="material-symbols-outlined text-[20px] text-zinc-500"
               >help</span
             >
-            <span class="font-bold text-sm text-zinc-800 dark:text-zinc-200"
-              >Довідковий центр</span
-            >
+            <span class="font-bold text-sm text-zinc-800 dark:text-zinc-200">{{
+              t("account.drawer.supportCard")
+            }}</span>
           </RouterLink>
 
           <!-- User Profile Card -->
@@ -317,7 +325,7 @@ const getRouteTo = (item: NavItem) => {
               @click="closeDrawer()"
             >
               <span class="material-symbols-outlined text-[16px]">login</span>
-              Увійти
+              {{ t("account.drawer.guestLogin") }}
             </RouterLink>
             <RouterLink
               to="/register"
@@ -327,7 +335,7 @@ const getRouteTo = (item: NavItem) => {
               <span class="material-symbols-outlined text-[16px]"
                 >person_add</span
               >
-              Реєстрація
+              {{ t("account.drawer.guestRegister") }}
             </RouterLink>
           </div>
 
@@ -437,7 +445,7 @@ const getRouteTo = (item: NavItem) => {
           @click="handleLogout"
         >
           <span class="material-symbols-outlined text-[20px]">logout</span>
-          <span class="tracking-wide">Вийти з акаунту</span>
+          <span class="tracking-wide">{{ t("account.nav.logout") }}</span>
         </button>
       </div>
     </div>

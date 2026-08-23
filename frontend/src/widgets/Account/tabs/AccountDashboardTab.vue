@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/shared/services/api/apiClient";
@@ -9,6 +10,7 @@ import { UiButton } from "@/shared/ui";
 const router = useRouter();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const ordersList = ref<any[]>([]);
 const isLoading = ref(false);
@@ -41,7 +43,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
       <button
         v-for="stat in [
           {
-            label: 'Замовлень',
+            label: t('account.dashboard.stats.orders'),
             value: isLoading ? null : ordersList.length,
             icon: 'shopping_bag',
             tab: 'orders',
@@ -49,7 +51,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
             bg: 'bg-emerald-50 dark:bg-emerald-900/20',
           },
           {
-            label: 'В обраному',
+            label: t('account.dashboard.stats.favorites'),
             value: cartStore.wishlistCount,
             icon: 'favorite',
             tab: 'favorites',
@@ -57,7 +59,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
             bg: 'bg-rose-50 dark:bg-rose-900/20',
           },
           {
-            label: 'В порівнянні',
+            label: t('account.dashboard.stats.compare'),
             value: cartStore.compareCount,
             icon: 'compare_arrows',
             tab: 'compare',
@@ -65,7 +67,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
             bg: 'bg-blue-50 dark:bg-blue-900/20',
           },
           {
-            label: 'Сповіщень',
+            label: t('account.dashboard.stats.notifications'),
             value: cartStore.unreadNotificationsCount,
             icon: 'notifications',
             tab: 'notifications',
@@ -118,34 +120,34 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
       <h3
         class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4"
       >
-        Швидкий доступ
+        {{ t("account.dashboard.quickAccess.title") }}
       </h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <button
           v-for="action in [
             {
-              label: 'До каталогу',
+              label: t('account.dashboard.quickAccess.catalog'),
               icon: 'storefront',
               color: 'text-[#00a046]',
               bg: 'bg-emerald-50 dark:bg-emerald-900/20',
               fn: () => router.push('/catalog'),
             },
             {
-              label: 'Мої замовлення',
+              label: t('account.dashboard.quickAccess.myOrders'),
               icon: 'receipt_long',
               color: 'text-[#00a046]',
               bg: 'bg-emerald-50 dark:bg-emerald-900/20',
               fn: () => go('orders'),
             },
             {
-              label: 'Налаштування',
+              label: t('account.dashboard.quickAccess.settings'),
               icon: 'manage_accounts',
               color: 'text-zinc-500 dark:text-zinc-400',
               bg: 'bg-zinc-100 dark:bg-zinc-800',
               fn: () => go('settings'),
             },
             {
-              label: 'Підтримка',
+              label: t('account.dashboard.quickAccess.support'),
               icon: 'support_agent',
               color: 'text-blue-500',
               bg: 'bg-blue-50 dark:bg-blue-900/20',
@@ -180,13 +182,13 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
         <h2
           class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white"
         >
-          Останні замовлення
+          {{ t("account.dashboard.recentOrders.title") }}
         </h2>
         <router-link
           :to="{ name: 'account', query: { tab: 'orders' } }"
           class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-extrabold flex items-center gap-1 transition-colors"
         >
-          Усі замовлення
+          {{ t("account.dashboard.recentOrders.viewAll") }}
           <span class="material-symbols-outlined text-[16px]"
             >chevron_right</span
           >
@@ -264,7 +266,7 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
               :to="{ name: 'account', query: { tab: 'orders' } }"
               class="text-[#00a046] hover:text-[#00b050] font-extrabold text-xs transition-colors"
             >
-              Детальніше
+              {{ t("account.dashboard.recentOrders.details") }}
             </router-link>
           </div>
           <div class="p-4 sm:p-6">
@@ -300,7 +302,11 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                   v-if="(item as any).returnWindow"
                   class="text-xs text-zinc-500 dark:text-zinc-400 mt-1"
                 >
-                  Повернення можливе до {{ (item as any).returnWindow }}
+                  {{
+                    t("account.dashboard.recentOrders.returnWindow", {
+                      date: (item as any).returnWindow,
+                    })
+                  }}
                 </p>
                 <div class="flex flex-wrap gap-2 mt-2.5">
                   <UiButton
@@ -309,10 +315,10 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
                     size="sm"
                     @click="go('orders')"
                   >
-                    Відстежити
+                    {{ t("account.dashboard.recentOrders.track") }}
                   </UiButton>
                   <UiButton size="sm" @click="cartStore.addToCart(item as any)">
-                    Повторити
+                    {{ t("account.dashboard.recentOrders.reorder") }}
                   </UiButton>
                 </div>
               </div>
@@ -331,13 +337,13 @@ const go = (tab: string) => router.push({ name: "account", query: { tab } });
           >shopping_bag</span
         >
         <p class="text-zinc-500 dark:text-zinc-400 text-sm font-bold">
-          У вас ще немає замовлень
+          {{ t("account.dashboard.empty.title") }}
         </p>
         <p class="text-zinc-400 dark:text-zinc-500 text-xs mt-1">
-          Оформіть своє перше замовлення в магазині!
+          {{ t("account.dashboard.empty.subtitle") }}
         </p>
         <UiButton :to="{ name: 'catalog' }" class="mt-4">
-          Перейти до каталогу
+          {{ t("account.dashboard.empty.cta") }}
         </UiButton>
       </div>
     </section>

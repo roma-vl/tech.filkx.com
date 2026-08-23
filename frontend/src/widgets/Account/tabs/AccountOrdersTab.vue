@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/shared/services/api/apiClient";
 import { UiButton } from "@/shared/ui";
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 interface TrackingStep {
   name: string;
@@ -155,13 +157,13 @@ const filteredOrders = computed(() =>
 const isCancelling = ref<Record<string, boolean>>({});
 
 const cancelOrderAction = async (order: Order) => {
-  if (!confirm("Ви впевнені, що хочете скасувати це замовлення?")) return;
+  if (!confirm(t("account.orders.cancelConfirm.message"))) return;
 
   isCancelling.value[order.id] = true;
   try {
     const response = await api.post(`/user/orders/${order.dbId}/cancel`);
     if (response.data && response.data.status === "success") {
-      cartStore.addToast("Замовлення успішно скасовано", "success");
+      cartStore.addToast(t("account.orders.toasts.cancelSuccess"), "success");
       await fetchOrders();
       if (selectedOrder.value && selectedOrder.value.id === order.id) {
         selectedOrder.value =
@@ -169,14 +171,14 @@ const cancelOrderAction = async (order: Order) => {
       }
     } else {
       cartStore.addToast(
-        response.data.message || "Помилка при скасуванні замовлення",
+        response.data.message || t("account.orders.toasts.cancelError"),
         "error",
       );
     }
   } catch (error: any) {
     console.error("Failed to cancel order:", error);
     const msg =
-      error.response?.data?.message || "Не вдалося скасувати замовлення";
+      error.response?.data?.message || t("account.orders.toasts.cancelFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isCancelling.value[order.id] = false;
@@ -268,26 +270,27 @@ const submitReview = async () => {
     );
 
     const successMsg = isEditMode.value
-      ? "Відгук успішно оновлено."
-      : "Дякуємо! Ваш відгук успішно опубліковано.";
+      ? t("account.orders.toasts.reviewUpdated")
+      : t("account.orders.toasts.reviewCreated");
     cartStore.addToast(successMsg, "success");
     await fetchUserReviews();
     isReviewOpen.value = false;
   } catch (e: any) {
-    const msg = e.response?.data?.message || "Не вдалося надіслати відгук.";
+    const msg =
+      e.response?.data?.message || t("account.orders.toasts.reviewFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isSubmittingReview.value = false;
   }
 };
 
-const filterBtns = [
-  { key: "all", label: "Усі" },
-  { key: "processing", label: "В обробці" },
-  { key: "shipped", label: "В дорозі" },
-  { key: "delivered", label: "Доставлені" },
-  { key: "cancelled", label: "Скасовані" },
-];
+const filterBtns = computed(() => [
+  { key: "all", label: t("account.orders.filters.all") },
+  { key: "processing", label: t("account.orders.filters.processing") },
+  { key: "shipped", label: t("account.orders.filters.shipped") },
+  { key: "delivered", label: t("account.orders.filters.delivered") },
+  { key: "cancelled", label: t("account.orders.filters.cancelled") },
+]);
 </script>
 
 <template>
@@ -321,7 +324,7 @@ const filterBtns = [
         <input
           v-model="ordersSearchQuery"
           type="text"
-          placeholder="Пошук замовлень за номером або назвою товару..."
+          :placeholder="t('account.orders.searchPlaceholder')"
           class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg pl-10 pr-4 py-2.5 text-xs md:text-sm focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] text-zinc-800 dark:text-zinc-200 outline-none"
         />
         <button
@@ -343,7 +346,7 @@ const filterBtns = [
         class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#00a046]"
       />
       <p class="text-zinc-500 dark:text-zinc-400 font-medium">
-        Завантаження замовлень...
+        {{ t("account.orders.loading") }}
       </p>
     </div>
 
@@ -362,7 +365,7 @@ const filterBtns = [
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Оформлено
+                {{ t("account.orders.card.placedOn") }}
               </p>
               <p
                 class="font-bold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5"
@@ -374,7 +377,7 @@ const filterBtns = [
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Сума замовлення
+                {{ t("account.orders.card.total") }}
               </p>
               <p
                 class="font-black text-zinc-900 dark:text-white text-sm mt-0.5"
@@ -386,7 +389,7 @@ const filterBtns = [
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
               >
-                Отримувач
+                {{ t("account.orders.card.recipient") }}
               </p>
               <p
                 class="font-bold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5"
@@ -398,7 +401,7 @@ const filterBtns = [
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5"
               >
-                Статус
+                {{ t("account.orders.card.status") }}
               </p>
               <span
                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider"
@@ -415,13 +418,13 @@ const filterBtns = [
             <p
               class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider"
             >
-              Замовлення №{{ order.id }}
+              {{ t("account.orders.card.orderNumber", { id: order.id }) }}
             </p>
             <button
               class="text-[#00a046] hover:text-[#00b050] font-extrabold text-xs md:text-sm hover:underline"
               @click="openDetails(order)"
             >
-              Детальніше
+              {{ t("account.orders.card.details") }}
             </button>
             <button
               v-if="
@@ -437,7 +440,11 @@ const filterBtns = [
               :disabled="isCancelling[order.id]"
               @click="cancelOrderAction(order)"
             >
-              {{ isCancelling[order.id] ? "Скасування..." : "Скасувати" }}
+              {{
+                isCancelling[order.id]
+                  ? t("account.orders.card.cancelling")
+                  : t("account.orders.card.cancel")
+              }}
             </button>
           </div>
         </div>
@@ -474,7 +481,11 @@ const filterBtns = [
                 v-if="item.returnWindow"
                 class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 mt-1.5"
               >
-                Повернення можливе до {{ item.returnWindow }}
+                {{
+                  t("account.orders.card.returnWindow", {
+                    date: item.returnWindow,
+                  })
+                }}
               </p>
               <p
                 v-if="item.note"
@@ -484,7 +495,7 @@ const filterBtns = [
               </p>
               <div class="mt-5 flex gap-3 flex-wrap">
                 <UiButton size="sm" @click="buyItAgain(item)">
-                  Купити знову
+                  {{ t("account.orders.card.buyAgain") }}
                 </UiButton>
                 <UiButton
                   v-if="order.statusCode === 'delivered'"
@@ -499,8 +510,8 @@ const filterBtns = [
                   </template>
                   {{
                     userReviewsMap[item.slug]
-                      ? "Редагувати відгук"
-                      : "Написати відгук"
+                      ? t("account.orders.card.editReview")
+                      : t("account.orders.card.writeReview")
                   }}
                 </UiButton>
                 <UiButton
@@ -514,7 +525,7 @@ const filterBtns = [
                       >track_changes</span
                     >
                   </template>
-                  Відстежити
+                  {{ t("account.orders.card.track") }}
                 </UiButton>
               </div>
             </div>
@@ -531,15 +542,15 @@ const filterBtns = [
         >shopping_bag</span
       >
       <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
-        Замовлень не знайдено
+        {{ t("account.orders.empty.title") }}
       </h3>
       <p
         class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-2"
       >
-        Спробуйте змінити фільтр або пошуковий запит.
+        {{ t("account.orders.empty.subtitle") }}
       </p>
       <UiButton :to="{ name: 'catalog' }" class="mt-6">
-        Перейти до каталогу
+        {{ t("account.orders.empty.cta") }}
       </UiButton>
     </div>
   </div>
@@ -557,12 +568,17 @@ const filterBtns = [
       >
         <div>
           <h3 class="font-black text-lg text-zinc-900 dark:text-white">
-            Деталі замовлення
+            {{ t("account.orders.detailsModal.title") }}
           </h3>
           <p
             class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-0.5"
           >
-            Замовлення №{{ selectedOrder.id }} • {{ selectedOrder.date }}
+            {{
+              t("account.orders.detailsModal.orderMeta", {
+                id: selectedOrder.id,
+                date: selectedOrder.date,
+              })
+            }}
           </p>
         </div>
         <button
@@ -579,7 +595,7 @@ const filterBtns = [
           <h4
             class="font-extrabold text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-wider mb-2"
           >
-            Придбані товари
+            {{ t("account.orders.detailsModal.purchasedItems") }}
           </h4>
           <div
             v-for="item in selectedOrder.items"
@@ -611,11 +627,15 @@ const filterBtns = [
               <p
                 class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-0.5"
               >
-                1x • {{ selectedOrder.total.toFixed(2) }} ₴
+                {{
+                  t("account.orders.detailsModal.qtyPrice", {
+                    total: `${selectedOrder.total.toFixed(2)} ₴`,
+                  })
+                }}
               </p>
             </div>
             <UiButton size="sm" @click="buyItAgain(item)">
-              Купити знову
+              {{ t("account.orders.detailsModal.buyAgain") }}
             </UiButton>
           </div>
         </div>
@@ -624,7 +644,7 @@ const filterBtns = [
             <h4
               class="font-extrabold text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-wider mb-2"
             >
-              Адреса доставки
+              {{ t("account.orders.detailsModal.shippingAddress") }}
             </h4>
             <p class="font-extrabold text-zinc-800 dark:text-zinc-200">
               {{ selectedOrder.shippingAddress.recipient }}
@@ -633,7 +653,8 @@ const filterBtns = [
               {{ selectedOrder.shippingAddress.street }}
             </p>
             <p class="text-zinc-500 dark:text-zinc-400">
-              м. {{ selectedOrder.shippingAddress.city }},
+              {{ t("account.orders.detailsModal.cityPrefix")
+              }}{{ selectedOrder.shippingAddress.city }},
               {{ selectedOrder.shippingAddress.state }}
               {{ selectedOrder.shippingAddress.zip }}
             </p>
@@ -642,7 +663,7 @@ const filterBtns = [
             <h4
               class="font-extrabold text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-wider mb-2"
             >
-              Спосіб оплати
+              {{ t("account.orders.detailsModal.paymentMethod") }}
             </h4>
             <p
               class="flex items-center gap-1.5 font-extrabold text-zinc-800 dark:text-zinc-200 mt-1"
@@ -658,19 +679,20 @@ const filterBtns = [
           <h4
             class="font-extrabold text-zinc-400 dark:text-zinc-500 uppercase text-[10px] tracking-wider mb-2"
           >
-            Сума
+            {{ t("account.orders.detailsModal.summary") }}
           </h4>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
-            <span>Вартість товарів</span
+            <span>{{ t("account.orders.detailsModal.itemsCost") }}</span
             ><span>{{ (selectedOrder.total - 150).toFixed(2) }} ₴</span>
           </div>
           <div class="flex justify-between text-zinc-500 dark:text-zinc-400">
-            <span>Доставка</span><span>150.00 ₴</span>
+            <span>{{ t("account.orders.detailsModal.shipping") }}</span
+            ><span>150.00 ₴</span>
           </div>
           <div
             class="flex justify-between font-black text-sm md:text-base pt-3 border-t border-zinc-100 dark:border-zinc-800 mt-2"
           >
-            <span>Всього</span
+            <span>{{ t("account.orders.detailsModal.totalLabel") }}</span
             ><span class="text-[#00a046]"
               >{{ selectedOrder.total.toFixed(2) }} ₴</span
             >
@@ -697,12 +719,12 @@ const filterBtns = [
         >
           {{
             isCancelling[selectedOrder.id]
-              ? "Скасування..."
-              : "Скасувати замовлення"
+              ? t("account.orders.detailsModal.cancelling")
+              : t("account.orders.detailsModal.cancelOrder")
           }}
         </UiButton>
         <UiButton variant="secondary" size="sm" @click="isDetailsOpen = false">
-          Закрити
+          {{ t("account.orders.detailsModal.close") }}
         </UiButton>
       </div>
     </div>
@@ -723,12 +745,16 @@ const filterBtns = [
           <h3
             class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
           >
-            Відстеження доставки
+            {{ t("account.orders.trackingModal.title") }}
           </h3>
           <p
             class="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mt-0.5"
           >
-            Замовлення №{{ trackingOrder.id }}
+            {{
+              t("account.orders.trackingModal.orderNumber", {
+                id: trackingOrder.id,
+              })
+            }}
           </p>
         </div>
         <button
@@ -785,7 +811,9 @@ const filterBtns = [
       <div
         class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 text-right"
       >
-        <UiButton size="sm" @click="isTrackingOpen = false"> Готово </UiButton>
+        <UiButton size="sm" @click="isTrackingOpen = false">
+          {{ t("account.orders.trackingModal.done") }}
+        </UiButton>
       </div>
     </div>
   </div>
@@ -803,7 +831,11 @@ const filterBtns = [
         class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 px-6 py-4 flex justify-between items-center shrink-0"
       >
         <h3 class="font-black text-base text-zinc-900 dark:text-white">
-          {{ isEditMode ? "Редагувати відгук" : "Написати відгук" }}
+          {{
+            isEditMode
+              ? t("account.orders.reviewModal.editTitle")
+              : t("account.orders.reviewModal.createTitle")
+          }}
         </h3>
         <button
           class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
@@ -837,7 +869,7 @@ const filterBtns = [
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Оцінка *</label
+            >{{ t("account.orders.reviewModal.ratingLabel") }}</label
           >
           <div class="flex gap-1 cursor-pointer">
             <span
@@ -864,13 +896,13 @@ const filterBtns = [
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Заголовок</label
+            >{{ t("account.orders.reviewModal.titleLabel") }}</label
           >
           <input
             v-model="reviewTitle"
             type="text"
             maxlength="120"
-            placeholder="Коротко про враження..."
+            :placeholder="t('account.orders.reviewModal.titlePlaceholder')"
             class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-250 dark:border-zinc-700 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
           />
         </div>
@@ -879,13 +911,13 @@ const filterBtns = [
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Відгук *</label
+            >{{ t("account.orders.reviewModal.commentLabel") }}</label
           >
           <textarea
             v-model="reviewComment"
             rows="4"
             minlength="10"
-            placeholder="Поділіться враженнями: якість, відповідність опису, зручність використання..."
+            :placeholder="t('account.orders.reviewModal.commentPlaceholder')"
             required
             class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-250 dark:border-zinc-700 rounded-lg px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
           />
@@ -896,7 +928,7 @@ const filterBtns = [
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
           >
-            Фото (до 5 штук)
+            {{ t("account.orders.reviewModal.photosLabel") }}
           </label>
 
           <!-- Previews (existing + new) -->
@@ -970,10 +1002,10 @@ const filterBtns = [
             </div>
             <div>
               <p class="font-bold text-zinc-600 dark:text-zinc-400 text-xs">
-                Додати фото товару
+                {{ t("account.orders.reviewModal.addPhoto") }}
               </p>
               <p class="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">
-                JPG, PNG, WebP · до 5 МБ кожне
+                {{ t("account.orders.reviewModal.photoHint") }}
               </p>
             </div>
             <input
@@ -996,7 +1028,7 @@ const filterBtns = [
             size="sm"
             @click="isReviewOpen = false"
           >
-            Скасувати
+            {{ t("account.orders.reviewModal.cancel") }}
           </UiButton>
           <UiButton
             type="submit"
@@ -1006,10 +1038,10 @@ const filterBtns = [
           >
             {{
               isSubmittingReview
-                ? "Надсилання..."
+                ? t("account.orders.reviewModal.submitting")
                 : isEditMode
-                  ? "Зберегти зміни"
-                  : "Опублікувати відгук"
+                  ? t("account.orders.reviewModal.saveChanges")
+                  : t("account.orders.reviewModal.submit")
             }}
           </UiButton>
         </div>

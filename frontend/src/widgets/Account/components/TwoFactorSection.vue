@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import QRCode from "qrcode";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/entities/user/model/authStore";
 
 defineProps<{
@@ -11,6 +12,7 @@ defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 const isEnabled = computed(() => !!authStore.user?.twoFactorEnabled);
 
@@ -49,7 +51,8 @@ async function startEnrollment() {
   enrolling.value = false;
 
   if (!result.ok) {
-    confirmError.value = result.error || "Не вдалося розпочати налаштування.";
+    confirmError.value =
+      result.error || t("account.twoFactor.errors.startFailed");
     return;
   }
 
@@ -75,7 +78,7 @@ async function confirmEnrollment() {
 
   if (!result.ok) {
     confirmError.value =
-      result.errors?.code?.[0] || "Невірний код підтвердження.";
+      result.errors?.code?.[0] || t("account.twoFactor.errors.invalidCode");
     return;
   }
 
@@ -94,7 +97,9 @@ async function submitDisable() {
   disabling.value = false;
 
   if (!result.ok) {
-    disableError.value = result.errors?.password?.[0] || "Невірний пароль.";
+    disableError.value =
+      result.errors?.password?.[0] ||
+      t("account.twoFactor.errors.invalidPassword");
     return;
   }
 
@@ -123,7 +128,9 @@ async function submitRegenerate() {
   regenerating.value = false;
 
   if (!result.ok) {
-    regenerateError.value = result.errors?.code?.[0] || "Невірний код.";
+    regenerateError.value =
+      result.errors?.code?.[0] ||
+      t("account.twoFactor.errors.invalidRegenCode");
     return;
   }
 
@@ -158,13 +165,17 @@ function copyRecoveryCodes() {
           <h3
             class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
           >
-            Двофакторна автентифікація
+            {{ t("account.twoFactor.title") }}
           </h3>
           <p
             v-if="!expanded"
             class="text-xs text-zinc-450 dark:text-zinc-500 mt-0.5 font-extrabold"
           >
-            {{ isEnabled ? "Увімкнено" : "Додатковий захист вашого акаунту" }}
+            {{
+              isEnabled
+                ? t("account.twoFactor.enabledStatus")
+                : t("account.twoFactor.disabledStatus")
+            }}
           </p>
         </div>
       </div>
@@ -185,7 +196,7 @@ function copyRecoveryCodes() {
           <span class="material-symbols-outlined text-[18px]"
             >check_circle</span
           >
-          Двофакторна автентифікація увімкнена
+          {{ t("account.twoFactor.enabledMessage") }}
         </div>
         <div class="flex flex-wrap gap-3">
           <button
@@ -193,14 +204,14 @@ function copyRecoveryCodes() {
             class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 rounded-lg font-black text-xs md:text-sm transition-all uppercase tracking-wider"
             @click="openRegenerateModal"
           >
-            Оновити резервні коди
+            {{ t("account.twoFactor.regenerateCodes") }}
           </button>
           <button
             type="button"
             class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-black text-xs md:text-sm transition-all uppercase tracking-wider shadow-sm"
             @click="openDisableModal"
           >
-            Вимкнути
+            {{ t("account.twoFactor.disable") }}
           </button>
         </div>
       </div>
@@ -208,9 +219,7 @@ function copyRecoveryCodes() {
       <!-- Disabled state, not yet enrolling -->
       <div v-else-if="!isEnrolling" class="space-y-4">
         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-          Захистіть свій акаунт додатковим кроком підтвердження під час входу за
-          допомогою застосунку-автентифікатора (Google Authenticator, Authy
-          тощо).
+          {{ t("account.twoFactor.description") }}
         </p>
         <p v-if="confirmError" class="text-xs text-red-500 font-semibold">
           {{ confirmError }}
@@ -225,27 +234,31 @@ function copyRecoveryCodes() {
             v-if="enrolling"
             class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
           />
-          {{ enrolling ? "Завантаження..." : "Увімкнути 2FA" }}
+          {{
+            enrolling
+              ? t("account.twoFactor.enabling")
+              : t("account.twoFactor.enable")
+          }}
         </button>
       </div>
 
       <!-- Enrollment: QR + confirm code -->
       <div v-else class="space-y-4">
         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-          1. Відскануйте QR-код застосунком-автентифікатором.
+          {{ t("account.twoFactor.step1") }}
         </p>
         <div class="flex justify-center">
           <img
             v-if="qrCodeDataUrl"
             :src="qrCodeDataUrl"
-            alt="QR-код для двофакторної автентифікації"
+            :alt="t('account.twoFactor.qrAlt')"
             class="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white p-2"
             width="180"
             height="180"
           />
         </div>
         <p class="text-xs text-center text-zinc-450 dark:text-zinc-500">
-          Або введіть ключ вручну:
+          {{ t("account.twoFactor.manualKeyHint") }}
           <code
             class="block mt-1 font-mono text-xs bg-zinc-100 dark:bg-zinc-800 rounded px-2 py-1 select-all break-all"
             >{{ secret }}</code
@@ -255,14 +268,14 @@ function copyRecoveryCodes() {
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-            >2. Введіть 6-значний код із застосунку</label
+            >{{ t("account.twoFactor.step2Label") }}</label
           >
           <input
             v-model="confirmCode"
             type="text"
             inputmode="numeric"
             maxlength="6"
-            placeholder="123456"
+            :placeholder="t('account.twoFactor.codePlaceholder')"
             :class="inputClass"
           />
           <p v-if="confirmError" class="text-xs text-red-500 font-semibold">
@@ -276,7 +289,7 @@ function copyRecoveryCodes() {
             class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 rounded-lg font-black text-xs md:text-sm transition-all uppercase tracking-wider"
             @click="cancelEnrollment"
           >
-            Скасувати
+            {{ t("account.twoFactor.cancel") }}
           </button>
           <button
             type="button"
@@ -288,7 +301,11 @@ function copyRecoveryCodes() {
               v-if="confirming"
               class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
             />
-            {{ confirming ? "Підтвердження..." : "Підтвердити" }}
+            {{
+              confirming
+                ? t("account.twoFactor.confirming")
+                : t("account.twoFactor.confirm")
+            }}
           </button>
         </div>
       </div>
@@ -307,7 +324,7 @@ function copyRecoveryCodes() {
         class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <h3 class="font-black text-base text-zinc-900 dark:text-white">
-          Вимкнути 2FA
+          {{ t("account.twoFactor.disableModal.title") }}
         </h3>
         <button
           class="text-zinc-400 hover:text-zinc-650"
@@ -318,13 +335,12 @@ function copyRecoveryCodes() {
       </div>
       <form class="p-6 space-y-4" @submit.prevent="submitDisable">
         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-          Введіть поточний пароль, щоб підтвердити вимкнення двофакторної
-          автентифікації.
+          {{ t("account.twoFactor.disableModal.description") }}
         </p>
         <input
           v-model="disablePassword"
           type="password"
-          placeholder="Поточний пароль"
+          :placeholder="t('account.twoFactor.disableModal.passwordPlaceholder')"
           :class="inputClass"
         />
         <p v-if="disableError" class="text-xs text-red-500 font-semibold">
@@ -336,14 +352,18 @@ function copyRecoveryCodes() {
             class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider"
             @click="isDisableModalOpen = false"
           >
-            Скасувати
+            {{ t("account.twoFactor.cancel") }}
           </button>
           <button
             type="submit"
             :disabled="disabling || !disablePassword"
             class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider shadow-sm disabled:opacity-50"
           >
-            {{ disabling ? "Вимкнення..." : "Вимкнути" }}
+            {{
+              disabling
+                ? t("account.twoFactor.disabling")
+                : t("account.twoFactor.disable")
+            }}
           </button>
         </div>
       </form>
@@ -362,7 +382,7 @@ function copyRecoveryCodes() {
         class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
       >
         <h3 class="font-black text-base text-zinc-900 dark:text-white">
-          Оновити резервні коди
+          {{ t("account.twoFactor.regenerateModal.title") }}
         </h3>
         <button
           class="text-zinc-400 hover:text-zinc-650"
@@ -373,15 +393,14 @@ function copyRecoveryCodes() {
       </div>
       <form class="p-6 space-y-4" @submit.prevent="submitRegenerate">
         <p class="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
-          Старі резервні коди перестануть працювати. Введіть поточний код із
-          застосунку-автентифікатора, щоб підтвердити.
+          {{ t("account.twoFactor.regenerateModal.description") }}
         </p>
         <input
           v-model="regenerateCode"
           type="text"
           inputmode="numeric"
           maxlength="6"
-          placeholder="123456"
+          :placeholder="t('account.twoFactor.codePlaceholder')"
           :class="inputClass"
         />
         <p v-if="regenerateError" class="text-xs text-red-500 font-semibold">
@@ -393,14 +412,18 @@ function copyRecoveryCodes() {
             class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider"
             @click="isRegenerateModalOpen = false"
           >
-            Скасувати
+            {{ t("account.twoFactor.cancel") }}
           </button>
           <button
             type="submit"
             :disabled="regenerating || regenerateCode.length !== 6"
             class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider shadow-sm disabled:opacity-50"
           >
-            {{ regenerating ? "Оновлення..." : "Оновити" }}
+            {{
+              regenerating
+                ? t("account.twoFactor.regenerateModal.updating")
+                : t("account.twoFactor.regenerateModal.submit")
+            }}
           </button>
         </div>
       </form>
@@ -419,16 +442,14 @@ function copyRecoveryCodes() {
         class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5"
       >
         <h3 class="font-black text-base text-zinc-900 dark:text-white">
-          Ваші резервні коди
+          {{ t("account.twoFactor.recoveryCodesModal.title") }}
         </h3>
       </div>
       <div class="p-6 space-y-4">
         <p
           class="text-xs md:text-sm text-amber-600 dark:text-amber-400 font-semibold"
         >
-          Збережіть ці коди в надійному місці. Кожен код можна використати лише
-          один раз для входу, якщо ви втратите доступ до
-          застосунку-автентифікатора. Ми покажемо їх лише зараз.
+          {{ t("account.twoFactor.recoveryCodesModal.warning") }}
         </p>
         <div
           class="grid grid-cols-2 gap-2 font-mono text-sm bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4"
@@ -441,14 +462,14 @@ function copyRecoveryCodes() {
             class="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider"
             @click="copyRecoveryCodes"
           >
-            Скопіювати
+            {{ t("account.twoFactor.recoveryCodesModal.copy") }}
           </button>
           <button
             type="button"
             class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2.5 rounded-lg font-black text-xs transition-all uppercase tracking-wider shadow-sm"
             @click="isRecoveryCodesModalOpen = false"
           >
-            Готово
+            {{ t("account.twoFactor.recoveryCodesModal.done") }}
           </button>
         </div>
       </div>

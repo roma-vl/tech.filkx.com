@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { productApi } from "@/shared/services/api/productApi";
 import { UiButton } from "@/shared/ui";
@@ -23,6 +24,7 @@ interface ProductItem {
 
 const route = useRoute();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const selectedCategory = ref<string | null>(null);
 const sharedStates = ref<Record<string, boolean>>({});
@@ -31,7 +33,7 @@ const sharedStates = ref<Record<string, boolean>>({});
 const comparedByCategory = computed(() => {
   const groups: Record<string, ProductItem[]> = {};
   (cartStore.compare as any[]).forEach((item) => {
-    const cat = item.category || "Різне";
+    const cat = item.category || t("account.compare.uncategorized");
     if (!groups[cat]) {
       groups[cat] = [];
     }
@@ -84,7 +86,7 @@ const shareCompareList = (categoryName: string) => {
     .filter(Boolean)
     .join(",");
   if (!slugs) {
-    cartStore.addToast("Немає товарів для обміну", "error");
+    cartStore.addToast(t("account.compare.toasts.noItemsToShare"), "error");
     return;
   }
 
@@ -93,7 +95,7 @@ const shareCompareList = (categoryName: string) => {
   navigator.clipboard
     .writeText(url)
     .then(() => {
-      cartStore.addToast("Посилання на порівняння скопійовано!", "success");
+      cartStore.addToast(t("account.compare.toasts.linkCopied"), "success");
       sharedStates.value[categoryName] = true;
       setTimeout(() => {
         sharedStates.value[categoryName] = false;
@@ -101,7 +103,7 @@ const shareCompareList = (categoryName: string) => {
     })
     .catch((err) => {
       console.error("Failed to copy URL:", err);
-      cartStore.addToast("Не вдалося скопіювати посилання", "error");
+      cartStore.addToast(t("account.compare.toasts.copyFailed"), "error");
     });
 };
 
@@ -151,7 +153,7 @@ const loadSharedItems = async () => {
             const productCategory =
               apiProduct.categories?.[0]?.name?.uk ||
               apiProduct.categories?.[0]?.name?.en ||
-              "Різне";
+              t("account.compare.uncategorized");
 
             const mappedProduct = {
               id: apiProduct.id,
@@ -202,7 +204,7 @@ const loadSharedItems = async () => {
         (p: any) => p.slug === slug || String(p.id) === slug,
       );
       if (found) {
-        loadedCategory = found.category || "Різне";
+        loadedCategory = found.category || t("account.compare.uncategorized");
       }
     }
   }
@@ -230,7 +232,7 @@ watch(() => route.query.items, loadSharedItems);
         <h2
           class="text-xl font-black text-zinc-955 dark:text-white tracking-tight mb-6"
         >
-          Списки порівнянь
+          {{ t("account.compare.title") }}
         </h2>
 
         <div class="grid grid-cols-1 gap-4">
@@ -248,7 +250,9 @@ watch(() => route.query.items, loadSharedItems);
                   {{ catName }}
                 </h3>
                 <p class="text-xs text-zinc-500 mt-1 font-bold">
-                  Кількість товарів: {{ products.length }}
+                  {{
+                    t("account.compare.itemCount", { count: products.length })
+                  }}
                 </p>
               </div>
 
@@ -286,7 +290,7 @@ watch(() => route.query.items, loadSharedItems);
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                     : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
                 "
-                title="Поділитися списком"
+                :title="t('account.compare.share')"
                 type="button"
                 @click="shareCompareList(catName as string)"
               >
@@ -300,7 +304,7 @@ watch(() => route.query.items, loadSharedItems);
 
               <button
                 class="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-zinc-500 hover:text-rose-500 transition-colors flex items-center justify-center"
-                title="Видалити весь список"
+                :title="t('account.compare.deleteList')"
                 type="button"
                 @click="removeCategoryComparison(catName as string)"
               >
@@ -323,16 +327,15 @@ watch(() => route.query.items, loadSharedItems);
           >compare_arrows</span
         >
         <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
-          Немає товарів для порівняння
+          {{ t("account.compare.empty.title") }}
         </h3>
         <p
           class="text-xs md:text-sm text-zinc-500 dark:text-zinc-500 max-w-sm mx-auto mt-2"
         >
-          Додайте товари до порівняння, натиснувши кнопку порівняння на картках
-          товарів.
+          {{ t("account.compare.empty.subtitle") }}
         </p>
         <UiButton :to="{ name: 'catalog' }" class="mt-6">
-          Перейти до каталогу
+          {{ t("account.compare.empty.cta") }}
         </UiButton>
       </div>
     </div>
@@ -348,14 +351,18 @@ watch(() => route.query.items, loadSharedItems);
           @click="selectedCategory = null"
         >
           <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-          До списків порівнянь
+          {{ t("account.compare.back") }}
         </button>
 
         <div class="flex items-center gap-3">
           <h2
             class="text-lg md:text-xl font-black text-[#00a046] dark:text-[#00a046] tracking-tight"
           >
-            Порівняння: {{ selectedCategory }}
+            {{
+              t("account.compare.comparingTitle", {
+                category: selectedCategory,
+              })
+            }}
           </h2>
           <button
             class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all shadow-sm text-xs font-bold"
@@ -364,7 +371,7 @@ watch(() => route.query.items, loadSharedItems);
                 ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                 : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-[#00a046] dark:text-zinc-400 dark:hover:text-white'
             "
-            title="Поділитися цим порівнянням"
+            :title="t('account.compare.shareThis')"
             type="button"
             @click="shareCompareList(selectedCategory as string)"
           >
@@ -375,7 +382,9 @@ watch(() => route.query.items, loadSharedItems);
               {{ sharedStates[selectedCategory] ? "check" : "share" }}
             </span>
             <span>{{
-              sharedStates[selectedCategory] ? "Скопійовано!" : "Поділитися"
+              sharedStates[selectedCategory]
+                ? t("account.compare.shared")
+                : t("account.compare.shareLabel")
             }}</span>
           </button>
         </div>
@@ -392,7 +401,7 @@ watch(() => route.query.items, loadSharedItems);
               <th
                 class="p-5 w-1/4 sticky left-0 bg-zinc-50 dark:bg-zinc-800 z-20 border-r border-zinc-200 dark:border-zinc-800"
               >
-                Параметри
+                {{ t("account.compare.table.parameters") }}
               </th>
               <th
                 v-for="product in comparedByCategory[selectedCategory]"
@@ -417,7 +426,7 @@ watch(() => route.query.items, loadSharedItems);
                 </button>
                 <span
                   class="inline-block py-1 font-bold text-zinc-500 dark:text-zinc-400"
-                  >Товар</span
+                  >{{ t("account.compare.table.productLabel") }}</span
                 >
               </th>
             </tr>
@@ -432,7 +441,7 @@ watch(() => route.query.items, loadSharedItems);
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
-                Зображення
+                {{ t("account.compare.table.image") }}
               </td>
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
@@ -471,7 +480,7 @@ watch(() => route.query.items, loadSharedItems);
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
-                Ціна
+                {{ t("account.compare.table.price") }}
               </td>
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
@@ -488,7 +497,7 @@ watch(() => route.query.items, loadSharedItems);
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
-                Рейтинг
+                {{ t("account.compare.table.rating") }}
               </td>
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
@@ -537,7 +546,7 @@ watch(() => route.query.items, loadSharedItems);
               <td
                 class="p-5 font-extrabold bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white sticky left-0 z-10 border-r border-zinc-200 dark:border-zinc-800"
               >
-                Опис
+                {{ t("account.compare.table.description") }}
               </td>
               <td
                 v-for="product in comparedByCategory[selectedCategory]"
@@ -568,7 +577,7 @@ watch(() => route.query.items, loadSharedItems);
                       >shopping_cart</span
                     >
                   </template>
-                  У кошик
+                  {{ t("account.compare.table.addToCart") }}
                 </UiButton>
               </td>
             </tr>
