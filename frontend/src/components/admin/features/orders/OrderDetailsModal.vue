@@ -1,7 +1,7 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    :title="`Замовлення #${order.orderNumber}`"
+    :title="t('admin.orders.detailsModal.title', { number: order.orderNumber })"
     max-width="2xl"
     @update:model-value="$emit('close')"
   >
@@ -13,7 +13,7 @@
         <div>
           <span
             class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase"
-            >Поточний статус</span
+            >{{ t("admin.orders.detailsModal.currentStatus") }}</span
           >
           <span
             :class="[
@@ -41,26 +41,30 @@
         <h4
           class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3"
         >
-          Інформація про клієнта
+          {{ t("admin.orders.detailsModal.customerInfo.heading") }}
         </h4>
         <div
           class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-zinc-900/30 p-4 rounded-xl border border-gray-100 dark:border-zinc-800"
         >
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">Ім'я</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+              {{ t("admin.orders.detailsModal.customerInfo.name") }}
+            </p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerName }}
             </p>
           </div>
           <div>
-            <p class="text-xs text-gray-400 dark:text-gray-500">Email</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+              {{ t("admin.orders.detailsModal.customerInfo.email") }}
+            </p>
             <p class="font-bold text-gray-800 dark:text-gray-200">
               {{ order.customerEmail }}
             </p>
           </div>
           <div class="sm:col-span-2">
             <p class="text-xs text-gray-400 dark:text-gray-500">
-              Адреса доставки
+              {{ t("admin.orders.detailsModal.customerInfo.shippingAddress") }}
             </p>
             <p class="font-medium text-gray-805 dark:text-gray-200 mt-0.5">
               {{ order.shippingAddress }}
@@ -74,7 +78,7 @@
         <h4
           class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3"
         >
-          Товари у замовленні
+          {{ t("admin.orders.detailsModal.items.heading") }}
         </h4>
         <div
           class="divide-y divide-gray-100 dark:divide-gray-700 border border-gray-150 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm"
@@ -95,7 +99,9 @@
                   {{ item.name }}
                 </p>
                 <p class="text-xs text-gray-400 dark:text-gray-500">
-                  SKU: {{ item.sku }}
+                  {{
+                    t("admin.orders.detailsModal.items.sku", { sku: item.sku })
+                  }}
                 </p>
               </div>
             </div>
@@ -108,7 +114,7 @@
           >
             <span
               class="text-sm font-bold uppercase text-gray-500 dark:text-gray-450"
-              >Разом</span
+              >{{ t("admin.orders.detailsModal.items.total") }}</span
             >
             <span class="text-lg font-black text-gray-900 dark:text-white">
               {{ formatPrice(order.totalPrice) }}
@@ -126,7 +132,7 @@
           class="!px-5 !py-2 !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046]"
           @click="$emit('close')"
         >
-          Закрити
+          {{ t("admin.orders.detailsModal.close") }}
         </AppButton>
       </div>
     </template>
@@ -134,9 +140,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+
+const { t } = useI18n();
 
 defineProps({
   modelValue: {
@@ -167,15 +177,15 @@ defineProps({
 
 defineEmits(["close", "updateStatus"]);
 
-const statusOptions = [
-  { id: "pending_payment", name: "Очікує оплати" },
-  { id: "paid", name: "Оплачено" },
-  { id: "processing", name: "Обробляється" },
-  { id: "packed", name: "Запаковано" },
-  { id: "shipped", name: "Відправлено" },
-  { id: "delivered", name: "Доставлено" },
-  { id: "completed", name: "Виконано" },
-  { id: "cancelled", name: "Скасовано" },
-  { id: "refunded", name: "Повернуто кошти" },
-];
+const statusOptions = computed(() => [
+  { id: "pending_payment", name: t("admin.orders.status.pending_payment") },
+  { id: "paid", name: t("admin.orders.status.paid") },
+  { id: "processing", name: t("admin.orders.status.processing") },
+  { id: "packed", name: t("admin.orders.status.packed") },
+  { id: "shipped", name: t("admin.orders.status.shipped") },
+  { id: "delivered", name: t("admin.orders.status.delivered") },
+  { id: "completed", name: t("admin.orders.status.completed") },
+  { id: "cancelled", name: t("admin.orders.status.cancelled") },
+  { id: "refunded", name: t("admin.orders.status.refunded") },
+]);
 </script>

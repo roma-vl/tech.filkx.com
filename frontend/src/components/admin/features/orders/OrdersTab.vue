@@ -9,7 +9,7 @@
         <div class="flex-1 max-w-md">
           <AppInput
             :model-value="searchQuery"
-            placeholder="Пошук за номером замовлення, клієнтом або email..."
+            :placeholder="t('admin.orders.filters.searchPlaceholder')"
             @update:model-value="$emit('update:searchQuery', $event)"
           />
         </div>
@@ -22,7 +22,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          title="Фільтри"
+          :title="t('admin.orders.filters.toggleTitle')"
           @click="$emit('update:showFilters', !showFilters)"
         >
           <svg
@@ -56,7 +56,7 @@
           @click="$emit('export')"
         >
           <ArrowDownTrayIcon class="w-4 h-4" />
-          Експорт CSV
+          {{ t("admin.orders.actions.exportCsv") }}
         </AppButton>
       </div>
     </div>
@@ -70,8 +70,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <AppSelect
             :model-value="statusFilter"
-            label="Статус"
-            placeholder="Всі статуси"
+            :label="t('admin.orders.filters.statusLabel')"
+            :placeholder="t('admin.orders.status.all')"
             :options="statusOptions"
             option-value="id"
             option-label="name"
@@ -79,8 +79,8 @@
           />
           <AppSelect
             :model-value="paymentFilter"
-            label="Спосіб оплати"
-            placeholder="Всі способи"
+            :label="t('admin.orders.filters.paymentLabel')"
+            :placeholder="t('admin.orders.filters.allMethods')"
             :options="paymentOptions"
             option-value="id"
             option-label="name"
@@ -88,8 +88,8 @@
           />
           <AppSelect
             :model-value="deliveryFilter"
-            label="Спосіб доставки"
-            placeholder="Всі способи"
+            :label="t('admin.orders.filters.deliveryLabel')"
+            :placeholder="t('admin.orders.filters.allMethods')"
             :options="deliveryOptions"
             option-value="id"
             option-label="name"
@@ -97,8 +97,8 @@
           />
           <AppSelect
             :model-value="sortFilter"
-            label="Сортування"
-            placeholder="За замовчуванням"
+            :label="t('admin.orders.filters.sortLabel')"
+            :placeholder="t('admin.orders.filters.defaultSortPlaceholder')"
             :options="sortOptions"
             option-value="id"
             option-label="name"
@@ -114,7 +114,7 @@
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
             @click="$emit('reset')"
           >
-            Скинути фільтри
+            {{ t("admin.orders.filters.reset") }}
           </AppButton>
         </div>
       </div>
@@ -134,37 +134,37 @@
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Замовлення
+                {{ t("admin.orders.table.columns.order") }}
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дата
+                {{ t("admin.orders.table.columns.date") }}
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Клієнт
+                {{ t("admin.orders.table.columns.customer") }}
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Сума
+                {{ t("admin.orders.table.columns.total") }}
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Статус
+                {{ t("admin.orders.table.columns.status") }}
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.orders.table.columns.actions") }}
               </th>
             </tr>
           </thead>
@@ -179,7 +179,11 @@
                   #{{ order.orderNumber }}
                 </div>
                 <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  {{ order.items?.length || 0 }} товари(ів)
+                  {{
+                    t("admin.orders.table.itemsCount", {
+                      count: order.items?.length || 0,
+                    })
+                  }}
                 </div>
               </td>
               <td
@@ -220,7 +224,7 @@
                     class="font-semibold text-xs bg-gray-50 dark:bg-gray-700/50 hover:bg-[#00a046]/10 text-gray-655 dark:text-gray-400 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors"
                     @click="$emit('view', order)"
                   >
-                    Деталі
+                    {{ t("admin.orders.table.viewDetails") }}
                   </AppButton>
                 </div>
               </td>
@@ -230,8 +234,10 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400 font-medium"
               >
-                <span v-if="isLoading">Завантаження замовлень...</span>
-                <span v-else>Замовлень не знайдено за вашим запитом.</span>
+                <span v-if="isLoading">{{
+                  t("admin.orders.table.loading")
+                }}</span>
+                <span v-else>{{ t("admin.orders.table.empty") }}</span>
               </td>
             </tr>
           </tbody>
@@ -254,11 +260,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+
+const { t } = useI18n();
 
 const props = defineProps({
   orders: {
@@ -357,40 +366,40 @@ watch(
   },
 );
 
-const statusOptions = [
-  { id: "", name: "Всі статуси" },
-  { id: "pending_payment", name: "Очікує оплати" },
-  { id: "paid", name: "Оплачено" },
-  { id: "processing", name: "Обробляється" },
-  { id: "packed", name: "Запаковано" },
-  { id: "shipped", name: "Відправлено" },
-  { id: "delivered", name: "Доставлено" },
-  { id: "completed", name: "Виконано" },
-  { id: "cancelled", name: "Скасовано" },
-  { id: "refunded", name: "Повернуто кошти" },
-];
+const statusOptions = computed(() => [
+  { id: "", name: t("admin.orders.status.all") },
+  { id: "pending_payment", name: t("admin.orders.status.pending_payment") },
+  { id: "paid", name: t("admin.orders.status.paid") },
+  { id: "processing", name: t("admin.orders.status.processing") },
+  { id: "packed", name: t("admin.orders.status.packed") },
+  { id: "shipped", name: t("admin.orders.status.shipped") },
+  { id: "delivered", name: t("admin.orders.status.delivered") },
+  { id: "completed", name: t("admin.orders.status.completed") },
+  { id: "cancelled", name: t("admin.orders.status.cancelled") },
+  { id: "refunded", name: t("admin.orders.status.refunded") },
+]);
 
-const paymentOptions = [
-  { id: "", name: "Всі способи" },
-  { id: "cod", name: "Оплата при отриманні" },
-  { id: "card", name: "Карткою онлайн" },
-  { id: "bank", name: "Банківський переказ" },
-];
+const paymentOptions = computed(() => [
+  { id: "", name: t("admin.orders.filters.allMethods") },
+  { id: "cod", name: t("admin.orders.payment.cod") },
+  { id: "card", name: t("admin.orders.payment.card") },
+  { id: "bank", name: t("admin.orders.payment.bank") },
+]);
 
-const deliveryOptions = [
-  { id: "", name: "Всі способи" },
-  { id: "nova_poshta", name: "Нова Пошта" },
-  { id: "ukrposhta", name: "Укрпошта" },
-  { id: "courier", name: "Кур'єр" },
-  { id: "pickup", name: "Самовивіз" },
-];
+const deliveryOptions = computed(() => [
+  { id: "", name: t("admin.orders.filters.allMethods") },
+  { id: "nova_poshta", name: t("admin.orders.delivery.nova_poshta") },
+  { id: "ukrposhta", name: t("admin.orders.delivery.ukrposhta") },
+  { id: "courier", name: t("admin.orders.delivery.courier") },
+  { id: "pickup", name: t("admin.orders.delivery.pickup") },
+]);
 
-const sortOptions = [
-  { id: "created-desc", name: "Спочатку нові" },
-  { id: "created-asc", name: "Спочатку старі" },
-  { id: "price-desc", name: "Сума (від більшої)" },
-  { id: "price-asc", name: "Сума (від меншої)" },
-  { id: "order-asc", name: "Номер (А-Я)" },
-  { id: "order-desc", name: "Номер (Я-А)" },
-];
+const sortOptions = computed(() => [
+  { id: "created-desc", name: t("admin.orders.filters.sort.newestFirst") },
+  { id: "created-asc", name: t("admin.orders.filters.sort.oldestFirst") },
+  { id: "price-desc", name: t("admin.orders.filters.sort.priceDesc") },
+  { id: "price-asc", name: t("admin.orders.filters.sort.priceAsc") },
+  { id: "order-asc", name: t("admin.orders.filters.sort.orderAsc") },
+  { id: "order-desc", name: t("admin.orders.filters.sort.orderDesc") },
+]);
 </script>
