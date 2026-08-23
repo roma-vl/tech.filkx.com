@@ -65,16 +65,17 @@ class GetSystemHealthActionTest extends TestCase
         }
     }
 
-    public function test_execute_reports_database_as_offline_when_the_driver_does_not_support_show_max_connections(): void
+    public function test_execute_reports_database_as_online_with_defaults_on_a_non_postgres_driver(): void
     {
-        // The test suite runs against sqlite (see phpunit.xml), which does not support the
-        // Postgres-only "SHOW max_connections" query issued unconditionally by the action;
-        // this documents the resulting (real, driver-dependent) fallback behaviour.
+        // The test suite runs against sqlite (see phpunit.xml). The Postgres-only
+        // pg_stat_activity/SHOW max_connections queries only run when the default
+        // connection is pgsql, so a non-Postgres driver still reports online, just
+        // without those two figures.
         $result = $this->action->execute();
 
-        $this->assertSame('offline', $result->database['status']);
-        $this->assertArrayHasKey('error', $result->database);
-        $this->assertNotEmpty($result->database['error']);
+        $this->assertSame('online', $result->database['status']);
+        $this->assertSame('N/A', $result->database['connections']);
+        $this->assertSame(100, $result->database['max_connections']);
     }
 
     public function test_to_array_maps_database_fields_to_camel_case(): void

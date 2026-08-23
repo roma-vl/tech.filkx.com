@@ -133,12 +133,13 @@ class GetSystemHealthAction
             $latency = round((microtime(true) - $start) * 1000, 2);
 
             $connections = 'N/A';
+            $maxConnections = 100;
             if (config('database.default') === 'pgsql') {
                 $connectionsData = DB::select('SELECT count(*) FROM pg_stat_activity');
                 $connections = $connectionsData[0]->count ?? '0';
-            }
 
-            $maxConnections = (int) (DB::select('SHOW max_connections')[0]->max_connections ?? 100);
+                $maxConnections = (int) (DB::select('SHOW max_connections')[0]->max_connections ?? 100);
+            }
 
             return [
                 'status' => 'online',
