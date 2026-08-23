@@ -7,10 +7,37 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository
 {
+    /**
+     * Parent categories for the site nav/mega-menu, with two levels of
+     * children - but only branches that actually have an active product
+     * somewhere underneath them. A category with no products (directly or
+     * via its subcategories) is just dead-end clutter in a menu meant for
+     * browsing the catalog, so it's excluded at every level rather than
+     * left for the frontend to filter out after the fact.
+     */
     public function getParentCategoriesWithChildren(): Collection
     {
-        return Category::with('children.children')
-            ->whereNull('parent_id')
+        $hasActiveProducts = fn ($query) => $query->whereHas(
+            'products',
+            fn ($productQuery) => $productQuery->where('status', 'active')
+        );
+
+        $nonEmpty = function ($query) use ($hasActiveProducts) {
+            $hasActiveProducts($query);
+            $query->orWhereHas('children', $hasActiveProducts);
+        };
+
+        return Category::whereNull('parent_id')
+            ->where(function ($query) use ($hasActiveProducts, $nonEmpty) {
+                $hasActiveProducts($query);
+                $query->orWhereHas('children', $nonEmpty);
+            })
+            ->with(['children' => function ($childQuery) use ($nonEmpty, $hasActiveProducts) {
+                $childQuery->where($nonEmpty)
+                    ->with(['children' => function ($grandchildQuery) use ($hasActiveProducts) {
+                        $grandchildQuery->where($hasActiveProducts);
+                    }]);
+            }])
             ->orderBy('order')
             ->get();
     }
