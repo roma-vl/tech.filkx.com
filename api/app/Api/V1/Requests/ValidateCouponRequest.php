@@ -15,7 +15,6 @@ class ValidateCouponRequest extends FormRequest
     {
         return [
             'code' => 'required|string',
-            'cartTotal' => 'required|numeric|min:0',
         ];
     }
 }

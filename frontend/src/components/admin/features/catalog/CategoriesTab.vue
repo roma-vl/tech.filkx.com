@@ -5,11 +5,13 @@
       <div
         class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        <div class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3">
+        <div
+          class="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3"
+        >
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="categorySearch"
-              placeholder="Пошук категорій за назвою чи slug..."
+              :placeholder="t('admin.products.categories.searchPlaceholder')"
             >
               <template #prepend>
                 <svg
@@ -32,8 +34,14 @@
           <div class="w-full md:w-64">
             <AppSelect
               v-model="parentFilter"
-              placeholder="Усі батьківські категорії"
-              :options="[{ id: '', nameUk: 'Усі батьківські категорії' }, ...categories]"
+              :placeholder="t('admin.products.categories.allParentCategories')"
+              :options="[
+                {
+                  id: '',
+                  nameUk: t('admin.products.categories.allParentCategories'),
+                },
+                ...categories,
+              ]"
               option-value="id"
               option-label="nameUk"
             />
@@ -59,7 +67,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Додати категорію
+            {{ t("admin.products.categories.addCategory") }}
           </AppButton>
         </div>
       </div>
@@ -75,37 +83,37 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                ID
+                {{ t("admin.products.categories.table.id") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва (UK)
+                {{ t("admin.products.categories.table.nameUk") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва (EN)
+                {{ t("admin.products.categories.table.nameEn") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Slug
+                {{ t("admin.products.categories.table.slug") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Характеристики
+                {{ t("admin.products.categories.table.attributes") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Батьківська категорія
+                {{ t("admin.products.categories.table.parent") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.products.categories.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -133,30 +141,43 @@
               >
                 {{ cat.slug }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-650 dark:text-gray-350"
+              >
                 <div class="flex flex-col gap-1">
                   <span
                     v-if="getOwnAttributesCount(cat.id) > 0"
                     class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
                   >
-                    Власних: {{ getOwnAttributesCount(cat.id) }}
+                    {{
+                      t("admin.products.categories.ownCount", {
+                        count: getOwnAttributesCount(cat.id),
+                      })
+                    }}
                   </span>
                   <span
                     v-if="getInheritedAttributesCount(cat.id) > 0"
                     class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
                   >
-                    Успадкованих: {{ getInheritedAttributesCount(cat.id) }}
+                    {{
+                      t("admin.products.categories.inheritedCount", {
+                        count: getInheritedAttributesCount(cat.id),
+                      })
+                    }}
                   </span>
                   <span
-                    v-if="getOwnAttributesCount(cat.id) === 0 && getInheritedAttributesCount(cat.id) === 0"
+                    v-if="
+                      getOwnAttributesCount(cat.id) === 0 &&
+                      getInheritedAttributesCount(cat.id) === 0
+                    "
                     class="text-gray-400 dark:text-gray-500 text-xs italic"
                   >
-                    —
+                    {{ t("admin.products.common.none") }}
                   </span>
                 </div>
               </td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                {{ cat.parentName || "—" }}
+                {{ cat.parentName || t("admin.products.categories.noParent") }}
               </td>
               <td
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -166,7 +187,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
-                    title="Характеристики"
+                    :title="t('admin.products.categories.table.attributes')"
                     @click="openCategoryAttributesModal(cat)"
                   >
                     <svg
@@ -231,14 +252,16 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Категорій не знайдено за вашим запитом.
+                {{ t("admin.products.categories.empty") }}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+      <div
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+      >
         <AppPagination
           :pagination="paginationMeta"
           @page-change="onPageChange"
@@ -249,33 +272,37 @@
     <!-- Category Modal -->
     <AppModal
       v-model="showCategoryModal"
-      :title="isEditing ? 'Редагувати категорію' : 'Додати категорію'"
+      :title="
+        isEditing
+          ? t('admin.products.categories.modal.editTitle')
+          : t('admin.products.categories.modal.addTitle')
+      "
       max-width="md"
     >
-      <form
-        class="space-y-4"
-        @submit.prevent="saveCategory"
-      >
+      <form class="space-y-4" @submit.prevent="saveCategory">
         <AppInput
           v-model="categoryForm.nameUk"
           required
-          label="Назва категорії (UK)"
-          placeholder="напр. Планшети"
+          :label="t('admin.products.categories.modal.nameUkLabel')"
+          :placeholder="t('admin.products.categories.modal.nameUkPlaceholder')"
         />
 
         <AppInput
           v-model="categoryForm.nameEn"
           required
-          label="Назва категорії (EN)"
-          placeholder="e.g. Tablets"
+          :label="t('admin.products.categories.modal.nameEnLabel')"
+          :placeholder="t('admin.products.categories.modal.nameEnPlaceholder')"
         />
 
         <AppSelect
           v-model="categoryForm.parentId"
-          label="Батьківська категорія"
-          placeholder="Немає (Головна категорія)"
+          :label="t('admin.products.categories.modal.parentLabel')"
+          :placeholder="t('admin.products.categories.modal.noParentOption')"
           :options="[
-            { id: null, nameUk: 'Немає (Головна категорія)' },
+            {
+              id: null,
+              nameUk: t('admin.products.categories.modal.noParentOption'),
+            },
             ...categories.filter((c) => c.id !== categoryForm.id),
           ]"
           option-value="id"
@@ -285,7 +312,7 @@
         <AppInput
           v-model.number="categoryForm.order"
           type="number"
-          label="Порядок сортування"
+          :label="t('admin.products.categories.modal.orderLabel')"
         />
       </form>
 
@@ -295,14 +322,14 @@
           class="mr-2"
           @click="showCategoryModal = false"
         >
-          Скасувати
+          {{ t("admin.products.categories.modal.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveCategory"
         >
-          Зберегти
+          {{ t("admin.products.categories.modal.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -310,10 +337,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення категорії"
-      :message="`Ви впевнені, що хочете видалити категорію &quot;${categoryToDelete?.nameUk || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.products.categories.deleteModal.title')"
+      :message="
+        t('admin.products.categories.deleteModal.message', {
+          name: categoryToDelete?.nameUk || '',
+        })
+      "
+      :confirm-text="t('admin.products.categories.deleteModal.confirm')"
+      :cancel-text="t('admin.products.categories.deleteModal.cancel')"
       :loading="deletingCategory"
       @confirm="confirmDeleteCategory"
     />
@@ -331,6 +362,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
@@ -339,6 +371,8 @@ import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import CategoryAttributesModal from "./CategoryAttributesModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   categories: { type: Array, required: true },
@@ -367,8 +401,7 @@ const filteredCategories = computed(() => {
       (cat.slug || "").toLowerCase().includes(query);
 
     const parentMatch =
-      !parentFilter.value ||
-      cat.parentId === parseInt(parentFilter.value);
+      !parentFilter.value || cat.parentId === parseInt(parentFilter.value);
 
     return nameMatch && parentMatch;
   });
@@ -390,12 +423,9 @@ const onPageChange = (page) => {
   currentPage.value = page;
 };
 
-watch(
-  [categorySearch, parentFilter],
-  () => {
-    currentPage.value = 1;
-  }
-);
+watch([categorySearch, parentFilter], () => {
+  currentPage.value = 1;
+});
 
 const openCategoryAttributesModal = (cat) => {
   selectedCategoryForAttributes.value = cat;
@@ -403,22 +433,23 @@ const openCategoryAttributesModal = (cat) => {
 };
 
 const getOwnAttributesCount = (catId) => {
-  return props.attributes.filter(a => a.categoryIds?.includes(catId)).length;
+  return props.attributes.filter((a) => a.categoryIds?.includes(catId)).length;
 };
 
 const getInheritedAttributesCount = (catId) => {
-  const cat = props.categories.find(c => c.id === catId);
+  const cat = props.categories.find((c) => c.id === catId);
   const ancestorIds = [];
   let currentParentId = cat ? cat.parentId : null;
   while (currentParentId) {
     ancestorIds.push(currentParentId);
-    const parent = props.categories.find(c => c.id === currentParentId);
+    const parent = props.categories.find((c) => c.id === currentParentId);
     currentParentId = parent ? parent.parentId : null;
   }
   if (ancestorIds.length === 0) return 0;
-  return props.attributes.filter(a => 
-    !a.categoryIds?.includes(catId) && 
-    a.categoryIds?.some(id => ancestorIds.includes(id))
+  return props.attributes.filter(
+    (a) =>
+      !a.categoryIds?.includes(catId) &&
+      a.categoryIds?.some((id) => ancestorIds.includes(id)),
   ).length;
 };
 

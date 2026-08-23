@@ -1,25 +1,37 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    :title="post ? 'Редагувати пост' : 'Новий пост'"
+    :title="
+      post
+        ? t('admin.blog.posts.form.editTitle')
+        : t('admin.blog.posts.form.newTitle')
+    "
     max-width="3xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div class="space-y-6">
       <!-- Top Action Controls inside Modal Header / Body boundary -->
-      <div class="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-700">
+      <div
+        class="flex items-center justify-between pb-4 border-b border-gray-150 dark:border-gray-700"
+      >
         <div>
           <p class="text-xs text-gray-400">
-            Статус публікації та дата
+            {{ t("admin.blog.posts.form.statusDateHint") }}
           </p>
         </div>
         <div class="flex items-center gap-3">
           <AppSelect
             v-model="postForm.status"
             :options="[
-              { id: 'draft', name: 'Чернетка' },
-              { id: 'published', name: 'Опублікувати' },
-              { id: 'archived', name: 'Архів' }
+              { id: 'draft', name: t('admin.blog.posts.form.status.draft') },
+              {
+                id: 'published',
+                name: t('admin.blog.posts.form.status.published'),
+              },
+              {
+                id: 'archived',
+                name: t('admin.blog.posts.form.status.archived'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -31,7 +43,7 @@
             class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046]"
             @click="savePost"
           >
-            Зберегти
+            {{ t("admin.blog.posts.form.save") }}
           </AppButton>
         </div>
       </div>
@@ -41,22 +53,32 @@
         <!-- Main content area (Left columns) -->
         <div class="lg:col-span-2 space-y-5">
           <!-- Tabs for UK/EN -->
-          <div class="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit">
+          <div
+            class="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit"
+          >
             <AppButton
               variant="text"
               class="px-4 py-1.5 rounded-lg text-sm font-semibold !no-underline"
-              :class="langTab === 'uk' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500'"
+              :class="
+                langTab === 'uk'
+                  ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500'
+              "
               @click="langTab = 'uk'"
             >
-              🇺🇦 Українська
+              {{ t("admin.blog.posts.form.langTabUk") }}
             </AppButton>
             <AppButton
               variant="text"
               class="px-4 py-1.5 rounded-lg text-sm font-semibold !no-underline"
-              :class="langTab === 'en' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm' : 'text-gray-500'"
+              :class="
+                langTab === 'en'
+                  ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm'
+                  : 'text-gray-500'
+              "
               @click="langTab = 'en'"
             >
-              🇬🇧 English
+              {{ t("admin.blog.posts.form.langTabEn") }}
             </AppButton>
           </div>
 
@@ -65,15 +87,15 @@
             <AppInput
               v-if="langTab === 'uk'"
               v-model="postForm.titleUk"
-              label="Заголовок (UK) *"
-              placeholder="Введіть заголовок..."
+              :label="t('admin.blog.posts.form.titleLabelUk')"
+              :placeholder="t('admin.blog.posts.form.titlePlaceholderUk')"
               class="font-bold text-base"
             />
             <AppInput
               v-else
               v-model="postForm.titleEn"
-              label="Title (EN) *"
-              placeholder="Enter title..."
+              :label="t('admin.blog.posts.form.titleLabelEn')"
+              :placeholder="t('admin.blog.posts.form.titlePlaceholderEn')"
               class="font-bold text-base"
             />
           </div>
@@ -83,23 +105,29 @@
             <AppTextarea
               v-if="langTab === 'uk'"
               v-model="postForm.excerptUk"
-              label="Анонс (UK)"
-              placeholder="Короткий опис..."
+              :label="t('admin.blog.posts.form.excerptLabelUk')"
+              :placeholder="t('admin.blog.posts.form.excerptPlaceholderUk')"
               rows="2"
             />
             <AppTextarea
               v-else
               v-model="postForm.excerptEn"
-              label="Excerpt (EN)"
-              placeholder="Short description..."
+              :label="t('admin.blog.posts.form.excerptLabelEn')"
+              :placeholder="t('admin.blog.posts.form.excerptPlaceholderEn')"
               rows="2"
             />
           </div>
 
           <!-- Rich text editor -->
           <div class="rich-editor-container">
-            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {{ langTab === 'uk' ? 'Контент (UK)' : 'Content (EN)' }}
+            <label
+              class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+            >
+              {{
+                langTab === "uk"
+                  ? t("admin.blog.posts.form.contentLabelUk")
+                  : t("admin.blog.posts.form.contentLabelEn")
+              }}
             </label>
             <RichEditor
               v-if="langTab === 'uk'"
@@ -117,10 +145,15 @@
         </div>
 
         <!-- Sidebar options (Right column) -->
-        <div class="space-y-5 bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+        <div
+          class="space-y-5 bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50"
+        >
           <!-- Cover image -->
           <div>
-            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Обкладинка</label>
+            <label
+              class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+              >{{ t("admin.blog.posts.form.coverLabel") }}</label
+            >
             <div class="relative">
               <div
                 v-if="postForm.coverImage"
@@ -129,7 +162,7 @@
                 <img
                   :src="postForm.coverImage"
                   class="w-full h-full object-cover"
-                >
+                />
                 <AppButton
                   variant="ghost"
                   size="sm"
@@ -139,15 +172,21 @@
                   <XMarkIcon class="w-4 h-4" />
                 </AppButton>
               </div>
-              <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors">
-                <PhotoIcon class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-1" />
-                <span class="text-xs text-gray-400">Завантажити фото</span>
+              <label
+                class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-250 dark:border-gray-700 rounded-xl cursor-pointer hover:border-[#00a046] hover:bg-emerald-50/10 dark:hover:bg-emerald-950/10 transition-colors"
+              >
+                <PhotoIcon
+                  class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-1"
+                />
+                <span class="text-xs text-gray-400">{{
+                  t("admin.blog.posts.form.coverUpload")
+                }}</span>
                 <input
                   type="file"
                   accept="image/*"
                   class="sr-only"
                   @change="uploadCover"
-                >
+                />
               </label>
             </div>
           </div>
@@ -155,9 +194,15 @@
           <!-- Category -->
           <AppSelect
             v-model="postForm.categoryId"
-            label="Категорія"
-            placeholder="Без категорії"
-            :options="[{ id: null, nameUk: 'Без категорії', nameEn: 'Uncategorized' }, ...categories]"
+            :label="t('admin.blog.posts.form.categoryLabel')"
+            :placeholder="t('admin.blog.posts.form.categoryPlaceholder')"
+            :options="[
+              {
+                id: null,
+                nameUk: t('admin.blog.posts.form.categoryPlaceholder'),
+              },
+              ...categories,
+            ]"
             option-value="id"
             option-label="nameUk"
           />
@@ -165,14 +210,17 @@
           <!-- Tags -->
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Теги</label>
+              <label
+                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                >{{ t("admin.blog.posts.form.tagsLabel") }}</label
+              >
               <AppButton
                 variant="text"
                 class="flex items-center gap-1 !text-xs !text-[#00a046] dark:!text-[#00b050] !no-underline"
                 @click="openInlineTagCreate"
               >
                 <PlusIcon class="w-3 h-3" />
-                Новий тег
+                {{ t("admin.blog.posts.form.newTagLabel") }}
               </AppButton>
             </div>
 
@@ -183,13 +231,13 @@
             >
               <AppInput
                 v-model="inlineTagNameUk"
-                placeholder="Назва (УК)"
+                :placeholder="t('admin.blog.posts.form.tagNameUkPlaceholder')"
                 class="flex-1 !py-1 !text-xs"
                 @keyup.enter="saveInlineTag"
               />
               <AppInput
                 v-model="inlineTagNameEn"
-                placeholder="Name (EN)"
+                :placeholder="t('admin.blog.posts.form.tagNameEnPlaceholder')"
                 class="flex-1 !py-1 !text-xs"
                 @keyup.enter="saveInlineTag"
               />
@@ -215,7 +263,9 @@
             </div>
 
             <!-- Tags List Pills -->
-            <div class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-1 border border-gray-100 dark:border-gray-800 rounded-lg">
+            <div
+              class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-1 border border-gray-100 dark:border-gray-800 rounded-lg"
+            >
               <button
                 v-for="tag in tags"
                 :key="tag.id"
@@ -224,7 +274,7 @@
                   'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer',
                   postForm.tagIds.includes(tag.id)
                     ? 'bg-[#00a046] text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-250 dark:hover:bg-gray-650'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-250 dark:hover:bg-gray-650',
                 ]"
                 @click="toggleTag(tag.id)"
               >
@@ -233,7 +283,8 @@
               <span
                 v-if="tags.length === 0"
                 class="text-xs text-gray-400 italic p-1"
-              >Тегів ще немає — створіть перший</span>
+                >{{ t("admin.blog.posts.form.noTagsYet") }}</span
+              >
             </div>
           </div>
 
@@ -242,7 +293,7 @@
             <AppInput
               v-model="postForm.publishedAt"
               type="datetime-local"
-              label="Дата публікації"
+              :label="t('admin.blog.posts.form.publishedAtLabel')"
             />
           </div>
         </div>
@@ -254,6 +305,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
@@ -261,28 +313,25 @@ import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import RichEditor from "@/components/admin/features/blog/RichEditor.vue";
-import {
-  XMarkIcon,
-  PhotoIcon,
-  PlusIcon
-} from "@heroicons/vue/24/outline";
+import { XMarkIcon, PhotoIcon, PlusIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
   modelValue: Boolean,
   post: Object,
   categories: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   tags: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "refresh", "tag-created"]);
 
 const toast = useToast();
+const { t } = useI18n();
 const langTab = ref("uk");
 const saving = ref(false);
 
@@ -297,7 +346,7 @@ const defaultPostForm = () => ({
   status: "draft",
   categoryId: null,
   tagIds: [],
-  publishedAt: ""
+  publishedAt: "",
 });
 
 const postForm = ref(defaultPostForm());
@@ -319,13 +368,15 @@ watch(
         status: newPost.status || "draft",
         categoryId: newPost.categoryId || null,
         tagIds: newPost.tags ? newPost.tags.map((t) => t.id) : [],
-        publishedAt: newPost.publishedAt ? newPost.publishedAt.slice(0, 16) : ""
+        publishedAt: newPost.publishedAt
+          ? newPost.publishedAt.slice(0, 16)
+          : "",
       };
     } else {
       postForm.value = defaultPostForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Inline tag creation
@@ -342,22 +393,22 @@ const openInlineTagCreate = () => {
 
 const saveInlineTag = async () => {
   if (!inlineTagNameUk.value.trim() || !inlineTagNameEn.value.trim()) {
-    toast.warning("Вкажіть назву для обох мов");
+    toast.warning(t("admin.blog.posts.form.alerts.nameRequiredBothLangs"));
     return;
   }
   savingInlineTag.value = true;
   try {
     const { data } = await api.post("/admin/blog/tags", {
       nameUk: inlineTagNameUk.value.trim(),
-      nameEn: inlineTagNameEn.value.trim()
+      nameEn: inlineTagNameEn.value.trim(),
     });
     const newTag = data.data;
     emit("tag-created", newTag);
     postForm.value.tagIds.push(newTag.id);
     showInlineTagForm.value = false;
-    toast.success("Тег створено та додано");
+    toast.success(t("admin.blog.posts.form.alerts.tagCreated"));
   } catch (e) {
-    toast.error("Помилка створення тегу");
+    toast.error(t("admin.blog.posts.form.alerts.tagCreateError"));
   } finally {
     savingInlineTag.value = false;
   }
@@ -380,11 +431,11 @@ const uploadCover = async (e) => {
   form.append("image", file);
   try {
     const { data } = await api.post("/admin/blog/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
     postForm.value.coverImage = data.data.url;
   } catch (e) {
-    toast.error("Помилка завантаження зображення");
+    toast.error(t("admin.blog.posts.form.alerts.imageUploadError"));
   }
 };
 
@@ -393,18 +444,18 @@ const handleImageUpload = async (file, callback) => {
   form.append("image", file);
   try {
     const { data } = await api.post("/admin/blog/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" }
+      headers: { "Content-Type": "multipart/form-data" },
     });
     callback(data.data.url);
   } catch (e) {
-    toast.error("Помилка завантаження зображення");
+    toast.error(t("admin.blog.posts.form.alerts.imageUploadError"));
   }
 };
 
 // Save post
 const savePost = async () => {
   if (!postForm.value.titleUk || !postForm.value.titleEn) {
-    toast.warning("Заголовок обов'язковий для обох мов");
+    toast.warning(t("admin.blog.posts.form.alerts.titleRequiredBothLangs"));
     return;
   }
   saving.value = true;
@@ -414,11 +465,15 @@ const savePost = async () => {
     } else {
       await api.post("/admin/blog/posts", postForm.value);
     }
-    toast.success(props.post ? "Пост оновлено!" : "Пост створено!");
+    toast.success(
+      props.post
+        ? t("admin.blog.posts.form.alerts.postUpdated")
+        : t("admin.blog.posts.form.alerts.postCreated"),
+    );
     emit("update:modelValue", false);
     emit("refresh");
   } catch (e) {
-    toast.error("Помилка збереження");
+    toast.error(t("admin.blog.posts.form.alerts.saveError"));
   } finally {
     saving.value = false;
   }

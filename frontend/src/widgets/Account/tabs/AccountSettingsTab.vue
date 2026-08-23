@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import api from "@/shared/services/api/apiClient";
+import TwoFactorSection from "@/widgets/Account/components/TwoFactorSection.vue";
+import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 interface AddressItem {
   id: number;
   type: string;
@@ -19,21 +23,12 @@ interface AddressItem {
   isDefault: boolean;
 }
 
-interface CardItem {
-  id: number;
-  type: string;
-  number: string;
-  holder: string;
-  expiry: string;
-  isDefault: boolean;
-}
-
 // Accordion Expand/Collapse State
 const expandedSections = reactive<Record<string, boolean>>({
   profile: true,
   password: false,
+  twoFactor: false,
   addresses: false,
-  cards: false,
 });
 
 const toggleSection = (section: string) => {
@@ -45,8 +40,24 @@ const profileForm = reactive({
   name: "",
   email: "",
   phone: "",
-  language: "Українська",
+  language: "uk",
 });
+
+const languageOptions = computed(() => [
+  { value: "uk", label: t("account.settings.profile.languageUk") },
+  { value: "en", label: t("account.settings.profile.languageEn") },
+]);
+
+// Older accounts may still have the pre-fix free-text label ("Українська"/
+// "Англійська") stored as their language setting, from when the native
+// <select> had no `value` attributes and sent its visible text instead of a
+// real locale code - normalize those to a real code so the dropdown can
+// actually find a matching option, rather than rendering blank.
+const normalizeLanguage = (value?: string | null): string => {
+  if (value === "uk" || value === "en") return value;
+  if (value === "Англійська" || value === "English") return "en";
+  return "uk";
+};
 
 const passwordForm = reactive({
   current: "",
@@ -55,7 +66,28 @@ const passwordForm = reactive({
 });
 
 const addressesList = ref<AddressItem[]>([]);
-const cardsList = ref<CardItem[]>([]);
+
+// Address type is persisted as its literal Ukrainian label (see AddressItem's
+// `type` field and how it's sent straight through in saveAddress/syncSettingsWithBackend),
+// so the option values below must stay untranslated to avoid changing what's
+// stored — only the dropdown's and the address card's displayed labels are localized.
+const ADDRESS_TYPE_VALUES = ["Дім", "Офіс", "Інше"] as const;
+
+const addressTypeLabelKeys: Record<string, string> = {
+  Дім: "account.settings.addresses.types.home",
+  Офіс: "account.settings.addresses.types.office",
+  Інше: "account.settings.addresses.types.other",
+};
+
+const addressTypeOptions = computed(() =>
+  ADDRESS_TYPE_VALUES.map((value) => ({
+    value,
+    label: t(addressTypeLabelKeys[value]),
+  })),
+);
+
+const getAddressTypeLabel = (type: string) =>
+  addressTypeLabelKeys[type] ? t(addressTypeLabelKeys[type]) : type;
 
 // Modals
 const isAddressModalOpen = ref(false);
@@ -81,15 +113,6 @@ const addressForm = reactive<{
   phone: "",
 });
 
-const isCardModalOpen = ref(false);
-const cardForm = reactive({
-  number: "",
-  holder: "",
-  expiry: "",
-  cvv: "",
-  type: "Visa",
-});
-
 // Initialization
 const initData = () => {
   if (authStore.user) {
@@ -97,10 +120,9 @@ const initData = () => {
     profileForm.name = user.name || "";
     profileForm.email = user.email || "";
     profileForm.phone = user.phone || "";
-    profileForm.language = user.language || "Українська";
+    profileForm.language = normalizeLanguage(user.language);
 
     addressesList.value = user.addresses || [];
-    cardsList.value = user.cards || [];
   }
 };
 
@@ -118,7 +140,7 @@ const userInitials = computed(() => {
       .map((n) => n[0])
       .join("")
       .substring(0, 2)
-      .toUpperCase() || "К"
+      .toUpperCase() || t("account.sidebar.customerInitial")
   );
 });
 
@@ -135,12 +157,15 @@ const handleAvatarFileChange = async (event: Event) => {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    cartStore.addToast("Будь ласка, виберіть файл зображення.", "warning");
+    cartStore.addToast(
+      t("account.settings.toasts.avatarInvalidType"),
+      "warning",
+    );
     return;
   }
 
   if (file.size > 2 * 1024 * 1024) {
-    cartStore.addToast("Розмір файлу не повинен перевищувати 2 МБ.", "warning");
+    cartStore.addToast(t("account.settings.toasts.avatarTooLarge"), "warning");
     return;
   }
 
@@ -156,11 +181,13 @@ const handleAvatarFileChange = async (event: Event) => {
     });
     if (response.data && response.data.status === "success") {
       authStore.user = response.data.data;
-      cartStore.addToast("Аватар успішно оновлено!", "success");
+      cartStore.addToast(t("account.settings.toasts.avatarUpdated"), "success");
     }
   } catch (error: any) {
     console.error("Avatar upload failed:", error);
-    const msg = error.response?.data?.message || "Не вдалося завантажити аватар.";
+    const msg =
+      error.response?.data?.message ||
+      t("account.settings.toasts.avatarUploadFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isUploadingAvatar.value = false;
@@ -171,18 +198,20 @@ const handleAvatarFileChange = async (event: Event) => {
 };
 
 const deleteAvatarAction = async () => {
-  if (!confirm("Ви впевнені, що хочете видалити свій аватар?")) return;
+  if (!confirm(t("account.settings.deleteAvatarConfirm"))) return;
 
   isUploadingAvatar.value = true;
   try {
     const response = await api.delete("/user/avatar");
     if (response.data && response.data.status === "success") {
       authStore.user = response.data.data;
-      cartStore.addToast("Аватар видалено.", "info");
+      cartStore.addToast(t("account.settings.toasts.avatarDeleted"), "info");
     }
   } catch (error: any) {
     console.error("Failed to delete avatar:", error);
-    const msg = error.response?.data?.message || "Не вдалося видалити аватар.";
+    const msg =
+      error.response?.data?.message ||
+      t("account.settings.toasts.avatarDeleteFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isUploadingAvatar.value = false;
@@ -200,14 +229,18 @@ const saveProfile = async () => {
       phone: profileForm.phone,
       language: profileForm.language,
       addresses: addressesList.value,
-      cards: cardsList.value,
     });
     if (response.data.success) {
       await authStore.fetchUser();
-      cartStore.addToast("Профіль успішно оновлено!", "success");
+      cartStore.addToast(
+        t("account.settings.toasts.profileUpdated"),
+        "success",
+      );
     }
   } catch (e: any) {
-    const msg = e.response?.data?.message || "Не вдалося оновити профіль.";
+    const msg =
+      e.response?.data?.message ||
+      t("account.settings.toasts.profileUpdateFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isSavingProfile.value = false;
@@ -217,11 +250,14 @@ const saveProfile = async () => {
 const isUpdatingPassword = ref(false);
 const updatePassword = async () => {
   if (!passwordForm.current || !passwordForm.new || !passwordForm.confirm) {
-    cartStore.addToast("Будь ласка, заповніть усі поля пароля.", "warning");
+    cartStore.addToast(
+      t("account.settings.toasts.fillPasswordFields"),
+      "warning",
+    );
     return;
   }
   if (passwordForm.new !== passwordForm.confirm) {
-    cartStore.addToast("Нові паролі не співпадають.", "error");
+    cartStore.addToast(t("account.settings.toasts.passwordMismatch"), "error");
     return;
   }
   isUpdatingPassword.value = true;
@@ -231,20 +267,25 @@ const updatePassword = async () => {
       newPassword: passwordForm.new,
     });
     if (response.data.success) {
-      cartStore.addToast("Пароль успішно змінено!", "success");
+      cartStore.addToast(
+        t("account.settings.toasts.passwordUpdated"),
+        "success",
+      );
       passwordForm.current = "";
       passwordForm.new = "";
       passwordForm.confirm = "";
     }
   } catch (e: any) {
-    const msg = e.response?.data?.message || "Поточний пароль вказано невірно.";
+    const msg =
+      e.response?.data?.message ||
+      t("account.settings.toasts.passwordUpdateFailed");
     cartStore.addToast(msg, "error");
   } finally {
     isUpdatingPassword.value = false;
   }
 };
 
-// Sync helpers for lists (addresses, cards)
+// Sync helper for the address book list
 const syncSettingsWithBackend = async () => {
   try {
     await api.put("/user/profile", {
@@ -253,12 +294,14 @@ const syncSettingsWithBackend = async () => {
       phone: profileForm.phone,
       language: profileForm.language,
       addresses: addressesList.value,
-      cards: cardsList.value,
     });
     await authStore.fetchUser();
   } catch (e) {
     console.error("Failed to sync settings with backend:", e);
-    cartStore.addToast("Не вдалося зберегти зміни на сервері.", "error");
+    cartStore.addToast(
+      t("account.settings.toasts.settingsSyncFailed"),
+      "error",
+    );
   }
 };
 
@@ -290,7 +333,7 @@ const saveAddress = async () => {
     !addressForm.zip
   ) {
     cartStore.addToast(
-      "Будь ласка, заповніть усі обов'язкові поля.",
+      t("account.settings.toasts.fillRequiredAddressFields"),
       "warning",
     );
     return;
@@ -300,7 +343,7 @@ const saveAddress = async () => {
     if (idx !== -1) {
       addressesList.value[idx] = { ...addressForm } as any;
     }
-    cartStore.addToast("Адресу оновлено!", "success");
+    cartStore.addToast(t("account.settings.toasts.addressUpdated"), "success");
   } else {
     const newId = addressesList.value.length
       ? Math.max(...addressesList.value.map((a) => a.id), 0) + 1
@@ -310,7 +353,7 @@ const saveAddress = async () => {
       id: newId,
       isDefault: addressesList.value.length === 0,
     } as any);
-    cartStore.addToast("Нову адресу збережено!", "success");
+    cartStore.addToast(t("account.settings.toasts.addressAdded"), "success");
   }
   isAddressModalOpen.value = false;
   await syncSettingsWithBackend();
@@ -324,89 +367,33 @@ const deleteAddress = async (id: number) => {
     if (wasDefault && addressesList.value.length > 0) {
       addressesList.value[0].isDefault = true;
     }
-    cartStore.addToast("Адресу видалено.", "info");
+    cartStore.addToast(t("account.settings.toasts.addressDeleted"), "info");
     await syncSettingsWithBackend();
   }
 };
 
 const setAddressDefault = async (id: number) => {
   addressesList.value.forEach((a) => (a.isDefault = a.id === id));
-  cartStore.addToast("Адресу за замовчуванням оновлено.", "success");
+  cartStore.addToast(
+    t("account.settings.toasts.addressDefaultUpdated"),
+    "success",
+  );
   await syncSettingsWithBackend();
 };
 
-// Saved Cards Handlers
-const openCardModal = () => {
-  Object.assign(cardForm, {
-    number: "",
-    holder: "",
-    expiry: "",
-    cvv: "",
-    type: "Visa",
-  });
-  isCardModalOpen.value = true;
-};
-
-const saveCard = async () => {
-  if (
-    !cardForm.number ||
-    !cardForm.holder ||
-    !cardForm.expiry ||
-    !cardForm.cvv
-  ) {
-    cartStore.addToast("Будь ласка, заповніть усі дані картки.", "warning");
-    return;
-  }
-  const digits = cardForm.number.replace(/\D/g, "");
-  const lastFour = digits.substring(digits.length - 4) || "1111";
-  const newId = cardsList.value.length
-    ? Math.max(...cardsList.value.map((c) => c.id), 0) + 1
-    : 1;
-  cardsList.value.push({
-    id: newId,
-    type: cardForm.type,
-    number: `•••• •••• •••• ${lastFour}`,
-    holder: cardForm.holder.toUpperCase(),
-    expiry: cardForm.expiry,
-    isDefault: cardsList.value.length === 0,
-  });
-  cartStore.addToast("Картку додано успішно!", "success");
-  isCardModalOpen.value = false;
-  await syncSettingsWithBackend();
-};
-
-const deleteCard = async (id: number) => {
-  const idx = cardsList.value.findIndex((c) => c.id === id);
-  if (idx !== -1) {
-    const wasDefault = cardsList.value[idx].isDefault;
-    cardsList.value.splice(idx, 1);
-    if (wasDefault && cardsList.value.length > 0) {
-      cardsList.value[0].isDefault = true;
-    }
-    cartStore.addToast("Картку видалено.", "info");
-    await syncSettingsWithBackend();
-  }
-};
-
-const setCardDefault = async (id: number) => {
-  cardsList.value.forEach((c) => (c.isDefault = c.id === id));
-  cartStore.addToast("Основну картку оновлено.", "success");
-  await syncSettingsWithBackend();
-};
-
-// Summary computations for collapsed state
+// Summary computation for collapsed state
 const addressesSummary = computed(() => {
-  if (!addressesList.value.length) return "Немає збережених адрес";
+  if (!addressesList.value.length)
+    return t("account.settings.addresses.noneSaved");
   const def = addressesList.value.find((a) => a.isDefault);
-  if (def) return `Основна: м. ${def.city}, ${def.street}`;
-  return `${addressesList.value.length} збережені адреси`;
-});
-
-const cardsSummary = computed(() => {
-  if (!cardsList.value.length) return "Немає збережених карт";
-  const def = cardsList.value.find((c) => c.isDefault);
-  if (def) return `${def.type} ${def.number}`;
-  return `${cardsList.value.length} збережені картки`;
+  if (def)
+    return t("account.settings.addresses.defaultSummary", {
+      city: def.city,
+      street: def.street,
+    });
+  return t("account.settings.addresses.countSummary", {
+    count: addressesList.value.length,
+  });
 });
 
 const inputClass =
@@ -433,13 +420,17 @@ const inputClass =
             <h3
               class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
             >
-              Особисті дані
+              {{ t("account.settings.profile.title") }}
             </h3>
             <p
               v-if="!expandedSections.profile"
               class="text-xs text-zinc-450 dark:text-zinc-500 mt-0.5 font-extrabold"
             >
-              {{ profileForm.name || "Не вказано ім'я" }} &bull;
+              {{
+                profileForm.name ||
+                t("account.settings.profile.collapsedFallbackName")
+              }}
+              &bull;
               {{ profileForm.email }}
             </p>
           </div>
@@ -456,7 +447,9 @@ const inputClass =
         class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
       >
         <!-- Avatar Section -->
-        <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80">
+        <div
+          class="flex flex-col sm:flex-row items-center gap-5 pb-6 mb-6 border-b border-zinc-150 dark:border-zinc-800/80"
+        >
           <div class="relative group">
             <img
               v-if="authStore.user?.avatarUrl"
@@ -469,23 +462,29 @@ const inputClass =
             >
               {{ userInitials }}
             </div>
-            
+
             <div
               v-if="isUploadingAvatar"
               class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center"
             >
-              <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div
+                class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              />
             </div>
           </div>
 
           <div class="flex flex-col gap-2 text-center sm:text-left">
             <h4 class="font-extrabold text-sm text-zinc-800 dark:text-zinc-200">
-              Ваш аватар
+              {{ t("account.settings.profile.avatarTitle") }}
             </h4>
-            <p class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal">
-              Дозволені формати: JPG, PNG, GIF. Максимальний розмір файлу: 2 МБ.
+            <p
+              class="text-xs text-zinc-450 dark:text-zinc-500 font-medium max-w-xs leading-normal"
+            >
+              {{ t("account.settings.profile.avatarHint") }}
             </p>
-            <div class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start">
+            <div
+              class="flex flex-wrap gap-2.5 mt-2 justify-center sm:justify-start"
+            >
               <input
                 ref="avatarFileInput"
                 type="file"
@@ -498,7 +497,7 @@ const inputClass =
                 class="bg-[#00a046] hover:bg-[#00b050] text-white px-4 py-2 rounded-lg font-black text-xs transition-colors shadow-sm"
                 @click="triggerAvatarUpload"
               >
-                Завантажити фото
+                {{ t("account.settings.profile.uploadPhoto") }}
               </button>
               <button
                 v-if="authStore.user?.avatarUrl"
@@ -506,7 +505,7 @@ const inputClass =
                 class="border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-rose-500 px-4 py-2 rounded-lg font-black text-xs transition-colors"
                 @click="deleteAvatarAction"
               >
-                Видалити
+                {{ t("account.settings.profile.deletePhoto") }}
               </button>
             </div>
           </div>
@@ -519,7 +518,7 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Повне ім'я</label
+              >{{ t("account.settings.profile.nameLabel") }}</label
             >
             <input
               v-model="profileForm.name"
@@ -531,37 +530,41 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Електронна пошта</label
+              >{{ t("account.settings.profile.emailLabel") }}</label
             >
             <input
               v-model="profileForm.email"
               type="email"
               required
               disabled
-              :class="[inputClass, '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed']"
+              :class="[
+                inputClass,
+                '!bg-zinc-100 dark:!bg-zinc-800/60 opacity-60 cursor-not-allowed',
+              ]"
             />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Номер телефону</label
+              >{{ t("account.settings.profile.phoneLabel") }}</label
             >
             <input
               v-model="profileForm.phone"
               type="text"
-              placeholder="+380..."
+              :placeholder="t('account.settings.profile.phonePlaceholder')"
               :class="inputClass"
             />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Мова інтерфейсу</label
+              >{{ t("account.settings.profile.languageLabel") }}</label
             >
-            <select v-model="profileForm.language" :class="inputClass">
-              <option>Українська</option>
-              <option>Англійська</option>
-            </select>
+            <UiDropdown
+              v-model="profileForm.language"
+              :options="languageOptions"
+              trigger-class="w-full"
+            />
           </div>
           <div class="md:col-span-2 pt-2 text-right">
             <button
@@ -573,7 +576,11 @@ const inputClass =
                 v-if="isSavingProfile"
                 class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
               />
-              {{ isSavingProfile ? "Збереження..." : "Зберегти профіль" }}
+              {{
+                isSavingProfile
+                  ? t("account.settings.profile.saving")
+                  : t("account.settings.profile.save")
+              }}
             </button>
           </div>
         </form>
@@ -598,13 +605,13 @@ const inputClass =
             <h3
               class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
             >
-              Безпека та пароль
+              {{ t("account.settings.password.title") }}
             </h3>
             <p
               v-if="!expandedSections.password"
               class="text-xs text-zinc-450 dark:text-zinc-500 mt-0.5 font-extrabold"
             >
-              Оновлення пароля вашого акаунту
+              {{ t("account.settings.password.collapsedSubtitle") }}
             </p>
           </div>
         </div>
@@ -623,7 +630,7 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-              >Поточний пароль</label
+              >{{ t("account.settings.password.currentLabel") }}</label
             >
             <input
               v-model="passwordForm.current"
@@ -636,7 +643,7 @@ const inputClass =
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-                >Новий пароль</label
+                >{{ t("account.settings.password.newLabel") }}</label
               >
               <input
                 v-model="passwordForm.new"
@@ -648,7 +655,7 @@ const inputClass =
             <div class="space-y-1.5">
               <label
                 class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-550 uppercase tracking-wider"
-                >Підтвердження пароля</label
+                >{{ t("account.settings.password.confirmLabel") }}</label
               >
               <input
                 v-model="passwordForm.confirm"
@@ -668,12 +675,22 @@ const inputClass =
                 v-if="isUpdatingPassword"
                 class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
               />
-              {{ isUpdatingPassword ? "Оновлення..." : "Оновити пароль" }}
+              {{
+                isUpdatingPassword
+                  ? t("account.settings.password.updating")
+                  : t("account.settings.password.submit")
+              }}
             </button>
           </div>
         </form>
       </div>
     </div>
+
+    <!-- 2b. TWO-FACTOR AUTHENTICATION ACCORDION -->
+    <TwoFactorSection
+      :expanded="expandedSections.twoFactor"
+      @toggle="toggleSection('twoFactor')"
+    />
 
     <!-- 3. ADDRESS BOOK ACCORDION -->
     <div
@@ -693,7 +710,7 @@ const inputClass =
             <h3
               class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
             >
-              Книга адрес
+              {{ t("account.settings.addresses.title") }}
             </h3>
             <p
               v-if="!expandedSections.addresses"
@@ -718,7 +735,7 @@ const inputClass =
           <span
             class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
           >
-            Збережені адреси доставки
+            {{ t("account.settings.addresses.savedTitle") }}
           </span>
           <button
             class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
@@ -727,7 +744,7 @@ const inputClass =
             <span class="material-symbols-outlined text-[16px] md:text-[18px]"
               >add</span
             >
-            Додати
+            {{ t("account.settings.addresses.add") }}
           </button>
         </div>
 
@@ -743,12 +760,12 @@ const inputClass =
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="font-extrabold text-zinc-800 dark:text-zinc-200">{{
-                  address.type
+                  getAddressTypeLabel(address.type)
                 }}</span>
                 <span
                   v-if="address.isDefault"
                   class="bg-[#00a046]/10 text-[#00a046] text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-[#00a046]/20"
-                  >Основна</span
+                  >{{ t("account.settings.addresses.defaultBadge") }}</span
                 >
               </div>
               <p class="text-zinc-800 dark:text-zinc-200 font-extrabold">
@@ -758,7 +775,8 @@ const inputClass =
                 {{ address.street }}
               </p>
               <p class="text-zinc-500 dark:text-zinc-400">
-                м. {{ address.city }}, {{ address.state }} {{ address.zip }}
+                {{ t("account.settings.addresses.cityPrefix")
+                }}{{ address.city }}, {{ address.state }} {{ address.zip }}
               </p>
             </div>
 
@@ -769,165 +787,27 @@ const inputClass =
                 class="text-zinc-450 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors font-extrabold"
                 @click="openAddressModal(address)"
               >
-                Редагувати
+                {{ t("account.settings.addresses.edit") }}
               </button>
               <button
                 class="text-zinc-450 hover:text-rose-500 transition-colors font-extrabold"
                 @click="deleteAddress(address.id)"
               >
-                Видалити
+                {{ t("account.settings.addresses.delete") }}
               </button>
               <button
                 v-if="!address.isDefault"
                 class="text-[#00a046] hover:underline ml-auto font-black text-[10px] uppercase"
                 @click="setAddressDefault(address.id)"
               >
-                Зробити основною
+                {{ t("account.settings.addresses.makeDefault") }}
               </button>
             </div>
           </div>
         </div>
 
         <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
-          У вас немає збережених адрес. Додайте першу адресу для швидкого
-          оформлення замовлення.
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. SAVED CARDS ACCORDION -->
-    <div
-      class="border border-zinc-150 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm transition-all duration-300"
-    >
-      <button
-        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
-        @click="toggleSection('cards')"
-      >
-        <div class="flex items-center gap-4">
-          <div
-            class="w-10 h-10 rounded-lg bg-[#00a046]/10 text-[#00a046] flex items-center justify-center shrink-0"
-          >
-            <span class="material-symbols-outlined text-[22px]"
-              >credit_card</span
-            >
-          </div>
-          <div>
-            <h3
-              class="font-black text-sm md:text-base text-zinc-900 dark:text-white"
-            >
-              Збережені картки
-            </h3>
-            <p
-              v-if="!expandedSections.cards"
-              class="text-xs text-zinc-450 dark:text-zinc-500 mt-0.5 font-extrabold truncate max-w-[280px]"
-            >
-              {{ cardsSummary }}
-            </p>
-          </div>
-        </div>
-        <span
-          class="material-symbols-outlined text-zinc-400 transition-transform duration-300"
-          :class="{ 'rotate-180': expandedSections.cards }"
-          >keyboard_arrow_down</span
-        >
-      </button>
-
-      <div
-        v-show="expandedSections.cards"
-        class="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-zinc-50/20 dark:bg-zinc-900/40"
-      >
-        <div class="flex items-center justify-between mb-4">
-          <span
-            class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest"
-          >
-            Ваші платіжні методи
-          </span>
-          <button
-            class="text-[#00a046] hover:text-[#00b050] text-xs md:text-sm font-black hover:underline flex items-center gap-0.5"
-            @click="openCardModal()"
-          >
-            <span class="material-symbols-outlined text-[16px] md:text-[18px]"
-              >add</span
-            >
-            Додати
-          </button>
-        </div>
-
-        <div
-          v-if="cardsList.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
-          <div
-            v-for="card in cardsList"
-            :key="card.id"
-            class="rounded-lg p-5 border relative overflow-hidden text-white flex flex-col justify-between aspect-[1.58/1] shadow-sm select-none"
-            :class="
-              card.isDefault
-                ? 'bg-gradient-to-tr from-emerald-950 via-[#00a046] to-emerald-800 border-[#00a046]/35'
-                : 'bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-700 border-zinc-750'
-            "
-          >
-            <div class="flex justify-between items-start">
-              <div>
-                <p
-                  class="text-[9px] font-black uppercase tracking-widest opacity-80"
-                >
-                  Картка {{ card.type }}
-                </p>
-                <p
-                  v-if="card.isDefault"
-                  class="text-[10px] font-bold mt-1 text-emerald-300"
-                >
-                  ОСНОВНИЙ МЕТОД
-                </p>
-              </div>
-              <span class="material-symbols-outlined text-2xl opacity-90">{{
-                card.type === "Visa" ? "credit_card" : "payments"
-              }}</span>
-            </div>
-            <p class="font-mono text-base tracking-widest my-2 text-center">
-              {{ card.number }}
-            </p>
-            <div class="flex justify-between items-end">
-              <div>
-                <p class="text-[8px] uppercase tracking-wider opacity-60">
-                  Власник
-                </p>
-                <p class="font-bold text-[11px] tracking-wide">
-                  {{ card.holder }}
-                </p>
-              </div>
-              <div>
-                <p class="text-[8px] uppercase tracking-wider opacity-60">
-                  Дійсна до
-                </p>
-                <p class="font-bold text-[11px]">
-                  {{ card.expiry }}
-                </p>
-              </div>
-            </div>
-            <div
-              class="absolute inset-0 bg-black/85 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3"
-            >
-              <button
-                v-if="!card.isDefault"
-                class="bg-white text-black font-extrabold text-[10px] px-3.5 py-2 rounded-lg uppercase tracking-wider hover:bg-zinc-200 transition-colors"
-                @click="setCardDefault(card.id)"
-              >
-                Основна
-              </button>
-              <button
-                class="bg-rose-600 text-white font-extrabold text-[10px] px-3.5 py-2 rounded-lg uppercase tracking-wider hover:bg-rose-500 transition-colors"
-                @click="deleteCard(card.id)"
-              >
-                Видалити
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="text-center py-6 text-zinc-400 dark:text-zinc-555">
-          У вас немає збережених платіжних карток.
+          {{ t("account.settings.addresses.empty") }}
         </div>
       </div>
     </div>
@@ -947,7 +827,11 @@ const inputClass =
         <h3
           class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
         >
-          {{ addressForm.id ? "Редагувати адресу" : "Додати нову адресу" }}
+          {{
+            addressForm.id
+              ? t("account.settings.addresses.modal.editTitle")
+              : t("account.settings.addresses.modal.addTitle")
+          }}
         </h3>
         <button
           class="text-zinc-400 hover:text-zinc-650"
@@ -964,21 +848,18 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Тип адреси</label
+              >{{ t("account.settings.addresses.modal.typeLabel") }}</label
             >
-            <select
+            <UiDropdown
               v-model="addressForm.type"
-              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            >
-              <option>Дім</option>
-              <option>Офіс</option>
-              <option>Інше</option>
-            </select>
+              :options="addressTypeOptions"
+              trigger-class="w-full"
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Отримувач *</label
+              >{{ t("account.settings.addresses.modal.recipientLabel") }}</label
             >
             <input
               v-model="addressForm.recipient"
@@ -991,7 +872,7 @@ const inputClass =
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Вулиця, будинок, квартира *</label
+            >{{ t("account.settings.addresses.modal.streetLabel") }}</label
           >
           <input
             v-model="addressForm.street"
@@ -1004,7 +885,7 @@ const inputClass =
           <div class="space-y-1.5 col-span-2">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Місто *</label
+              >{{ t("account.settings.addresses.modal.cityLabel") }}</label
             >
             <input
               v-model="addressForm.city"
@@ -1016,7 +897,7 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Область</label
+              >{{ t("account.settings.addresses.modal.stateLabel") }}</label
             >
             <input
               v-model="addressForm.state"
@@ -1029,7 +910,7 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Поштовий індекс *</label
+              >{{ t("account.settings.addresses.modal.zipLabel") }}</label
             >
             <input
               v-model="addressForm.zip"
@@ -1041,7 +922,7 @@ const inputClass =
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Країна *</label
+              >{{ t("account.settings.addresses.modal.countryLabel") }}</label
             >
             <input
               v-model="addressForm.country"
@@ -1054,7 +935,7 @@ const inputClass =
         <div class="space-y-1.5">
           <label
             class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Номер телефону</label
+            >{{ t("account.settings.addresses.modal.phoneLabel") }}</label
           >
           <input
             v-model="addressForm.phone"
@@ -1070,137 +951,13 @@ const inputClass =
             class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs"
             @click="isAddressModalOpen = false"
           >
-            Скасувати
+            {{ t("account.settings.addresses.modal.cancel") }}
           </button>
           <button
             type="submit"
             class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs"
           >
-            Зберегти
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Card Modal -->
-  <div
-    v-if="isCardModalOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade"
-  >
-    <div
-      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-sm w-full shadow-2xl overflow-hidden"
-    >
-      <div
-        class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-150 dark:border-zinc-800 px-6 py-5 flex justify-between items-center"
-      >
-        <h3
-          class="font-black text-base md:text-lg text-zinc-900 dark:text-white"
-        >
-          Додати платіжну картку
-        </h3>
-        <button
-          class="text-zinc-400 hover:text-zinc-650"
-          @click="isCardModalOpen = false"
-        >
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <form class="p-6 space-y-4 text-xs md:text-sm" @submit.prevent="saveCard">
-        <div class="space-y-1.5">
-          <label
-            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Платіжна система</label
-          >
-          <div class="flex gap-4">
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
-              ><input
-                v-model="cardForm.type"
-                type="radio"
-                value="Visa"
-                class="accent-[#00a046]"
-              /><span>Visa</span></label
-            >
-            <label class="flex items-center gap-2 cursor-pointer font-extrabold"
-              ><input
-                v-model="cardForm.type"
-                type="radio"
-                value="Mastercard"
-                class="accent-[#00a046]"
-              /><span>Mastercard</span></label
-            >
-          </div>
-        </div>
-        <div class="space-y-1.5">
-          <label
-            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Ім'я власника картки *</label
-          >
-          <input
-            v-model="cardForm.holder"
-            type="text"
-            placeholder="напр. ROMAN SHEVCHENKO"
-            required
-            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          />
-        </div>
-        <div class="space-y-1.5">
-          <label
-            class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-            >Номер картки *</label
-          >
-          <input
-            v-model="cardForm.number"
-            type="text"
-            placeholder="16-значний номер картки"
-            required
-            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-          />
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Термін дії *</label
-            >
-            <input
-              v-model="cardForm.expiry"
-              type="text"
-              placeholder="ММ/РР"
-              required
-              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            />
-          </div>
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >CVV *</label
-            >
-            <input
-              v-model="cardForm.cvv"
-              type="password"
-              maxlength="3"
-              placeholder="•••"
-              required
-              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-800 dark:text-zinc-200 focus:ring-1 focus:ring-[#00a046] outline-none"
-            />
-          </div>
-        </div>
-        <div
-          class="bg-zinc-50 dark:bg-zinc-800 border-t border-zinc-150 dark:border-zinc-800 -mx-6 -mb-6 px-6 py-4 flex justify-end gap-3 mt-6"
-        >
-          <button
-            type="button"
-            class="border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs"
-            @click="isCardModalOpen = false"
-          >
-            Скасувати
-          </button>
-          <button
-            type="submit"
-            class="bg-[#00a046] hover:bg-[#00b050] text-white px-5 py-2 rounded-lg font-extrabold transition-all text-xs"
-          >
-            Додати картку
+            {{ t("account.settings.addresses.modal.save") }}
           </button>
         </div>
       </form>

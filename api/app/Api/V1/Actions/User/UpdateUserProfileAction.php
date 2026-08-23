@@ -12,7 +12,7 @@ class UpdateUserProfileAction
         $user->name = $data['name'] ?? $user->name;
         $user->email = $data['email'] ?? $user->email;
 
-        // Save phone, language, addresses, and cards inside settings json
+        // Save phone, language, and addresses inside settings json
         $settings = $user->settings ?? [];
         if (array_key_exists('phone', $data)) {
             $settings['phone'] = $data['phone'];
@@ -22,9 +22,6 @@ class UpdateUserProfileAction
         }
         if (array_key_exists('addresses', $data)) {
             $settings['addresses'] = $data['addresses'];
-        }
-        if (array_key_exists('cards', $data)) {
-            $settings['cards'] = $data['cards'];
         }
         $user->settings = $settings;
 

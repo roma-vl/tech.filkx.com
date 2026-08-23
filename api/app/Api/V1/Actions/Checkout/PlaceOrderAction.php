@@ -10,7 +10,9 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use App\Notifications\OrderConfirmedNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class PlaceOrderAction
@@ -28,7 +30,7 @@ class PlaceOrderAction
             throw new EmptyCartException;
         }
 
-        return DB::transaction(function () use ($cart, $dto, $user) {
+        $order = DB::transaction(function () use ($cart, $dto, $user) {
             $orderItemsData = [];
             $totalPrice = 0;
 
@@ -146,5 +148,9 @@ class PlaceOrderAction
 
             return $order->load('items');
         });
+
+        Notification::route('mail', $order->customer_email)->notify(new OrderConfirmedNotification($order));
+
+        return $order;
     }
 }

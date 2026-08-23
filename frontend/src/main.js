@@ -11,6 +11,7 @@ import "@/assets/style.css";
 import { VueReCaptcha } from "vue-recaptcha-v3";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import * as Sentry from "@sentry/vue";
 
 // Export a factory function for creating the app instance
 export function createApp(routerInstance) {
@@ -22,6 +23,15 @@ export function createApp(routerInstance) {
   app.use(routerInstance);
   app.use(i18n);
   app.use(head);
+
+  // Error tracking - only initializes when a DSN is configured
+  if (import.meta.env.VITE_SENTRY_DSN) {
+    Sentry.init({
+      app,
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      tracesSampleRate: 0.2,
+    });
+  }
   app.use(Toast, {
     position: "top-right",
     timeout: 3000,

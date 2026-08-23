@@ -4,14 +4,18 @@
     <button
       type="button"
       class="inline-flex items-center justify-between gap-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-600 focus:outline-none focus:border-[#00a046] focus:ring-2 focus:ring-[#00a046]/15 transition-all"
-      :class="[open ? 'border-[#00a046] ring-2 ring-[#00a046]/15' : '', triggerClass]"
+      :class="[
+        open ? 'border-[#00a046] ring-2 ring-[#00a046]/15' : '',
+        triggerClass,
+      ]"
       @click="open = !open"
     >
       <span class="truncate">{{ selectedLabel || placeholder }}</span>
       <span
         class="material-symbols-outlined text-[18px] text-zinc-400 transition-transform duration-200 shrink-0"
         :class="open ? 'rotate-180' : ''"
-      >expand_more</span>
+        >expand_more</span
+      >
     </button>
 
     <!-- Dropdown panel -->
@@ -29,24 +33,24 @@
         :class="alignRight ? 'right-0' : 'left-0'"
       >
         <ul class="py-1 max-h-64 overflow-y-auto">
-          <li
-            v-for="opt in normalizedOptions"
-            :key="opt.value"
-          >
+          <li v-for="opt in normalizedOptions" :key="opt.value">
             <button
               type="button"
               class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm font-medium transition-colors text-left"
-              :class="opt.value === modelValue
-                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-[#00a046] font-bold'
-                : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'"
+              :class="
+                opt.value === modelValue
+                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-[#00a046] font-bold'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+              "
               @click="select(opt.value)"
             >
               <span>{{ opt.label }}</span>
               <span
                 v-if="opt.value === modelValue"
                 class="material-symbols-outlined text-[16px] text-[#00a046] shrink-0"
-                style="font-variation-settings: 'FILL' 1"
-              >check_circle</span>
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >check_circle</span
+              >
             </button>
           </li>
         </ul>
@@ -80,7 +84,9 @@ const normalizedOptions = computed(() =>
 );
 
 const selectedLabel = computed(
-  () => normalizedOptions.value.find((o) => o.value === props.modelValue)?.label ?? "",
+  () =>
+    normalizedOptions.value.find((o) => o.value === props.modelValue)?.label ??
+    "",
 );
 
 const select = (value: string | number) => {

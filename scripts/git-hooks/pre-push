@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Pre-push hook to run the full test suite before code leaves the machine.
+# TeamCity picks up the build/deploy pipeline automatically once pushed; this
+# hook is the local safety net that catches broken tests before that point.
+
+echo "🔍 Running backend tests before push..."
+make test-backend
+BACKEND_RESULT=$?
+
+echo "🔍 Running frontend tests before push..."
+make test-frontend
+FRONTEND_RESULT=$?
+
+if [ $BACKEND_RESULT -ne 0 ] || [ $FRONTEND_RESULT -ne 0 ]; then
+    echo ""
+    echo "❌ Tests failed! Push aborted."
+    echo "Please fix the tests or use --no-verify if you're absolutely sure (but don't 😉)."
+    exit 1
+fi
+
+echo "✅ Tests passed! Proceeding with push..."
+exit 0

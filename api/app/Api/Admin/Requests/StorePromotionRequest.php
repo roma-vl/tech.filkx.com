@@ -23,6 +23,10 @@ class StorePromotionRequest extends FormRequest
             'startDate' => 'nullable|date',
             'endDate' => 'nullable|date',
             'isActive' => 'boolean',
+            'categoryIds' => 'array',
+            'categoryIds.*' => 'integer|exists:categories,id',
+            'productIds' => 'array',
+            'productIds.*' => 'integer|exists:products,id',
         ];
     }
 }

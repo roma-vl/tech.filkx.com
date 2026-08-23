@@ -1,13 +1,12 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    title="Імпорт товарів з CSV"
+    :title="t('admin.products.import.title')"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div class="space-y-4">
       <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
-        Завантажте файл CSV для імпорту нових товарів або оновлення існуючих.
-        Формат файлу повинен точно збігатися з експортованим файлом.
+        {{ t("admin.products.import.description") }}
       </p>
 
       <!-- Drag & Drop Area -->
@@ -29,7 +28,7 @@
           class="hidden"
           accept=".csv"
           @change="handleFileSelect"
-        >
+        />
         <svg
           class="mx-auto h-12 w-12 text-gray-400"
           stroke="currentColor"
@@ -44,19 +43,18 @@
           />
         </svg>
         <p class="mt-2 text-sm font-bold text-gray-700 dark:text-gray-300">
-          Перетягніть файл сюди або натисніть для вибору
+          {{ t("admin.products.import.dropzoneText") }}
         </p>
         <p class="text-xs text-gray-400 mt-1">
-          Тільки файли .csv
+          {{ t("admin.products.import.csvOnly") }}
         </p>
-        <p
-          v-if="selectedFile"
-          class="mt-2 text-xs font-bold text-emerald-500"
-        >
-          Обрано: {{ selectedFile.name }} ({{
-            (selectedFile.size / 1024).toFixed(1)
+        <p v-if="selectedFile" class="mt-2 text-xs font-bold text-emerald-500">
+          {{
+            t("admin.products.import.selectedFile", {
+              name: selectedFile.name,
+              size: (selectedFile.size / 1024).toFixed(1),
+            })
           }}
-          KB)
         </p>
       </div>
 
@@ -65,47 +63,76 @@
         class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-700 space-y-2"
       >
         <h5 class="text-xs font-black uppercase text-gray-500">
-          Опис колонок CSV файлу:
+          {{ t("admin.products.import.columnsTitle") }}
         </h5>
         <ul
           class="text-[11px] text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside font-medium"
         >
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">ID</strong>:
-            Числовий ID для оновлення наявного товару (залишити пустим для
-            нового товару).
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.idLabel")
+            }}</strong
+            >: {{ t("admin.products.import.columns.idDesc") }}
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">Назва (UK)</strong>
-            та
-            <strong class="text-gray-800 dark:text-gray-200">Назва (EN)</strong>: Обов'язкові текстові поля.
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.nameUk")
+            }}</strong>
+            {{ t("admin.products.import.columns.and") }}
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.nameEn")
+            }}</strong
+            >: {{ t("admin.products.import.columns.nameRequired") }}
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">Категорія</strong>:
-            Назва категорії (буде підібрано автоматично з існуючих).
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.categoryLabel")
+            }}</strong
+            >: {{ t("admin.products.import.columns.categoryDesc") }}
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">Бренд</strong>:
-            Назва бренду (буде підібрано автоматично з існуючих).
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.brandLabel")
+            }}</strong
+            >: {{ t("admin.products.import.columns.brandDesc") }}
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">SKU / Ціна / Кількість</strong>: Формат:
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.variantsLabel")
+            }}</strong
+            >: {{ t("admin.products.import.columns.variantsDesc") }}
             <code
               class="bg-gray-200 dark:bg-gray-800 px-1 py-0.5 rounded font-mono text-gray-700 dark:text-gray-300"
-            >sku1 (price, stock) | sku2 (price2, stock2)</code>.
+              >sku1 (price, stock) | sku2 (price2, stock2)</code
+            >.
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">Статус</strong>:
-            <code class="font-mono text-gray-700 dark:text-gray-300">active</code>,
-            <code class="font-mono text-gray-700 dark:text-gray-300">draft</code>
-            або
-            <code class="font-mono text-gray-700 dark:text-gray-300">hidden</code>.
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.statusLabel")
+            }}</strong
+            >:
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >active</code
+            >,
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >draft</code
+            >
+            {{ t("admin.products.import.columns.or") }}
+            <code class="font-mono text-gray-700 dark:text-gray-300"
+              >hidden</code
+            >.
           </li>
           <li>
-            <strong class="text-gray-800 dark:text-gray-200">Гаряча</strong> та
-            <strong class="text-gray-800 dark:text-gray-200">Рекомендовано</strong>:
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.hotLabel")
+            }}</strong>
+            {{ t("admin.products.import.columns.and") }}
+            <strong class="text-gray-800 dark:text-gray-200">{{
+              t("admin.products.import.columns.recommendedLabel")
+            }}</strong
+            >:
             <code class="font-mono text-gray-700 dark:text-gray-300">Так</code>
-            або
+            {{ t("admin.products.import.columns.or") }}
             <code class="font-mono text-gray-700 dark:text-gray-300">Ні</code>.
           </li>
         </ul>
@@ -127,7 +154,7 @@
         :disabled="importing"
         @click="$emit('update:modelValue', false)"
       >
-        Скасувати
+        {{ t("admin.products.import.cancel") }}
       </AppButton>
       <AppButton
         variant="primary"
@@ -135,8 +162,8 @@
         :disabled="!selectedFile || importing"
         @click="processImport"
       >
-        <span v-if="importing">Імпортування...</span>
-        <span v-else>Почати імпорт</span>
+        <span v-if="importing">{{ t("admin.products.import.importing") }}</span>
+        <span v-else>{{ t("admin.products.import.startImport") }}</span>
       </AppButton>
     </template>
   </AppModal>
@@ -144,9 +171,12 @@
 
 <script setup>
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {
@@ -198,7 +228,7 @@ const processImport = async () => {
   if (!selectedFile.value) return;
 
   importing.value = true;
-  importingStatus.value = "Зчитування файлу...";
+  importingStatus.value = t("admin.products.import.progress.reading");
 
   const reader = new FileReader();
   reader.onload = async (e) => {
@@ -206,7 +236,7 @@ const processImport = async () => {
       const text = e.target.result;
       const parsedRows = parseCSV(text);
       if (parsedRows.length <= 1) {
-        alert("Помилка: Файл порожній або містить лише заголовок.");
+        alert(t("admin.products.import.errors.emptyFile"));
         importing.value = false;
         importingStatus.value = "";
         return;
@@ -222,7 +252,13 @@ const processImport = async () => {
           continue;
         }
 
-        importingStatus.value = `Імпорт товару ${i + 1} з ${dataRows.length}...`;
+        importingStatus.value = t(
+          "admin.products.import.progress.importingRow",
+          {
+            current: i + 1,
+            total: dataRows.length,
+          },
+        );
 
         const existingProduct = row[0]
           ? props.products.find((p) => p.id === parseInt(row[0]))
@@ -319,14 +355,17 @@ const processImport = async () => {
       }
 
       alert(
-        `Імпорт завершено. Успішно: ${successCount}, Помилок: ${errorCount}`,
+        t("admin.products.import.resultAlert", {
+          success: successCount,
+          errors: errorCount,
+        }),
       );
       emit("refresh");
       emit("update:modelValue", false);
       selectedFile.value = null;
     } catch (e) {
       console.error("Failed to parse CSV:", e);
-      alert("Помилка при обробці CSV файлу.");
+      alert(t("admin.products.import.errors.parseFailed"));
     } finally {
       importing.value = false;
       importingStatus.value = "";

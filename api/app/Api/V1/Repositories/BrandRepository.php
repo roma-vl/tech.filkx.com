@@ -34,10 +34,20 @@ class BrandRepository implements BrandRepositoryInterface
         return (bool) $brand->delete();
     }
 
-    public function getBrandsWithActiveProductsCount(): Collection
+    public function getBrandsWithActiveProductsCount(array $categoryIds = []): Collection
     {
-        return Brand::withCount(['products' => function ($q) {
+        return Brand::withCount(['products' => function ($q) use ($categoryIds) {
             $q->where('status', 'active');
+            if (! empty($categoryIds)) {
+                $q->whereHas('categories', function ($c) use ($categoryIds) {
+                    $c->whereIn('categories.id', $categoryIds);
+                });
+            }
         }])->orderBy('name')->get();
+    }
+
+    public function findIdsBySlugs(array $slugs): array
+    {
+        return Brand::whereIn('slug', $slugs)->pluck('id')->all();
     }
 }

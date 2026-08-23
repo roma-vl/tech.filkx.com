@@ -1,106 +1,33 @@
+import auth from "./auth/uk";
+import account from "./account/uk";
+import notifications from "./notifications/uk";
+import header from "./header/uk";
+import common from "./common/uk";
+import cookieConsent from "./cookieConsent/uk";
+import home from "./home/uk";
+import meta from "./meta/uk";
+import footer from "./footer/uk";
+import cart from "./cart/uk";
+import catalog from "./catalog/uk";
+import product from "./product/uk";
+import blog from "./blog/uk";
+import errors from "./errors/uk";
+import staticPage from "./static/uk";
+
 export default {
-  auth: {
-    or_continue_with: "Або увійдіть за допомогою",
-    login: {
-      title: "Вхід",
-      subtitle: "З поверненням! Введіть свої дані для входу в акаунт.",
-      emailLabel: "Електронна пошта",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "Пароль",
-      passwordPlaceholder: "Введіть пароль",
-      forgotPassword: "Забули пароль?",
-      submit: "Увійти",
-      noAccount: "Ще немає акаунта?",
-      createAccount: "Зареєструватися",
-      successMessage: "Успішний вхід!",
-      errorMessage: "Невірна пошта або пароль.",
-    },
-    register: {
-      title: "Реєстрація",
-      subtitle: "Отримайте доступ до преміум функцій, створивши акаунт.",
-      nameLabel: "Повне ім'я",
-      namePlaceholder: "Іван Іванов",
-      emailLabel: "Електронна пошта",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "Пароль",
-      passwordPlaceholder: "Придумайте пароль (мін. 8 символів)",
-      confirmPasswordLabel: "Підтвердження пароля",
-      confirmPasswordPlaceholder: "Підтвердіть пароль",
-      submit: "Зареєструватися",
-      hasAccount: "Вже є акаунт?",
-      signIn: "Увійти",
-      passwordsMismatch: "Паролі не співпадають.",
-      successMessage:
-        "Реєстрація успішна! Будь ласка, перевірте пошту для підтвердження.",
-      errorMessage: "Помилка реєстрації. Перевірте введені дані.",
-    },
-    forgotPassword: {
-      title: "Відновлення пароля",
-      subtitle:
-        "Введіть адресу електронної пошти, і ми надішлемо посилання для відновлення пароля.",
-      emailLabel: "Електронна пошта",
-      emailPlaceholder: "name.company.com",
-      submit: "Надіслати посилання",
-      backToLogin: "Назад до входу",
-      sentMessage:
-        "Ми надіслали посилання для відновлення пароля на вашу пошту.",
-      returnToLogin: "Повернутися до входу",
-      toastSuccess: "Посилання для відновлення успішно надіслано!",
-      toastError: "Не вдалося надіслати посилання. Перевірте адресу пошти.",
-    },
-    resetPassword: {
-      title: "Скидання пароля",
-      subtitle: "Введіть новий пароль нижче.",
-      emailLabel: "Електронна пошта",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "Новий пароль",
-      passwordPlaceholder: "Придумайте новий пароль (мін. 8 символів)",
-      confirmPasswordLabel: "Підтвердіть новий пароль",
-      confirmPasswordPlaceholder: "Підтвердіть новий пароль",
-      submit: "Зберегти новий пароль",
-      invalidLink: "Недійсне або прострочене посилання для відновлення.",
-      toastSuccess: "Пароль успішно змінено!",
-      toastError: "Не вдалося скинути пароль. Спробуйте ще раз.",
-    },
-    verifyEmailNotice: {
-      title: "Підтвердження пошти",
-      subtitle:
-        "Будь ласка, підтвердіть адресу електронної пошти для доступу до всіх функцій.",
-      instructions:
-        "Ми надіслали посилання для підтвердження на вашу адресу. Будь ласка, натисніть на нього, щоб підтвердити акаунт.",
-      resendButton: "Надіслати листа повторно",
-      resendSuccess: "Лист для підтвердження успішно надіслано повторно!",
-      logout: "Вийти з акаунта",
-      toastNoEmail: "Адресу електронної пошти не знайдено. Увійдіть знову.",
-      toastError: "Не вдалося надіслати лист повторно. Спробуйте пізніше.",
-    },
-    verifyEmail: {
-      verifying: "Підтвердження пошти...",
-      verifyingSubtitle:
-        "Будь ласка, зачекайте, поки ми підтвердимо вашу адресу.",
-      successTitle: "Пошту підтверджено!",
-      successSubtitle:
-        "Дякуємо за підтвердження пошти. Тепер вам доступні всі функції сайту.",
-      cta: "Перейти до кабінету",
-      errorTitle: "Помилка підтвердження",
-      resendButton: "Надіслати нове посилання",
-      invalidLink: "Посилання для підтвердження недійсне або застаріло.",
-    },
-  },
-  account: {
-    darkMode: "Темна тема",
-    localeMode: "Мова інтерфейсу",
-    locale: "Мова",
-  },
-  notifications: {
-    title: "Сповіщення",
-    title_with_count: "Сповіщення ({count} непрочитаних)",
-    mark_all_read: "Позначити всі як прочитані",
-    empty_title: "Немає сповіщень",
-    empty: "Нових сповіщень немає",
-    new_notification: "Нове сповіщення",
-    read_more: "Читати більше",
-    read_less: "Згорнути",
-    open_verify_link: "Відкрити посилання",
-  },
+  auth,
+  account,
+  notifications,
+  header,
+  common,
+  cookieConsent,
+  home,
+  meta,
+  footer,
+  cart,
+  catalog,
+  product,
+  blog,
+  errors,
+  staticPage,
 };

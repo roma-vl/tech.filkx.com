@@ -52,7 +52,7 @@
               v-if="!row.roles || row.roles.length === 0"
               class="text-xs text-gray-400"
             >
-              Покупець
+              {{ t("admin.users.table.defaultRole") }}
             </span>
           </div>
         </td>
@@ -156,7 +156,7 @@ defineEmits(["edit", "suspend", "delete", "impersonate"]);
 
 const headers = computed(() => [
   { key: "client", label: t("admin.users.table.client") },
-  { key: "roles", label: "Ролі" },
+  { key: "roles", label: t("admin.users.table.roles") },
   { key: "status", label: t("admin.users.filters.status") },
   { key: "joinDate", label: t("admin.users.table.joinDate") },
   {

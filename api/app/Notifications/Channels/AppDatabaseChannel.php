@@ -15,10 +15,10 @@ class AppDatabaseChannel
 
         Notification::create([
             'user_id' => $notifiable->id,
-            'title'   => $data['title']   ?? 'Сповіщення',
+            'title' => $data['title'] ?? 'Сповіщення',
             'content' => $data['content'] ?? '',
-            'type'    => $data['type']    ?? 'system',
-            'link'    => $data['link']    ?? null,
+            'type' => $data['type'] ?? 'system',
+            'link' => $data['link'] ?? null,
         ]);
     }
 }

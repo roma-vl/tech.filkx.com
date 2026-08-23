@@ -46,14 +46,16 @@
 
       <!-- Content -->
       <div class="space-y-2">
-        <p class="text-sm text-gray-650 dark:text-gray-300 font-medium leading-relaxed">
+        <p
+          class="text-sm text-gray-650 dark:text-gray-300 font-medium leading-relaxed"
+        >
           {{ message }}
         </p>
         <p
           v-if="irreversible"
           class="text-[11px] font-black text-red-650 dark:text-red-500 uppercase tracking-wide"
         >
-          Цю дію не можна буде скасувати!
+          {{ t("admin.common.confirmModal.irreversible") }}
         </p>
       </div>
     </div>
@@ -81,29 +83,33 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import AppModal from "./AppModal.vue";
 import AppButton from "./AppButton.vue";
 
-defineProps({
+const { t } = useI18n();
+
+const props = defineProps({
   modelValue: {
     type: Boolean,
     required: true,
   },
   title: {
     type: String,
-    default: "Підтвердження",
+    default: null,
   },
   message: {
     type: String,
-    default: "Ви впевнені, що хочете виконати цю дію?",
+    default: null,
   },
   confirmText: {
     type: String,
-    default: "Підтвердити",
+    default: null,
   },
   cancelText: {
     type: String,
-    default: "Скасувати",
+    default: null,
   },
   confirmVariant: {
     type: String,
@@ -122,6 +128,19 @@ defineProps({
     default: false,
   },
 });
+
+const title = computed(
+  () => props.title ?? t("admin.common.confirmModal.title"),
+);
+const message = computed(
+  () => props.message ?? t("admin.common.confirmModal.message"),
+);
+const confirmText = computed(
+  () => props.confirmText ?? t("admin.common.confirmModal.confirm"),
+);
+const cancelText = computed(
+  () => props.cancelText ?? t("admin.common.confirmModal.cancel"),
+);
 
 const emit = defineEmits(["update:modelValue", "confirm", "cancel"]);
 

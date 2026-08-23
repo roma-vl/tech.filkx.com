@@ -41,7 +41,10 @@ class UpdateAdminAttributeAction
         foreach ($valuesInput as $valData) {
             $valuePayload = [];
             if ($attribute->type === 'color') {
-                $valuePayload = ['value' => $valData['value'] ?? ''];
+                // Same {uk, en} shape every other attribute value uses - see
+                // CreateAdminAttributeAction::syncValues() for why.
+                $hex = $valData['value'] ?? '';
+                $valuePayload = ['uk' => $hex, 'en' => $hex];
             } else {
                 $valuePayload = [
                     'uk' => $valData['valueUk'] ?? '',

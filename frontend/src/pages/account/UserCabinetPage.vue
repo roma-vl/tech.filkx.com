@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -17,31 +18,47 @@ import AccountNotificationsTab from "@/widgets/Account/tabs/AccountNotifications
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const activeTab = computed(() => (route.query.tab as string) || "dashboard");
-const userName = computed(() => authStore.user?.name || "Клієнт");
 
-const tabTitles: Record<string, string> = {
-  dashboard: "Панель керування",
-  orders: "Історія замовлень",
-  favorites: "Моє обране",
-  compare: "Порівняння товарів",
-  viewed: "Історія переглядів",
-  settings: "Налаштування профілю",
-  support: "Служба підтримки",
-  notifications: "Сповіщення та новини",
-};
+const tabTitles = computed<Record<string, string>>(() => ({
+  dashboard: t("account.nav.dashboard"),
+  orders: t("account.nav.orders"),
+  favorites: t("account.nav.favorites"),
+  compare: t("account.nav.compare"),
+  viewed: t("account.nav.viewed"),
+  settings: t("account.page.titles.settings"),
+  support: t("account.page.titles.support"),
+  notifications: t("account.page.titles.notifications"),
+}));
 
-const navTabs = [
-  { label: "Панель", icon: "dashboard", tab: "dashboard" },
-  { label: "Замовлення", icon: "shopping_bag", tab: "orders" },
-  { label: "Обране", icon: "favorite", tab: "favorites" },
-  { label: "Порівняння", icon: "compare_arrows", tab: "compare" },
-  { label: "Перегляди", icon: "history", tab: "viewed" },
-  { label: "Сповіщення", icon: "notifications", tab: "notifications" },
-  { label: "Налаштування", icon: "settings", tab: "settings" },
-  { label: "Підтримка", icon: "help", tab: "support" },
-];
+const navTabs = computed(() => [
+  {
+    label: t("account.nav.dashboardShort"),
+    icon: "dashboard",
+    tab: "dashboard",
+  },
+  { label: t("account.nav.ordersShort"), icon: "shopping_bag", tab: "orders" },
+  {
+    label: t("account.nav.favoritesShort"),
+    icon: "favorite",
+    tab: "favorites",
+  },
+  {
+    label: t("account.nav.compareShort"),
+    icon: "compare_arrows",
+    tab: "compare",
+  },
+  { label: t("account.nav.viewedShort"), icon: "history", tab: "viewed" },
+  {
+    label: t("account.nav.notifications"),
+    icon: "notifications",
+    tab: "notifications",
+  },
+  { label: t("account.nav.settings"), icon: "settings", tab: "settings" },
+  { label: t("account.nav.support"), icon: "help", tab: "support" },
+]);
 
 const tabComponents: Record<string, any> = {
   dashboard: AccountDashboardTab,
@@ -74,28 +91,27 @@ onMounted(() => {
     <AccountSidebar />
 
     <!-- Content Workspace -->
-    <div class="flex-1 px-4 md:px-8 py-10 min-w-0">
+    <div class="flex-1 px-4 md:px-8 py-5 sm:py-8 lg:py-10 min-w-0">
       <!-- Page Header -->
-      <header class="mb-8">
-        <div class="flex items-start justify-between gap-4 pb-5 border-b border-zinc-200 dark:border-zinc-800">
-          <div class="min-w-0">
-            <p class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1">Особистий кабінет</p>
-            <h1 class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight">
-              {{ tabTitles[activeTab] || "Кабінет" }}
-            </h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5">
-              Вітаємо, <span class="font-semibold text-zinc-700 dark:text-zinc-300">{{ userName }}</span>! Керуйте профілем та замовленнями.
-            </p>
-          </div>
-          <div class="lg:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-            <span class="material-symbols-outlined text-[15px] text-[#00a046]">verified</span>
-            <span class="text-[10px] font-black text-[#00a046] uppercase tracking-widest">Клієнт</span>
-          </div>
+      <header class="mb-5 sm:mb-8">
+        <div class="pb-4 sm:pb-5 border-b border-zinc-200 dark:border-zinc-800">
+          <p
+            class="text-[10px] font-extrabold text-[#00a046] uppercase tracking-widest mb-1"
+          >
+            {{ t("account.page.eyebrow") }}
+          </p>
+          <h1
+            class="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight leading-tight"
+          >
+            {{ tabTitles[activeTab] || t("account.page.fallbackTitle") }}
+          </h1>
         </div>
       </header>
 
       <!-- Mobile Navigation Scroll Bar -->
-      <div class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1">
+      <div
+        class="lg:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none flex gap-2 pb-1"
+      >
         <router-link
           v-for="item in navTabs"
           :key="item.tab"
@@ -109,8 +125,13 @@ onMounted(() => {
         >
           <span
             class="material-symbols-outlined text-[15px]"
-            :style="activeTab === item.tab ? 'font-variation-settings: \'FILL\' 1' : ''"
-          >{{ item.icon }}</span>
+            :style="
+              activeTab === item.tab
+                ? 'font-variation-settings: \'FILL\' 1'
+                : ''
+            "
+            >{{ item.icon }}</span
+          >
           {{ item.label }}
         </router-link>
       </div>

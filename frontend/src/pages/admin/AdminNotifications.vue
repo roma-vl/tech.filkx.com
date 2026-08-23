@@ -76,10 +76,7 @@ const handleSubmit = async () => {
       class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm relative z-10"
     >
       <div class="p-8">
-        <form
-          class="space-y-8 max-w-3xl"
-          @submit.prevent="handleSubmit"
-        >
+        <form class="space-y-8 max-w-3xl" @submit.prevent="handleSubmit">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AppInput
               v-model="form.title"
@@ -140,10 +137,7 @@ const handleSubmit = async () => {
           />
 
           <div class="pt-6 border-t border-gray-100 dark:border-gray-700/50">
-            <AppButton
-              type="submit"
-              :loading="isSending"
-            >
+            <AppButton type="submit" :loading="isSending">
               {{ t("admin.notifications.form.submit") }}
             </AppButton>
           </div>

@@ -1,0 +1,78 @@
+export default {
+  breadcrumbs: {
+    home: "Home",
+    catalog: "Catalog",
+  },
+  toolbar: {
+    resultsCount: "{count} products found",
+    grid4Title: "4 products per row",
+    grid5Title: "5 products per row",
+    listViewTitle: "List",
+  },
+  sort: {
+    byPopularity: "By popularity",
+    newest: "Newest",
+    priceAsc: "Price: low to high",
+    priceDesc: "Price: high to low",
+  },
+  activeFilters: {
+    clearAll: "Clear all",
+  },
+  empty: {
+    title: "No products found",
+    description: "Try adjusting your filters or resetting your search",
+    resetButton: "Reset filters",
+  },
+  filters: {
+    title: "Filters",
+    resetButton: "Reset",
+    applyButton: "Apply",
+    clearAllButton: "Clear all filters",
+    allProducts: "All products",
+    inStock: "In stock",
+    onlyDiscounts: "On sale",
+    ratingFrom: "From {rate}",
+    sections: {
+      category: "Category",
+      quickSwitches: "Quick filters",
+      price: "Price",
+      brand: "Brand",
+      rating: "Rating",
+    },
+  },
+  productCard: {
+    outOfStock: "Out of stock",
+    buyTooltip: "Buy",
+    outOfStockTooltip: "Out of stock",
+    inCompareTooltip: "In comparison",
+    specs: {
+      processor: "Processor",
+      os: "OS",
+      weight: "Weight",
+    },
+  },
+  quickOrder: {
+    badge: "Quick order",
+    title: "One-click order",
+    successTitle: "Order placed successfully!",
+    orderNumberLabel: "Order number: {number}",
+    successMessagePrefix:
+      "Thank you for your purchase! Our manager will contact you shortly at",
+    successMessageSuffix: "to confirm the shipping details.",
+    gotItButton: "Got it",
+    nameLabel: "Your name",
+    namePlaceholder: "Enter your name",
+    phoneLabel: "Phone number",
+    phonePlaceholder: "+380",
+    paymentLabel: "Payment",
+    paymentCod: "Cash on delivery",
+    paymentCard: "Card online",
+    submitRedirecting: "Redirecting to payment...",
+    submitSending: "Sending...",
+    submitButton: "Place order",
+    errorRequiredFields: "Please fill in the required fields.",
+    errorPaymentUnavailable:
+      "Online payment is temporarily unavailable. Your order has been placed, and our manager will contact you about payment.",
+    errorGeneric: "Failed to place the order. Please try again later.",
+  },
+};

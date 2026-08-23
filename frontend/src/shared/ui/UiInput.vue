@@ -21,12 +21,16 @@
         :required="required"
         class="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-[#00a046] focus:ring-2 focus:ring-[#00a046]/20 disabled:opacity-50 disabled:bg-zinc-50 dark:disabled:bg-zinc-800 transition-colors"
         :class="[
-          error ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : '',
+          error
+            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
+            : '',
           $slots.prepend ? 'pl-10' : '',
           $slots.append ? 'pr-10' : '',
         ]"
         v-bind="$attrs"
-        @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        @input="
+          $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+        "
       />
       <div
         v-if="$slots.append"
@@ -35,7 +39,9 @@
         <slot name="append" />
       </div>
     </div>
-    <p v-if="error" class="mt-1.5 text-xs text-red-500 font-medium">{{ error }}</p>
+    <p v-if="error" class="mt-1.5 text-xs text-red-500 font-medium">
+      {{ error }}
+    </p>
   </div>
 </template>
 

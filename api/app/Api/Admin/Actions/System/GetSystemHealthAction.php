@@ -3,12 +3,8 @@
 namespace App\Api\Admin\Actions\System;
 
 use App\Api\Admin\Dto\System\SystemHealthDTO;
-use App\Enums\Streaming\StreamStatus;
-use App\Models\StreamSession;
-use App\Models\Video;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GetSystemHealthAction
 {
@@ -27,7 +23,6 @@ class GetSystemHealthAction
             database: $this->getDatabaseStats(),
             services: $this->getServicesStatus(),
             network: $this->getNetworkStats(),
-            streaming: $this->getStreamingStats(),
         );
     }
 
@@ -138,12 +133,13 @@ class GetSystemHealthAction
             $latency = round((microtime(true) - $start) * 1000, 2);
 
             $connections = 'N/A';
+            $maxConnections = 100;
             if (config('database.default') === 'pgsql') {
                 $connectionsData = DB::select('SELECT count(*) FROM pg_stat_activity');
                 $connections = $connectionsData[0]->count ?? '0';
-            }
 
-            $maxConnections = (int) (DB::select('SHOW max_connections')[0]->max_connections ?? 100);
+                $maxConnections = (int) (DB::select('SHOW max_connections')[0]->max_connections ?? 100);
+            }
 
             return [
                 'status' => 'online',
@@ -163,9 +159,9 @@ class GetSystemHealthAction
     {
         return [
             ['name' => 'API Engine', 'endpoint' => '/api/v1', 'status' => 'active', 'latency' => 8],
-            ['name' => 'Stream Runner', 'endpoint' => 'docker.filkx.com', 'status' => 'active', 'latency' => 12],
-            ['name' => 'Storage Node', 'endpoint' => 's3.filkx.com', 'status' => 'active', 'latency' => 45],
-            ['name' => 'Mail Server', 'endpoint' => 'smtp.filkx.com', 'status' => 'active', 'latency' => 156],
+            ['name' => 'Queue Worker', 'endpoint' => 'redis', 'status' => 'active', 'latency' => 12],
+            ['name' => 'Storage', 'endpoint' => config('filesystems.disks.public.url', ''), 'status' => 'active', 'latency' => 45],
+            ['name' => 'Mail Server', 'endpoint' => config('mail.mailers.smtp.host', ''), 'status' => 'active', 'latency' => 156],
         ];
     }
 
@@ -236,37 +232,5 @@ class GetSystemHealthAction
             'total_sent' => round($t2['out'] / 1024 / 1024 / 1024, 2),     // GB
             'max' => 1000,
         ];
-    }
-
-    private function getStreamingStats(): array
-    {
-        try {
-            $allActive = StreamSession::where('status', StreamStatus::LIVE)->count();
-            $youtubeActive = StreamSession::where('status', StreamStatus::LIVE)->where('platform', 'youtube')->count();
-            $totalVideos = Video::count();
-
-            // Encoder load based on active streams relative to capacity (16 is currently hardcoded capacity)
-            $encoderLoad = round(($allActive / 16) * 100, 1);
-
-            return [
-                'active_streams' => $allActive,
-                'youtube_active' => $youtubeActive,
-                'encoder_load' => $encoderLoad,
-                'jobs' => [
-                    ['name' => 'Parallel Transcodes', 'value' => "$allActive/16"],
-                    ['name' => 'YouTube Destinations', 'value' => $youtubeActive],
-                    ['name' => 'Total Library', 'value' => $totalVideos],
-                ],
-            ];
-        } catch (Exception $e) {
-            Log::error('Failed to get streaming stats', ['error' => $e->getMessage()]);
-
-            return [
-                'active_streams' => 0,
-                'youtube_active' => 0,
-                'encoder_load' => 0,
-                'jobs' => [],
-            ];
-        }
     }
 }

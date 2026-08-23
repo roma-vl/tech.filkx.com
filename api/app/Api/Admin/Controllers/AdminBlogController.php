@@ -2,35 +2,93 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\BlogCategory;
-use App\Models\BlogPost;
-use App\Models\BlogTag;
+use App\Api\Admin\Actions\Blog\CreateBlogCategoryAction;
+use App\Api\Admin\Actions\Blog\CreateBlogPostAction;
+use App\Api\Admin\Actions\Blog\CreateBlogTagAction;
+use App\Api\Admin\Actions\Blog\DeleteBlogCategoryAction;
+use App\Api\Admin\Actions\Blog\DeleteBlogPostAction;
+use App\Api\Admin\Actions\Blog\DeleteBlogTagAction;
+use App\Api\Admin\Actions\Blog\GetAdminBlogPostAction;
+use App\Api\Admin\Actions\Blog\ListAdminBlogCategoriesAction;
+use App\Api\Admin\Actions\Blog\ListAdminBlogPostsAction;
+use App\Api\Admin\Actions\Blog\ListAdminBlogTagsAction;
+use App\Api\Admin\Actions\Blog\UpdateBlogCategoryAction;
+use App\Api\Admin\Actions\Blog\UpdateBlogPostAction;
+use App\Api\Admin\Actions\Blog\UpdateBlogTagAction;
+use App\Api\Admin\Actions\Blog\UploadBlogImageAction;
+use App\Api\Admin\Dto\BlogCategoryDto;
+use App\Api\Admin\Dto\BlogPostDto;
+use App\Api\Admin\Dto\BlogTagDto;
+use App\Api\Admin\Requests\Blog\StoreBlogCategoryRequest;
+use App\Api\Admin\Requests\Blog\StoreBlogPostRequest;
+use App\Api\Admin\Requests\Blog\StoreBlogTagRequest;
+use App\Api\Admin\Requests\Blog\UpdateBlogCategoryRequest;
+use App\Api\Admin\Requests\Blog\UpdateBlogPostRequest;
+use App\Api\Admin\Requests\Blog\UpdateBlogTagRequest;
+use App\Api\Admin\Requests\Blog\UploadBlogImageRequest;
+use App\Api\Admin\Resources\AdminBlogCategoryResource;
+use App\Api\Admin\Resources\AdminBlogPostResource;
+use App\Api\Admin\Resources\AdminBlogTagResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminBlogController extends BaseApiController
 {
     // ─── Posts ────────────────────────────────────────────────────────────────
 
-    public function posts(Request $request): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/blog/posts',
+        summary: 'List blog posts',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['draft', 'published', 'archived'])),
+            new OA\Parameter(name: 'category_id', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'search', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Paginated list of blog posts',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/AdminBlogPost')),
+                                new OA\Property(
+                                    property: 'meta',
+                                    properties: [
+                                        new OA\Property(property: 'total', type: 'integer'),
+                                        new OA\Property(property: 'per_page', type: 'integer'),
+                                        new OA\Property(property: 'current_page', type: 'integer'),
+                                        new OA\Property(property: 'last_page', type: 'integer'),
+                                    ],
+                                    type: 'object',
+                                ),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function posts(Request $request, ListAdminBlogPostsAction $action): JsonResponse
     {
-        $query = BlogPost::with(['category', 'author', 'tags'])
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
-            ->when($request->filled('category_id'), fn ($q) => $q->where('blog_category_id', $request->category_id))
-            ->when($request->filled('search'), fn ($q) => $q->where(function ($q2) use ($request) {
-                $q2->whereRaw("title->>'uk' ILIKE ?", ['%'.$request->search.'%'])
-                   ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$request->search.'%']);
-            }))
-            ->orderByDesc('created_at');
-
-        $paginated = $query->paginate($request->input('per_page', 20));
+        $paginated = $action->execute(
+            $request->string('status')->value() ?: null,
+            $request->integer('category_id') ?: null,
+            $request->string('search')->value() ?: null,
+            (int) $request->input('per_page', 20)
+        );
 
         return self::successfulResponseWithData([
-            'data' => $paginated->map(fn ($post) => $this->formatPost($post)),
+            'data' => AdminBlogPostResource::collection($paginated),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),
@@ -40,279 +98,407 @@ class AdminBlogController extends BaseApiController
         ]);
     }
 
-    public function showPost(int $id): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/blog/posts/{id}',
+        summary: 'Get a blog post',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogPost'),
+            ),
+            new OA\Response(response: 404, description: 'Post not found'),
+        ],
+    )]
+    public function showPost(int $id, GetAdminBlogPostAction $action): JsonResponse
     {
-        $post = BlogPost::with(['category', 'author', 'tags'])->findOrFail($id);
-        return self::successfulResponseWithData($this->formatPost($post, true));
+        $post = $action->execute($id);
+
+        return self::successfulResponseWithData(new AdminBlogPostResource($post, withContent: true));
     }
 
-    public function storePost(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/blog/posts',
+        summary: 'Create a blog post',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['titleUk', 'titleEn', 'contentUk', 'contentEn', 'status'],
+                properties: [
+                    new OA\Property(property: 'titleUk', type: 'string'),
+                    new OA\Property(property: 'titleEn', type: 'string'),
+                    new OA\Property(property: 'contentUk', type: 'string'),
+                    new OA\Property(property: 'contentEn', type: 'string'),
+                    new OA\Property(property: 'excerptUk', type: 'string'),
+                    new OA\Property(property: 'excerptEn', type: 'string'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['draft', 'published', 'archived']),
+                    new OA\Property(property: 'categoryId', type: 'integer', nullable: true),
+                    new OA\Property(property: 'tagIds', type: 'array', items: new OA\Items(type: 'integer')),
+                    new OA\Property(property: 'coverImage', type: 'string', nullable: true),
+                    new OA\Property(property: 'publishedAt', type: 'string', format: 'date', nullable: true),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Post created successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogPost'),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function storePost(StoreBlogPostRequest $request, CreateBlogPostAction $action): JsonResponse
     {
-        $request->validate([
-            'titleUk' => 'required|string|max:500',
-            'titleEn' => 'required|string|max:500',
-            'contentUk' => 'required|string',
-            'contentEn' => 'required|string',
-            'excerptUk' => 'nullable|string|max:1000',
-            'excerptEn' => 'nullable|string|max:1000',
-            'status' => 'required|in:draft,published,archived',
-            'categoryId' => 'nullable|exists:blog_categories,id',
-            'tagIds' => 'nullable|array',
-            'tagIds.*' => 'exists:blog_tags,id',
-            'coverImage' => 'nullable|string',
-            'publishedAt' => 'nullable|date',
-        ]);
+        $post = $action->execute(BlogPostDto::fromRequest($request));
 
-        $slug = Str::slug($request->input('titleEn'));
-        $count = BlogPost::where('slug', 'like', "{$slug}%")->count();
-        if ($count > 0) {
-            $slug = "{$slug}-".($count + 1);
-        }
-
-        $post = BlogPost::create([
-            'blog_category_id' => $request->input('categoryId'),
-            'author_id' => Auth::id(),
-            'slug' => $slug,
-            'title' => ['uk' => $request->input('titleUk'), 'en' => $request->input('titleEn')],
-            'excerpt' => ['uk' => $request->input('excerptUk', ''), 'en' => $request->input('excerptEn', '')],
-            'content' => ['uk' => $request->input('contentUk'), 'en' => $request->input('contentEn')],
-            'cover_image' => $request->input('coverImage'),
-            'status' => $request->input('status', 'draft'),
-            'published_at' => $request->input('status') === 'published' ? ($request->input('publishedAt') ?? now()) : $request->input('publishedAt'),
-        ]);
-
-        if ($request->filled('tagIds')) {
-            $post->tags()->sync($request->input('tagIds'));
-        }
-
-        $post->load(['category', 'author', 'tags']);
-        return self::successfulResponseWithData($this->formatPost($post, true), Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new AdminBlogPostResource($post, withContent: true), Response::HTTP_CREATED);
     }
 
-    public function updatePost(Request $request, int $id): JsonResponse
+    #[OA\Put(
+        path: '/api/admin/blog/posts/{id}',
+        summary: 'Update a blog post',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['titleUk', 'titleEn', 'contentUk', 'contentEn', 'status'],
+                properties: [
+                    new OA\Property(property: 'titleUk', type: 'string'),
+                    new OA\Property(property: 'titleEn', type: 'string'),
+                    new OA\Property(property: 'contentUk', type: 'string'),
+                    new OA\Property(property: 'contentEn', type: 'string'),
+                    new OA\Property(property: 'excerptUk', type: 'string'),
+                    new OA\Property(property: 'excerptEn', type: 'string'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['draft', 'published', 'archived']),
+                    new OA\Property(property: 'categoryId', type: 'integer', nullable: true),
+                    new OA\Property(property: 'tagIds', type: 'array', items: new OA\Items(type: 'integer')),
+                    new OA\Property(property: 'coverImage', type: 'string', nullable: true),
+                    new OA\Property(property: 'publishedAt', type: 'string', format: 'date', nullable: true),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Post updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogPost'),
+            ),
+            new OA\Response(response: 404, description: 'Post not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function updatePost(UpdateBlogPostRequest $request, int $id, UpdateBlogPostAction $action): JsonResponse
     {
-        $post = BlogPost::findOrFail($id);
+        $post = $action->execute($id, BlogPostDto::fromRequest($request));
 
-        $request->validate([
-            'titleUk' => 'required|string|max:500',
-            'titleEn' => 'required|string|max:500',
-            'contentUk' => 'required|string',
-            'contentEn' => 'required|string',
-            'excerptUk' => 'nullable|string|max:1000',
-            'excerptEn' => 'nullable|string|max:1000',
-            'status' => 'required|in:draft,published,archived',
-            'categoryId' => 'nullable|exists:blog_categories,id',
-            'tagIds' => 'nullable|array',
-            'tagIds.*' => 'exists:blog_tags,id',
-            'coverImage' => 'nullable|string',
-            'publishedAt' => 'nullable|date',
-        ]);
-
-        $wasPublished = $post->status !== 'published' && $request->input('status') === 'published';
-
-        $post->update([
-            'blog_category_id' => $request->input('categoryId'),
-            'title' => ['uk' => $request->input('titleUk'), 'en' => $request->input('titleEn')],
-            'excerpt' => ['uk' => $request->input('excerptUk', ''), 'en' => $request->input('excerptEn', '')],
-            'content' => ['uk' => $request->input('contentUk'), 'en' => $request->input('contentEn')],
-            'cover_image' => $request->input('coverImage'),
-            'status' => $request->input('status'),
-            'published_at' => $wasPublished ? now() : ($request->input('publishedAt') ?? $post->published_at),
-        ]);
-
-        $post->tags()->sync($request->input('tagIds', []));
-        $post->load(['category', 'author', 'tags']);
-
-        return self::successfulResponseWithData($this->formatPost($post, true));
+        return self::successfulResponseWithData(new AdminBlogPostResource($post, withContent: true));
     }
 
-    public function destroyPost(int $id): JsonResponse
+    #[OA\Delete(
+        path: '/api/admin/blog/posts/{id}',
+        summary: 'Delete a blog post',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Post deleted successfully'),
+            new OA\Response(response: 404, description: 'Post not found'),
+        ],
+    )]
+    public function destroyPost(int $id, DeleteBlogPostAction $action): JsonResponse
     {
-        $post = BlogPost::findOrFail($id);
-        $post->delete();
+        $action->execute($id);
+
         return self::successfulResponse();
     }
 
-    public function uploadImage(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/blog/upload',
+        summary: 'Upload a blog cover/content image',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['image'],
+                    properties: [
+                        new OA\Property(property: 'image', type: 'string', format: 'binary'),
+                    ],
+                ),
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Image uploaded successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'url', type: 'string'),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function uploadImage(UploadBlogImageRequest $request, UploadBlogImageAction $action): JsonResponse
     {
-        $request->validate([
-            'image' => 'required|image|max:5120',
-        ]);
-
-        $path = $request->file('image')->store('blog', 'public');
-        $url = Storage::disk('public')->url($path);
+        $url = $action->execute($request->file('image'));
 
         return self::successfulResponseWithData(['url' => $url]);
     }
 
     // ─── Categories ───────────────────────────────────────────────────────────
 
-    public function categories(): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/blog/categories',
+        summary: 'List blog categories',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/AdminBlogCategory')),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function categories(ListAdminBlogCategoriesAction $action): JsonResponse
     {
-        $cats = BlogCategory::withCount('posts')->orderBy('order')->get()
-            ->map(fn ($c) => $this->formatCategory($c));
-        return self::successfulResponseWithData($cats);
+        $categories = $action->execute();
+
+        return self::successfulResponseWithData(AdminBlogCategoryResource::collection($categories));
     }
 
-    public function storeCategory(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/blog/categories',
+        summary: 'Create a blog category',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                    new OA\Property(property: 'descriptionUk', type: 'string'),
+                    new OA\Property(property: 'descriptionEn', type: 'string'),
+                    new OA\Property(property: 'order', type: 'integer'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Category created successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogCategory'),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function storeCategory(StoreBlogCategoryRequest $request, CreateBlogCategoryAction $action): JsonResponse
     {
-        $request->validate([
-            'nameUk' => 'required|string|max:255',
-            'nameEn' => 'required|string|max:255',
-            'descriptionUk' => 'nullable|string',
-            'descriptionEn' => 'nullable|string',
-            'order' => 'nullable|integer',
-        ]);
+        $category = $action->execute(BlogCategoryDto::fromRequest($request));
 
-        $slug = Str::slug($request->input('nameEn'));
-        $count = BlogCategory::where('slug', 'like', "{$slug}%")->count();
-        if ($count > 0) {
-            $slug = "{$slug}-".($count + 1);
-        }
-
-        $cat = BlogCategory::create([
-            'slug' => $slug,
-            'name' => ['uk' => $request->input('nameUk'), 'en' => $request->input('nameEn')],
-            'description' => ['uk' => $request->input('descriptionUk', ''), 'en' => $request->input('descriptionEn', '')],
-            'order' => $request->input('order', 0),
-        ]);
-
-        return self::successfulResponseWithData($this->formatCategory($cat), Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new AdminBlogCategoryResource($category), Response::HTTP_CREATED);
     }
 
-    public function updateCategory(Request $request, int $id): JsonResponse
+    #[OA\Put(
+        path: '/api/admin/blog/categories/{id}',
+        summary: 'Update a blog category',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                    new OA\Property(property: 'descriptionUk', type: 'string'),
+                    new OA\Property(property: 'descriptionEn', type: 'string'),
+                    new OA\Property(property: 'order', type: 'integer'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Category updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogCategory'),
+            ),
+            new OA\Response(response: 404, description: 'Category not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function updateCategory(UpdateBlogCategoryRequest $request, int $id, UpdateBlogCategoryAction $action): JsonResponse
     {
-        $cat = BlogCategory::findOrFail($id);
+        $category = $action->execute($id, BlogCategoryDto::fromRequest($request));
 
-        $request->validate([
-            'nameUk' => 'required|string|max:255',
-            'nameEn' => 'required|string|max:255',
-            'descriptionUk' => 'nullable|string',
-            'descriptionEn' => 'nullable|string',
-            'order' => 'nullable|integer',
-        ]);
-
-        $cat->update([
-            'name' => ['uk' => $request->input('nameUk'), 'en' => $request->input('nameEn')],
-            'description' => ['uk' => $request->input('descriptionUk', ''), 'en' => $request->input('descriptionEn', '')],
-            'order' => $request->input('order', 0),
-        ]);
-
-        return self::successfulResponseWithData($this->formatCategory($cat->loadCount('posts')));
+        return self::successfulResponseWithData(new AdminBlogCategoryResource($category));
     }
 
-    public function destroyCategory(int $id): JsonResponse
+    #[OA\Delete(
+        path: '/api/admin/blog/categories/{id}',
+        summary: 'Delete a blog category',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Category deleted successfully'),
+            new OA\Response(response: 404, description: 'Category not found'),
+        ],
+    )]
+    public function destroyCategory(int $id, DeleteBlogCategoryAction $action): JsonResponse
     {
-        $cat = BlogCategory::findOrFail($id);
-        $cat->delete();
+        $action->execute($id);
+
         return self::successfulResponse();
     }
 
     // ─── Tags ─────────────────────────────────────────────────────────────────
 
-    public function tags(): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/blog/tags',
+        summary: 'List blog tags',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/AdminBlogTag')),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function tags(ListAdminBlogTagsAction $action): JsonResponse
     {
-        $tags = BlogTag::withCount('posts')->orderBy('id', 'desc')->get()
-            ->map(fn ($t) => $this->formatTag($t));
-        return self::successfulResponseWithData($tags);
+        $tags = $action->execute();
+
+        return self::successfulResponseWithData(AdminBlogTagResource::collection($tags));
     }
 
-    public function storeTag(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/blog/tags',
+        summary: 'Create a blog tag',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Tag created successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogTag'),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function storeTag(StoreBlogTagRequest $request, CreateBlogTagAction $action): JsonResponse
     {
-        $request->validate([
-            'nameUk' => 'required|string|max:100',
-            'nameEn' => 'required|string|max:100',
-        ]);
+        $tag = $action->execute(BlogTagDto::fromRequest($request));
 
-        $slug = Str::slug($request->input('nameEn'));
-        $count = BlogTag::where('slug', 'like', "{$slug}%")->count();
-        if ($count > 0) {
-            $slug = "{$slug}-".($count + 1);
-        }
-
-        $tag = BlogTag::create([
-            'slug' => $slug,
-            'name' => ['uk' => $request->input('nameUk'), 'en' => $request->input('nameEn')],
-        ]);
-
-        return self::successfulResponseWithData($this->formatTag($tag), Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new AdminBlogTagResource($tag), Response::HTTP_CREATED);
     }
 
-    public function updateTag(Request $request, int $id): JsonResponse
+    #[OA\Put(
+        path: '/api/admin/blog/tags/{id}',
+        summary: 'Update a blog tag',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['nameUk', 'nameEn'],
+                properties: [
+                    new OA\Property(property: 'nameUk', type: 'string'),
+                    new OA\Property(property: 'nameEn', type: 'string'),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Tag updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminBlogTag'),
+            ),
+            new OA\Response(response: 404, description: 'Tag not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function updateTag(UpdateBlogTagRequest $request, int $id, UpdateBlogTagAction $action): JsonResponse
     {
-        $tag = BlogTag::findOrFail($id);
+        $tag = $action->execute($id, BlogTagDto::fromRequest($request));
 
-        $request->validate([
-            'nameUk' => 'required|string|max:100',
-            'nameEn' => 'required|string|max:100',
-        ]);
-
-        $tag->update([
-            'name' => ['uk' => $request->input('nameUk'), 'en' => $request->input('nameEn')],
-        ]);
-
-        return self::successfulResponseWithData($this->formatTag($tag->loadCount('posts')));
+        return self::successfulResponseWithData(new AdminBlogTagResource($tag));
     }
 
-    public function destroyTag(int $id): JsonResponse
+    #[OA\Delete(
+        path: '/api/admin/blog/tags/{id}',
+        summary: 'Delete a blog tag',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Blog'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Tag deleted successfully'),
+            new OA\Response(response: 404, description: 'Tag not found'),
+        ],
+    )]
+    public function destroyTag(int $id, DeleteBlogTagAction $action): JsonResponse
     {
-        $tag = BlogTag::findOrFail($id);
-        $tag->delete();
+        $action->execute($id);
+
         return self::successfulResponse();
-    }
-
-    // ─── Formatters ───────────────────────────────────────────────────────────
-
-    private function formatPost(BlogPost $post, bool $withContent = false): array
-    {
-        $data = [
-            'id' => $post->id,
-            'slug' => $post->slug,
-            'titleUk' => $post->title['uk'] ?? '',
-            'titleEn' => $post->title['en'] ?? '',
-            'excerptUk' => $post->excerpt['uk'] ?? '',
-            'excerptEn' => $post->excerpt['en'] ?? '',
-            'coverImage' => $post->cover_image,
-            'status' => $post->status,
-            'views' => $post->views,
-            'publishedAt' => $post->published_at?->toIso8601String(),
-            'createdAt' => $post->created_at->toIso8601String(),
-            'categoryId' => $post->blog_category_id,
-            'categoryName' => $post->category ? ($post->category->name['uk'] ?? $post->category->name['en'] ?? '') : null,
-            'authorName' => $post->author ? $post->author->name : null,
-            'tags' => $post->tags->map(fn ($t) => ['id' => $t->id, 'nameUk' => $t->name['uk'] ?? '', 'nameEn' => $t->name['en'] ?? '', 'slug' => $t->slug])->values(),
-        ];
-
-        if ($withContent) {
-            $data['contentUk'] = $post->content['uk'] ?? '';
-            $data['contentEn'] = $post->content['en'] ?? '';
-        }
-
-        return $data;
-    }
-
-    private function formatCategory(BlogCategory $cat): array
-    {
-        return [
-            'id' => $cat->id,
-            'slug' => $cat->slug,
-            'nameUk' => $cat->name['uk'] ?? '',
-            'nameEn' => $cat->name['en'] ?? '',
-            'descriptionUk' => $cat->description['uk'] ?? '',
-            'descriptionEn' => $cat->description['en'] ?? '',
-            'order' => $cat->order,
-            'postsCount' => $cat->posts_count ?? 0,
-        ];
-    }
-
-    private function formatTag(BlogTag $tag): array
-    {
-        return [
-            'id' => $tag->id,
-            'slug' => $tag->slug,
-            'nameUk' => $tag->name['uk'] ?? '',
-            'nameEn' => $tag->name['en'] ?? '',
-            'postsCount' => $tag->posts_count ?? 0,
-        ];
     }
 }

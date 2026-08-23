@@ -1,21 +1,62 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { UiConfirmModal } from "@/shared/ui";
+import { CartItem } from "@/entities/order/types";
 
+const { t } = useI18n();
 const router = useRouter();
 const cartStore = useCartStore();
-const shippingThreshold = 500;
 
-const shippingProgress = computed(() => {
-  const total = cartStore.cartTotal;
-  return Math.min(100, (total / shippingThreshold) * 100);
-});
+const pendingRemoveId = ref<number | string | null>(null);
 
-const remainingForFreeShipping = computed(() => {
-  const total = cartStore.cartTotal;
-  return Math.max(0, shippingThreshold - total);
-});
+function decreaseQuantity(item: CartItem) {
+  if (item.quantity <= 1) {
+    pendingRemoveId.value = item.id;
+    return;
+  }
+  cartStore.updateCartQuantity(item.id, item.quantity - 1);
+}
+
+function confirmRemove() {
+  if (pendingRemoveId.value !== null) {
+    cartStore.removeFromCart(pendingRemoveId.value);
+  }
+  pendingRemoveId.value = null;
+}
+
+// Mirrors the free-shipping threshold, flat fee and tax rate used in the real
+// checkout flow (see useShoppingCart.ts) so the drawer preview never disagrees
+// with the totals shown at checkout.
+const shippingThreshold = 5000;
+const shippingFee = 250;
+const taxRate = 0.075;
+
+const shipping = computed(() =>
+  cartStore.cartTotal >= shippingThreshold || cartStore.cart.length === 0
+    ? 0
+    : shippingFee,
+);
+const tax = computed(() => cartStore.cartTotal * taxRate);
+const total = computed(() => cartStore.cartTotal + shipping.value + tax.value);
+
+const shippingProgress = computed(() =>
+  Math.min(100, (cartStore.cartTotal / shippingThreshold) * 100),
+);
+
+const remainingForFreeShipping = computed(() =>
+  Math.max(0, shippingThreshold - cartStore.cartTotal),
+);
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("uk-UA", {
+    style: "currency",
+    currency: "UAH",
+    maximumFractionDigits: 0,
+  }).format(price);
+};
 
 const checkout = () => {
   if (cartStore.cart.length === 0) return;
@@ -37,20 +78,23 @@ const checkout = () => {
 
     <!-- Drawer Panel -->
     <div
-      class="relative w-full max-w-md bg-white h-full flex flex-col shadow-2xl border-l border-outline-variant/30 animate-in slide-in-from-right duration-300 z-10"
+      class="relative w-full max-w-md bg-white dark:bg-zinc-900 h-full flex flex-col shadow-2xl border-l border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-right duration-300 z-10"
     >
       <!-- Header -->
       <div
-        class="p-6 border-b border-surface-variant flex items-center justify-between"
+        class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between"
       >
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-[28px]">shopping_cart</span>
-          <h2 class="font-headline-md text-headline-md text-on-surface">
-            Your Shopping Cart
+          <span class="material-symbols-outlined text-[#00a046] text-[28px]"
+            >shopping_cart</span
+          >
+          <h2 class="text-zinc-900 dark:text-white text-xl font-bold">
+            {{ t("cart.title") }}
           </h2>
         </div>
         <button
-          class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors"
+          class="w-10 h-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 transition-colors"
+          type="button"
           @click="cartStore.closeDrawer()"
         >
           <span class="material-symbols-outlined">close</span>
@@ -60,30 +104,31 @@ const checkout = () => {
       <!-- Shipping Goal Tracker -->
       <div
         v-if="cartStore.cart.length > 0"
-        class="px-6 py-4 bg-surface-container-low border-b border-surface-variant flex flex-col gap-2"
+        class="px-6 py-4 bg-zinc-50 dark:bg-zinc-800/40 border-b border-zinc-200 dark:border-zinc-800 flex flex-col gap-2"
       >
         <div
-          class="flex justify-between items-center text-xs font-semibold text-on-surface-variant"
+          class="flex justify-between items-center text-xs font-semibold text-zinc-500 dark:text-zinc-400"
         >
           <span v-if="remainingForFreeShipping > 0">
-            Spend
-            <span class="text-primary font-bold">${{ remainingForFreeShipping.toFixed(2) }}</span>
-            more for FREE shipping!
+            {{
+              t("cart.drawer.freeShippingRemaining", {
+                amount: formatPrice(remainingForFreeShipping),
+              })
+            }}
           </span>
-          <span
-            v-else
-            class="text-primary flex items-center gap-1"
-          >
-            <span class="material-symbols-outlined text-[16px] text-primary">local_shipping</span>
-            You qualify for Free Express Shipping!
+          <span v-else class="text-[#00a046] flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-[#00a046]"
+              >local_shipping</span
+            >
+            {{ t("cart.drawer.freeShippingQualified") }}
           </span>
           <span>{{ Math.round(shippingProgress) }}%</span>
         </div>
         <div
-          class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden"
+          class="w-full bg-zinc-200 dark:bg-zinc-700 h-2 rounded-full overflow-hidden"
         >
           <div
-            class="bg-primary h-full rounded-full transition-all duration-500"
+            class="bg-[#00a046] h-full rounded-full transition-all duration-500"
             :style="{ width: shippingProgress + '%' }"
           />
         </div>
@@ -97,22 +142,24 @@ const checkout = () => {
           class="flex-grow flex flex-col items-center justify-center text-center gap-4 py-12"
         >
           <div
-            class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant border border-outline-variant/30"
+            class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700"
           >
-            <span class="material-symbols-outlined text-[48px]">remove_shopping_cart</span>
+            <span class="material-symbols-outlined text-[48px]"
+              >remove_shopping_cart</span
+            >
           </div>
-          <h3 class="font-title-lg text-title-lg text-on-surface">
-            Your cart is empty
+          <h3 class="text-zinc-900 dark:text-white text-lg font-bold">
+            {{ t("cart.emptyTitle") }}
           </h3>
-          <p class="text-on-surface-variant text-xs max-w-[240px]">
-            Explore our curated collections of premium electronics and start
-            adding products.
+          <p class="text-zinc-500 dark:text-zinc-400 text-xs max-w-[240px]">
+            {{ t("cart.drawer.emptyDescription") }}
           </p>
           <button
-            class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/10 mt-2"
+            class="bg-[#00a046] text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all shadow-md shadow-[#00a046]/10 mt-2"
+            type="button"
             @click="cartStore.closeDrawer()"
           >
-            Start Shopping
+            {{ t("cart.drawer.startShopping") }}
           </button>
         </div>
 
@@ -121,52 +168,58 @@ const checkout = () => {
           v-for="item in cartStore.cart"
           v-else
           :key="item.id"
-          class="flex gap-4 p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-xl relative group hover:shadow-md transition-shadow"
+          class="flex gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/50 rounded-xl relative group hover:shadow-md dark:hover:shadow-black/30 transition-shadow"
         >
           <!-- Thumbnail -->
           <div
-            class="w-20 h-20 bg-surface-container-low rounded-lg p-2 flex items-center justify-center shrink-0"
+            class="w-20 h-20 bg-white dark:bg-zinc-900 rounded-lg p-2 flex items-center justify-center shrink-0"
           >
             <img
               class="w-full h-full object-contain"
               :src="item.image"
               :alt="item.name"
-            >
+            />
           </div>
 
           <!-- Details -->
           <div class="flex-grow flex flex-col justify-between">
             <div>
               <span
-                class="text-[10px] font-bold text-primary uppercase tracking-wider"
-              >{{ (item as any).category || "Товар" }}</span>
+                class="text-[10px] font-bold text-[#00a046] uppercase tracking-wider"
+                >{{ (item as any).category || t("common.product") }}</span
+              >
               <h4
-                class="font-title-md text-sm text-on-surface line-clamp-1 leading-tight"
+                class="text-sm text-zinc-900 dark:text-white line-clamp-1 leading-tight font-bold"
               >
                 {{ item.name }}
               </h4>
             </div>
 
             <div class="flex items-center justify-between mt-2">
-              <span class="font-bold text-on-surface text-sm">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="font-bold text-[#00a046] text-sm">{{
+                formatPrice(item.price * item.quantity)
+              }}</span>
 
               <!-- Quantity Selector -->
               <div
-                class="flex items-center border border-outline-variant/50 rounded-lg overflow-hidden h-8 bg-white"
+                class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden h-8 bg-white dark:bg-zinc-800"
               >
                 <button
-                  class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
-                  @click="
-                    cartStore.updateCartQuantity(item.id, item.quantity - 1)
-                  "
+                  class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
+                  type="button"
+                  @click="decreaseQuantity(item)"
                 >
-                  <span class="material-symbols-outlined text-[16px]">remove</span>
+                  <span class="material-symbols-outlined text-[16px]"
+                    >remove</span
+                  >
                 </button>
-                <span class="px-3 text-xs font-bold text-on-surface">{{
-                  item.quantity
-                }}</span>
+                <span
+                  class="px-3 text-xs font-bold text-zinc-900 dark:text-white"
+                  >{{ item.quantity }}</span
+                >
                 <button
-                  class="w-8 h-full flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface"
+                  class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
+                  type="button"
                   @click="
                     cartStore.updateCartQuantity(item.id, item.quantity + 1)
                   "
@@ -176,72 +229,75 @@ const checkout = () => {
               </div>
             </div>
           </div>
-
-          <!-- Delete button -->
-          <button
-            class="absolute top-2 right-2 text-on-surface-variant hover:text-error transition-colors"
-            @click="cartStore.removeFromCart(item.id)"
-          >
-            <span class="material-symbols-outlined text-[18px]">delete</span>
-          </button>
         </div>
       </div>
+
+      <UiConfirmModal
+        :open="pendingRemoveId !== null"
+        :title="t('cart.items.confirmRemoveTitle')"
+        :message="t('cart.items.confirmRemoveMessage')"
+        :confirm-label="t('cart.items.confirmRemoveYes')"
+        :cancel-label="t('cart.items.confirmRemoveNo')"
+        @confirm="confirmRemove"
+        @cancel="pendingRemoveId = null"
+      />
 
       <!-- Footer (Summary + Checkout button) -->
       <div
         v-if="cartStore.cart.length > 0"
-        class="p-6 border-t border-surface-variant bg-surface-container-lowest"
+        class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
       >
         <div class="flex flex-col gap-3 mb-6">
           <div
-            class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
+            class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
           >
-            <span>Subtotal</span>
-            <span class="text-on-surface font-bold">${{ cartStore.cartTotal.toFixed(2) }}</span>
+            <span>{{ t("cart.summary.subtotal") }}</span>
+            <span class="text-zinc-900 dark:text-white font-bold">{{
+              formatPrice(cartStore.cartTotal)
+            }}</span>
           </div>
           <div
-            class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
+            class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
           >
-            <span>Estimated Taxes</span>
-            <span class="text-on-surface font-bold">${{ (cartStore.cartTotal * 0.1).toFixed(2) }}</span>
+            <span>{{ t("cart.summary.taxEstimate") }}</span>
+            <span class="text-zinc-900 dark:text-white font-bold">{{
+              formatPrice(tax)
+            }}</span>
           </div>
           <div
-            class="flex justify-between items-center text-xs text-on-surface-variant font-semibold"
+            class="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-semibold"
           >
-            <span>Shipping</span>
+            <span>{{ t("cart.summary.shippingEstimate") }}</span>
             <span
               class="font-bold"
               :class="
-                remainingForFreeShipping === 0
-                  ? 'text-primary'
-                  : 'text-on-surface'
+                shipping === 0
+                  ? 'text-[#00a046]'
+                  : 'text-zinc-900 dark:text-white'
               "
             >
-              {{ remainingForFreeShipping === 0 ? "FREE" : "$25.00" }}
+              {{
+                shipping === 0 ? t("cart.summary.free") : formatPrice(shipping)
+              }}
             </span>
           </div>
-          <div class="h-px bg-surface-variant my-1" />
+          <div class="h-px bg-zinc-200 dark:bg-zinc-800 my-1" />
           <div
-            class="flex justify-between items-center font-title-lg text-lg text-on-surface"
+            class="flex justify-between items-center text-lg text-zinc-900 dark:text-white font-bold"
           >
-            <span>Total</span>
-            <span class="font-bold text-primary">
-              ${{
-                (
-                  cartStore.cartTotal +
-                  cartStore.cartTotal * 0.1 +
-                  (remainingForFreeShipping === 0 ? 0 : 25)
-                ).toFixed(2)
-              }}
+            <span>{{ t("cart.summary.total") }}</span>
+            <span class="font-bold text-[#00a046]">
+              {{ formatPrice(total) }}
             </span>
           </div>
         </div>
 
         <button
-          class="w-full bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 duration-200"
+          class="w-full bg-[#00a046] text-white py-4 rounded-xl font-bold hover:bg-[#00b050] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#00a046]/20 hover:scale-[1.02] active:scale-95 duration-200"
+          type="button"
           @click="checkout()"
         >
-          Proceed to Checkout
+          {{ t("cart.summary.proceedToCheckout") }}
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>

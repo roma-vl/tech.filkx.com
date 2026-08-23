@@ -21,6 +21,7 @@ import AdminCategories from "@/pages/admin/AdminCategories.vue";
 import AdminBrands from "@/pages/admin/AdminBrands.vue";
 import AdminBlog from "@/pages/admin/AdminBlog.vue";
 import AdminPages from "@/pages/admin/AdminPages.vue";
+import AdminHomeBanners from "@/pages/admin/AdminHomeBanners.vue";
 
 export default {
   path: "/admin",
@@ -28,7 +29,6 @@ export default {
   meta: {
     auth: true,
     verified: true,
-    requiresSubscription: true,
   },
   children: [
     {
@@ -83,6 +83,15 @@ export default {
       meta: {
         titleKey: "admin.pages.title",
         descriptionKey: "admin.pages.description",
+      },
+    },
+    {
+      path: "home-banners",
+      name: "admin-home-banners",
+      component: AdminHomeBanners,
+      meta: {
+        titleKey: "admin.homeBanners.title",
+        descriptionKey: "admin.homeBanners.description",
       },
     },
 

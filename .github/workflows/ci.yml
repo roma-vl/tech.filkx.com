@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+
+# Only the latest run per branch/PR needs to finish - cancel superseded ones.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Pint + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create the external docker network
+        run: docker network create filkx
+
+      - name: Prepare environment file
+        # api/.env is gitignored (contains local secrets/keys) - .env.example already
+        # defaults DB_CONNECTION=sqlite, matching phpunit.xml's test configuration, so
+        # tests don't need the real Postgres/Redis/Meilisearch services to be reachable.
+        run: cp api/.env.example api/.env
+
+      - name: Match checkout ownership to the container's fixed UID
+        # docker-compose.yml hardcodes `user: "1000:1000"` on the api containers to
+        # match a local dev machine's UID. actions/checkout on GitHub-hosted runners
+        # writes files as the `runner` user (UID 1001), so without this the bind-mounted
+        # ./api directory isn't writable by the container and `composer install` fails
+        # with "vendor does not exist and could not be created". Must run after the .env
+        # copy above, which itself runs as `runner` directly on the host (not in a
+        # container) and needs to still own the directory to write into it.
+        run: sudo chown -R 1000:1000 api
+
+      - name: Bring up the docker-compose stack
+        run: docker compose up -d
+
+      - name: Install composer dependencies
+        run: docker compose run --rm tech-api-php-cli composer install --no-interaction --prefer-dist
+
+      - name: Generate application key
+        run: docker compose run --rm tech-api-php-cli php artisan key:generate
+
+      - name: Generate Passport keys
+        # storage/*.key is gitignored - Passport's RSA keypair only exists on a machine
+        # where `passport:keys`/`passport:install` was run manually. Without it, the
+        # `auth:api` guard throws (League\OAuth2\Server\CryptKey: "Invalid key supplied")
+        # on every request, including the tests asserting a 401 for unauthenticated ones.
+        run: docker compose run --rm tech-api-php-cli php artisan passport:keys
+
+      - name: PHP style check (Pint)
+        run: docker compose run --rm tech-api-php-cli ./vendor/bin/pint --test
+
+      - name: Run backend test suite
+        run: docker compose run --rm tech-api-php-cli php artisan test
+
+  frontend:
+    name: Frontend (tests + lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests (Vitest)
+        run: npm run test:unit -- --run
+
+      - name: Prettier check (advisory)
+        # Check-only, never --write (unlike `make format`) - CI must never silently
+        # rewrite code. Non-blocking for now: 223 pre-existing files repo-wide are
+        # already unformatted (verified independently of this workflow), which isn't
+        # this task's job to mass-reformat. Drop `continue-on-error` once that debt is
+        # cleared, so this becomes a real gate.
+        continue-on-error: true
+        run: npx prettier --check .
+
+      - name: ESLint check (advisory)
+        # Same reasoning as above, non-blocking for the same reason - `eslint.config.js`
+        # has no TypeScript parser wired up for `.vue` files with `lang="ts"`, so it
+        # currently errors on `defineProps<{...}>()` generics in most components
+        # (~80 parsing errors, ~8100 warnings repo-wide, verified independently of this
+        # workflow) - a config fix, not something to paper over with `--fix` in CI.
+        # Drop `continue-on-error` once that's fixed, so this becomes a real gate.
+        continue-on-error: true
+        run: npx eslint --config=eslint.config.js --no-cache
+
+      - name: Build
+        run: npm run build

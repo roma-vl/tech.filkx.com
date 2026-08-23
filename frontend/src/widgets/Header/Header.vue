@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  onServerPrefetch,
+  computed,
+  watch,
+} from "vue";
 import { useRouter, RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
+import { resolveProductImage } from "@/entities/product/lib/resolveProductImage";
 
 interface SearchProduct {
   id: string | number;
@@ -18,9 +27,9 @@ interface SearchProduct {
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const { locale, t, tm } = useI18n();
 
 const isDark = ref(false);
-const currentLang = ref("UA");
 
 const toggleDarkMode = () => {
   isDark.value = !isDark.value;
@@ -34,29 +43,17 @@ const toggleDarkMode = () => {
 };
 
 const setLanguage = (lang: string) => {
-  currentLang.value = lang;
-  localStorage.setItem("lang", lang);
+  if (locale.value === lang) return;
+  authStore.updateLocale(lang);
 };
 
 const searchInput = ref<HTMLInputElement | null>(null);
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const isMegaMenuOpen = ref(false);
+const isPhoneMenuOpen = ref(false);
 
-const popularQueries = [
-  "SSD",
-  "Кава",
-  "Свічки",
-  "Чайник",
-  "Кросівки",
-  "Jack Daniel's",
-  "Телефон",
-  "Мишка",
-  "Lego",
-  "Сумка",
-  "Крокси",
-  "Наушники",
-];
+const popularQueries = computed(() => tm("header.search.popular") as string[]);
 
 const searchResults = ref<SearchProduct[]>([]);
 const isSearching = ref(false);
@@ -65,20 +62,7 @@ const mapApiProduct = (prod: any): SearchProduct => {
   const mainVariant = prod.variants?.[0] || null;
   const price = mainVariant ? parseFloat(mainVariant.price) : 0;
 
-  let image = "";
-  if (mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-    const primary =
-      mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-      mainVariant.dimensions.images[0];
-    if (primary && primary.url) {
-      image = primary.url;
-    }
-  }
-
-  if (!image) {
-    image =
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-  }
+  const image = resolveProductImage(mainVariant, prod.variants);
 
   const name =
     typeof prod.name === "object" ? prod.name.uk || prod.name.en : prod.name;
@@ -88,7 +72,7 @@ const mapApiProduct = (prod: any): SearchProduct => {
     ? typeof categoryObj.name === "object"
       ? categoryObj.name.uk || categoryObj.name.en
       : categoryObj.name
-    : "Товари";
+    : t("header.search.defaultCategory");
 
   return {
     id: prod.id,
@@ -131,25 +115,37 @@ watch(searchQuery, (newQuery) => {
   }, 300);
 });
 
-// Using dynamic database categories mapped to columns layout
-const categories = ref<any[]>([]);
-const activeCat = ref<any>(null);
+// Using dynamic database categories mapped to columns layout.
+// Raw categories are kept separate from the locale-picked labels so the mega
+// menu re-translates immediately when the visitor switches language, without
+// needing to refetch from the API.
+const rawCategories = ref<any[]>([]);
+const categories = computed(() =>
+  mapDbCategoriesToMenu(rawCategories.value, locale.value),
+);
+const activeCatId = ref<string | number | null>(null);
+const activeCat = computed(
+  () =>
+    categories.value.find((c: any) => c.id === activeCatId.value) ||
+    categories.value[0] ||
+    null,
+);
 
 const selectCategory = (cat: any) => {
-  activeCat.value = cat;
+  activeCatId.value = cat.id;
 };
 
 const getLinkRoute = (link: any) => {
   return {
-    name: "catalog",
-    query: { category: link.slug }
+    name: "category",
+    params: { slug: link.slug },
   };
 };
 
 const getGroupRoute = (group: any) => {
   return {
-    name: "catalog",
-    query: { category: group.slug }
+    name: "category",
+    params: { slug: group.slug },
   };
 };
 
@@ -203,6 +199,7 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === "Escape") {
     showDropdown.value = false;
     isMegaMenuOpen.value = false;
+    isPhoneMenuOpen.value = false;
   }
 };
 
@@ -220,6 +217,9 @@ const handleClickOutside = (e: MouseEvent) => {
   ) {
     isMegaMenuOpen.value = false;
   }
+  if (!(e.target as HTMLElement).closest(".phone-menu-wrapper")) {
+    isPhoneMenuOpen.value = false;
+  }
 };
 
 const toggleCatalog = () => {
@@ -227,7 +227,7 @@ const toggleCatalog = () => {
 };
 
 const triggerVoiceSearch = () => {
-  cartStore.addToast("Voice search activated. Start speaking...", "info");
+  cartStore.addToast(t("header.search.voiceActivated"), "info");
 };
 
 const unreadCount = computed(() => cartStore.unreadNotificationsCount);
@@ -251,24 +251,7 @@ watch(
   },
 );
 
-onMounted(async () => {
-  window.addEventListener("keydown", handleKeydown);
-  document.addEventListener("click", handleClickOutside);
-  fetchUnreadCount();
-
-  // Load saved theme
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-    isDark.value = true;
-    document.documentElement.classList.add("dark");
-  } else {
-    isDark.value = false;
-    document.documentElement.classList.remove("dark");
-  }
-
-  // Load language
-  currentLang.value = localStorage.getItem("lang") || "UA";
-
+const fetchMegaMenuCategories = async () => {
   try {
     const response = await productApi.catalogGetCategories();
     const responseData = response.data;
@@ -276,16 +259,40 @@ onMounted(async () => {
       responseData &&
       (responseData.success || responseData.status === "success")
     ) {
-      const dbCats = responseData.data || [];
-      categories.value = mapDbCategoriesToMenu(dbCats);
+      rawCategories.value = responseData.data || [];
       if (categories.value.length > 0) {
-        activeCat.value = categories.value[0];
+        activeCatId.value = categories.value[0].id;
       }
     }
   } catch (error) {
     console.error("Failed to load mega menu categories:", error);
   }
+};
+
+onMounted(async () => {
+  window.addEventListener("keydown", handleKeydown);
+  document.addEventListener("click", handleClickOutside);
+  fetchUnreadCount();
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme");
+  if (
+    savedTheme === "dark" ||
+    (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+  ) {
+    isDark.value = true;
+    document.documentElement.classList.add("dark");
+  } else {
+    isDark.value = false;
+    document.documentElement.classList.remove("dark");
+  }
+
+  fetchMegaMenuCategories();
 });
+
+// Prerendering has no DOM, so onMounted never runs — fetch the mega-menu
+// categories here so every static page ships real nav content.
+onServerPrefetch(fetchMegaMenuCategories);
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeydown);
@@ -297,50 +304,132 @@ onUnmounted(() => {
   <!-- Main Header Shell -->
   <header class="sticky top-0 z-50 w-full bg-[#211f1f] text-white shadow-md">
     <!-- Announcement bar -->
-    <div class="hidden md:block bg-[#13191f] border-b border-white/[0.06] text-zinc-400">
-      <div class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4">
+    <div
+      class="hidden md:block bg-[#13191f] border-b border-white/[0.06] text-zinc-400"
+    >
+      <div
+        class="max-w-container-max mx-auto px-4 md:px-8 py-2 flex items-center justify-between text-[11.5px] gap-4"
+      >
         <!-- Left: sota.store style top menu links -->
         <div class="flex items-center gap-5">
-          <router-link to="/shipping-payment" class="hover:text-white transition-colors">Оплата та доставка</router-link>
-          <router-link to="/warranty-returns" class="hover:text-white transition-colors">Гарантія та обмін</router-link>
-          <router-link to="/service" class="hover:text-white transition-colors">Сервіс</router-link>
-          <router-link to="/services" class="hover:text-white transition-colors">Послуги</router-link>
-          <router-link to="/installments" class="hover:text-white transition-colors">Розстрочка</router-link>
-          <router-link to="/filkx-exchange" class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors">Filkx Обмін</router-link>
-          <router-link to="/contacts" class="hover:text-white transition-colors">Контакти</router-link>
+          <router-link
+            to="/shipping-payment"
+            class="hover:text-white transition-colors"
+          >
+            {{ t("header.topLinks.shippingPayment") }}
+          </router-link>
+          <router-link
+            to="/warranty-returns"
+            class="hover:text-white transition-colors"
+          >
+            {{ t("header.topLinks.warrantyReturns") }}
+          </router-link>
+          <router-link to="/service" class="hover:text-white transition-colors">
+            {{ t("header.topLinks.service") }}
+          </router-link>
+          <router-link
+            to="/services"
+            class="hover:text-white transition-colors"
+          >
+            {{ t("header.topLinks.services") }}
+          </router-link>
+          <router-link
+            to="/installments"
+            class="hover:text-white transition-colors"
+          >
+            {{ t("header.topLinks.installments") }}
+          </router-link>
+          <router-link
+            to="/filkx-exchange"
+            class="hover:text-white font-extrabold text-[#00a046] hover:text-[#00b050] transition-colors"
+          >
+            {{ t("header.topLinks.filkxExchange") }}
+          </router-link>
+          <router-link
+            to="/contacts"
+            class="hover:text-white transition-colors"
+          >
+            {{ t("header.topLinks.contacts") }}
+          </router-link>
         </div>
 
         <!-- Right: phone, theme toggle, and language switcher -->
         <div class="flex items-center gap-5">
-          <!-- Phone link -->
-          <a href="tel:0800330131" class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300">
-            0 800 33-01-31
-            <span class="material-symbols-outlined text-[13px] select-none">keyboard_arrow_down</span>
-          </a>
+          <!-- Phone Contact Dropdown -->
+          <div class="relative phone-menu-wrapper">
+            <button
+              type="button"
+              class="flex items-center gap-1 hover:text-white transition-colors whitespace-nowrap font-bold text-zinc-300"
+              @click="isPhoneMenuOpen = !isPhoneMenuOpen"
+            >
+              0 800 33-01-31
+              <span
+                class="material-symbols-outlined text-[13px] select-none transition-transform duration-200"
+                :class="isPhoneMenuOpen ? 'rotate-180' : ''"
+                >keyboard_arrow_down</span
+              >
+            </button>
+
+            <div
+              v-if="isPhoneMenuOpen"
+              class="absolute right-0 top-full mt-2 w-60 bg-[#1c2229] border border-zinc-800 rounded-lg shadow-2xl p-3 z-[130] text-left animate-in fade-in slide-in-from-top-2 duration-200"
+            >
+              <a
+                href="tel:0800330131"
+                class="flex items-center gap-2 text-sm font-black text-white hover:text-[#00a046] transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-[16px] text-zinc-500"
+                  >call</span
+                >
+                0 800 33-01-31
+              </a>
+              <p class="text-[10px] text-zinc-500 pl-6 mt-0.5">
+                {{ t("footer.freeCall") }}
+              </p>
+              <div
+                class="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-white/[0.06]"
+              >
+                <span
+                  class="material-symbols-outlined text-[16px] text-zinc-500"
+                  >schedule</span
+                >
+                <span class="text-xs text-zinc-400">{{
+                  t("footer.workingHours")
+                }}</span>
+              </div>
+            </div>
+          </div>
 
           <!-- Theme Toggle Button -->
           <button
             type="button"
             class="flex items-center justify-center p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+            :title="
+              isDark
+                ? t('header.switchToLightTheme')
+                : t('header.switchToDarkTheme')
+            "
             @click="toggleDarkMode"
-            :title="isDark ? 'Увімкнути світлу тему' : 'Увімкнути темну тему'"
           >
             <span class="material-symbols-outlined text-[16px]">
-              {{ isDark ? 'light_mode' : 'dark_mode' }}
+              {{ isDark ? "light_mode" : "dark_mode" }}
             </span>
           </button>
 
           <!-- Language Selector -->
-          <div class="flex items-center bg-[#252a32] p-0.5 rounded border border-white/[0.05]">
+          <div
+            class="flex items-center bg-[#252a32] p-0.5 rounded border border-white/[0.05]"
+          >
             <button
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
               :class="
-                currentLang === 'UA'
+                locale === 'uk'
                   ? 'bg-[#00a046] text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               "
-              @click="setLanguage('UA')"
+              @click="setLanguage('uk')"
             >
               UA
             </button>
@@ -348,13 +437,13 @@ onUnmounted(() => {
               type="button"
               class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider transition-all"
               :class="
-                currentLang === 'EN'
+                locale === 'en'
                   ? 'bg-[#00a046] text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               "
-              @click="setLanguage('EN')"
+              @click="setLanguage('en')"
             >
-                EN
+              EN
             </button>
           </div>
         </div>
@@ -368,7 +457,7 @@ onUnmounted(() => {
       <div class="flex items-center gap-3">
         <button
           class="burger-btn p-1.5 hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
-          title="Menu"
+          :title="t('header.menu')"
           @click="cartStore.openDrawer('account')"
         >
           <img
@@ -390,42 +479,49 @@ onUnmounted(() => {
           <span
             class="font-extrabold text-lg tracking-tight text-white hidden sm:inline-block"
           >
-            TechNova
+            FilkxTech
           </span>
         </a>
       </div>
 
       <!-- Catalog Toggle Button -->
       <button
-        :class="isMegaMenuOpen ? 'bg-[#009040]' : 'bg-[#00a046] hover:bg-[#00b050]'"
+        :class="
+          isMegaMenuOpen ? 'bg-[#009040]' : 'bg-[#00a046] hover:bg-[#00b050]'
+        "
         class="catalog-btn hidden md:flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm text-white transition-all shrink-0 shadow-sm"
         @click="toggleCatalog"
       >
-        <span v-if="!isMegaMenuOpen" class="flex flex-col gap-[4px] w-[15px] shrink-0">
+        <span
+          v-if="!isMegaMenuOpen"
+          class="flex flex-col gap-[4px] w-[15px] shrink-0"
+        >
           <span class="block h-[2px] bg-white rounded-full w-full" />
           <span class="block h-[2px] bg-white rounded-full w-[10px]" />
           <span class="block h-[2px] bg-white rounded-full w-full" />
         </span>
         <span v-else class="material-symbols-outlined text-[18px]">close</span>
-        <span>Каталог</span>
+        <span>{{ t("header.catalog") }}</span>
       </button>
 
       <!-- Center: Rozetka Styled Search Input -->
       <div class="flex-grow max-w-3xl search-container relative z-40">
         <form
-          class="flex items-center bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm h-10 border border-transparent dark:border-zinc-700/80 focus-within:border-zinc-500 dark:focus-within:border-zinc-400"
+          class="flex items-center bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-sm h-9 md:h-10 border border-transparent dark:border-zinc-700/80 focus-within:border-zinc-500 dark:focus-within:border-zinc-400"
           @submit.prevent="triggerSearch"
         >
-          <div class="relative flex-grow flex items-center h-full px-3">
+          <div
+            class="relative flex-grow flex items-center h-full px-2.5 md:px-3"
+          >
             <span
-              class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 mr-2 text-[20px]"
+              class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 mr-1.5 md:mr-2 text-[18px] md:text-[20px]"
               >search</span
             >
             <input
               ref="searchInput"
               v-model="searchQuery"
               class="w-full h-full text-zinc-800 dark:text-zinc-100 text-sm focus:outline-none placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent"
-              placeholder="Я шукаю..."
+              :placeholder="t('header.search.placeholder')"
               type="text"
               @focus="showDropdown = true"
             />
@@ -438,21 +534,27 @@ onUnmounted(() => {
             >
               <span class="material-symbols-outlined text-[16px]">close</span>
             </button>
-            <!-- Microphone Voice Search Button -->
+            <!-- Microphone Voice Search Button (hidden on mobile - the input
+                 needs the room more than this does at that width) -->
             <button
               type="button"
-              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex items-center justify-center"
+              class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 hidden sm:flex items-center justify-center"
               @click="triggerVoiceSearch"
             >
               <span class="material-symbols-outlined text-[20px]">mic</span>
             </button>
           </div>
-          <!-- Rozetka Green Find Button -->
+          <!-- Rozetka Green Find Button - icon-only on mobile, same reason -->
           <button
             type="submit"
-            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
+            class="bg-[#00a046] hover:bg-[#00b050] text-white font-bold px-3 md:px-6 h-full text-sm transition-colors border-l border-zinc-200 dark:border-zinc-700 shrink-0"
           >
-            Знайти
+            <span class="material-symbols-outlined text-[20px] md:hidden"
+              >search</span
+            >
+            <span class="hidden md:inline">{{
+              t("header.search.submit")
+            }}</span>
           </button>
         </form>
 
@@ -466,26 +568,30 @@ onUnmounted(() => {
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
-              Шукаємо товари...
+              {{ t("header.search.searching") }}
             </div>
             <div
               v-for="n in 3"
               :key="n"
               class="flex items-center gap-3 p-2 animate-pulse"
             >
-              <div class="w-10 h-10 bg-zinc-150 dark:bg-zinc-800 rounded shrink-0" />
+              <div
+                class="w-10 h-10 bg-zinc-150 dark:bg-zinc-800 rounded shrink-0"
+              />
               <div class="flex-grow space-y-1.5">
                 <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded w-1/4" />
                 <div class="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-3/4" />
               </div>
-              <div class="w-12 h-3 bg-zinc-200 dark:bg-zinc-700 rounded shrink-0" />
+              <div
+                class="w-12 h-3 bg-zinc-200 dark:bg-zinc-700 rounded shrink-0"
+              />
             </div>
           </div>
           <div v-else-if="filteredProducts.length > 0" class="space-y-1">
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2"
             >
-              Результати пошуку
+              {{ t("header.search.results") }}
             </div>
             <div
               v-for="prod in filteredProducts"
@@ -513,9 +619,10 @@ onUnmounted(() => {
                   v-html="highlightMatch(prod.name, searchQuery)"
                 />
               </div>
-              <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 shrink-0">{{
-                formatPrice(prod.price)
-              }}</span>
+              <span
+                class="text-xs font-bold text-zinc-900 dark:text-zinc-100 shrink-0"
+                >{{ formatPrice(prod.price) }}</span
+              >
             </div>
           </div>
 
@@ -523,7 +630,7 @@ onUnmounted(() => {
             v-else-if="searchQuery.trim()"
             class="text-center text-xs text-zinc-400 dark:text-zinc-500 py-2"
           >
-            Нічого не знайдено для "{{ searchQuery }}".
+            {{ t("header.search.noResults", { query: searchQuery }) }}
           </div>
 
           <!-- Popular Searches (Rozetka Tags Style) -->
@@ -531,7 +638,7 @@ onUnmounted(() => {
             <div
               class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider"
             >
-              Популярні запити
+              {{ t("header.search.popularQueries") }}
             </div>
             <div class="flex flex-wrap gap-2">
               <button
@@ -552,8 +659,8 @@ onUnmounted(() => {
       <div class="flex items-center gap-4 md:gap-6 text-white">
         <!-- Notifications -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Notifications"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
+          :title="t('header.actions.notifications')"
           @click="
             router.push({ name: 'account', query: { tab: 'notifications' } })
           "
@@ -571,8 +678,8 @@ onUnmounted(() => {
 
         <!-- Compare -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Compare"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
+          :title="t('header.actions.compare')"
           @click="router.push({ name: 'account', query: { tab: 'compare' } })"
         >
           <span class="material-symbols-outlined text-[24px]"
@@ -588,8 +695,8 @@ onUnmounted(() => {
 
         <!-- Wishlist -->
         <button
-          class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Wishlist"
+          class="p-1 hover:text-[#00a046] transition-colors relative hidden md:flex items-center justify-center"
+          :title="t('header.actions.wishlist')"
           @click="router.push({ name: 'account', query: { tab: 'favorites' } })"
         >
           <span class="material-symbols-outlined text-[24px]">favorite</span>
@@ -604,7 +711,7 @@ onUnmounted(() => {
         <!-- Cart -->
         <button
           class="p-1 hover:text-[#00a046] transition-colors relative flex items-center justify-center"
-          title="Cart"
+          :title="t('header.actions.cart')"
           @click="cartStore.openDrawer('cart')"
         >
           <span class="material-symbols-outlined text-[24px]"
@@ -631,12 +738,9 @@ onUnmounted(() => {
           class="w-[230px] xl:w-[250px] border-r border-zinc-800 bg-[#1c2229] p-4 shrink-0"
         >
           <ul class="space-y-1">
-            <li
-              v-for="cat in categories"
-              :key="cat.id"
-            >
+            <li v-for="cat in categories" :key="cat.id">
               <RouterLink
-                :to="{ name: 'catalog', query: { category: cat.slug } }"
+                :to="{ name: 'category', params: { slug: cat.slug } }"
                 :class="
                   activeCat && activeCat.id === cat.id
                     ? 'bg-[#252e37] text-white font-bold'
@@ -670,9 +774,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Center/Right: Sub-categories Columns (Identical to screenshot) -->
-        <div
-          class="flex-grow p-6 pl-8 bg-[#1c2229] text-white"
-        >
+        <div class="flex-grow p-6 pl-8 bg-[#1c2229] text-white">
           <div
             v-if="activeCat.columns && activeCat.columns.length > 0"
             class="grid grid-cols-4 gap-6"
@@ -682,12 +784,10 @@ onUnmounted(() => {
               :key="colIdx"
               class="space-y-6"
             >
-              <div
-                v-for="(group, gIdx) in col"
-                :key="gIdx"
-                class="space-y-2"
-              >
-                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+              <div v-for="(group, gIdx) in col" :key="gIdx" class="space-y-2">
+                <h4
+                  class="font-extrabold text-[11.5px] uppercase tracking-wider"
+                >
                   <RouterLink
                     :to="getGroupRoute(group)"
                     class="text-[#3898ec] hover:underline cursor-pointer"
@@ -723,7 +823,7 @@ onUnmounted(() => {
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
                   @click="isMegaMenuOpen = false"
                 >
-                  Дивитися далі →
+                  {{ t("header.search.viewMore") }}
                 </RouterLink>
               </div>
             </div>
@@ -733,8 +833,12 @@ onUnmounted(() => {
             class="flex items-center justify-center h-full text-zinc-500"
           >
             <div class="text-center">
-              <span class="material-symbols-outlined text-4xl mb-2">category</span>
-              <p class="text-xs font-bold">Немає дочірніх розділів.</p>
+              <span class="material-symbols-outlined text-4xl mb-2"
+                >category</span
+              >
+              <p class="text-xs font-bold">
+                {{ t("header.megaMenu.noSubcategories") }}
+              </p>
             </div>
           </div>
         </div>

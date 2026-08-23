@@ -8,11 +8,7 @@
       {{ t("admin.analytics.content_mix") }}
     </h3>
     <div class="space-y-5">
-      <div
-        v-for="item in content"
-        :key="item.label"
-        class="space-y-2"
-      >
+      <div v-for="item in content" :key="item.label" class="space-y-2">
         <div
           class="flex justify-between text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400"
         >

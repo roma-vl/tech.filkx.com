@@ -1,18 +1,21 @@
 <template>
   <AppModal
     :model-value="isOpen"
-    :title="isEditing ? t('admin.marketing.promotions.edit') : t('admin.marketing.promotions.new')"
+    :title="
+      isEditing
+        ? t('admin.marketing.promotions.edit')
+        : t('admin.marketing.promotions.new')
+    "
     max-width="3xl"
     @update:model-value="closeModal"
   >
-    <form
-      class="space-y-6"
-      @submit.prevent="submit"
-    >
+    <form class="space-y-6" @submit.prevent="submit">
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Основна інформація
+          {{ t("admin.marketing.promotions.sections.basicInfo") }}
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -32,15 +35,17 @@
         <AppTextarea
           v-model="form.description"
           :label="t('admin.marketing.promotions.description')"
-          placeholder="Опис акції..."
+          :placeholder="t('admin.marketing.promotions.descriptionPlaceholder')"
           rows="2"
         />
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Налаштування знижки
+          {{ t("admin.marketing.promotions.sections.discountSettings") }}
         </h4>
 
         <div class="grid grid-cols-2 gap-6">
@@ -48,8 +53,14 @@
             v-model="form.type"
             :label="t('admin.marketing.promotions.type')"
             :options="[
-              { id: 'percent', name: t('admin.marketing.promotions.types.percent') },
-              { id: 'fixed', name: t('admin.marketing.promotions.types.fixed') }
+              {
+                id: 'percent',
+                name: t('admin.marketing.promotions.types.percent'),
+              },
+              {
+                id: 'fixed',
+                name: t('admin.marketing.promotions.types.fixed'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -59,7 +70,10 @@
             type="number"
             step="0.01"
             min="0"
-            :label="t('admin.marketing.promotions.amount') + (form.type === 'percent' ? ' (%)' : ' (₴)')"
+            :label="
+              t('admin.marketing.promotions.amount') +
+              (form.type === 'percent' ? ' (%)' : ' (₴)')
+            "
             required
           />
         </div>
@@ -69,57 +83,87 @@
           type="number"
           step="0.01"
           min="0"
-          label="Мінімальна сума покупки (Опціонально)"
+          :label="
+            t('admin.marketing.promotions.minimumAmount') +
+            t('admin.marketing.promotions.optional_suffix')
+          "
           placeholder="0.00"
         />
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Розклад акції
+          {{ t("admin.marketing.promotions.sections.schedule") }}
         </h4>
 
         <div class="grid grid-cols-2 gap-6">
           <AppInput
             v-model="form.startsAt"
             type="datetime-local"
-            :label="t('admin.marketing.promotions.starts_at') + ' (Опціонально)'"
+            :label="
+              t('admin.marketing.promotions.starts_at') +
+              t('admin.marketing.promotions.optional_suffix')
+            "
           />
           <AppInput
             v-model="form.endsAt"
             type="datetime-local"
-            :label="t('admin.marketing.promotions.ends_at') + ' (Опціонально)'"
+            :label="
+              t('admin.marketing.promotions.ends_at') +
+              t('admin.marketing.promotions.optional_suffix')
+            "
           />
         </div>
       </div>
 
       <div class="space-y-6">
-        <h4 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h4
+          class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
+        >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Параметри застосування
+          {{ t("admin.marketing.promotions.sections.applicationSettings") }}
         </h4>
 
-        <div class="p-6 bg-gray-50/50 dark:bg-zinc-900/50 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-6">
+        <div
+          class="p-6 bg-gray-50/50 dark:bg-zinc-900/50 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-6"
+        >
           <AppSelect
             v-model="form.applicationType"
-            label="Спосіб застосування"
+            :label="t('admin.marketing.promotions.applicationType')"
             :options="[
-              { id: 'code', name: 'За промокодом' },
-              { id: 'auto', name: 'Автоматично' },
-              { id: 'url', name: 'За спеціальним посиланням' }
+              {
+                id: 'code',
+                name: t('admin.marketing.promotions.applicationTypes.code'),
+              },
+              {
+                id: 'auto',
+                name: t('admin.marketing.promotions.applicationTypes.auto'),
+              },
+              {
+                id: 'url',
+                name: t('admin.marketing.promotions.applicationTypes.url'),
+              },
             ]"
             option-value="id"
             option-label="name"
           />
 
-          <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-zinc-800">
+          <div
+            class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-zinc-800"
+          >
             <div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white block">
+              <span
+                class="text-sm font-semibold text-gray-900 dark:text-white block"
+              >
                 {{ t("admin.marketing.promotions.sitewide") }}
               </span>
-              <span class="text-[10px] text-gray-405 dark:text-gray-500 uppercase tracking-wider">
-                Автоматично застосувати до всього каталогу
+              <span
+                class="text-[10px] text-gray-405 dark:text-gray-500 uppercase tracking-wider"
+              >
+                {{ t("admin.marketing.promotions.sitewideDescription") }}
               </span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
@@ -128,25 +172,39 @@
                 type="checkbox"
                 class="sr-only peer"
                 @change="handleSitewideChange"
-              >
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm" />
+              />
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
+              />
             </label>
           </div>
 
-          <div class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-zinc-800">
+          <div
+            class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-200 dark:border-zinc-800"
+          >
             <AppInput
               v-model.number="form.usageLimit"
               type="number"
               min="0"
-              label="Загальний ліміт використань (Опціонально)"
-              placeholder="Необмежено"
+              :label="
+                t('admin.marketing.promotions.usageLimit') +
+                t('admin.marketing.promotions.optional_suffix')
+              "
+              :placeholder="
+                t('admin.marketing.promotions.usageLimitPlaceholder')
+              "
             />
             <AppInput
               v-model.number="form.usageLimitPerUser"
               type="number"
               min="0"
-              label="Ліміт на одного користувача (Опціонально)"
-              placeholder="Необмежено"
+              :label="
+                t('admin.marketing.promotions.usageLimitPerUser') +
+                t('admin.marketing.promotions.optional_suffix')
+              "
+              :placeholder="
+                t('admin.marketing.promotions.usageLimitPlaceholder')
+              "
             />
           </div>
 
@@ -159,35 +217,49 @@
                 v-model="form.bannerText"
                 type="text"
                 :label="t('admin.marketing.promotions.banner_text')"
-                placeholder="Введіть текст банера..."
+                :placeholder="
+                  t('admin.marketing.promotions.bannerTextPlaceholder')
+                "
               />
               <AppInput
                 v-model="form.bannerColor"
                 type="text"
-                label="Колір банера"
-                placeholder="напр. primary, red, green або #FF0000"
+                :label="t('admin.marketing.promotions.bannerColor')"
+                :placeholder="
+                  t('admin.marketing.promotions.bannerColorPlaceholder')
+                "
               />
             </div>
           </transition>
         </div>
       </div>
 
-      <div class="flex items-center justify-between p-4 bg-gray-55 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800">
+      <DiscountTargetingFields
+        v-model="targeting"
+        :categories="categories"
+        :products="products"
+      />
+
+      <div
+        class="flex items-center justify-between p-4 bg-gray-55 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-zinc-800"
+      >
         <div>
-          <span class="text-sm font-semibold text-gray-900 dark:text-white block">
+          <span
+            class="text-sm font-semibold text-gray-900 dark:text-white block"
+          >
             {{ t("admin.marketing.promotions.active") }}
           </span>
-          <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <span
+            class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider"
+          >
             {{ t("admin.marketing.promotions.active_hint") }}
           </span>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
-          <input
-            v-model="form.isActive"
-            type="checkbox"
-            class="sr-only peer"
-          >
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm" />
+          <input v-model="form.isActive" type="checkbox" class="sr-only peer" />
+          <div
+            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
+          />
         </label>
       </div>
 
@@ -222,7 +294,11 @@
           @click="submit"
         >
           <RocketLaunchIcon class="w-4 h-4 mr-1.5 inline" />
-          {{ isEditing ? t("admin.marketing.promotions.save") : t("admin.marketing.promotions.create") }}
+          {{
+            isEditing
+              ? t("admin.marketing.promotions.save")
+              : t("admin.marketing.promotions.create")
+          }}
         </AppButton>
       </div>
     </template>
@@ -238,6 +314,7 @@ import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import DiscountTargetingFields from "@/components/admin/features/marketing/DiscountTargetingFields.vue";
 import {
   ExclamationCircleIcon,
   RocketLaunchIcon,
@@ -247,7 +324,15 @@ const props = defineProps({
   isOpen: Boolean,
   promotion: {
     type: Object,
-    default: null
+    default: null,
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  products: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -273,6 +358,19 @@ const form = ref({
   usageLimitPerUser: null,
   minimumAmount: null,
   applicablePlanIds: [],
+  categoryIds: [],
+  productIds: [],
+});
+
+const targeting = computed({
+  get: () => ({
+    categoryIds: form.value.categoryIds,
+    productIds: form.value.productIds,
+  }),
+  set: (val) => {
+    form.value.categoryIds = val.categoryIds;
+    form.value.productIds = val.productIds;
+  },
 });
 
 const loading = ref(false);
@@ -315,6 +413,8 @@ watch(
         usageLimitPerUser: newVal.usageLimitPerUser ?? null,
         minimumAmount: newVal.minimumAmount ?? null,
         applicablePlanIds: newVal.applicablePlanIds || [],
+        categoryIds: newVal.categoryIds || [],
+        productIds: newVal.productIds || [],
       };
     } else {
       form.value = {
@@ -334,6 +434,8 @@ watch(
         usageLimitPerUser: null,
         minimumAmount: null,
         applicablePlanIds: [],
+        categoryIds: [],
+        productIds: [],
       };
     }
   },
@@ -381,7 +483,7 @@ const submit = async () => {
     const errorMessage =
       e.response?.data?.message || e.response?.data?.errors
         ? Object.values(e.response.data.errors).flat().join(", ")
-        : "Failed to save promotion";
+        : t("admin.marketing.promotions.alerts.saveError");
     error.value = errorMessage;
   } finally {
     loading.value = false;

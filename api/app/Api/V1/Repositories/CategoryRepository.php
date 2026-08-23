@@ -32,4 +32,19 @@ class CategoryRepository
     {
         return Category::where('slug', $slug)->first();
     }
+
+    /**
+     * Resolves a category slug to its id plus its direct children's ids - the same
+     * category-scope resolution catalog product listing/filtering uses. Returns an
+     * empty array when the slug doesn't match any category.
+     */
+    public function resolveCategoryIdsBySlug(string $slug): array
+    {
+        $category = $this->findBySlug($slug);
+        if (! $category) {
+            return [];
+        }
+
+        return array_merge([$category->id], $category->children()->pluck('id')->toArray());
+    }
 }

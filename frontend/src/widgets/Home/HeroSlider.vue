@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import UiButton from "@/shared/ui/UiButton.vue";
 import { mapDbCategoriesToMenu } from "@/shared/utils/categoryMapper";
 
@@ -9,58 +10,72 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  banners: {
+    type: Array,
+    default: () => [],
+  },
 });
+
+const { locale, t } = useI18n();
 
 const activeIndex = ref(0);
 const hoveredCat = ref(null);
 let intervalId = null;
 
-const mappedCategories = computed(() => mapDbCategoriesToMenu(props.categories));
+const mappedCategories = computed(() =>
+  mapDbCategoriesToMenu(props.categories, locale.value),
+);
 
-const slides = [
-  {
-    badge: "Новинка",
-    subtitle: "Ексклюзивне передзамовлення",
-    title: "Майбутнє звуку:<br/>Ultra-HD Obsidian X",
-    description:
-      "Відчуйте 99.9% чистоти звуку з новими бездротовими навушниками Obsidian X. Професійне гібридне шумозаглушення ANC.",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAeP34U9uxXzWX_WKcHhEi0vWNEKPS1GBvEAaaCn8H_vs759dx6l3vFG3nU5he_83uLeobjrt3wO0ZTEHNr25GfoTOXk5BgJw0aBq4DOBTZMDcXNWSXIr1Br7yzQkfStCKz3Oxa_9E9hwc-MI8TOzXJweyp4dCEYjzmPa4PcOZWK8cZ5xZfFuBzDK2HqrULJkf1Ml3VwbTL28VxUOr2bPKZymnCA8AKm6tLkWZ6qdevZbKINiYZfVXwJTG_-T6bU9QakJ1S-sv7f0Y",
-    btnPrimary: "Передзамовити",
-    btnSecondary: "Детальніше",
-    link: "/product/1",
-  },
-  {
-    badge: "Спеціальна пропозиція",
-    subtitle: "Еволюція OLED екранів",
-    title: "Ігровий монітор:<br/>Curved Ultra-Wide 144Hz",
-    description:
-      "Повністю пориньте в ігровий процес завдяки вигнутому екрану з радіусом кривизни 1500R та частотою оновлення 144 Гц.",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCVMdErktV3TxMtO3JGMvZ9zS0x0zYbKz1BOjfXYU1LCka8ZihAQRInqqCc_p8i-qxa_HPIqDZ5Kevwr5VKLqyqstWGjEH_WRir7OtrPCpV_H8AvfRt69AI8p1TEbtE5tbqG2zcqQqVYp5pEPBnpsxa17bgXzaPwXHLRwCkbNLOL2MDuK_HzBB7j5pEfGKiX20Mo3vcs919pbLNN6aCAU31C3gWvj4f1OiGSSrW_Xd-ECi9ml_qk2QQhzRko2TzwHZxUspi7SRTQJg",
-    btnPrimary: "Переглянути",
-    btnSecondary: "Характеристики",
-    link: "/product/2",
-  },
-  {
-    badge: "Рекомендовано",
-    subtitle: "Розумні гаджети",
-    title: "TechNova Watch 5:<br/>Активний інтелект",
-    description:
-      "Відстежуйте показники здоров'я та тренування за допомогою точного GPS та до 7 днів роботи на одному заряді.",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAG1j0OkwUBTuRJYlZq12iTWSfCx0hTSkVryqbF-FYIDY0p2IODoLkQCjdBzvMUE28jinrTZ-Yhx8ATbKeWyMq2bSKQehQZ5dUfTVBStqMLuWl_dnxdhw_-eZMoiP9_egaelvQQU7gzfXiv-g6KH0W1d7n6iYmoObJXDCEXbrnLagqWXZxOIyeHX_fQAyS84ZvkaGDv8Ld75VMMB-p3JQk_MupRVz9V0REcSykJQllrCavETBkPh8j054bmRUv5No-7faKEr_uRPp0",
-    btnPrimary: "Придбати",
-    btnSecondary: "Функції",
-    link: "/product/3",
-  },
-];
+const getBannerLink = (banner) => {
+  switch (banner.linkType) {
+    case "category":
+      return { name: "category", params: { slug: banner.linkValue } };
+    case "product":
+      return banner.linkValue
+        ? { name: "product-detail", params: { id: banner.linkValue } }
+        : { name: "catalog" };
+    case "url":
+      return banner.linkValue || { name: "catalog" };
+    case "catalog":
+    default:
+      return { name: "catalog" };
+  }
+};
+
+const slides = computed(() => {
+  if (props.banners.length > 0) {
+    return props.banners.map((banner) => ({
+      badge: banner.badge,
+      subtitle: banner.subtitle,
+      title: banner.title,
+      description: banner.description,
+      image: banner.imageUrl,
+      buttonLabel: banner.buttonLabel || t("home.hero.viewButton"),
+      link: getBannerLink(banner),
+    }));
+  }
+
+  // Safe fallback when no admin-managed banners are configured yet:
+  // no external images, no invented promo content.
+  return [
+    {
+      badge: "",
+      subtitle: "",
+      title: t("home.hero.welcomeTitle"),
+      description: t("home.hero.welcomeDescription"),
+      image: null,
+      buttonLabel: t("home.hero.goToCatalog"),
+      link: { name: "catalog" },
+    },
+  ];
+});
 
 const nextSlide = () => {
-  activeIndex.value = (activeIndex.value + 1) % slides.length;
+  activeIndex.value = (activeIndex.value + 1) % slides.value.length;
 };
 const prevSlide = () => {
-  activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length;
+  activeIndex.value =
+    (activeIndex.value - 1 + slides.value.length) % slides.value.length;
   resetTimer();
 };
 const setSlide = (index) => {
@@ -71,25 +86,32 @@ const startTimer = () => {
   intervalId = setInterval(nextSlide, 7000);
 };
 const resetTimer = () => {
-  if (intervalId) { clearInterval(intervalId); startTimer(); }
-};
-
-const getLinkRoute = (link) => {
-  return {
-    name: "catalog",
-    query: { category: link.slug }
-  };
+  if (intervalId) {
+    clearInterval(intervalId);
+    startTimer();
+  }
 };
 
 const getGroupRoute = (group) => {
   return {
-    name: "catalog",
-    query: { category: group.slug }
+    name: "category",
+    params: { slug: group.slug },
   };
 };
 
-onMounted(() => { startTimer(); });
-onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
+const getLinkRoute = (link) => {
+  return {
+    name: "category",
+    params: { slug: link.slug },
+  };
+};
+
+onMounted(() => {
+  startTimer();
+});
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId);
+});
 </script>
 
 <template>
@@ -99,14 +121,16 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
       @mouseleave="hoveredCat = null"
     >
       <!-- ── Left: dark category sidebar (desktop only) ── -->
-      <div class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800">
+      <div
+        class="hidden lg:flex flex-col w-[230px] xl:w-[250px] shrink-0 bg-[#1c2229] relative z-20 border-r border-zinc-800"
+      >
         <!-- Category links -->
         <nav class="flex-1 overflow-y-auto cat-scroll bg-[#1c2229]">
           <template v-if="mappedCategories.length > 0">
             <RouterLink
               v-for="cat in mappedCategories"
               :key="cat.id"
-              :to="{ name: 'catalog', query: { category: cat.slug } }"
+              :to="{ name: 'category', params: { slug: cat.slug } }"
               class="w-full flex items-center justify-between px-4 py-2.5 text-left transition-all duration-150 group/cl rounded-none"
               :class="
                 hoveredCat && hoveredCat.id === cat.id
@@ -119,7 +143,11 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               <div class="flex items-center gap-3">
                 <span
                   class="material-symbols-outlined text-[19px] shrink-0 transition-colors"
-                  :class="hoveredCat && hoveredCat.id === cat.id ? 'text-white' : 'text-zinc-400 group-hover/cl:text-white'"
+                  :class="
+                    hoveredCat && hoveredCat.id === cat.id
+                      ? 'text-white'
+                      : 'text-zinc-400 group-hover/cl:text-white'
+                  "
                 >
                   {{ cat.icon }}
                 </span>
@@ -163,73 +191,107 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
           ]"
         >
           <img
+            v-if="slide.image"
             class="absolute inset-0 w-full h-full object-cover opacity-60"
             :src="slide.image"
             alt=""
-          >
-          <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          />
+          <div
+            v-else
+            class="absolute inset-0 bg-gradient-to-br from-[#1c2229] via-zinc-900 to-[#00a046]/20"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
+          />
 
-          <div class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 rounded-none text-[10px]">
+          <div
+            class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center"
+          >
+            <div
+              v-if="slide.badge || slide.subtitle"
+              class="flex items-center gap-2 mb-3"
+            >
+              <span
+                v-if="slide.badge"
+                class="bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 rounded-none text-[10px]"
+              >
                 {{ slide.badge }}
               </span>
-              <span class="text-zinc-300 font-bold text-xs uppercase tracking-widest">• {{ slide.subtitle }}</span>
+              <span
+                v-if="slide.subtitle"
+                class="text-zinc-300 font-bold text-xs uppercase tracking-widest"
+                >• {{ slide.subtitle }}</span
+              >
             </div>
             <h1
               class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
-              v-html="slide.title"
-            />
-            <p class="text-sm md:text-[15px] mb-6 text-zinc-300 max-w-lg leading-relaxed">
+            >
+              {{ slide.title }}
+            </h1>
+            <p
+              v-if="slide.description"
+              class="text-sm md:text-[15px] mb-6 text-zinc-300 max-w-lg leading-relaxed"
+            >
               {{ slide.description }}
             </p>
             <div class="flex items-center gap-3">
-              <UiButton
-                :to="slide.link"
-                size="md"
-              >
-                {{ slide.btnPrimary }}
-                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <UiButton :to="slide.link" size="md">
+                {{ slide.buttonLabel }}
+                <span class="material-symbols-outlined text-[18px]"
+                  >arrow_forward</span
+                >
               </UiButton>
-              <router-link
-                :to="slide.link"
-                class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-4 py-2.5 rounded-none text-sm font-bold transition-colors"
-              >
-                {{ slide.btnSecondary }}
-              </router-link>
             </div>
           </div>
         </div>
 
         <!-- Arrows -->
-        <button
-          class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-          @click="prevSlide"
-        >
-          <span class="material-symbols-outlined text-white text-[20px]">chevron_left</span>
-        </button>
-        <button
-          class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-          @click="() => { nextSlide(); resetTimer(); }"
-        >
-          <span class="material-symbols-outlined text-white text-[20px]">chevron_right</span>
-        </button>
-
-        <!-- Counter -->
-        <div class="absolute bottom-6 right-8 z-20 text-white/40 text-xs font-bold tabular-nums">
-          {{ activeIndex + 1 }}&nbsp;/&nbsp;{{ slides.length }}
-        </div>
-
-        <!-- Dots -->
-        <div class="absolute bottom-6 left-8 md:left-12 flex gap-2.5 z-20">
+        <template v-if="slides.length > 1">
           <button
-            v-for="(_, index) in slides"
-            :key="index"
-            :class="['h-1.5 rounded-full transition-all duration-500', activeIndex === index ? 'w-12 bg-[#00a046]' : 'w-6 bg-white/30 hover:bg-white/50']"
-            :aria-label="`Слайд ${index + 1}`"
-            @click="setSlide(index)"
-          />
-        </div>
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+            @click="prevSlide"
+          >
+            <span class="material-symbols-outlined text-white text-[20px]"
+              >chevron_left</span
+            >
+          </button>
+          <button
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+            @click="
+              () => {
+                nextSlide();
+                resetTimer();
+              }
+            "
+          >
+            <span class="material-symbols-outlined text-white text-[20px]"
+              >chevron_right</span
+            >
+          </button>
+
+          <!-- Counter -->
+          <div
+            class="absolute bottom-6 right-8 z-20 text-white/40 text-xs font-bold tabular-nums"
+          >
+            {{ activeIndex + 1 }}&nbsp;/&nbsp;{{ slides.length }}
+          </div>
+
+          <!-- Dots -->
+          <div class="absolute bottom-6 left-8 md:left-12 flex gap-2.5 z-20">
+            <button
+              v-for="(_, index) in slides"
+              :key="index"
+              :class="[
+                'h-1.5 rounded-full transition-all duration-500',
+                activeIndex === index
+                  ? 'w-12 bg-[#00a046]'
+                  : 'w-6 bg-white/30 hover:bg-white/50',
+              ]"
+              :aria-label="t('home.hero.slideAriaLabel', { n: index + 1 })"
+              @click="setSlide(index)"
+            />
+          </div>
+        </template>
       </div>
 
       <!-- ── Subcategories Mega Menu overlay (appears on hover) ── -->
@@ -255,12 +317,10 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
               :key="colIdx"
               class="space-y-6 text-white"
             >
-              <div
-                v-for="(group, gIdx) in col"
-                :key="gIdx"
-                class="space-y-2"
-              >
-                <h4 class="font-extrabold text-[11.5px] uppercase tracking-wider">
+              <div v-for="(group, gIdx) in col" :key="gIdx" class="space-y-2">
+                <h4
+                  class="font-extrabold text-[11.5px] uppercase tracking-wider"
+                >
                   <RouterLink
                     :to="getGroupRoute(group)"
                     class="text-[#3898ec] hover:underline cursor-pointer"
@@ -296,7 +356,7 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
                   class="text-zinc-500 hover:text-zinc-300 text-[11px] font-semibold cursor-pointer underline decoration-dashed decoration-zinc-600 underline-offset-2 mt-1 inline-block"
                   @click="hoveredCat = null"
                 >
-                  Дивитися далі →
+                  {{ t("header.search.viewMore") }}
                 </RouterLink>
               </div>
             </div>
@@ -305,9 +365,11 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
             v-else
             class="flex-grow flex flex-col items-center justify-center text-zinc-500 py-12"
           >
-            <span class="material-symbols-outlined text-4xl mb-2">category</span>
+            <span class="material-symbols-outlined text-4xl mb-2"
+              >category</span
+            >
             <p class="text-xs font-bold">
-              Немає дочірніх розділів.
+              {{ t("header.megaMenu.noSubcategories") }}
             </p>
           </div>
         </div>
@@ -317,7 +379,14 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 </template>
 
 <style scoped>
-.cat-scroll::-webkit-scrollbar { width: 3px; }
-.cat-scroll::-webkit-scrollbar-track { background: transparent; }
-.cat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.cat-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.cat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
 </style>

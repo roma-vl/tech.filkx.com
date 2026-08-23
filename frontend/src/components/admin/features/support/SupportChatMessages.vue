@@ -4,15 +4,9 @@
     class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50 dark:bg-gray-900/10 relative"
   >
     <!-- Load More Trigger -->
-    <div
-      ref="loadMoreTrigger"
-      class="h-1 w-full"
-    />
+    <div ref="loadMoreTrigger" class="h-1 w-full" />
 
-    <div
-      v-if="isLoadingMore"
-      class="flex justify-center py-2"
-    >
+    <div v-if="isLoadingMore" class="flex justify-center py-2">
       <div
         class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"
       />
@@ -64,7 +58,8 @@
           <div class="flex items-center justify-end gap-2 mt-2 opacity-50">
             <span
               class="text-[8px] font-black uppercase text-amber-700/60 dark:text-amber-300/60"
-            >{{ formatTime(msg.createdAt) }}</span>
+              >{{ formatTime(msg.createdAt) }}</span
+            >
           </div>
         </div>
       </div>
@@ -88,10 +83,7 @@
         >
           <span class="text-[8px] font-black">!</span>
         </span>
-        <div
-          v-if="!msg.isAdmin"
-          class="flex items-center gap-2 mb-1.5"
-        >
+        <div v-if="!msg.isAdmin" class="flex items-center gap-2 mb-1.5">
           <div
             class="w-5 h-5 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
           >
@@ -99,11 +91,8 @@
               v-if="msg.userAvatar"
               :src="msg.userAvatar"
               class="w-full h-full object-cover"
-            >
-            <UserIcon
-              v-else
-              class="w-3 h-3 text-gray-400"
             />
+            <UserIcon v-else class="w-3 h-3 text-gray-400" />
           </div>
           <p
             class="text-[10px] font-black opacity-40 uppercase tracking-widest"
@@ -111,22 +100,16 @@
             {{ userName }}
           </p>
         </div>
-        <p
-          v-if="msg.message"
-          class="text-sm leading-relaxed font-medium"
-        >
+        <p v-if="msg.message" class="text-sm leading-relaxed font-medium">
           {{ msg.message }}
         </p>
-        <div
-          v-if="msg.fileUrl"
-          class="mt-3"
-        >
+        <div v-if="msg.fileUrl" class="mt-3">
           <img
             v-if="isImage(msg.fileType)"
             :src="msg.fileUrl"
             class="rounded-xl max-w-full cursor-pointer hover:scale-105 transition-transform"
             @click="openFile(msg.fileUrl)"
-          >
+          />
           <video
             v-else-if="isVideo(msg.fileType)"
             :src="msg.fileUrl"
@@ -195,7 +178,8 @@
         </div>
         <span
           class="text-[8px] font-black uppercase text-primary-500 text-center tracking-tighter"
-        >AI</span>
+          >AI</span
+        >
       </div>
     </div>
   </div>

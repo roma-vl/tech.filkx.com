@@ -1,12 +1,14 @@
 import { ref, computed, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { orderApi } from "@/shared/services/api/orderApi";
 import { productApi } from "@/shared/services/api/productApi";
+import { redirectToLiqPay } from "@/shared/utils/liqpay";
 
 export function useShoppingCart() {
   const router = useRouter();
+  const route = useRoute();
   const cartStore = useCartStore();
   const authStore = useAuthStore();
 
@@ -52,36 +54,63 @@ export function useShoppingCart() {
 
   const mapProduct = (p: any) => {
     const mainVariant = p.variants?.[0];
-    const price = mainVariant ? parseFloat(mainVariant.price) : (p.price || 0);
-    const oldPrice = mainVariant && mainVariant.old_price ? parseFloat(mainVariant.old_price) : (p.oldPrice || p.old_price || null);
-    
+    const price = mainVariant ? parseFloat(mainVariant.price) : p.price || 0;
+    const oldPrice =
+      mainVariant && mainVariant.old_price
+        ? parseFloat(mainVariant.old_price)
+        : p.oldPrice || p.old_price || null;
+
     let image = p.image || "";
-    if (!image && mainVariant && mainVariant.dimensions && mainVariant.dimensions.images) {
-      const primary = mainVariant.dimensions.images.find((img: any) => img.isPrimary) || mainVariant.dimensions.images[0];
+    if (
+      !image &&
+      mainVariant &&
+      mainVariant.dimensions &&
+      mainVariant.dimensions.images
+    ) {
+      const primary =
+        mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
+        mainVariant.dimensions.images[0];
       if (primary && primary.url) {
         image = primary.url;
       }
     }
     if (!image) {
-      image = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
+      image =
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop";
     }
 
     const category = p.categories?.[0]
-      ? (p.categories[0].name?.uk || p.categories[0].name?.en || p.categories[0].name)
-      : (p.category || "Electronics");
+      ? p.categories[0].name?.uk ||
+        p.categories[0].name?.en ||
+        p.categories[0].name
+      : p.category || "Electronics";
 
     const brandName = p.brand?.name || p.brand || "Brand";
 
     // Extract specs
-    const ram = p.attributeValues?.find((av: any) => av.attribute?.code === "ram")?.customValue || "8GB";
-    const screen = p.attributeValues?.find((av: any) => av.attribute?.code === "screen")?.customValue || "6.1\"";
-    const storage = p.attributeValues?.find((av: any) => av.attribute?.code === "storage")?.customValue || "128GB";
+    const ram =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "ram")
+        ?.customValue || "8GB";
+    const screen =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "screen")
+        ?.customValue || '6.1"';
+    const storage =
+      p.attributeValues?.find((av: any) => av.attribute?.code === "storage")
+        ?.customValue || "128GB";
 
     const totalStock = mainVariant
-      ? (mainVariant.stocks
-          ? mainVariant.stocks.reduce((acc: number, s: any) => acc + (parseInt(s.quantity) - parseInt(s.reserved || 0)), 0)
-          : (mainVariant.stock !== undefined ? mainVariant.stock : 0))
-      : (p.stock !== undefined ? p.stock : 10);
+      ? mainVariant.stocks
+        ? mainVariant.stocks.reduce(
+            (acc: number, s: any) =>
+              acc + (parseInt(s.quantity) - parseInt(s.reserved || 0)),
+            0,
+          )
+        : mainVariant.stock !== undefined
+          ? mainVariant.stock
+          : 0
+      : p.stock !== undefined
+        ? p.stock
+        : 10;
 
     return {
       id: p.id,
@@ -98,8 +127,8 @@ export function useShoppingCart() {
       ram: ram,
       specs: {
         screen: screen,
-        storage: storage
-      }
+        storage: storage,
+      },
     };
   };
 
@@ -115,8 +144,34 @@ export function useShoppingCart() {
     }
   };
 
+  const checkPaymentReturn = async () => {
+    const orderNumber = route.query.order;
+    if (route.query.payment !== "liqpay" || !orderNumber) return;
+
+    try {
+      const res = await orderApi.getOrderStatus(String(orderNumber));
+      if (res.data && res.data.status === "success") {
+        orderSuccessData.value = res.data.data;
+        isSuccessMode.value = true;
+        cartStore.cart = [];
+
+        if (res.data.data.paymentStatus !== "paid") {
+          cartStore.addToast(
+            "Оплату не підтверджено. Якщо кошти було списано, статус оновиться протягом кількох хвилин.",
+            "warning",
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch order status after payment", e);
+    } finally {
+      router.replace({ query: {} });
+    }
+  };
+
   onMounted(() => {
     fetchRecommended();
+    checkPaymentReturn();
   });
 
   const moveToCart = async (product: any) => {
@@ -134,21 +189,10 @@ export function useShoppingCart() {
   };
 
   const hasOutOfStockItems = computed(() => {
-    return cartStore.cart.some(item => item.stock !== undefined && item.stock <= 0);
+    return cartStore.cart.some(
+      (item) => item.stock !== undefined && item.stock <= 0,
+    );
   });
-
-  const isQuickViewOpen = ref(false);
-  const quickViewProduct = ref<any>(null);
-
-  const openQuickView = (product: any) => {
-    quickViewProduct.value = product;
-    isQuickViewOpen.value = true;
-  };
-
-  const closeQuickView = () => {
-    isQuickViewOpen.value = false;
-    quickViewProduct.value = null;
-  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("uk-UA", {
@@ -162,7 +206,7 @@ export function useShoppingCart() {
     if (!promoCode.value.trim()) return;
     const code = promoCode.value.trim().toUpperCase();
     try {
-      const response = await orderApi.validateCoupon(code, cartStore.cartTotal);
+      const response = await orderApi.validateCoupon(code);
       if (response.data && response.data.status === "success") {
         appliedPromo.value = code;
         promoDiscountAmount.value = response.data.data.discount;
@@ -193,15 +237,7 @@ export function useShoppingCart() {
     cartStore.addToCart(product);
   };
 
-  const isPaymentSimulatorOpen = ref(false);
-  const pendingSuccessData = ref<any>(null);
-
-  const confirmSimulatedPayment = () => {
-    isPaymentSimulatorOpen.value = false;
-    orderSuccessData.value = pendingSuccessData.value;
-    pendingSuccessData.value = null;
-    isSuccessMode.value = true;
-  };
+  const isRedirectingToPayment = ref(false);
 
   const handlePlaceOrder = async () => {
     if (
@@ -210,7 +246,10 @@ export function useShoppingCart() {
       !checkoutForm.value.customerPhone ||
       !checkoutForm.value.shippingAddress
     ) {
-      cartStore.addToast("Будь ласка, заповніть усі обов'язкові поля.", "error");
+      cartStore.addToast(
+        "Будь ласка, заповніть усі обов'язкові поля.",
+        "error",
+      );
       return;
     }
 
@@ -230,16 +269,31 @@ export function useShoppingCart() {
       });
 
       if (response.data && response.data.status === "success") {
-        cartStore.addToast("Замовлення успішно створено!", "success");
-        cartStore.cart = [];
-        
+        const order = response.data.data;
+
         if (checkoutForm.value.paymentMethod === "card") {
-          pendingSuccessData.value = response.data.data;
-          isPaymentSimulatorOpen.value = true;
+          const payRes = await orderApi.initiateLiqPayPayment(
+            order.orderNumber,
+          );
+          if (payRes.data && payRes.data.status === "success") {
+            isRedirectingToPayment.value = true;
+            const { data, signature, checkoutUrl } = payRes.data.data;
+            redirectToLiqPay(data, signature, checkoutUrl);
+            return; // browser is navigating to LiqPay, nothing left to do here
+          }
+
+          cartStore.addToast(
+            payRes.data?.message ||
+              "Онлайн-оплата тимчасово недоступна. Замовлення створено, зверніться до підтримки для оплати.",
+            "error",
+          );
         } else {
-          orderSuccessData.value = response.data.data;
-          isSuccessMode.value = true;
+          cartStore.addToast("Замовлення успішно створено!", "success");
         }
+
+        cartStore.cart = [];
+        orderSuccessData.value = order;
+        isSuccessMode.value = true;
       }
     } catch (error: any) {
       console.error("Checkout failed:", error);
@@ -270,13 +324,7 @@ export function useShoppingCart() {
     moveToCart,
     removePromo,
     hasOutOfStockItems,
-    isQuickViewOpen,
-    quickViewProduct,
-    openQuickView,
-    closeQuickView,
-    isPaymentSimulatorOpen,
-    pendingSuccessData,
-    confirmSimulatedPayment,
+    isRedirectingToPayment,
     formatPrice,
     applyPromo,
     addRecommended,

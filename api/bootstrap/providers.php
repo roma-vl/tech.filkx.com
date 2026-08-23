@@ -1,8 +1,9 @@
 <?php
 
 use App\Providers\AppServiceProvider;
+use App\Providers\WishlistServiceProvider;
 
 return [
     AppServiceProvider::class,
-    App\Providers\WishlistServiceProvider::class,
+    WishlistServiceProvider::class,
 ];

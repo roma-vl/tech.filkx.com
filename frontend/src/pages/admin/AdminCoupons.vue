@@ -3,7 +3,9 @@
     <CouponStats :data="statsData" />
 
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+    >
       <!-- Search bar & filters toggle button -->
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
@@ -22,7 +24,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          title="Фільтри"
+          :title="t('admin.marketing.coupons.filterPanel.toggle')"
           @click="showFilters = !showFilters"
         >
           <svg
@@ -68,24 +70,35 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <AppSelect
             v-model="statusFilter"
-            label="Статус"
-            placeholder="Всі статуси"
+            :label="t('admin.marketing.coupons.filterPanel.statusLabel')"
+            :placeholder="t('admin.marketing.coupons.filterPanel.statusAll')"
             :options="[
-              { id: '', name: 'Всі статуси' },
-              { id: 'active', name: 'Активні' },
-              { id: 'inactive', name: 'Неактивні' }
+              {
+                id: '',
+                name: t('admin.marketing.coupons.filterPanel.statusAll'),
+              },
+              {
+                id: 'active',
+                name: t('admin.marketing.coupons.filterPanel.statusActive'),
+              },
+              {
+                id: 'inactive',
+                name: t('admin.marketing.coupons.filterPanel.statusInactive'),
+              },
             ]"
             option-value="id"
             option-label="name"
           />
         </div>
-        <div class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700"
+        >
           <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
             @click="resetFilters"
           >
-            Скинути фільтри
+            {{ t("admin.marketing.coupons.filterPanel.reset") }}
           </AppButton>
         </div>
       </div>
@@ -104,6 +117,8 @@
     <CouponEditModal
       :is-open="isEditModalOpen"
       :coupon="editingCoupon"
+      :categories="categories"
+      :products="products"
       @close="closeEditModal"
       @saved="handleSaved"
     />
@@ -113,8 +128,8 @@
       v-model="showDeleteConfirm"
       :title="t('admin.marketing.coupons.alerts.delete_confirm_title')"
       :message="deleteConfirmMessage"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :confirm-text="t('admin.marketing.coupons.alerts.confirmButton')"
+      :cancel-text="t('admin.marketing.coupons.cancel')"
       :loading="deleteLoading"
       @confirm="handleDeleteConfirm"
     />
@@ -126,6 +141,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
+import { productApi } from "@/shared/services/api/productApi";
 import { PlusIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 
 import CouponStats from "@/components/admin/features/marketing/coupons/CouponStats.vue";
@@ -140,6 +156,8 @@ const { t } = useI18n();
 const toast = useToast();
 
 const coupons = ref([]);
+const categories = ref([]);
+const products = ref([]);
 const loading = ref(false);
 const deleteLoading = ref(false);
 const search = ref("");
@@ -172,7 +190,7 @@ const showDeleteConfirm = computed({
   get: () => !!couponToDelete.value,
   set: (val) => {
     if (!val) couponToDelete.value = null;
-  }
+  },
 });
 
 const deleteConfirmMessage = computed(() => {
@@ -287,8 +305,22 @@ watch(statusFilter, () => {
   fetchCoupons(1);
 });
 
+const fetchTargetingOptions = async () => {
+  try {
+    const [categoriesRes, productsRes] = await Promise.all([
+      productApi.adminGetCategories(),
+      productApi.adminGetProducts(),
+    ]);
+    categories.value = categoriesRes.data.data || [];
+    products.value = productsRes.data.data || [];
+  } catch (e) {
+    console.error("Failed to fetch categories/products for targeting", e);
+  }
+};
+
 onMounted(() => {
   fetchCoupons();
+  fetchTargetingOptions();
 });
 </script>
 

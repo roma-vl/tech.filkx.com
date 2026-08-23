@@ -51,6 +51,7 @@ services:
       - ./frontend:/app
     networks:
       - filkx
+    command: tail -f /dev/null
 
   tech-api-php-fpm:
     container_name: tech-api-php-fpm
@@ -120,7 +121,7 @@ services:
     networks:
       - filkx
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U live -d live" ]
+      test: [ "CMD-SHELL", "pg_isready -U tech -d tech" ]
       interval: 5s
       timeout: 5s
       retries: 5

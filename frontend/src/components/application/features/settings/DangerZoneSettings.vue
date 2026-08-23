@@ -70,7 +70,7 @@
               type="password"
               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               :placeholder="t('settings.delete_account_password_placeholder')"
-            >
+            />
           </div>
         </div>
 

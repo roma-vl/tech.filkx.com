@@ -1,26 +1,33 @@
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
+import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 export function useCatalog() {
   const route = useRoute();
   const router = useRouter();
 
   const viewMode = ref("grid");
+  // How many product cards per row from the lg breakpoint up - 4 is the default,
+  // 5 is the denser option. Smaller breakpoints below lg still scale down to 1/2
+  // columns responsively regardless of this setting.
+  const gridDensity = ref<4 | 5>(4);
   const sortBy = ref("popularity");
   const initialPriceMin = ref(0);
   const initialPriceMax = ref(200000);
   const priceMin = ref(0);
   const priceMax = ref(200000);
-  const selectedBrands = ref<string[]>([]);
-  const selectedAttrs = ref<Record<string, string>>({});
+  const selectedBrands = ref<string[]>(
+    route.query.brand ? (route.query.brand as string).split(",") : [],
+  );
+  const selectedAttrs = ref<Record<string, string[]>>({});
   const selectedRating = ref("");
-  const onlyDiscounts = ref(false);
+  const onlyDiscounts = ref(
+    route.query.discounts === "1" || route.query.discounts === "true",
+  );
   const onlyInStock = ref(false);
 
   const isMobileFilterOpen = ref(false);
-  const selectedProductForQuickView = ref<any>(null);
-  const isQuickViewOpen = ref(false);
 
   const isLoading = ref(false);
   const rawProducts = ref<any[]>([]);
@@ -33,6 +40,14 @@ export function useCatalog() {
     total: 0,
   });
 
+  // The category is addressed by its own route (`category/:slug`) rather than
+  // a `?category=` query param on the flat `/catalog` route - that route now
+  // exists only for free-text search results and a generic "all products"
+  // browse view, never for category browsing.
+  const categorySlug = computed(() =>
+    route.name === "category" ? (route.params.slug as string) : "",
+  );
+
   // Brand counts computed property dynamically mapping from DB
   const brands = computed(() => {
     return dbBrands.value.map((b) => {
@@ -44,135 +59,7 @@ export function useCatalog() {
     });
   });
 
-  function mapProduct(apiProduct: any) {
-    if (!apiProduct) return null;
-    const mainVariant =
-      apiProduct.variants && apiProduct.variants[0]
-        ? apiProduct.variants[0]
-        : null;
-    const price = mainVariant ? parseFloat(mainVariant.price) : 0;
-    const oldPrice =
-      mainVariant && mainVariant.old_price
-        ? parseFloat(mainVariant.old_price)
-        : mainVariant && mainVariant.oldPrice
-          ? parseFloat(mainVariant.oldPrice)
-          : null;
-    const totalStock = mainVariant
-      ? (mainVariant.stocks || []).reduce(
-          (acc: number, s: any) =>
-            acc + (parseInt(s.quantity) - parseInt(s.reserved)),
-          0,
-        )
-      : 0;
-
-    // Try to get primary image from variant's dimensions.images
-    let image = "";
-    if (
-      mainVariant &&
-      mainVariant.dimensions &&
-      mainVariant.dimensions.images
-    ) {
-      const primary =
-        mainVariant.dimensions.images.find((img: any) => img.isPrimary) ||
-        mainVariant.dimensions.images[0];
-      if (primary && primary.url) {
-        image = primary.url;
-      }
-    }
-
-    // Fallback to legacy static images if no dynamic images exist
-    if (!image) {
-      image =
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-      if (apiProduct.slug === "iphone-15-pro-max") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuC0pdjuB0YFLkInl4zdi5bxprMDGyN-cagKuDnRtaemxo2Cc7uHUFxB6DBm4KDzEA7-TWHm_tJ2X975lakn1VUXxj_Zii1600ZoHaFVsz42-JNUnzhMZS1yc7eB5PimODocEzaKmUou2cKXOmIO_iZOVYFvo3cykUosBr0wQGW7pts6rONrYQbozd8m96y1s0lscEtxiXD3coOXigoJlVixBgNJVGo917sZReo9Lr1nYzzcVx33iqM0_SAspKG6N-tlAqBX2Ta60sM";
-      } else if (apiProduct.slug === "samsung-galaxy-s24-ultra") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDNXpOdOi1q9K16_agnjDdmva4mM8QDf9TI4MCTsRa0_OXpmRLAkd2BmZ0IpQebeCf9T-oqp5EXZIEqu5AgJgO3UAZfh8JwEUwazBkmMcqSqi5NOJjpKjWbdNN6PVkBt40FEXcJMc2b-kYP2x4afcnwiPcUckUaDsOZfW3QlxwFPMxfrXvfI7xR-8qcpi8AlkYYBVIucffemoFhQigVY-yrdYAUIMrcC6HgcPyO99EpuBM4WdjdU2LJpA6MY3BhgG7BudOrk4ZPlNw";
-      } else if (apiProduct.slug === "lenovo-legion-5-pro") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDr331B7FabLZcRGhJ_DbZowzkaew5s_GJfms-DS1LXHrCr9JrEM_qiTSvHHdcRLOQU4NygZqdg2vzSEP8qolpkbrEuPi83FukM8x4ZzJpflfXCL5i6WZw99Ro2W_kJSyPwSKmBh7aTJ89xk_sSMwhQZu0di9CfY_tYG8xsS9crK6wdrdWzCio8Ct_P6vzzIdKMqZSvWk-cI5tR8P_uuTugKKtObu44X83uzkFVwQ768UhPlN4P_9soMg2YidbSr7gU_mGJdorHV3E";
-      } else if (apiProduct.slug === "sony-wh-1000xm5-black") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuApPyQSbFm8gPmD-BUjU4KbU8lxRaJgxXIhErhaMatT2s9qIW-w_5-JYkv6KP4VCydvIJ7AILq7vAzgYxtBMWpH3kCLV-dTj-MLQXnn5QZ-wzUyExGQ4ctA0UF9iDDXWD5M5J4yjWdsZwVHkLS41IEyjl_3hgh0UOOKNAFACOcwflvlJmUTb4_shPWuLH9O39dD2jY3poIQW6bgNMNDkH27ULegCxzfRn5mcStW0AeWRcTRtB-FbFVceirC1rt5mfGkfUq5SmcUkmA";
-      } else if (apiProduct.slug === "apple-airpods-pro-2") {
-        image =
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuA4CBkZB03qlIoMec3YDV24fO35X8SQ-nFR3-vSL9fHTRB_0yNWXQIPyPUR9XTJAgwPRqR9BMPLYRdA1wE5DJ45Whogygd0z1RLbsHf57iD3oNin76Iky7ChCqZYi5i_wfvTapwlF_E-PSDIHYoRQK6uRBPNNTQz4EHty0UuXvWXNNbKzjznstWRzJVKUzyYdU8ZPafSIhxOBNZZog6jxjU4a9KAaF5H8EcaCT0lQ1XAMin35srr2hS4Wizm7MABaeuhA9WVqY02lQ";
-      }
-    }
-
-    const name =
-      typeof apiProduct.name === "object"
-        ? apiProduct.name.uk || apiProduct.name.en
-        : apiProduct.name;
-    const description =
-      typeof apiProduct.description === "object"
-        ? apiProduct.description.uk || apiProduct.description.en
-        : apiProduct.description;
-
-    const getAttrValue = (code: string) => {
-      const checkList: any[] = [];
-      if (mainVariant) {
-        if (mainVariant.attribute_values)
-          checkList.push(...mainVariant.attribute_values);
-        if (mainVariant.attributeValues)
-          checkList.push(...mainVariant.attributeValues);
-      }
-      if (apiProduct) {
-        if (apiProduct.attribute_values)
-          checkList.push(...apiProduct.attribute_values);
-        if (apiProduct.attributeValues)
-          checkList.push(...apiProduct.attributeValues);
-      }
-
-      const match = checkList.find(
-        (av) => av.attribute && av.attribute.code === code,
-      );
-      if (match) {
-        const valObj = match.attribute_value || match.attributeValue;
-        if (valObj && valObj.value) {
-          if (typeof valObj.value === "object") {
-            return valObj.value.uk || valObj.value.en || "";
-          }
-          return valObj.value;
-        }
-        return match.custom_value || match.customValue || "";
-      }
-      return "";
-    };
-
-    return {
-      id: apiProduct.id,
-      slug: apiProduct.slug,
-      name: name,
-      brand: apiProduct.brand ? apiProduct.brand.name : "Unknown",
-      ram: getAttrValue("ram") || "16GB",
-      category:
-        apiProduct.categories && apiProduct.categories[0]
-          ? apiProduct.categories[0].name.uk || apiProduct.categories[0].name.en
-          : "Laptops",
-      price: price,
-      oldPrice: oldPrice,
-      rating: apiProduct.approvedReviewsAvgRating != null ? parseFloat(apiProduct.approvedReviewsAvgRating) : 0,
-      reviews: apiProduct.approvedReviewsCount != null ? Number(apiProduct.approvedReviewsCount) : 0,
-      badge: oldPrice ? "Акція" : null,
-      badgeClass: oldPrice ? "bg-rose-600" : "",
-      inStock: totalStock > 0,
-      image: image,
-      description: description,
-      specs: {
-        processor: getAttrValue("processor") || "Apple Silicon / Intel Core",
-        screen: getAttrValue("screen_size") || '14" IPS',
-        storage: getAttrValue("storage") || "512GB SSD",
-        os: getAttrValue("os") || "Windows 11 / macOS",
-        weight:
-          mainVariant && mainVariant.weight
-            ? `${mainVariant.weight} кг`
-            : "1.5 кг",
-      },
-    };
-  }
+  const mapProduct = mapCatalogProduct;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("uk-UA", {
@@ -195,7 +82,10 @@ export function useCatalog() {
 
   const fetchBrands = async () => {
     try {
-      const response = await productApi.catalogGetBrands();
+      const params = categorySlug.value
+        ? { category: categorySlug.value }
+        : undefined;
+      const response = await productApi.catalogGetBrands(params);
       if (response.data && response.data.status === "success") {
         dbBrands.value = response.data.data || [];
       }
@@ -206,16 +96,17 @@ export function useCatalog() {
 
   const fetchFilterSchema = async () => {
     try {
-      const response = await productApi.catalogGetFiltersSchema();
+      const params = categorySlug.value
+        ? { category: categorySlug.value }
+        : undefined;
+      const response = await productApi.catalogGetFiltersSchema(params);
       if (response.data && response.data.status === "success") {
         const data = response.data.data;
         dynamicAttributes.value = data.attributes || [];
-        if (priceMin.value === 0 && priceMax.value === 200000) {
-          priceMin.value = data.price.min || 0;
-          priceMax.value = data.price.max || 200000;
-          initialPriceMin.value = data.price.min || 0;
-          initialPriceMax.value = data.price.max || 200000;
-        }
+        priceMin.value = data.price.min || 0;
+        priceMax.value = data.price.max || 200000;
+        initialPriceMin.value = data.price.min || 0;
+        initialPriceMax.value = data.price.max || 200000;
       }
     } catch (error) {
       console.error("Failed to fetch filter schema:", error);
@@ -238,8 +129,8 @@ export function useCatalog() {
         params.brand = selectedBrands.value.join(",");
       }
 
-      if (route.query.category) {
-        params.category = route.query.category;
+      if (categorySlug.value) {
+        params.category = categorySlug.value;
       }
 
       if (route.query.search) {
@@ -254,11 +145,12 @@ export function useCatalog() {
         params.in_stock = 1;
       }
 
-      // Add EAV attributes to query parameters in camelCase format
+      // Add EAV attributes to query parameters, comma-joining multi-selected values -
+      // matches ListProductsAction's `explode(',', ...)` parsing on the backend.
       Object.keys(selectedAttrs.value).forEach((code) => {
-        const val = selectedAttrs.value[code];
-        if (val) {
-          params[`attrs[${code}]`] = val;
+        const values = selectedAttrs.value[code];
+        if (values && values.length > 0) {
+          params[`attrs[${code}]`] = values.join(",");
         }
       });
 
@@ -281,22 +173,20 @@ export function useCatalog() {
     }
   };
 
-  const selectCategory = (categorySlug: string) => {
-    router.push({
-      name: "catalog",
-      query: {
-        ...route.query,
-        category: categorySlug || undefined,
-        page: 1,
-      },
-    });
+  const selectCategory = (slug: string) => {
+    if (slug) {
+      router.push({ name: "category", params: { slug } });
+    } else {
+      router.push({ name: "catalog" });
+    }
   };
 
   const changePage = (page: number) => {
     if (page >= 1 && page <= pagination.value.lastPage) {
       pagination.value.page = page;
       router.push({
-        name: "catalog",
+        name: route.name as string,
+        params: route.params,
         query: {
           ...route.query,
           page: page,
@@ -326,21 +216,19 @@ export function useCatalog() {
       });
     });
 
-    // Dynamic attributes
+    // Dynamic attributes - one chip per selected value so each can be removed independently
     Object.keys(selectedAttrs.value).forEach((code) => {
-      const val = selectedAttrs.value[code];
-      if (val) {
-        const attr = dynamicAttributes.value.find((a) => a.code === code);
-        const attrName = attr
-          ? attr.name.uk || attr.name.en || attr.name
-          : code;
+      const values = selectedAttrs.value[code] || [];
+      const attr = dynamicAttributes.value.find((a) => a.code === code);
+      const attrName = attr ? attr.name.uk || attr.name.en || attr.name : code;
+      values.forEach((val) => {
         filters.push({
           type: "attribute",
           code: code,
           label: `${attrName}: ${val}`,
           value: val,
         });
-      }
+      });
     });
 
     if (
@@ -384,7 +272,14 @@ export function useCatalog() {
     }
     if (filter.type === "attribute") {
       const current = { ...selectedAttrs.value };
-      delete current[filter.code];
+      const remaining = (current[filter.code] || []).filter(
+        (v) => v !== filter.value,
+      );
+      if (remaining.length > 0) {
+        current[filter.code] = remaining;
+      } else {
+        delete current[filter.code];
+      }
       selectedAttrs.value = current;
     }
     if (filter.type === "price") {
@@ -412,17 +307,11 @@ export function useCatalog() {
     onlyInStock.value = false;
   };
 
-  const openQuickView = (product: any) => {
-    selectedProductForQuickView.value = product;
-    isQuickViewOpen.value = true;
-  };
-
-  const closeQuickView = () => {
-    selectedProductForQuickView.value = null;
-    isQuickViewOpen.value = false;
-  };
-
-  const getCategoryPath = (categories: any[], slug: string, path: any[] = []): any[] | null => {
+  const getCategoryPath = (
+    categories: any[],
+    slug: string,
+    path: any[] = [],
+  ): any[] | null => {
     for (const cat of categories) {
       const currentPath = [...path, cat];
       if (cat.slug === slug) {
@@ -437,12 +326,14 @@ export function useCatalog() {
   };
 
   const currentCategoryPath = computed(() => {
-    if (!route.query.category) return [];
-    return getCategoryPath(categoriesList.value, route.query.category as string) || [];
+    if (!categorySlug.value) return [];
+    return getCategoryPath(categoriesList.value, categorySlug.value) || [];
   });
 
   const currentCategoryName = computed(() => {
-    if (!route.query.category) return "Всі товари";
+    if (!categorySlug.value) {
+      return route.query.search ? `Пошук: ${route.query.search}` : "Всі товари";
+    }
     const path = currentCategoryPath.value;
     if (path.length > 0) {
       const last = path[path.length - 1];
@@ -452,9 +343,25 @@ export function useCatalog() {
   });
 
   watch(
-    () => [route.query.category, route.query.search, route.query.page],
-    () => {
+    () => [categorySlug.value, route.query.search, route.query.page],
+    async ([newCategory], [oldCategory]) => {
       pagination.value.page = parseInt(route.query.page as string) || 1;
+      if (newCategory !== oldCategory) {
+        // A category switch invalidates filters chosen for the previous category's
+        // facets (e.g. a phone attribute carrying over into laptops) - clear them and
+        // refetch the category-scoped price bounds/attributes/brand counts before
+        // reloading products against the new category. Resetting selectedAttrs/
+        // selectedBrands (and fetchFilterSchema() updating priceMin/priceMax) already
+        // triggers the watch() below, which calls fetchProducts() itself - an explicit
+        // call here would just be a redundant duplicate request.
+        selectedAttrs.value = {};
+        selectedBrands.value = [];
+        selectedRating.value = "";
+        onlyDiscounts.value = false;
+        onlyInStock.value = false;
+        await Promise.all([fetchFilterSchema(), fetchBrands()]);
+        return;
+      }
       fetchProducts();
     },
   );
@@ -485,23 +392,40 @@ export function useCatalog() {
     fetchProducts();
   });
 
+  // Prerendering runs no onMounted hooks (there is no DOM) — mirror the same
+  // fetches here so the static build captures real catalog content.
+  //
+  // fetchFilterSchema() is deliberately left out: it writes the fetched
+  // price range into priceMin/priceMax, which the watch() above reacts to
+  // by firing its own untracked fetchProducts() call — a race that could
+  // flip isLoading back to true after this hook's own fetchProducts() has
+  // already resolved and Vue has moved on to serializing the page. The
+  // filter sidebar isn't SEO content, so it's fine for it to render with
+  // its client-side defaults until onMounted runs in the browser.
+  onServerPrefetch(async () => {
+    pagination.value.page = parseInt(route.query.page as string) || 1;
+    await Promise.all([fetchCategories(), fetchBrands(), fetchProducts()]);
+  });
+
   return {
     route,
     router,
     viewMode,
+    gridDensity,
     sortBy,
     priceMin,
     priceMax,
+    initialPriceMin,
+    initialPriceMax,
     selectedBrands,
     selectedAttrs,
     selectedRating,
     onlyDiscounts,
     onlyInStock,
     isMobileFilterOpen,
-    selectedProductForQuickView,
-    isQuickViewOpen,
     isLoading,
     rawProducts,
+    categorySlug,
     categoriesList,
     brands,
     dynamicAttributes,
@@ -513,8 +437,6 @@ export function useCatalog() {
     activeFilters,
     removeFilter,
     clearFilters,
-    openQuickView,
-    closeQuickView,
     currentCategoryName,
     currentCategoryPath,
   };

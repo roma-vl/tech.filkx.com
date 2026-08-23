@@ -10,10 +10,7 @@
     />
 
     <div class="relative min-h-[400px]">
-      <AppLoadingOverlay
-        :loading="loading"
-        :text="$t('admin.users.loading')"
-      />
+      <AppLoadingOverlay :loading="loading" :text="$t('admin.users.loading')" />
 
       <AdminClientTable
         :clients="clients"
@@ -216,7 +213,6 @@ const openAddModal = () => {
     email: "",
     password: "",
     status: "active",
-    subscription: null,
     roles: [],
   };
   showModal.value = true;
@@ -229,7 +225,6 @@ const openEditModal = (client) => {
     name: client.name,
     email: client.email,
     status: client.status,
-    subscription: client.subscription,
     roles: client.roles || [],
   };
   showModal.value = true;
@@ -248,14 +243,6 @@ const saveUser = async (formData) => {
       status: formData.status,
       roles: formData.roles,
     };
-
-    if (formData.featuresSnapshot) {
-      payload.featuresSnapshot = formData.featuresSnapshot;
-    }
-
-    if (formData.subscriptionUsage) {
-      payload.subscriptionUsage = formData.subscriptionUsage;
-    }
 
     if (!isEditing.value) {
       payload.password = formData.password;

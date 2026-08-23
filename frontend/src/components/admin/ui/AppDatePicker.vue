@@ -18,12 +18,9 @@
         :disabled="disabled"
         class="w-full pl-10 rounded-xl border-gray-200 dark:border-gray-700 dark:bg-gray-800/50 focus:border-primary-500 focus:ring-primary-500 disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-900 transition-all shadow-sm text-sm text-gray-900 dark:text-gray-100"
         @input="$emit('update:modelValue', $event.target.value)"
-      >
+      />
     </div>
-    <p
-      v-if="error"
-      class="mt-1 text-xs text-red-600"
-    >
+    <p v-if="error" class="mt-1 text-xs text-red-600">
       {{ error }}
     </p>
   </div>

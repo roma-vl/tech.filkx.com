@@ -2,15 +2,20 @@
 
 namespace App\Api\V1\Actions\Coupon;
 
+use App\Api\V1\Actions\Cart\GetCartAction;
 use App\Api\V1\Dto\ValidateCouponDto;
 use App\Api\V1\Dto\ValidateCouponResultDto;
 use App\Api\V1\Exceptions\CheckoutValidationException;
 use App\Api\V1\Repositories\CouponRepositoryInterface;
+use App\Services\Pricing\Dto\CartLineItemDto;
+use App\Services\Pricing\PriceCalculationService;
 
 class ValidateCouponAction
 {
     public function __construct(
-        protected CouponRepositoryInterface $couponRepository
+        protected CouponRepositoryInterface $couponRepository,
+        protected GetCartAction $getCartAction,
+        protected PriceCalculationService $priceCalculationService
     ) {}
 
     public function execute(ValidateCouponDto $dto): ValidateCouponResultDto
@@ -29,22 +34,31 @@ class ValidateCouponAction
             throw new CheckoutValidationException('Купон вичерпав ліміт використання');
         }
 
-        $discount = 0;
-        if ($coupon->type === 'percent') {
-            $discount = $dto->cartTotal * ($coupon->amount / 100);
-        } else {
-            $discount = $coupon->amount;
+        // The discount is calculated off the real, server-side cart (never a
+        // client-supplied total) so targeting and stacking can't be spoofed.
+        $cartDetails = $this->getCartAction->execute($dto->cartSession);
+
+        if (empty($cartDetails->items)) {
+            throw new CheckoutValidationException('Корзина порожня');
         }
 
-        if ($discount > $dto->cartTotal) {
-            $discount = $dto->cartTotal;
-        }
+        $lineItems = array_map(
+            fn (array $item) => new CartLineItemDto(
+                productId: $item['product_id'],
+                categoryIds: $item['category_ids'],
+                unitPrice: $item['price'],
+                quantity: $item['quantity']
+            ),
+            $cartDetails->items
+        );
+
+        $result = $this->priceCalculationService->calculate($lineItems, $coupon);
 
         return new ValidateCouponResultDto(
             code: $coupon->code,
             type: $coupon->type,
             amount: (float) $coupon->amount,
-            discount: (float) $discount
+            discount: $result->couponDiscount
         );
     }
 }

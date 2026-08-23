@@ -23,8 +23,8 @@ export const orderApi = {
   },
 
   // Checkout API
-  validateCoupon(code: string, cartTotal: number) {
-    return apiClient.post("/v1/coupons/validate", { code, cartTotal });
+  validateCoupon(code: string) {
+    return apiClient.post("/v1/coupons/validate", { code });
   },
 
   placeOrder(checkoutForm: Record<string, any>) {
@@ -35,12 +35,23 @@ export const orderApi = {
     customerName: string,
     customerPhone: string,
     variantId: number | string,
+    paymentMethod: "cod" | "card" = "cod",
   ) {
     return apiClient.post("/v1/checkout/quick", {
       customerName,
       customerPhone,
       variantId,
+      paymentMethod,
     });
+  },
+
+  // Payment API
+  initiateLiqPayPayment(orderNumber: string) {
+    return apiClient.post(`/v1/payments/orders/${orderNumber}/liqpay`);
+  },
+
+  getOrderStatus(orderNumber: string) {
+    return apiClient.get(`/v1/payments/orders/${orderNumber}/status`);
   },
 
   // Admin Orders Management APIs

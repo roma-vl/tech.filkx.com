@@ -1,104 +1,33 @@
+import auth from "./auth/en";
+import account from "./account/en";
+import notifications from "./notifications/en";
+import header from "./header/en";
+import common from "./common/en";
+import cookieConsent from "./cookieConsent/en";
+import home from "./home/en";
+import meta from "./meta/en";
+import footer from "./footer/en";
+import cart from "./cart/en";
+import catalog from "./catalog/en";
+import product from "./product/en";
+import blog from "./blog/en";
+import errors from "./errors/en";
+import staticPage from "./static/en";
+
 export default {
-  auth: {
-    or_continue_with: "Or continue with",
-    login: {
-      title: "Sign In",
-      subtitle: "Welcome back! Enter your details to log in to your account.",
-      emailLabel: "Email Address",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "Password",
-      passwordPlaceholder: "Enter your password",
-      forgotPassword: "Forgot password?",
-      submit: "Sign In",
-      noAccount: "Don't have an account yet?",
-      createAccount: "Create account",
-      successMessage: "Successfully logged in!",
-      errorMessage: "Invalid email or password.",
-    },
-    register: {
-      title: "Create Account",
-      subtitle: "Get access to premium features by creating your account.",
-      nameLabel: "Full Name",
-      namePlaceholder: "John Doe",
-      emailLabel: "Email Address",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "Password",
-      passwordPlaceholder: "Create a password (min. 8 characters)",
-      confirmPasswordLabel: "Confirm Password",
-      confirmPasswordPlaceholder: "Confirm your password",
-      submit: "Register",
-      hasAccount: "Already have an account?",
-      signIn: "Sign In",
-      passwordsMismatch: "Passwords do not match.",
-      successMessage:
-        "Registration successful! Please check your email for a verification link.",
-      errorMessage: "Registration failed. Please check the entered data.",
-    },
-    forgotPassword: {
-      title: "Forgot Password",
-      subtitle:
-        "Enter your email address and we'll send you a link to reset your password.",
-      emailLabel: "Email Address",
-      emailPlaceholder: "name.company.com",
-      submit: "Send Reset Link",
-      backToLogin: "Back to Login",
-      sentMessage: "We have sent a password reset link to your email address.",
-      returnToLogin: "Return to Login",
-      toastSuccess: "Password reset link sent successfully!",
-      toastError: "Failed to send reset link. Please check your email address.",
-    },
-    resetPassword: {
-      title: "Reset Password",
-      subtitle: "Enter your new password below.",
-      emailLabel: "Email Address",
-      emailPlaceholder: "name.company.com",
-      passwordLabel: "New Password",
-      passwordPlaceholder: "Create a new password (min. 8 characters)",
-      confirmPasswordLabel: "Confirm New Password",
-      confirmPasswordPlaceholder: "Confirm your new password",
-      submit: "Reset Password",
-      invalidLink: "Invalid or expired password reset link.",
-      toastSuccess: "Password has been reset successfully!",
-      toastError: "Failed to reset password. Please try again.",
-    },
-    verifyEmailNotice: {
-      title: "Verify your email",
-      subtitle: "Please verify your email address to access all features.",
-      instructions:
-        "We sent a verification link to your email address. Please click it to verify your account.",
-      resendButton: "Resend Verification Email",
-      resendSuccess: "Verification email has been resent successfully!",
-      logout: "Log Out",
-      toastNoEmail: "No email address found. Please log in again.",
-      toastError:
-        "Failed to resend verification email. Please try again later.",
-    },
-    verifyEmail: {
-      verifying: "Verifying your email...",
-      verifyingSubtitle: "Please wait while we confirm your email address.",
-      successTitle: "Email Verified!",
-      successSubtitle:
-        "Thank you for verifying your email. You can now access all features.",
-      cta: "Go to Dashboard",
-      errorTitle: "Verification Failed",
-      resendButton: "Resend Verification Link",
-      invalidLink: "The verification link is invalid or has expired.",
-    },
-  },
-  account: {
-    darkMode: "Dark Mode",
-    localeMode: "Language Selector",
-    locale: "Language",
-  },
-  notifications: {
-    title: "Notifications",
-    title_with_count: "Notifications ({count} unread)",
-    mark_all_read: "Mark all as read",
-    empty_title: "No notifications",
-    empty: "You have no new notifications",
-    new_notification: "New notification",
-    read_more: "Read more",
-    read_less: "Read less",
-    open_verify_link: "Open link",
-  },
+  auth,
+  account,
+  notifications,
+  header,
+  common,
+  cookieConsent,
+  home,
+  meta,
+  footer,
+  cart,
+  catalog,
+  product,
+  blog,
+  errors,
+  staticPage,
 };

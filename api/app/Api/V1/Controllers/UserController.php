@@ -2,20 +2,38 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\Api\Admin\Actions\Order\UpdateAdminOrderStatusAction;
-use App\Api\Admin\Dto\UpdateOrderStatusDto;
+use App\Api\Admin\Actions\Accounting\GenerateInvoicePdfAction;
+use App\Api\V1\Actions\User\Compare\GetUserComparesAction;
+use App\Api\V1\Actions\User\Compare\SyncUserComparesAction;
+use App\Api\V1\Actions\User\Compare\ToggleUserCompareAction;
+use App\Api\V1\Actions\User\ConfirmEmailChangeAction;
 use App\Api\V1\Actions\User\DeleteUserAvatarAction;
+use App\Api\V1\Actions\User\Favorites\GetUserFavoritesAction;
+use App\Api\V1\Actions\User\Favorites\SyncUserFavoritesAction;
+use App\Api\V1\Actions\User\Favorites\ToggleUserFavoriteAction;
 use App\Api\V1\Actions\User\GetUserAction;
+use App\Api\V1\Actions\User\GetUserNotificationPreferencesAction;
 use App\Api\V1\Actions\User\GetUserSessionsAction;
 use App\Api\V1\Actions\User\InitiateAccountDeletionAction;
+use App\Api\V1\Actions\User\Order\CancelUserOrderAction;
+use App\Api\V1\Actions\User\Order\GetUserOrdersAction;
+use App\Api\V1\Actions\User\Order\UserOwnsOrderAction;
 use App\Api\V1\Actions\User\RestoreDeletedAccountAction;
 use App\Api\V1\Actions\User\RevokeAllUserSessionsAction;
 use App\Api\V1\Actions\User\SetUserPasswordAction;
 use App\Api\V1\Actions\User\UpdateUserLocaleAction;
+use App\Api\V1\Actions\User\UpdateUserNotificationPreferencesAction;
 use App\Api\V1\Actions\User\UpdateUserPasswordAction;
 use App\Api\V1\Actions\User\UpdateUserProfileAction;
 use App\Api\V1\Actions\User\UploadUserAvatarAction;
-use App\Api\V1\Repositories\ProductRepository;
+use App\Api\V1\Actions\User\ViewedProducts\ClearViewedProductsAction;
+use App\Api\V1\Actions\User\ViewedProducts\GetUserViewedProductsAction;
+use App\Api\V1\Actions\User\ViewedProducts\SyncViewedProductsAction;
+use App\Api\V1\Actions\User\ViewedProducts\TrackViewedProductAction;
+use App\Api\V1\Exceptions\OrderAccessDeniedException;
+use App\Api\V1\Exceptions\OrderAlreadyCancelledException;
+use App\Api\V1\Exceptions\OrderNotCancellableException;
+use App\Api\V1\Exceptions\OrderNotFoundException;
 use App\Api\V1\Requests\User\SetUserPasswordRequest;
 use App\Api\V1\Requests\User\UpdateNotificationPreferencesRequest;
 use App\Api\V1\Requests\User\UpdateUserLocaleRequest;
@@ -25,31 +43,29 @@ use App\Api\V1\Requests\User\UploadAvatarRequest;
 use App\Api\V1\Resources\User\UserResource;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\User;
-use App\Services\WishlistService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
 class UserController extends BaseApiController
 {
-    /**
-     * @OA\Get(
-     *     path="/api/user/me",
-     *     summary="Get authenticated user details",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="User details",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/api/user/me',
+        summary: 'Get authenticated user details',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'User details',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource'),
+            ),
+        ],
+    )]
     public function me(GetUserAction $action): JsonResponse
     {
         $user = $action->execute();
@@ -57,27 +73,23 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData(new UserResource($user));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/user/locale",
-     *     summary="Update user locale",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateUserLocaleRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Locale updated",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/user/locale',
+        summary: 'Update user locale',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserLocaleRequest'),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Locale updated',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource'),
+            ),
+        ],
+    )]
     public function updateLocale(
         UpdateUserLocaleRequest $request,
         UpdateUserLocaleAction $action
@@ -90,27 +102,23 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData(new UserResource($user));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/user/profile",
-     *     summary="Update user profile",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateUserProfileRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Profile updated",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/api/user/profile',
+        summary: 'Update user profile',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserProfileRequest'),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Profile updated (or update pending confirmation, when the email changed)',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource'),
+            ),
+        ],
+    )]
     public function updateProfile(
         UpdateUserProfileRequest $request,
         UpdateUserProfileAction $action
@@ -131,42 +139,38 @@ class UserController extends BaseApiController
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/user/password",
-     *     summary="Update user password",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateUserPasswordRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password updated successfully",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Password updated successfully")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=400,
-     *         description="Current password is incorrect",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Current password is incorrect")
-     *         )
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/api/user/password',
+        summary: 'Update user password',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserPasswordRequest'),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Password updated successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'Password updated successfully'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Current password is incorrect',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Current password is incorrect'),
+                    ],
+                ),
+            ),
+        ],
+    )]
     public function updatePassword(
         UpdateUserPasswordRequest $request,
         UpdateUserPasswordAction $action
@@ -190,31 +194,26 @@ class UserController extends BaseApiController
         ], 200);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/user/avatar",
-     *     summary="Upload user avatar",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *
-     *             @OA\Schema(ref="#/components/schemas/UploadAvatarRequest")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Avatar uploaded",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/user/avatar',
+        summary: 'Upload user avatar',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(ref: '#/components/schemas/UploadAvatarRequest'),
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Avatar uploaded',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource'),
+            ),
+        ],
+    )]
     public function uploadAvatar(
         UploadAvatarRequest $request,
         UploadUserAvatarAction $action
@@ -229,21 +228,19 @@ class UserController extends BaseApiController
         );
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/user/avatar",
-     *     summary="Delete user avatar",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Avatar deleted",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *     )
-     * )
-     */
+    #[OA\Delete(
+        path: '/api/user/avatar',
+        summary: 'Delete user avatar',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Avatar deleted',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource'),
+            ),
+        ],
+    )]
     public function deleteAvatar(
         DeleteUserAvatarAction $action
     ): JsonResponse {
@@ -257,29 +254,22 @@ class UserController extends BaseApiController
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/user/password/set",
-     *     summary="Set password for OAuth users",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/SetUserPasswordRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password set successfully"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/user/password/set',
+        summary: 'Set password for OAuth users',
+        description: 'Lets a user who registered via OAuth (and therefore has no password) set one for the first time.',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/SetUserPasswordRequest'),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Password set successfully'),
+            new OA\Response(response: 400, description: 'A password is already set for this account'),
+            new OA\Response(response: 403, description: 'Account has no linked OAuth provider'),
+        ],
+    )]
     public function setPassword(
         SetUserPasswordRequest $request,
         SetUserPasswordAction $action
@@ -314,76 +304,83 @@ class UserController extends BaseApiController
         ], 200);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/user/settings/preferences",
-     *     summary="Get notification preferences",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Notification preferences"
-     *     )
-     * )
-     */
-    public function getPreferences(): JsonResponse
-    {
-        $user = auth()->user();
-        $preferences = $user->notification_preferences ?? [
-            'newsletter' => false,
-            'product_updates' => true,
-            'marketing_emails' => false,
-        ];
-
-        return self::successfulResponseWithData(['preferences' => $preferences]);
-    }
-
-    /**
-     * @OA\Put(
-     *     path="/api/user/settings/preferences",
-     *     summary="Update notification preferences",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateNotificationPreferencesRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Preferences updated"
-     *     )
-     * )
-     */
-    public function updatePreferences(
-        UpdateNotificationPreferencesRequest $request
+    #[OA\Get(
+        path: '/api/user/settings/preferences',
+        summary: 'Get notification preferences',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Notification preferences',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'preferences',
+                            properties: [
+                                new OA\Property(property: 'newsletter', type: 'boolean'),
+                                new OA\Property(property: 'product_updates', type: 'boolean'),
+                                new OA\Property(property: 'marketing_emails', type: 'boolean'),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function getPreferences(
+        Request $request,
+        GetUserNotificationPreferencesAction $action
     ): JsonResponse {
-        $user = auth()->user();
-        $user->notification_preferences = $request->validated();
-        $user->save();
-
         return self::successfulResponseWithData([
-            'message' => 'Notification preferences updated successfully',
-            'preferences' => $user->notification_preferences,
+            'preferences' => $action->execute($request->user()),
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/user/sessions",
-     *     summary="Get active sessions",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of active sessions"
-     *     )
-     * )
-     */
+    #[OA\Put(
+        path: '/api/user/settings/preferences',
+        summary: 'Update notification preferences',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateNotificationPreferencesRequest'),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Preferences updated',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Notification preferences updated successfully'),
+                        new OA\Property(property: 'preferences', type: 'object'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function updatePreferences(
+        UpdateNotificationPreferencesRequest $request,
+        UpdateUserNotificationPreferencesAction $action
+    ): JsonResponse {
+        $preferences = $action->execute($request->user(), $request->validated());
+
+        return self::successfulResponseWithData([
+            'message' => 'Notification preferences updated successfully',
+            'preferences' => $preferences,
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/user/sessions',
+        summary: 'Get active sessions',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'List of active sessions'),
+        ],
+    )]
     public function sessions(
         GetUserSessionsAction $action
     ): JsonResponse {
@@ -392,19 +389,15 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData(['sessions' => $sessions]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/user/sessions/logout-all",
-     *     summary="Logout from all sessions except current",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Sessions revoked"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/user/sessions/logout-all',
+        summary: 'Logout from all sessions except current',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'Sessions revoked'),
+        ],
+    )]
     public function logoutAll(
         RevokeAllUserSessionsAction $action
     ): JsonResponse {
@@ -416,19 +409,15 @@ class UserController extends BaseApiController
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/user/delete",
-     *     summary="Initiate account deletion",
-     *     tags={"User"},
-     *     security={{"passport": {}}},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Account deletion initiated"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/user/delete',
+        summary: 'Initiate account deletion',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'Account deletion initiated'),
+        ],
+    )]
     public function initiateDelete(
         InitiateAccountDeletionAction $action
     ): JsonResponse {
@@ -439,535 +428,381 @@ class UserController extends BaseApiController
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/user/restore",
-     *     summary="Restore deleted account",
-     *     tags={"User"},
-     *
-     *     @OA\Parameter(
-     *         name="userId",
-     *         in="query",
-     *         required=true,
-     *
-     *         @OA\Schema(type="integer")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="signature",
-     *         in="query",
-     *         required=true,
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=302,
-     *         description="Redirect to frontend"
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/api/user/restore',
+        summary: 'Restore a soft-deleted account via signed link',
+        description: 'The signed link is issued by AccountDeletionScheduledNotification, sent when initiateDelete runs.',
+        tags: ['User'],
+        parameters: [
+            new OA\Parameter(name: 'userId', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'signature', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 302, description: 'Redirect to frontend login with restored status'),
+            new OA\Response(response: 400, description: 'Invalid/expired signature, or account not found'),
+        ],
+    )]
     public function restore(
         Request $request,
         RestoreDeletedAccountAction $action
     ): RedirectResponse|JsonResponse {
-        // Validate signed URL
         if (! $request->hasValidSignature()) {
-            // If signature is invalid, we might still want to redirect to a frontend error page
-            // But returning JSON/Error for now as per original, or redirecting to generic error
             return response()->json([
                 'message' => 'Invalid or expired restoration link',
             ], 400);
         }
 
         try {
-            $user = User::withTrashed()->findOrFail($request->userId);
-            $action->execute($user);
+            $action->execute((int) $request->userId);
 
-            // Redirect to frontend dashboard or login with a success message param
             $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
 
             return redirect()->to($frontendUrl.'/login?status=restored');
-        } catch (Exception $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/user/email/confirm-change",
-     *     summary="Confirm email change",
-     *     tags={"User"},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="query",
-     *         required=true,
-     *
-     *         @OA\Schema(type="integer")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="new_email",
-     *         in="query",
-     *         required=true,
-     *
-     *         @OA\Schema(type="string", format="email")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="signature",
-     *         in="query",
-     *         required=true,
-     *
-     *         @OA\Schema(type="string")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=302,
-     *         description="Redirect to frontend"
-     *     )
-     * )
-     */
-    public function confirmEmailChange(Request $request): RedirectResponse
-    {
+    #[OA\Get(
+        path: '/api/user/email/confirm-change',
+        summary: 'Confirm a pending email change via signed link',
+        description: 'Not currently wired to any route - the signed link is never issued by any notification in this codebase. Kept documented for when the email-change flow is implemented.',
+        tags: ['User'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'new_email', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'email')),
+            new OA\Parameter(name: 'signature', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 302, description: 'Redirect to frontend (success or email-taken error)'),
+            new OA\Response(response: 403, description: 'Invalid or expired confirmation link'),
+        ],
+    )]
+    public function confirmEmailChange(
+        Request $request,
+        ConfirmEmailChangeAction $action
+    ): RedirectResponse {
         if (! $request->hasValidSignature()) {
             abort(403, 'Invalid or expired confirmation link.');
         }
 
-        $user = User::findOrFail($request->id);
-        $newEmail = $request->new_email;
-
-        // Double check if email is still available (unlikely but possible race condition)
-        if (User::where('email', $newEmail)->exists()) {
-            // Ideally redirect with error
-            $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
-
-            return redirect()->to($frontendUrl.'/settings?error=email_taken');
-        }
-
-        $user->email = $newEmail;
-        $user->email_verified_at = null;
-        $user->save();
-
-        // Send verification to NEW email
-        $user->sendEmailVerificationNotification();
-
         $frontendUrl = config('app.frontend_url', 'https://tech.filkx.com');
+        $confirmed = $action->execute((int) $request->id, $request->new_email);
 
-        return redirect()->to($frontendUrl.'/login?status=email-changed');
+        return redirect()->to($confirmed
+            ? $frontendUrl.'/login?status=email-changed'
+            : $frontendUrl.'/settings?error=email_taken');
     }
 
-    public function getFavorites(Request $request, ProductRepository $productRepository): JsonResponse
+    #[OA\Get(
+        path: '/api/user/favorites',
+        summary: 'Get favorited products',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'List of favorited products'),
+        ],
+    )]
+    public function getFavorites(Request $request, GetUserFavoritesAction $action): JsonResponse
     {
-        $productIds = $request->user()->favorites()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-
-        return self::successfulResponseWithData($products);
+        return self::successfulResponseWithData($action->execute($request->user()));
     }
 
-    public function toggleFavorite(Request $request, ProductRepository $productRepository, WishlistService $wishlistService): JsonResponse
+    #[OA\Post(
+        path: '/api/user/favorites/toggle',
+        summary: 'Add or remove a product from favorites',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['product_id'],
+                properties: [new OA\Property(property: 'product_id', type: 'integer')],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Updated list of favorited products'),
+            new OA\Response(response: 400, description: 'Product ID is required'),
+            new OA\Response(response: 404, description: 'Product not found'),
+        ],
+    )]
+    public function toggleFavorite(Request $request, ToggleUserFavoriteAction $action): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
 
-        $user    = $request->user();
         $product = Product::find($productId);
-
         if (! $product) {
             return self::errorResponse('Product not found.', 404);
         }
 
-        if ($user->favorites()->where('product_id', $productId)->exists()) {
-            $wishlistService->remove($user, $product);
-        } else {
-            $wishlistService->add($user, $product);
-        }
-
-        $productIds = $user->favorites()->pluck('product_id')->toArray();
-        $products   = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-
-        return self::successfulResponseWithData($products);
+        return self::successfulResponseWithData($action->execute($request->user(), $product));
     }
 
-    public function syncFavorites(Request $request, ProductRepository $productRepository): JsonResponse
+    #[OA\Post(
+        path: '/api/user/favorites/sync',
+        summary: 'Merge a client-side favorites list into the user\'s account',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'product_ids', type: 'array', items: new OA\Items(type: 'integer')),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Full list of favorited products after sync'),
+        ],
+    )]
+    public function syncFavorites(Request $request, SyncUserFavoritesAction $action): JsonResponse
     {
-        $productIds = $request->input('product_ids', []);
-        $user = $request->user();
-        if (! empty($productIds)) {
-            $user->favorites()->syncWithoutDetaching($productIds);
-        }
-
-        $allIds = $user->favorites()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $allIds)->get();
-
-        return self::successfulResponseWithData($products);
+        return self::successfulResponseWithData(
+            $action->execute($request->user(), $request->input('product_ids', []))
+        );
     }
 
-    public function getCompares(Request $request, ProductRepository $productRepository): JsonResponse
+    #[OA\Get(
+        path: '/api/user/compares',
+        summary: 'Get products in the comparison list',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'List of products in comparison'),
+        ],
+    )]
+    public function getCompares(Request $request, GetUserComparesAction $action): JsonResponse
     {
-        $productIds = $request->user()->compares()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-
-        return self::successfulResponseWithData($products);
+        return self::successfulResponseWithData($action->execute($request->user()));
     }
 
-    public function toggleCompare(Request $request, ProductRepository $productRepository): JsonResponse
-    {
-        $productId = $request->input('product_id');
-        if (! $productId) {
-            return self::errorResponse('Product ID is required.', 400);
-        }
-
-        $user = $request->user();
-        $user->compares()->toggle($productId);
-
-        $productIds = $user->compares()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-
-        return self::successfulResponseWithData($products);
-    }
-
-    public function syncCompares(Request $request, ProductRepository $productRepository): JsonResponse
-    {
-        $productIds = $request->input('product_ids', []);
-        $user = $request->user();
-        if (! empty($productIds)) {
-            $user->compares()->syncWithoutDetaching($productIds);
-        }
-
-        $allIds = $user->compares()->pluck('product_id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $allIds)->get();
-
-        return self::successfulResponseWithData($products);
-    }
-
-    public function getViewedProducts(Request $request, ProductRepository $productRepository): JsonResponse
-    {
-        $viewedItems = $request->user()->viewedProducts()
-            ->withPivot('view_count')
-            ->orderByPivot('updated_at', 'desc')
-            ->get();
-
-        $productIds = $viewedItems->pluck('id')->toArray();
-        $products = $productRepository->queryActive()->whereIn('id', $productIds)->get();
-
-        $productsMapped = $products->map(function ($product) use ($viewedItems) {
-            $viewed = $viewedItems->firstWhere('id', $product->id);
-            $product->view_count = $viewed ? $viewed->pivot->view_count : 1;
-            $product->last_viewed_at = $viewed ? $viewed->pivot->updated_at->toISOString() : now()->toISOString();
-
-            return $product;
-        });
-
-        $productsMappedSorted = $productsMapped->sortByDesc('last_viewed_at')->values();
-
-        return self::successfulResponseWithData($productsMappedSorted);
-    }
-
-    public function trackViewedProduct(Request $request, ProductRepository $productRepository): JsonResponse
+    #[OA\Post(
+        path: '/api/user/compares/toggle',
+        summary: 'Add or remove a product from the comparison list',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['product_id'],
+                properties: [new OA\Property(property: 'product_id', type: 'integer')],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Updated comparison list'),
+            new OA\Response(response: 400, description: 'Product ID is required'),
+        ],
+    )]
+    public function toggleCompare(Request $request, ToggleUserCompareAction $action): JsonResponse
     {
         $productId = $request->input('product_id');
         if (! $productId) {
             return self::errorResponse('Product ID is required.', 400);
         }
 
-        $user = $request->user();
-        $existing = $user->viewedProducts()->where('product_id', $productId)->first();
+        return self::successfulResponseWithData($action->execute($request->user(), (int) $productId));
+    }
 
-        if ($existing) {
-            $user->viewedProducts()->updateExistingPivot($productId, [
-                'view_count' => $existing->pivot->view_count + 1,
-                'updated_at' => now(),
-            ]);
-        } else {
-            $user->viewedProducts()->attach($productId, [
-                'view_count' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+    #[OA\Post(
+        path: '/api/user/compares/sync',
+        summary: 'Merge a client-side comparison list into the user\'s account',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'product_ids', type: 'array', items: new OA\Items(type: 'integer')),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Full comparison list after sync'),
+        ],
+    )]
+    public function syncCompares(Request $request, SyncUserComparesAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData(
+            $action->execute($request->user(), $request->input('product_ids', []))
+        );
+    }
+
+    #[OA\Get(
+        path: '/api/user/viewed-products',
+        summary: 'Get recently viewed products',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'Recently viewed products, most recent first'),
+        ],
+    )]
+    public function getViewedProducts(Request $request, GetUserViewedProductsAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData($action->execute($request->user()));
+    }
+
+    #[OA\Post(
+        path: '/api/user/viewed-products/track',
+        summary: 'Record a product view',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['product_id'],
+                properties: [new OA\Property(property: 'product_id', type: 'integer')],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Product tracked successfully'),
+            new OA\Response(response: 400, description: 'Product ID is required'),
+        ],
+    )]
+    public function trackViewedProduct(Request $request, TrackViewedProductAction $action): JsonResponse
+    {
+        $productId = $request->input('product_id');
+        if (! $productId) {
+            return self::errorResponse('Product ID is required.', 400);
         }
+
+        $action->execute($request->user(), (int) $productId);
 
         return self::successfulResponse('Product tracked successfully.');
     }
 
-    public function syncViewedProducts(Request $request, ProductRepository $productRepository): JsonResponse
+    #[OA\Post(
+        path: '/api/user/viewed-products/sync',
+        summary: 'Merge a client-side viewing history into the user\'s account',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(
+                        property: 'items',
+                        type: 'array',
+                        items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'view_count', type: 'integer'),
+                                new OA\Property(property: 'last_viewed_at', type: 'string', format: 'date-time'),
+                            ],
+                            type: 'object',
+                        ),
+                    ),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Recently viewed products after merge'),
+        ],
+    )]
+    public function syncViewedProducts(Request $request, SyncViewedProductsAction $action): JsonResponse
     {
-        $items = $request->input('items', []);
-        $user = $request->user();
-
-        foreach ($items as $item) {
-            $pId = $item['id'] ?? null;
-            if (! $pId) {
-                continue;
-            }
-
-            $existing = $user->viewedProducts()->where('product_id', $pId)->first();
-            if ($existing) {
-                $newCount = max($existing->pivot->view_count, $item['view_count'] ?? 1);
-                $newTime = ! empty($item['last_viewed_at']) && strtotime($item['last_viewed_at']) > $existing->pivot->updated_at->timestamp
-                    ? date('Y-m-d H:i:s', strtotime($item['last_viewed_at']))
-                    : $existing->pivot->updated_at;
-
-                $user->viewedProducts()->updateExistingPivot($pId, [
-                    'view_count' => $newCount,
-                    'updated_at' => $newTime,
-                ]);
-            } else {
-                $user->viewedProducts()->attach($pId, [
-                    'view_count' => $item['view_count'] ?? 1,
-                    'created_at' => ! empty($item['last_viewed_at']) ? date('Y-m-d H:i:s', strtotime($item['last_viewed_at'])) : now(),
-                    'updated_at' => ! empty($item['last_viewed_at']) ? date('Y-m-d H:i:s', strtotime($item['last_viewed_at'])) : now(),
-                ]);
-            }
-        }
-
-        return $this->getViewedProducts($request, $productRepository);
+        return self::successfulResponseWithData(
+            $action->execute($request->user(), $request->input('items', []))
+        );
     }
 
-    public function clearViewedProducts(Request $request): JsonResponse
+    #[OA\Delete(
+        path: '/api/user/viewed-products/clear',
+        summary: 'Clear viewed products history',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'History cleared'),
+        ],
+    )]
+    public function clearViewedProducts(Request $request, ClearViewedProductsAction $action): JsonResponse
     {
-        $request->user()->viewedProducts()->detach();
+        $action->execute($request->user());
 
         return self::successfulResponse('Viewed products history cleared.');
     }
 
-    public function getOrders(Request $request): JsonResponse
-    {
+    #[OA\Get(
+        path: '/api/user/orders/{id}/invoice',
+        summary: 'Download an order invoice as PDF',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Invoice PDF stream'),
+            new OA\Response(response: 403, description: 'Order does not belong to this user'),
+            new OA\Response(response: 404, description: 'Order not found'),
+        ],
+    )]
+    public function downloadInvoice(
+        Request $request,
+        int $id,
+        GenerateInvoicePdfAction $action,
+        UserOwnsOrderAction $userOwnsOrderAction
+    ): mixed {
         $user = $request->user();
-
-        $orders = Order::with(['items.variant.product'])
-            ->where('user_id', $user->id)
-            ->orWhere('customer_email', $user->email)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $formattedOrders = $orders->map(function ($order) {
-            $mappedStatus = $this->mapOrderStatus($order->status, $order->updated_at);
-
-            $itemsMapped = $order->items->map(function ($item) {
-                $variant = $item->variant;
-                $images = $variant ? ($variant->dimensions['images'] ?? []) : [];
-                $imageUrl = ! empty($images) ? ($images[0]['url'] ?? null) : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&fit=crop';
-
-                return [
-                    'id' => $item->id,
-                    'slug' => $variant && $variant->product ? $variant->product->slug : '',
-                    'name' => $item->product_name,
-                    'price' => (float) $item->price,
-                    'image' => $imageUrl,
-                    'qty' => $item->quantity,
-                ];
-            })->toArray();
-
-            return [
-                'id' => $order->order_number ?: (string) $order->id,
-                'dbId' => $order->id,
-                'date' => $this->formatUkrainianDate($order->created_at),
-                'total' => (float) $order->total_price,
-                'shipTo' => $order->customer_name ?: '',
-                'status' => $mappedStatus['status'],
-                'statusIcon' => $mappedStatus['statusIcon'],
-                'statusClass' => $mappedStatus['statusClass'],
-                'statusCode' => $mappedStatus['statusCode'],
-                'trackingSteps' => $this->generateTrackingSteps($mappedStatus['statusCode'], $order->created_at, $order->updated_at),
-                'shippingAddress' => [
-                    'recipient' => $order->customer_name ?: '',
-                    'street' => $order->shipping_address ?: '',
-                    'city' => $order->shipping_city ?: 'Київ',
-                    'state' => 'Київська обл.',
-                    'zip' => '01001',
-                    'country' => $order->shipping_country ?: 'Україна',
-                ],
-                'paymentMethod' => [
-                    'type' => $order->payment_method ?: 'Картка',
-                    'number' => '•••• 4242',
-                ],
-                'items' => $itemsMapped,
-            ];
-        });
-
-        return self::successfulResponseWithData($formattedOrders);
-    }
-
-    protected function formatUkrainianDate($carbonDate): string
-    {
-        $months = [
-            1 => 'Січ', 2 => 'Лют', 3 => 'Бер', 4 => 'Кві', 5 => 'Тра', 6 => 'Чер',
-            7 => 'Лип', 8 => 'Сер', 9 => 'Вер', 10 => 'Жов', 11 => 'Лис', 12 => 'Гру',
-        ];
-
-        $day = $carbonDate->format('d');
-        $monthNum = (int) $carbonDate->format('m');
-        $year = $carbonDate->format('Y');
-
-        return "{$day} {$months[$monthNum]}, {$year}";
-    }
-
-    protected function mapOrderStatus($dbStatus, $updatedAt): array
-    {
-        $formattedUpdateDate = $this->formatUkrainianDate($updatedAt);
-
-        switch ($dbStatus) {
-            case 'completed':
-                return [
-                    'statusCode' => 'completed',
-                    'status' => "Виконано {$formattedUpdateDate}",
-                    'statusIcon' => 'task_alt',
-                    'statusClass' => 'text-zinc-500 dark:text-zinc-455 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700',
-                ];
-            case 'delivered':
-                return [
-                    'statusCode' => 'delivered',
-                    'status' => "Доставлено {$formattedUpdateDate}",
-                    'statusIcon' => 'check_circle',
-                    'statusClass' => 'text-teal-500 bg-teal-550/10 border border-teal-550/20',
-                ];
-            case 'cancelled':
-                return [
-                    'statusCode' => 'cancelled',
-                    'status' => "Скасовано {$formattedUpdateDate}",
-                    'statusIcon' => 'cancel',
-                    'statusClass' => 'text-rose-500 bg-rose-500/10 border border-rose-500/20',
-                ];
-            case 'refunded':
-                return [
-                    'statusCode' => 'refunded',
-                    'status' => "Повернуто кошти {$formattedUpdateDate}",
-                    'statusIcon' => 'undo',
-                    'statusClass' => 'text-gray-500 bg-gray-500/10 border border-gray-500/20',
-                ];
-            case 'shipped':
-                return [
-                    'statusCode' => 'shipped',
-                    'status' => 'Відправлено - в дорозі',
-                    'statusIcon' => 'local_shipping',
-                    'statusClass' => 'text-[#00a046] bg-emerald-500/10 border border-emerald-500/20',
-                ];
-            case 'pending_payment':
-                return [
-                    'statusCode' => 'pending_payment',
-                    'status' => 'Очікує оплати',
-                    'statusIcon' => 'hourglass_empty',
-                    'statusClass' => 'text-amber-500 bg-amber-500/10 border border-amber-500/20',
-                ];
-            case 'paid':
-                return [
-                    'statusCode' => 'paid',
-                    'status' => 'Оплачено',
-                    'statusIcon' => 'payments',
-                    'statusClass' => 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20',
-                ];
-            case 'processing':
-                return [
-                    'statusCode' => 'processing',
-                    'status' => 'Обробляється',
-                    'statusIcon' => 'hourglass_empty',
-                    'statusClass' => 'text-blue-550 bg-blue-550/10 border border-blue-550/20',
-                ];
-            case 'packed':
-                return [
-                    'statusCode' => 'packed',
-                    'status' => 'Запаковано',
-                    'statusIcon' => 'inventory_2',
-                    'statusClass' => 'text-cyan-500 bg-cyan-500/10 border border-cyan-500/20',
-                ];
-            case 'pending':
-            default:
-                return [
-                    'statusCode' => 'pending',
-                    'status' => 'В обробці',
-                    'statusIcon' => 'hourglass_empty',
-                    'statusClass' => 'text-amber-505 bg-amber-500/10 border border-amber-500/20',
-                ];
-        }
-    }
-
-    protected function generateTrackingSteps(string $statusCode, $createdAt, $updatedAt): array
-    {
-        $createdStr = $createdAt->format('d.m.Y H:i');
-        $updatedStr = $updatedAt->format('d.m.Y H:i');
-
-        if ($statusCode === 'cancelled' || $statusCode === 'refunded') {
-            $name = $statusCode === 'refunded' ? 'Повернуто кошти' : 'Скасовано';
-
-            return [
-                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-                ['name' => $name, 'date' => $updatedStr, 'done' => true],
-            ];
-        }
-
-        if ($statusCode === 'delivered' || $statusCode === 'completed') {
-            $name = $statusCode === 'completed' ? 'Виконано' : 'Доставлено';
-
-            return [
-                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-                ['name' => 'Обробка та комплектування', 'date' => $createdStr, 'done' => true],
-                ['name' => 'Передано кур\'єру', 'date' => $updatedStr, 'done' => true],
-                ['name' => 'Доставка отримувачу', 'date' => $updatedStr, 'done' => true],
-                ['name' => $name, 'date' => $updatedStr, 'done' => true],
-            ];
-        }
-
-        if ($statusCode === 'shipped') {
-            return [
-                ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-                ['name' => 'Обробка та комплектування', 'date' => $createdStr, 'done' => true],
-                ['name' => 'Передано кур\'єру', 'date' => $updatedStr, 'done' => true],
-                ['name' => 'Доставка отримувачу', 'date' => 'Очікується найближчим часом', 'done' => false],
-                ['name' => 'Доставлено', 'date' => 'Очікується', 'done' => false],
-            ];
-        }
-
-        // pending_payment, paid, processing, packed, pending / default
-        $stageText = 'В процесі';
-        if ($statusCode === 'pending_payment') {
-            $stageText = 'Очікує оплати';
-        } elseif ($statusCode === 'paid') {
-            $stageText = 'Оплачено';
-        } elseif ($statusCode === 'packed') {
-            $stageText = 'Запаковано';
-        }
-
-        return [
-            ['name' => 'Замовлення створено', 'date' => $createdStr, 'done' => true],
-            ['name' => 'Обробка та комплектування', 'date' => $stageText, 'done' => $statusCode !== 'pending_payment'],
-            ['name' => 'Передано кур\'єру', 'date' => 'Очікується', 'done' => false],
-            ['name' => 'Доставлено', 'date' => 'Очікується', 'done' => false],
-        ];
-    }
-
-    public function cancelOrder(Request $request, int $id, UpdateAdminOrderStatusAction $action): JsonResponse
-    {
-        $user = $request->user();
-        $order = Order::find($id);
+        $order = Order::with('items')->find($id);
 
         if (! $order) {
-            return self::failedResponse('Замовлення не знайдено', 404);
+            return self::errorResponse('Замовлення не знайдено', 404);
         }
 
-        if ($order->user_id !== $user->id && $order->customer_email !== $user->email) {
-            return self::failedResponse('У вас немає доступу до цього замовлення', 403);
+        if (! $userOwnsOrderAction->execute($user, $order)) {
+            return self::errorResponse('У вас немає доступу до цього замовлення', 403);
         }
 
-        // Cancellable statuses: pending_payment, paid, processing, packed, pending
-        if (in_array($order->status, ['shipped', 'delivered', 'completed', 'refunded'])) {
-            return self::failedResponse('Це замовлення вже відправлено або виконано і його не можна скасувати.', 422);
-        }
+        return $action->execute($order)->download("invoice-{$order->order_number}.pdf");
+    }
 
-        if ($order->status === 'cancelled') {
-            return self::failedResponse('Це замовлення вже скасовано.', 400);
-        }
+    #[OA\Get(
+        path: '/api/user/orders',
+        summary: 'Get the authenticated user\'s order history',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'Orders, most recent first, with Ukrainian-localized status/tracking'),
+        ],
+    )]
+    public function getOrders(Request $request, GetUserOrdersAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData($action->execute($request->user()));
+    }
 
-        $action->execute($id, new UpdateOrderStatusDto(
-            status: 'cancelled',
-            carrier: null,
-            trackingNumber: null
-        ));
+    #[OA\Post(
+        path: '/api/user/orders/{id}/cancel',
+        summary: 'Cancel an order',
+        security: [['bearerAuth' => []]],
+        tags: ['User'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Order cancelled successfully'),
+            new OA\Response(response: 400, description: 'Order is already cancelled'),
+            new OA\Response(response: 403, description: 'Order does not belong to this user'),
+            new OA\Response(response: 404, description: 'Order not found'),
+            new OA\Response(response: 422, description: 'Order already shipped/delivered/completed/refunded and can no longer be self-cancelled'),
+        ],
+    )]
+    public function cancelOrder(Request $request, int $id, CancelUserOrderAction $action): JsonResponse
+    {
+        try {
+            $action->execute($request->user(), $id);
+        } catch (OrderNotFoundException $e) {
+            return self::errorResponse($e->getMessage(), 404);
+        } catch (OrderAccessDeniedException $e) {
+            return self::errorResponse($e->getMessage(), 403);
+        } catch (OrderNotCancellableException $e) {
+            return self::errorResponse($e->getMessage(), 422);
+        } catch (OrderAlreadyCancelledException $e) {
+            return self::errorResponse($e->getMessage(), 400);
+        }
 
         return self::successfulResponse('Замовлення успішно скасовано.');
     }

@@ -53,4 +53,20 @@ class Category extends Model
 
         return $ids;
     }
+
+    /**
+     * Walks up the parent chain, e.g. for indexing every category a product
+     * should be facetable/filterable under, not just its immediate ones.
+     */
+    public function getAncestorIds(): array
+    {
+        $ids = [];
+        $current = $this->parent;
+        while ($current !== null) {
+            $ids[] = $current->id;
+            $current = $current->parent;
+        }
+
+        return $ids;
+    }
 }

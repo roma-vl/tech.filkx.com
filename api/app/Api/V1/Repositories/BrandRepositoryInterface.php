@@ -17,5 +17,5 @@ interface BrandRepositoryInterface
 
     public function delete(Brand $brand): bool;
 
-    public function getBrandsWithActiveProductsCount(): Collection;
+    public function getBrandsWithActiveProductsCount(array $categoryIds = []): Collection;
 }

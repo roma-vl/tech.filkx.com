@@ -33,7 +33,8 @@
           </slot>
           <span
             class="text-lg font-medium mb-1 text-gray-700 dark:text-gray-200"
-          >{{ title }}</span>
+            >{{ title }}</span
+          >
           <span class="text-sm text-gray-500 dark:text-gray-400">{{
             subtitle
           }}</span>
@@ -48,23 +49,14 @@
         :multiple="multiple"
         :disabled="disabled"
         @change="handleFileSelect"
-      >
+      />
 
-      <div
-        v-if="$slots.action"
-        class="mt-4"
-      >
-        <slot
-          name="action"
-          :trigger="triggerSelect"
-        />
+      <div v-if="$slots.action" class="mt-4">
+        <slot name="action" :trigger="triggerSelect" />
       </div>
     </div>
 
-    <p
-      v-if="error"
-      class="mt-2 text-sm text-red-600"
-    >
+    <p v-if="error" class="mt-2 text-sm text-red-600">
       {{ error }}
     </p>
   </div>

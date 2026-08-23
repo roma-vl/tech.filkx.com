@@ -14,9 +14,13 @@
       <div class="space-y-4">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t("admin.billing.pending.approveModal.confirmText") }}
-          <span class="font-bold text-gray-900 dark:text-white">{{ payment?.amount }} {{ payment?.currency }}</span>
+          <span class="font-bold text-gray-900 dark:text-white"
+            >{{ payment?.amount }} {{ payment?.currency }}</span
+          >
           {{ t("admin.billing.pending.table.user").toLowerCase() }}
-          <span class="font-bold text-gray-900 dark:text-white">"{{ payment?.user?.name }}"</span>?
+          <span class="font-bold text-gray-900 dark:text-white"
+            >"{{ payment?.user?.name }}"</span
+          >?
         </p>
 
         <div

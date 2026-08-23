@@ -29,7 +29,15 @@ export default {
         "on-secondary": "#ffffff",
         "surface-dim": "#e4e4e7",
         secondary: "#52525b",
-        primary: "#09090b",
+        // Brand accent (#00a046) as a full 50-950 scale, not the M3 "primary"
+        // token's original flat black — `primary-NNN` shade classes used across
+        // the admin UI generated no CSS at all under the old flat definition.
+        primary: {
+          ...colors.green,
+          500: "#00b050",
+          600: "#00a046",
+          DEFAULT: "#00a046",
+        },
         "on-primary-fixed-variant": "#09090b",
         "primary-fixed": "#e4e4e7",
         "surface-container": "#f4f4f5",
@@ -79,13 +87,12 @@ export default {
         "surface-container-high": "#f4f4f5",
         "on-surface": "#09090b",
       },
-      borderRadius: {
-        DEFAULT: "0.375rem",
-        lg: "12px",
-        xl: "16px",
-        "2xl": "24px",
-        full: "9999px",
-      },
+      // Previously overridden to lg:12px/xl:16px/2xl:24px (well above Tailwind's
+      // own scale), which made rounded-lg/xl/2xl read as noticeably bulbous
+      // everywhere they're used site-wide. Reverted to Tailwind's stock scale
+      // (lg:8px/xl:12px/2xl:16px/3xl:24px) for a subtler, more standard look —
+      // no component classes need to change, since they still reference the
+      // same rounded-lg/xl/2xl utility names.
       spacing: {
         "stack-sm": "8px",
         "stack-xl": "64px",
@@ -97,7 +104,13 @@ export default {
         gutter: "24px",
       },
       fontFamily: {
-        sans: ["Inter Variable", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: [
+          "Inter Variable",
+          "Inter",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
         "headline-md": ["Inter Variable", "Inter", "sans-serif"],
         "body-lg": ["Inter Variable", "Inter", "sans-serif"],
         "title-md": ["Inter Variable", "Inter", "sans-serif"],

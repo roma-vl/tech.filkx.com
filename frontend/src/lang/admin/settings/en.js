@@ -1,0 +1,31 @@
+export default {
+  title: "System Settings",
+  description: "Manage platform configurations and policies",
+  loading: "Retrieving system configurations...",
+  saving: "Saving Changes...",
+  save_all: "Save All Settings",
+  success: "All settings saved successfully!",
+  error: "Failed to update settings",
+  load_error: "Failed to load settings from server",
+  general: {
+    title: "General Configuration",
+    platform_name: "Shop Name",
+    support_email: "Support Email",
+    registration: "Public Registration",
+    registration_desc: "Allow new users to create accounts without invite",
+  },
+  shop: {
+    title: "Shop Settings",
+    currency: "Currency",
+    tax_rate: "Default Tax Rate",
+    min_order: "Minimum Order Amount",
+    free_shipping: "Free Shipping Threshold",
+    guest_checkout: "Guest Checkout",
+    guest_checkout_desc: "Allow customers to place orders without an account",
+  },
+  security: {
+    title: "Security & Access",
+    rate_limiting: "IP Rate Limiting",
+    rate_limiting_desc: "Prevent brute-force attacks by limiting requests",
+  },
+};

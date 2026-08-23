@@ -17,17 +17,10 @@
         class="absolute left-6 top-6 bottom-0 w-px bg-gradient-to-b from-primary-500/50 via-gray-200 dark:via-gray-700 to-transparent"
       />
 
-      <AdminLogItem
-        v-for="log in logs"
-        :key="log.id"
-        :log="log"
-      />
+      <AdminLogItem v-for="log in logs" :key="log.id" :log="log" />
 
       <!-- Load More -->
-      <div
-        v-if="hasMore"
-        class="flex justify-center pt-8"
-      >
+      <div v-if="hasMore" class="flex justify-center pt-8">
         <button
           :disabled="loading"
           class="group relative px-12 py-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-500 transition-all duration-300 disabled:opacity-50"

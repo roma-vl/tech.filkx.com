@@ -28,10 +28,7 @@
         class="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-primary-500 text-gray-500 hover:text-primary-600 font-bold uppercase tracking-widest text-[10px] transition-all active:scale-95 shadow-sm"
         @click="$emit('refresh')"
       >
-        <ArrowPathIcon
-          class="w-4 h-4"
-          :class="{ 'animate-spin': loading }"
-        />
+        <ArrowPathIcon class="w-4 h-4" :class="{ 'animate-spin': loading }" />
         {{ t("admin.system.refresh") }}
       </button>
     </div>
@@ -101,7 +98,8 @@
                 </span>
                 <span
                   class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                >ms</span>
+                  >ms</span
+                >
                 <div
                   class="w-24 h-1.5 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden ml-4"
                 >

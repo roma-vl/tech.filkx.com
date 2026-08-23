@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/shared/services/api/apiClient";
+import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 interface FaqItem {
   q: string;
@@ -14,48 +17,61 @@ interface TicketItem {
   id: string | number;
   subject: string;
   status: string;
-  created_at: string;
+  createdAt: string;
   [key: string]: any;
 }
 
 interface TicketMessage {
   id: string | number;
   message: string;
-  is_admin: boolean;
-  created_at: string;
-  file_path?: string;
-  file_name?: string;
+  isAdmin: boolean;
+  createdAt: string;
+  filePath?: string;
+  fileName?: string;
 }
 
 const activeFaqIndex = ref<number | null>(null);
-const faqs: FaqItem[] = [
-  {
-    q: "Скільки часу займає доставка товарів?",
-    a: "Стандартна доставка триває 1-3 робочих дні. Експрес-доставка кур'єром по місту — 1 день. Для наших постійних покупців та преміум-клієнтів діє безкоштовна доставка.",
-  },
-  {
-    q: "Які умови повернення товару?",
-    a: "Повернення товару можливе протягом 14 днів відповідно до законодавства України. Товар має бути в оригінальній упаковці, без слідів використання, з усіма заводськими плівками, аксесуарами та чеком.",
-  },
-  {
-    q: "Як отримати гарантійне обслуговування?",
-    a: "Вся техніка FilkxTech постачається з офіційною гарантією терміном від 12 до 24 місяців. Ви можете подати заявку на ремонт, створивши звернення тут, або звернутися до сервісного центру.",
-  },
-  {
-    q: "Чи можна змінити адресу після оформлення замовлення?",
-    a: 'Адресу доставки можна змінити протягом 1 години після оформлення замовлення. Коли замовлення переходить у статус "В дорозі", змінити адресу вже неможливо.',
-  },
-];
+const faqs = computed<FaqItem[]>(() => [
+  { q: t("account.support.faq.q1"), a: t("account.support.faq.a1") },
+  { q: t("account.support.faq.q2"), a: t("account.support.faq.a2") },
+  { q: t("account.support.faq.q3"), a: t("account.support.faq.a3") },
+  { q: t("account.support.faq.q4"), a: t("account.support.faq.a4") },
+]);
 
 const toggleFaq = (i: number) => {
   activeFaqIndex.value = activeFaqIndex.value === i ? null : i;
 };
 
+// Ticket categories are persisted as a literal Ukrainian label embedded in the
+// ticket subject (see submitTicket's fullSubject below), so the option values
+// below must stay untranslated to avoid changing what gets stored — only the
+// dropdown's displayed labels are localized.
+const TICKET_CATEGORY_VALUES = [
+  "Проблеми із замовленням",
+  "Гарантія та повернення",
+  "Технічна підтримка",
+  "Оплата та рахунки",
+] as const;
+
 const ticketForm = ref({
   subject: "",
-  category: "Проблеми із замовленням",
+  category: TICKET_CATEGORY_VALUES[0] as string,
   message: "",
 });
+
+const ticketCategoryLabels: Record<string, string> = {
+  "Проблеми із замовленням": "account.support.categories.orderIssues",
+  "Гарантія та повернення": "account.support.categories.warrantyReturns",
+  "Технічна підтримка": "account.support.categories.technicalSupport",
+  "Оплата та рахунки": "account.support.categories.paymentBilling",
+};
+
+const ticketCategoryOptions = computed(() =>
+  TICKET_CATEGORY_VALUES.map((value) => ({
+    value,
+    label: t(ticketCategoryLabels[value]),
+  })),
+);
 
 const ticketsList = ref<TicketItem[]>([]);
 const loadingTickets = ref(false);
@@ -69,13 +85,13 @@ const replying = ref(false);
 const getStatusLabel = (status: string) => {
   switch (status) {
     case "new":
-      return "Створено";
+      return t("account.support.statuses.new");
     case "accepted":
-      return "В обробці";
+      return t("account.support.statuses.accepted");
     case "done":
-      return "Вирішено";
+      return t("account.support.statuses.done");
     case "archived":
-      return "Архів";
+      return t("account.support.statuses.archived");
     default:
       return status;
   }
@@ -99,7 +115,10 @@ const parseTicketSubject = (ticket: TicketItem) => {
   if (match) {
     return { category: match[1], subject: match[2] };
   }
-  return { category: "Підтримка", subject: ticket.subject };
+  return {
+    category: t("account.support.categoryFallback"),
+    subject: ticket.subject,
+  };
 };
 
 const formatDate = (dateStr?: string) => {
@@ -128,7 +147,7 @@ const fetchTickets = async () => {
     }
   } catch (error) {
     console.error("Failed to load tickets:", error);
-    cartStore.addToast("Не вдалося завантажити звернення.", "error");
+    cartStore.addToast(t("account.support.toasts.loadTicketsFailed"), "error");
   } finally {
     loadingTickets.value = false;
   }
@@ -145,7 +164,10 @@ const openTicket = async (ticket: TicketItem) => {
     }
   } catch (error) {
     console.error("Failed to load ticket details:", error);
-    cartStore.addToast("Не вдалося завантажити деталі звернення.", "error");
+    cartStore.addToast(
+      t("account.support.toasts.loadTicketDetailsFailed"),
+      "error",
+    );
   }
 };
 
@@ -166,7 +188,7 @@ const sendTicketReply = async () => {
     }
   } catch (error) {
     console.error("Failed to reply to ticket:", error);
-    cartStore.addToast("Не вдалося відправити повідомлення.", "error");
+    cartStore.addToast(t("account.support.toasts.sendReplyFailed"), "error");
   } finally {
     replying.value = false;
   }
@@ -174,7 +196,10 @@ const sendTicketReply = async () => {
 
 const submitTicket = async () => {
   if (!ticketForm.value.subject || !ticketForm.value.message) {
-    cartStore.addToast("Будь ласка, вкажіть тему та опис проблеми.", "warning");
+    cartStore.addToast(
+      t("account.support.toasts.fillRequiredFields"),
+      "warning",
+    );
     return;
   }
   isSubmitting.value = true;
@@ -185,17 +210,14 @@ const submitTicket = async () => {
       message: ticketForm.value.message,
     });
     if (response.data && response.data.status === "success") {
-      cartStore.addToast(
-        "Звернення створено! Наша служба підтримки відповість найближчим часом.",
-        "success",
-      );
+      cartStore.addToast(t("account.support.toasts.ticketCreated"), "success");
       ticketForm.value.subject = "";
       ticketForm.value.message = "";
       fetchTickets();
     }
   } catch (error) {
     console.error("Failed to submit ticket:", error);
-    cartStore.addToast("Не вдалося створити звернення.", "error");
+    cartStore.addToast(t("account.support.toasts.ticketCreateFailed"), "error");
   } finally {
     isSubmitting.value = false;
   }
@@ -217,7 +239,7 @@ onMounted(() => {
           <h3
             class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3"
           >
-            Часті запитання (FAQ)
+            {{ t("account.support.faq.title") }}
           </h3>
           <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
             <div
@@ -256,13 +278,13 @@ onMounted(() => {
           <h3
             class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3"
           >
-            Історія звернень
+            {{ t("account.support.history.title") }}
           </h3>
           <div
             v-if="loadingTickets"
             class="py-10 text-center text-zinc-400 text-xs italic"
           >
-            Завантаження звернень...
+            {{ t("account.support.history.loading") }}
           </div>
           <div
             v-else-if="ticketsList.length > 0"
@@ -288,9 +310,15 @@ onMounted(() => {
                 <p
                   class="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 flex items-center gap-2"
                 >
-                  <span>ID: #{{ ticket.id }}</span>
+                  <span>{{
+                    t("account.support.history.idLabel", { id: ticket.id })
+                  }}</span>
                   <span>•</span>
-                  <span>Створено: {{ formatDate(ticket.created_at) }}</span>
+                  <span>{{
+                    t("account.support.history.createdLabel", {
+                      date: formatDate(ticket.createdAt),
+                    })
+                  }}</span>
                 </p>
               </div>
               <span
@@ -304,7 +332,7 @@ onMounted(() => {
             v-else
             class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 italic text-center py-4"
           >
-            У вас немає відкритих звернень.
+            {{ t("account.support.history.empty") }}
           </p>
         </section>
       </div>
@@ -316,33 +344,29 @@ onMounted(() => {
         <h3
           class="font-extrabold text-base md:text-lg text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 pb-3"
         >
-          Створити звернення
+          {{ t("account.support.form.title") }}
         </h3>
         <form class="space-y-4" @submit.prevent="submitTicket">
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-455 dark:text-zinc-500 uppercase tracking-wider"
-              >Категорія</label
+              >{{ t("account.support.form.categoryLabel") }}</label
             >
-            <select
+            <UiDropdown
               v-model="ticketForm.category"
-              class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
-            >
-              <option>Проблеми із замовленням</option>
-              <option>Гарантія та повернення</option>
-              <option>Технічна підтримка</option>
-              <option>Оплата та рахунки</option>
-            </select>
+              :options="ticketCategoryOptions"
+              trigger-class="w-full"
+            />
           </div>
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Тема звернення</label
+              >{{ t("account.support.form.subjectLabel") }}</label
             >
             <input
               v-model="ticketForm.subject"
               type="text"
-              placeholder="Коротко опишіть тему..."
+              :placeholder="t('account.support.form.subjectPlaceholder')"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none"
             />
@@ -350,12 +374,12 @@ onMounted(() => {
           <div class="space-y-1.5">
             <label
               class="text-[10px] font-extrabold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider"
-              >Опис проблеми</label
+              >{{ t("account.support.form.descriptionLabel") }}</label
             >
             <textarea
               v-model="ticketForm.message"
               rows="4"
-              placeholder="Детально опишіть вашу проблему..."
+              :placeholder="t('account.support.form.descriptionPlaceholder')"
               required
               class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2.5 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
             />
@@ -375,7 +399,7 @@ onMounted(() => {
               class="material-symbols-outlined text-[16px] md:text-[18px]"
               >send</span
             >
-            Надіслати
+            {{ t("account.support.form.submit") }}
           </button>
         </form>
       </section>
@@ -409,8 +433,12 @@ onMounted(() => {
               </span>
             </div>
             <p class="text-[11px] text-zinc-400 mt-1">
-              ID звернення: #{{ selectedTicket.id }} • Створено:
-              {{ formatDate(selectedTicket.created_at) }}
+              {{
+                t("account.support.history.ticketIdLabel", {
+                  id: selectedTicket.id,
+                  date: formatDate(selectedTicket.createdAt),
+                })
+              }}
             </p>
           </div>
           <button
@@ -429,20 +457,24 @@ onMounted(() => {
             v-for="msg in selectedTicketMessages"
             :key="msg.id"
             class="flex flex-col"
-            :class="msg.is_admin ? 'items-start' : 'items-end'"
+            :class="msg.isAdmin ? 'items-start' : 'items-end'"
           >
             <div class="flex items-center gap-2 mb-1">
               <span class="text-[10px] font-extrabold uppercase text-zinc-400">
-                {{ msg.is_admin ? "Підтримка" : "Ви" }}
+                {{
+                  msg.isAdmin
+                    ? t("account.support.chat.support")
+                    : t("account.support.chat.you")
+                }}
               </span>
               <span class="text-[9px] text-zinc-400">
-                {{ formatTime(msg.created_at) }}
+                {{ formatTime(msg.createdAt) }}
               </span>
             </div>
             <div
               class="max-w-[85%] px-4 py-3 rounded-2xl text-xs md:text-sm shadow-sm"
               :class="
-                msg.is_admin
+                msg.isAdmin
                   ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-tl-none'
                   : 'bg-[#00a046] text-white rounded-tr-none'
               "
@@ -453,18 +485,18 @@ onMounted(() => {
 
               <!-- Attachment if any -->
               <div
-                v-if="msg.file_path"
+                v-if="msg.filePath"
                 class="mt-2 pt-2 border-t border-white/10 dark:border-zinc-700/50 flex items-center gap-2 text-xs"
               >
                 <span class="material-symbols-outlined text-[16px]"
                   >attachment</span
                 >
                 <a
-                  :href="msg.file_path"
+                  :href="msg.filePath"
                   target="_blank"
                   class="underline hover:opacity-80 truncate max-w-[150px]"
                 >
-                  {{ msg.file_name || "Файл" }}
+                  {{ msg.fileName || t("account.support.chat.file") }}
                 </a>
               </div>
             </div>
@@ -473,7 +505,7 @@ onMounted(() => {
             v-if="selectedTicketMessages.length === 0"
             class="text-center text-zinc-400 py-10 italic text-xs"
           >
-            Повідомлень немає.
+            {{ t("account.support.chat.noMessages") }}
           </div>
         </div>
 
@@ -486,7 +518,7 @@ onMounted(() => {
               <textarea
                 v-model="replyText"
                 rows="2"
-                placeholder="Введіть ваше повідомлення..."
+                :placeholder="t('account.support.chat.inputPlaceholder')"
                 required
                 class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-xs md:text-sm text-zinc-850 dark:text-zinc-150 focus:ring-1 focus:ring-[#00a046] focus:border-[#00a046] outline-none resize-none"
                 @keydown.enter.prevent="sendTicketReply"
@@ -505,7 +537,7 @@ onMounted(() => {
               <span v-else class="material-symbols-outlined text-[18px]"
                 >send</span
               >
-              <span>Надіслати</span>
+              <span>{{ t("account.support.chat.send") }}</span>
             </button>
           </form>
         </div>

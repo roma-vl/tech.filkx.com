@@ -73,8 +73,8 @@ const translatedQuickActions = computed(() => [
     to: "/admin/users",
   },
   {
-    label: "Керування товарами",
-    desc: "Додавання, редагування та огляд товарів",
+    label: t("admin.dashboard.quickActions.productManagement.label"),
+    desc: t("admin.dashboard.quickActions.productManagement.desc"),
     icon: ShoppingBagIcon,
     bg: "bg-red-500",
     to: "/admin/products",

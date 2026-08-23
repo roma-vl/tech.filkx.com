@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter, useRoute, RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
@@ -8,8 +9,11 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+const { t } = useI18n();
 
-const userName = computed(() => authStore.user?.name || "Клієнт");
+const userName = computed(
+  () => authStore.user?.name || t("account.sidebar.customerLabel"),
+);
 const userEmail = computed(() => authStore.user?.email || "");
 const userInitials = computed(() => {
   const name = authStore.user?.name || "";
@@ -19,7 +23,7 @@ const userInitials = computed(() => {
       .map((n) => n[0])
       .join("")
       .substring(0, 2)
-      .toUpperCase() || "К"
+      .toUpperCase() || t("account.sidebar.customerInitial")
   );
 });
 
@@ -41,13 +45,21 @@ const navItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
 
   if (authStore.isAuthenticated) {
-    const allowedRoles = ["admin", "administrator", "support", "owner", "moderator"];
+    const allowedRoles = [
+      "admin",
+      "administrator",
+      "support",
+      "owner",
+      "moderator",
+    ];
     const userRoles = authStore.user?.roles || [];
-    const hasAdminAccess = allowedRoles.some((role) => userRoles.includes(role));
+    const hasAdminAccess = allowedRoles.some((role) =>
+      userRoles.includes(role),
+    );
 
     if (hasAdminAccess) {
       items.push({
-        name: "Адмін панель",
+        name: t("account.nav.adminPanel"),
         icon: "admin_panel_settings",
         routeName: "admin-dashboard",
       });
@@ -55,12 +67,12 @@ const navItems = computed<NavItem[]>(() => {
 
     items.push(
       {
-        name: "Панель керування",
+        name: t("account.nav.dashboard"),
         icon: "dashboard",
         query: { tab: "dashboard" },
       },
       {
-        name: "Історія замовлень",
+        name: t("account.nav.orders"),
         icon: "shopping_bag",
         query: { tab: "orders" },
       },
@@ -70,23 +82,27 @@ const navItems = computed<NavItem[]>(() => {
   // These work for both guests and authenticated users
   items.push(
     {
-      name: "Моє обране",
+      name: t("account.nav.favorites"),
       icon: "favorite",
       query: { tab: "favorites" },
       badgeKey: "wishlistCount",
     },
     {
-      name: "Порівняння товарів",
+      name: t("account.nav.compare"),
       icon: "compare_arrows",
       query: { tab: "compare" },
       badgeKey: "compareCount",
     },
-    { name: "Історія переглядів", icon: "history", query: { tab: "viewed" } },
+    {
+      name: t("account.nav.viewed"),
+      icon: "history",
+      query: { tab: "viewed" },
+    },
   );
 
   if (authStore.isAuthenticated) {
     items.push({
-      name: "Сповіщення",
+      name: t("account.nav.notifications"),
       icon: "notifications",
       query: { tab: "notifications" },
       badgeKey: "unreadNotificationsCount",
@@ -101,12 +117,16 @@ const footerItems = computed<NavItem[]>(() => {
   const items: NavItem[] = [];
   if (authStore.isAuthenticated) {
     items.push({
-      name: "Налаштування",
+      name: t("account.nav.settings"),
       icon: "settings",
       query: { tab: "settings" },
     });
   }
-  items.push({ name: "Підтримка", icon: "help", query: { tab: "support" } });
+  items.push({
+    name: t("account.nav.support"),
+    icon: "help",
+    query: { tab: "support" },
+  });
   return items;
 });
 
@@ -139,22 +159,50 @@ const getRouteTo = (item: NavItem) => {
   >
     <!-- Promo Banners -->
     <div class="flex flex-col gap-2">
-      <div class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all cursor-pointer">
-        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-[17px] text-[#00a046]">verified_user</span>
+      <div
+        class="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 dark:border-emerald-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-emerald-500/8 dark:hover:bg-emerald-500/15 transition-all cursor-pointer"
+      >
+        <div
+          class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-[17px] text-[#00a046]"
+            >verified_user</span
+          >
         </div>
         <div class="min-w-0">
-          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight">Верифікований клієнт</h4>
-          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5">Доступ до ексклюзивних акцій</p>
+          <h4
+            class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
+          >
+            {{ t("account.sidebar.perks.verifiedClient.title") }}
+          </h4>
+          <p
+            class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
+          >
+            {{ t("account.sidebar.perks.verifiedClient.subtitle") }}
+          </p>
         </div>
       </div>
-      <div class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all cursor-pointer">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-[17px] text-amber-500">star</span>
+      <div
+        class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-xl p-3.5 flex gap-3 items-center hover:bg-amber-500/8 dark:hover:bg-amber-500/15 transition-all cursor-pointer"
+      >
+        <div
+          class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-[17px] text-amber-500"
+            >star</span
+          >
         </div>
         <div class="min-w-0">
-          <h4 class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight">Програма лояльності</h4>
-          <p class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5">Бонуси з кожного замовлення</p>
+          <h4
+            class="font-black text-[11px] text-zinc-900 dark:text-zinc-200 leading-tight"
+          >
+            {{ t("account.sidebar.perks.loyaltyProgram.title") }}
+          </h4>
+          <p
+            class="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug mt-0.5"
+          >
+            {{ t("account.sidebar.perks.loyaltyProgram.subtitle") }}
+          </p>
         </div>
       </div>
     </div>
@@ -185,16 +233,6 @@ const getRouteTo = (item: NavItem) => {
           >
             {{ userEmail }}
           </p>
-          <div class="flex items-center gap-1.5 mt-1">
-            <span class="material-symbols-outlined text-[13px] text-[#00a046]"
-              >verified</span
-            >
-            <p
-              class="font-black text-[#00a046] uppercase tracking-widest text-[9px]"
-            >
-              Клієнт
-            </p>
-          </div>
         </div>
       </div>
     </div>
@@ -271,7 +309,7 @@ const getRouteTo = (item: NavItem) => {
         @click="handleLogout"
       >
         <span class="material-symbols-outlined text-[20px]">logout</span>
-        <span class="tracking-wide">Вийти з акаунту</span>
+        <span class="tracking-wide">{{ t("account.nav.logout") }}</span>
       </button>
     </div>
   </aside>

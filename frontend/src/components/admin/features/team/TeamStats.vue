@@ -67,10 +67,7 @@
         :title="t('admin.analytics.refresh')"
         @click="$emit('refresh')"
       >
-        <ArrowPathIcon
-          class="w-5 h-5"
-          :class="{ 'animate-spin': loading }"
-        />
+        <ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': loading }" />
       </AppButton>
     </div>
   </div>

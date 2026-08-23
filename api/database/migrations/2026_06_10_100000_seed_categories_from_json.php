@@ -32,14 +32,15 @@ return new class extends Migration
 
             if ($existing) {
                 $slugToId[$cat['slug']] = $existing->id;
+
                 continue;
             }
 
             $id = DB::table('categories')->insertGetId([
-                'parent_id'  => null,
-                'slug'       => $cat['slug'],
-                'name'       => json_encode($cat['name'], JSON_UNESCAPED_UNICODE),
-                'order'      => $cat['order'] ?? 0,
+                'parent_id' => null,
+                'slug' => $cat['slug'],
+                'name' => json_encode($cat['name'], JSON_UNESCAPED_UNICODE),
+                'order' => $cat['order'] ?? 0,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -63,14 +64,15 @@ return new class extends Migration
 
             if ($existing) {
                 $slugToId[$cat['slug']] = $existing->id;
+
                 continue;
             }
 
             $id = DB::table('categories')->insertGetId([
-                'parent_id'  => $parentId,
-                'slug'       => $cat['slug'],
-                'name'       => json_encode($cat['name'], JSON_UNESCAPED_UNICODE),
-                'order'      => $cat['order'] ?? 0,
+                'parent_id' => $parentId,
+                'slug' => $cat['slug'],
+                'name' => json_encode($cat['name'], JSON_UNESCAPED_UNICODE),
+                'order' => $cat['order'] ?? 0,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

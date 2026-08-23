@@ -1,6 +1,6 @@
 <template>
   <div class="md:hidden text-xs text-gray-400 px-4">
-    ← Проведіть пальцем, щоб побачити більше
+    {{ t("admin.common.dataGrid.swipeHint") }}
   </div>
 
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 space-y-4 grid">
@@ -9,23 +9,20 @@
       class="flex flex-col md:flex-row md:justify-between md:items-center gap-2"
     >
       <slot name="header">
-        <div
-          v-if="searchable"
-          class="flex-1 flex gap-2 items-center"
-        >
+        <div v-if="searchable" class="flex-1 flex gap-2 items-center">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search..."
+            :placeholder="t('admin.common.dataGrid.searchPlaceholder')"
             class="flex-1 pl-3 pr-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:bg-gray-900 dark:text-gray-200"
-          >
+          />
         </div>
 
         <div class="flex gap-2 items-center">
           <Dropdown v-if="headings?.length">
             <template #trigger>
               <button class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded">
-                Columns
+                {{ t("admin.common.dataGrid.columns") }}
               </button>
             </template>
             <template #content>
@@ -38,7 +35,7 @@
                   v-model="visibleColumns"
                   type="checkbox"
                   :value="col.key"
-                >
+                />
                 {{ col.value }}
               </label>
             </template>
@@ -56,11 +53,7 @@
                 :key="n"
                 class="flex items-center gap-2 px-2 py-1"
               >
-                <input
-                  v-model="perPage"
-                  type="radio"
-                  :value="n"
-                >
+                <input v-model="perPage" type="radio" :value="n" />
                 {{ n }}
               </label>
             </template>
@@ -83,10 +76,7 @@
             >
               <div class="flex items-center gap-1">
                 {{ col.value }}
-                <ArrowUpDownIcon
-                  v-if="col.sortable"
-                  class="w-3 h-3"
-                />
+                <ArrowUpDownIcon v-if="col.sortable" class="w-3 h-3" />
               </div>
             </th>
           </tr>
@@ -97,15 +87,8 @@
             :key="item[uniqueKey]"
             class="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <td
-              v-for="col in visibleHeadings"
-              :key="col.key"
-              class="px-4 py-2"
-            >
-              <slot
-                :name="`column-${col.key}`"
-                :row="item"
-              >
+            <td v-for="col in visibleHeadings" :key="col.key" class="px-4 py-2">
+              <slot :name="`column-${col.key}`" :row="item">
                 {{ item[col.key] }}
               </slot>
             </td>
@@ -115,7 +98,7 @@
               :colspan="visibleHeadings.length"
               class="text-center py-4 text-gray-400 dark:text-gray-300"
             >
-              {{ emptyText || $t("ui.no_data") }}
+              {{ emptyText || t("admin.common.no_data") }}
             </td>
           </tr>
         </tbody>
@@ -132,9 +115,12 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import ArrowUpDownIcon from "@/components/Icon/ArrowUpDownIcon.vue";
 import Dropdown from "./AppDropdown.vue";
 import Pagination from "./AppPagination.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   items: { type: Array, required: true },
@@ -152,10 +138,8 @@ const props = defineProps({
   perPageOptions: { type: Array, default: () => [5, 10, 20, 50] },
 
   /* UX */
-  /* UX */
   emptyText: { type: String, default: null },
 });
-/* Note: We will handle default inside template or computed if null using $t */
 
 const emit = defineEmits([
   "sort",

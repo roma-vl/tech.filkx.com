@@ -19,11 +19,13 @@
         <h1
           class="text-4xl font-black text-gray-900 dark:text-white tracking-tight"
         >
-          System <span class="text-indigo-600">Maintenance</span>
+          {{ t("errors.maintenance.title") }}
+          <span class="text-indigo-600">{{
+            t("errors.maintenance.titleHighlight")
+          }}</span>
         </h1>
         <p class="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
-          We're currently performing scheduled updates to improve your streaming
-          experience. We'll be back online shortly.
+          {{ t("errors.maintenance.message") }}
         </p>
       </div>
 
@@ -34,11 +36,10 @@
           class="flex items-center gap-3 justify-center text-indigo-700 dark:text-indigo-400 font-bold mb-2"
         >
           <ClockIcon class="w-5 h-5" />
-          <span>Estimated downtime: ~30 minutes</span>
+          <span>{{ t("errors.maintenance.estimatedDowntime") }}</span>
         </div>
         <p class="text-sm text-indigo-600/70 dark:text-indigo-400/60">
-          Our team is working hard to bring the platform back online as fast as
-          possible.
+          {{ t("errors.maintenance.teamNote") }}
         </p>
       </div>
 
@@ -53,7 +54,7 @@
           />
         </div>
         <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">
-          Filkx Stream Studio — Powered by DeepMind
+          {{ t("errors.maintenance.brand") }}
         </p>
       </div>
     </div>
@@ -62,6 +63,9 @@
 
 <script setup lang="ts">
 import { WrenchScrewdriverIcon, ClockIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <style scoped>

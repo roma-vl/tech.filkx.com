@@ -1,7 +1,11 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    :title="isEditing ? 'Редагувати товар' : 'Створити товар із варіантами'"
+    :title="
+      isEditing
+        ? t('admin.products.form.titleEdit')
+        : t('admin.products.form.titleCreate')
+    "
     max-width="3xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -13,7 +17,7 @@
         <h4
           class="font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2"
         >
-          1. Загальна інформація про товар
+          {{ t("admin.products.form.section1Title") }}
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -21,8 +25,8 @@
             <AppInput
               v-model="productForm.nameUk"
               :class="errors.nameUk ? 'ring-2 ring-red-500/60' : ''"
-              label="Назва товару (UK)"
-              placeholder="напр. iPhone 15 Pro Max"
+              :label="t('admin.products.form.nameUkLabel')"
+              :placeholder="t('admin.products.form.nameUkPlaceholder')"
             />
             <p
               v-if="errors.nameUk"
@@ -35,8 +39,8 @@
             <AppInput
               v-model="productForm.nameEn"
               :class="errors.nameEn ? 'ring-2 ring-red-500/60' : ''"
-              label="Назва товару (EN)"
-              placeholder="e.g. iPhone 15 Pro Max"
+              :label="t('admin.products.form.nameEnLabel')"
+              :placeholder="t('admin.products.form.nameEnPlaceholder')"
             />
             <p
               v-if="errors.nameEn"
@@ -51,14 +55,14 @@
           <AppTextarea
             v-model="productForm.descriptionUk"
             rows="3"
-            label="Опис (UK)"
-            placeholder="Опис українською..."
+            :label="t('admin.products.form.descriptionUkLabel')"
+            :placeholder="t('admin.products.form.descriptionUkPlaceholder')"
           />
           <AppTextarea
             v-model="productForm.descriptionEn"
             rows="3"
-            label="Опис (EN)"
-            placeholder="Description in English..."
+            :label="t('admin.products.form.descriptionEnLabel')"
+            :placeholder="t('admin.products.form.descriptionEnPlaceholder')"
           />
         </div>
 
@@ -69,8 +73,8 @@
               :class="
                 errors.categoryId ? 'ring-2 ring-red-500/60 rounded-lg' : ''
               "
-              label="Категорія"
-              placeholder="Оберіть категорію"
+              :label="t('admin.products.form.categoryLabel')"
+              :placeholder="t('admin.products.form.categoryPlaceholder')"
               :options="categories"
               option-value="id"
               option-label="nameUk"
@@ -84,9 +88,12 @@
           </div>
           <AppSelect
             v-model="productForm.brandId"
-            label="Бренд"
-            placeholder="Без бренду"
-            :options="[{ id: null, name: 'Без бренду' }, ...brands]"
+            :label="t('admin.products.form.brandLabel')"
+            :placeholder="t('admin.products.form.noBrand')"
+            :options="[
+              { id: null, name: t('admin.products.form.noBrand') },
+              ...brands,
+            ]"
             option-value="id"
             option-label="name"
           />
@@ -94,12 +101,12 @@
             <AppSelect
               v-model="productForm.status"
               :class="errors.status ? 'ring-2 ring-red-500/60 rounded-lg' : ''"
-              label="Статус"
-              placeholder="Оберіть статус"
+              :label="t('admin.products.form.statusLabel')"
+              :placeholder="t('admin.products.form.statusPlaceholder')"
               :options="[
-                { id: 'active', name: 'Активний' },
-                { id: 'draft', name: 'Чернетка' },
-                { id: 'hidden', name: 'Прихований' },
+                { id: 'active', name: t('admin.products.form.statusActive') },
+                { id: 'draft', name: t('admin.products.form.statusDraft') },
+                { id: 'hidden', name: t('admin.products.form.statusHidden') },
               ]"
               option-value="id"
               option-label="name"
@@ -126,7 +133,7 @@
                 type="checkbox"
                 class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
               />
-              🔥 Гаряча пропозиція
+              {{ t("admin.products.form.isHot") }}
             </label>
             <label
               class="flex items-center gap-2 cursor-pointer select-none text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -136,7 +143,7 @@
                 type="checkbox"
                 class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
               />
-              👍 Рекомендовано
+              {{ t("admin.products.form.isRecommended") }}
             </label>
           </div>
         </div>
@@ -148,7 +155,7 @@
           class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2"
         >
           <h4 class="font-bold text-gray-900 dark:text-white">
-            2. Варіанти товару та ціни
+            {{ t("admin.products.form.section2Title") }}
           </h4>
           <AppButton
             type="button"
@@ -170,7 +177,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Додати варіант
+            {{ t("admin.products.form.addVariant") }}
           </AppButton>
         </div>
 
@@ -182,7 +189,9 @@
           <div class="absolute top-4 right-4 flex items-center gap-2">
             <span
               class="text-xs font-black uppercase text-gray-400 bg-gray-200/50 dark:bg-gray-800 px-2 py-0.5 rounded-md"
-              >Варіант #{{ vIdx + 1 }}</span
+              >{{
+                t("admin.products.form.variantLabel", { number: vIdx + 1 })
+              }}</span
             >
             <AppButton
               v-if="productForm.variants.length > 1"
@@ -216,8 +225,8 @@
                 :class="
                   variantErrors[vIdx]?.sku ? 'ring-2 ring-red-500/60' : ''
                 "
-                label="SKU (Артикул)"
-                placeholder="напр. iphone-15-black"
+                :label="t('admin.products.form.skuLabel')"
+                :placeholder="t('admin.products.form.skuPlaceholder')"
               />
               <p
                 v-if="variantErrors[vIdx]?.sku"
@@ -234,7 +243,7 @@
                 "
                 type="number"
                 step="0.01"
-                label="Ціна (UAH)"
+                :label="t('admin.products.form.priceLabel')"
                 placeholder="0.00"
                 @update:model-value="
                   (val) => ((v as any).price = val === '' ? null : Number(val))
@@ -246,18 +255,32 @@
               >
                 {{ variantErrors[vIdx].price }}
               </p>
-              <template v-if="isEditing && getPriceChange(v) !== null && getPriceChange(v) !== 0">
+              <template
+                v-if="
+                  isEditing &&
+                  getPriceChange(v) !== null &&
+                  getPriceChange(v) !== 0
+                "
+              >
                 <p
                   v-if="getPriceChange(v)! > 0"
                   class="mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400"
                 >
-                  ↓ −{{ getPriceChange(v) }}% від початкової
+                  {{
+                    t("admin.products.form.priceDropPercent", {
+                      percent: getPriceChange(v),
+                    })
+                  }}
                 </p>
                 <p
                   v-else
                   class="mt-1 text-[11px] font-bold text-orange-500 dark:text-orange-400"
                 >
-                  ↑ +{{ Math.abs(getPriceChange(v)!) }}% від початкової
+                  {{
+                    t("admin.products.form.priceRisePercent", {
+                      percent: Math.abs(getPriceChange(v)!),
+                    })
+                  }}
                 </p>
               </template>
             </div>
@@ -265,7 +288,7 @@
               :model-value="v.oldPrice ?? undefined"
               type="number"
               step="0.01"
-              label="Стара ціна (UAH)"
+              :label="t('admin.products.form.oldPriceLabel')"
               placeholder="0.00"
               @update:model-value="
                 (val) => ((v as any).oldPrice = val === '' ? null : Number(val))
@@ -278,7 +301,7 @@
                   variantErrors[vIdx]?.stock ? 'ring-2 ring-red-500/60' : ''
                 "
                 type="number"
-                label="Кількість"
+                :label="t('admin.products.form.stockLabel')"
                 placeholder="0"
               />
               <p
@@ -292,7 +315,7 @@
               :model-value="v.weight ?? undefined"
               type="number"
               step="0.001"
-              label="Вага (кг)"
+              :label="t('admin.products.form.weightLabel')"
               placeholder="0.000"
               @update:model-value="
                 (val) => (v.weight = val === '' ? null : Number(val))
@@ -304,7 +327,7 @@
           <div class="space-y-2">
             <label
               class="block text-xs font-bold text-gray-500 uppercase tracking-wider"
-              >Зображення варіанту</label
+              >{{ t("admin.products.form.variantImagesLabel") }}</label
             >
             <div class="flex flex-wrap items-center gap-4">
               <!-- Upload Image Button -->
@@ -327,9 +350,9 @@
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span class="text-[9px] font-bold text-gray-500 uppercase"
-                    >Додати</span
-                  >
+                  <span class="text-[9px] font-bold text-gray-500 uppercase">{{
+                    t("admin.products.form.addImage")
+                  }}</span>
                 </div>
                 <input
                   type="file"
@@ -368,7 +391,7 @@
                     v-if="img.isPrimary"
                     class="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow"
                   >
-                    ★ Головне
+                    {{ t("admin.products.form.primaryBadge") }}
                   </span>
                   <span
                     v-else
@@ -407,7 +430,7 @@
             <div class="flex justify-between items-center">
               <label
                 class="block text-xs font-bold text-gray-500 uppercase tracking-wider"
-                >Характеристики варіанту</label
+                >{{ t("admin.products.form.variantAttributesLabel") }}</label
               >
             </div>
 
@@ -415,18 +438,22 @@
               v-if="!productForm.categoryId"
               class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/50 p-3 rounded-xl"
             >
-              ⚠️ Оберіть категорію товару в розділі 1, щоб налаштувати характеристики.
+              {{ t("admin.products.form.selectCategoryWarning") }}
             </div>
 
             <div
               v-else-if="availableAttributes.length === 0"
               class="text-xs text-gray-500 dark:text-gray-400 italic bg-gray-50/50 dark:bg-gray-900/10 p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-800"
             >
-              Немає доступних характеристик для обраної категорії.
+              {{ t("admin.products.form.noAttributesAvailable") }}
             </div>
 
             <div
-              v-if="productForm.categoryId && v.attributes && v.attributes.length > 0"
+              v-if="
+                productForm.categoryId &&
+                v.attributes &&
+                v.attributes.length > 0
+              "
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
             >
               <div
@@ -436,7 +463,9 @@
               >
                 <!-- Display attribute name as a strong label -->
                 <div class="space-y-2">
-                  <span class="block text-xs font-black uppercase text-gray-400">
+                  <span
+                    class="block text-xs font-black uppercase text-gray-400"
+                  >
                     {{ getAttributeName(attr.attributeId) }}
                   </span>
 
@@ -448,7 +477,9 @@
                       getAttributeType(attr.attributeId) === 'color'
                     "
                     v-model="attr.valueId"
-                    placeholder="Оберіть значення..."
+                    :placeholder="
+                      t('admin.products.form.selectValuePlaceholder')
+                    "
                     :options="getAttributeValues(attr.attributeId)"
                     option-value="id"
                     option-label="valueUk"
@@ -458,7 +489,9 @@
                   <AppInput
                     v-else
                     v-model="attr.value"
-                    placeholder="Введіть значення..."
+                    :placeholder="
+                      t('admin.products.form.enterValuePlaceholder')
+                    "
                   />
                 </div>
               </div>
@@ -475,12 +508,12 @@
           class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2"
         >
           <h4 class="font-bold text-gray-900 dark:text-white">
-            3. Додаткові параметри (SEO, супутні товари)
+            {{ t("admin.products.form.section3Title") }}
           </h4>
           <span
             class="bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full select-none"
           >
-            Незабаром
+            {{ t("admin.products.form.comingSoon") }}
           </span>
         </div>
 
@@ -494,18 +527,18 @@
             <h5
               class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
             >
-              🔍 SEO Налаштування (Soon)
+              {{ t("admin.products.form.seoSectionTitle") }}
             </h5>
             <AppInput
               disabled
-              label="SEO Заголовок (Title)"
-              placeholder="напр. Придбати iPhone 15 Pro за найкращою ціною"
+              :label="t('admin.products.form.seoTitleLabel')"
+              :placeholder="t('admin.products.form.seoTitlePlaceholder')"
             />
             <AppTextarea
               disabled
               rows="2"
-              label="SEO Опис (Meta Description)"
-              placeholder="Короткий опис для пошукових систем..."
+              :label="t('admin.products.form.seoDescriptionLabel')"
+              :placeholder="t('admin.products.form.seoDescriptionPlaceholder')"
             />
           </div>
 
@@ -516,18 +549,19 @@
             <h5
               class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
             >
-              🔗 Супутні товари (Soon)
+              {{ t("admin.products.form.crossSellTitle") }}
             </h5>
             <div
               class="p-3 bg-gray-50 dark:bg-gray-950/30 rounded-xl text-xs text-gray-400 dark:text-gray-500 italic"
             >
-              Тут ви зможете зв'язати товари для рекомендацій «Разом дешевше» або
-              «З цим товаром також купують».
+              {{ t("admin.products.form.crossSellDescription") }}
             </div>
             <AppSelect
               disabled
-              label="Рекомендовані аксесуари"
-              placeholder="Оберіть товари..."
+              :label="t('admin.products.form.recommendedAccessoriesLabel')"
+              :placeholder="
+                t('admin.products.form.recommendedAccessoriesPlaceholder')
+              "
               :options="[]"
             />
           </div>
@@ -567,7 +601,7 @@
               ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
               : 'border border-transparent',
           ]"
-          title="Якщо ціна хоча б одного варіанту знизилась більш ніж на 5%, клієнти з вішліста отримають email"
+          :title="t('admin.products.form.notifyWishlistTooltip')"
         >
           <input
             v-model="notifyWishlistNow"
@@ -582,10 +616,12 @@
                 : 'text-gray-700 dark:text-gray-300',
             ]"
           >
-            Сповістити клієнтів вішліста
+            {{ t("admin.products.form.notifyWishlistLabel") }}
           </span>
-          <span class="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-            (при зниженні &gt;5%)
+          <span
+            class="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap"
+          >
+            {{ t("admin.products.form.notifyWishlistHint") }}
           </span>
         </label>
         <span v-else />
@@ -595,14 +631,14 @@
             variant="secondary"
             @click="$emit('update:modelValue', false)"
           >
-            Скасувати
+            {{ t("admin.products.form.cancel") }}
           </AppButton>
           <AppButton
             variant="primary"
             class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
             @click="saveProduct"
           >
-            Зберегти товар
+            {{ t("admin.products.form.save") }}
           </AppButton>
         </div>
       </div>
@@ -612,12 +648,15 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import apiClient from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
+
+const { t } = useI18n();
 
 interface VariantErrors {
   sku?: string;
@@ -661,34 +700,34 @@ const validate = (): boolean => {
   let valid = true;
 
   if (!productForm.value.nameUk.trim()) {
-    e.nameUk = "Назва товару (UK) є обов'язковою";
+    e.nameUk = t("admin.products.form.validation.nameUkRequired");
     valid = false;
   }
   if (!productForm.value.nameEn.trim()) {
-    e.nameEn = "Назва товару (EN) є обов'язковою";
+    e.nameEn = t("admin.products.form.validation.nameEnRequired");
     valid = false;
   }
   if (!productForm.value.categoryId) {
-    e.categoryId = "Категорія є обов'язковою";
+    e.categoryId = t("admin.products.form.validation.categoryRequired");
     valid = false;
   }
   if (!productForm.value.status) {
-    e.status = "Статус є обов'язковим";
+    e.status = t("admin.products.form.validation.statusRequired");
     valid = false;
   }
 
   productForm.value.variants.forEach((v: any, i: number) => {
     const ve_: VariantErrors = {};
     if (!v.sku?.trim()) {
-      ve_.sku = "SKU є обов'язковим";
+      ve_.sku = t("admin.products.form.validation.skuRequired");
       valid = false;
     }
     if (v.price === null || v.price === "" || Number(v.price) < 0) {
-      ve_.price = "Вкажіть коректну ціну";
+      ve_.price = t("admin.products.form.validation.priceInvalid");
       valid = false;
     }
     if (v.stock === null || v.stock === "" || Number(v.stock) < 0) {
-      ve_.stock = "Кількість не може бути від'ємною";
+      ve_.stock = t("admin.products.form.validation.stockInvalid");
       valid = false;
     }
     ve[i] = ve_;
@@ -747,19 +786,25 @@ const productForm = ref<{
 const availableAttributes = computed(() => {
   const catId = Number(productForm.value.categoryId);
   if (!catId) {
-    return props.attributes.filter(attr => !attr.categoryIds || attr.categoryIds.length === 0);
+    return props.attributes.filter(
+      (attr) => !attr.categoryIds || attr.categoryIds.length === 0,
+    );
   }
 
   const ancestorIds: number[] = [];
   let currentId: number | null = catId;
   while (currentId) {
     ancestorIds.push(currentId);
-    const cat = props.categories.find(c => c.id === currentId);
+    const cat = props.categories.find((c) => c.id === currentId);
     currentId = cat ? cat.parentId : null;
   }
 
-  return props.attributes.filter(attr => {
-    return !attr.categoryIds || attr.categoryIds.length === 0 || attr.categoryIds.some((id: number) => ancestorIds.includes(id));
+  return props.attributes.filter((attr) => {
+    return (
+      !attr.categoryIds ||
+      attr.categoryIds.length === 0 ||
+      attr.categoryIds.some((id: number) => ancestorIds.includes(id))
+    );
   });
 });
 
@@ -773,12 +818,13 @@ const getPriceChange = (v: ProductVariantForm): number | null => {
   return Math.round(pct * 10) / 10;
 };
 
-const hasAnyPriceDrop = computed(() =>
-  isEditing.value &&
-  productForm.value.variants.some((v) => {
-    const ch = getPriceChange(v);
-    return ch !== null && ch > 0;
-  })
+const hasAnyPriceDrop = computed(
+  () =>
+    isEditing.value &&
+    productForm.value.variants.some((v) => {
+      const ch = getPriceChange(v);
+      return ch !== null && ch > 0;
+    }),
 );
 
 watch(
@@ -795,14 +841,16 @@ watch(
       const syncedAttrs: any[] = [];
 
       availableAttributes.value.forEach((avail: any) => {
-        const existing = currentAttrs.find(a => Number(a.attributeId) === Number(avail.id));
+        const existing = currentAttrs.find(
+          (a) => Number(a.attributeId) === Number(avail.id),
+        );
         if (existing) {
           syncedAttrs.push(existing);
         } else {
           syncedAttrs.push({
             attributeId: avail.id,
             valueId: null,
-            value: ""
+            value: "",
           });
         }
       });
@@ -810,7 +858,7 @@ watch(
       v.attributes = syncedAttrs;
     });
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 watch(
@@ -947,15 +995,24 @@ const buildPayload = () => {
           if (!a.attributeId) return false;
           const type = getAttributeType(a.attributeId);
           if (type === "select" || type === "color") {
-            return a.valueId !== null && a.valueId !== undefined && a.valueId !== "";
+            return (
+              a.valueId !== null && a.valueId !== undefined && a.valueId !== ""
+            );
           } else {
-            return a.value !== null && a.value !== undefined && String(a.value).trim() !== "";
+            return (
+              a.value !== null &&
+              a.value !== undefined &&
+              String(a.value).trim() !== ""
+            );
           }
         })
         .map((a: any) => ({
           attributeId: Number(a.attributeId),
           valueId: a.valueId ? Number(a.valueId) : null,
-          value: a.value !== null && a.value !== undefined ? String(a.value).trim() : null,
+          value:
+            a.value !== null && a.value !== undefined
+              ? String(a.value).trim()
+              : null,
         })),
     })),
   };
@@ -964,7 +1021,7 @@ const buildPayload = () => {
 const saveProduct = async () => {
   clearErrors();
   if (!validate()) {
-    globalError.value = "Заповніть усі обов'язкові поля, позначені червоним.";
+    globalError.value = t("admin.products.form.validation.fillRequiredFields");
     return;
   }
   const payload = buildPayload();
@@ -1002,10 +1059,13 @@ const saveProduct = async () => {
       Object.entries(serverErrors).forEach(([field, msgs]: [string, any]) => {
         allMessages.push(`${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`);
       });
-      globalError.value = "Помилки сервера:\n" + allMessages.join("\n");
+      globalError.value =
+        t("admin.products.form.validation.serverErrorsPrefix") +
+        "\n" +
+        allMessages.join("\n");
     } else {
       globalError.value =
-        serverMessage || "Помилка при збереженні товару. Спробуйте ще раз.";
+        serverMessage || t("admin.products.form.validation.saveError");
     }
   }
 };
@@ -1085,9 +1145,9 @@ const onFileChange = async (event: Event, variant: any) => {
       }
     } catch (error: any) {
       console.error("Failed to upload image:", error);
-      globalError.value =
-        "Помилка завантаження зображення: " +
-        (error.response?.data?.message || error.message);
+      globalError.value = t("admin.products.form.validation.imageUploadError", {
+        message: error.response?.data?.message || error.message,
+      });
     }
   }
   input.value = "";
@@ -1126,7 +1186,7 @@ const onAttributeSelected = (attr: any) => {
 
 const getAttributeName = (attrId: any) => {
   const attr = props.attributes.find((a: any) => a.id === attrId);
-  return attr ? attr.nameUk : "Характеристика";
+  return attr ? attr.nameUk : t("admin.products.form.defaultAttributeName");
 };
 
 const getAttributeType = (attrId: any) => {
@@ -1137,8 +1197,9 @@ const getAttributeType = (attrId: any) => {
 const getAttributeValues = (attrId: any) => {
   const attr = props.attributes.find((a: any) => a.id === attrId);
   if (!attr) return [];
+  const noValueSelected = t("admin.products.form.noValueSelected");
   return [
-    { id: null, valueUk: "— Не обрано —", valueEn: "— Not Selected —" },
+    { id: null, valueUk: noValueSelected, valueEn: noValueSelected },
     ...(attr.values || []),
   ];
 };

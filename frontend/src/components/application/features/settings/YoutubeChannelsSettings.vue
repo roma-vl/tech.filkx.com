@@ -10,22 +10,16 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{
             $t("settings.youtube_channels.description") ||
-              "Manage YouTube channels for automatic streaming"
+            "Manage YouTube channels for automatic streaming"
           }}
         </p>
       </div>
-      <AppButton
-        size="sm"
-        @click="youtubeStore.connect()"
-      >
+      <AppButton size="sm" @click="youtubeStore.connect()">
         {{ $t("settings.youtube_channels.connect_btn") || "Connect Channel" }}
       </AppButton>
     </div>
 
-    <div
-      v-if="youtubeStore.loading"
-      class="flex justify-center py-8"
-    >
+    <div v-if="youtubeStore.loading" class="flex justify-center py-8">
       <div
         class="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"
       />
@@ -43,15 +37,12 @@
       <p class="text-sm text-gray-500 dark:text-gray-400">
         {{
           $t("settings.youtube_channels.no_channels") ||
-            "No YouTube channels connected yet"
+          "No YouTube channels connected yet"
         }}
       </p>
     </div>
 
-    <div
-      v-else
-      class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-    >
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div
         v-for="channel in youtubeStore.channels"
         :key="channel.id"
@@ -61,7 +52,7 @@
           <img
             :src="channel.thumbnail"
             class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700"
-          >
+          />
           <div>
             <p class="font-bold text-gray-900 dark:text-white leading-tight">
               {{ channel.title }}

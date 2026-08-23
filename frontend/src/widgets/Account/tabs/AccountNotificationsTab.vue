@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
 interface NotificationItem {
   id: string | number;
-  read_at: string | null;
+  readAt: string | null;
   type: string;
   title: string;
   content: string;
-  created_at: string;
+  createdAt: string;
   link?: string;
 }
 
 const cartStore = useCartStore();
+const { t } = useI18n();
 
 const notifications = ref<NotificationItem[]>([]);
 const isLoading = ref(true);
@@ -25,20 +27,16 @@ const fetchNotifications = async () => {
   try {
     const { data } = await api.get("/notifications");
     notifications.value = data.data?.data || data.data || [];
-    console.log(
-      "Loaded notifications:",
-      JSON.parse(JSON.stringify(notifications.value)),
-    );
   } catch (err) {
     console.error("Failed to load notifications:", err);
-    error.value = "Не вдалося завантажити сповіщення";
+    error.value = t("account.notifications.loadError");
   } finally {
     isLoading.value = false;
   }
 };
 
 const markAsRead = async (notification: NotificationItem) => {
-  if (notification.read_at) return;
+  if (notification.readAt) return;
   try {
     const { data } = await api.post(`/notifications/${notification.id}/read`);
     // update local state
@@ -50,22 +48,25 @@ const markAsRead = async (notification: NotificationItem) => {
     }
     // Update store counter if needed
     (cartStore as any).fetchUnreadNotificationsCount();
-    cartStore.addToast("Сповіщення прочитано", "success");
+    cartStore.addToast(t("account.notifications.toasts.markedRead"), "success");
   } catch (err) {
     console.error("Failed to mark notification as read:", err);
   }
 };
 
 const markAllRead = async () => {
-  if (notifications.value.every((n) => n.read_at)) return;
+  if (notifications.value.every((n) => n.readAt)) return;
   try {
     await api.post("/notifications/mark-all-read");
     notifications.value = notifications.value.map((n) => ({
       ...n,
-      read_at: new Date().toISOString(),
+      readAt: new Date().toISOString(),
     }));
     (cartStore as any).fetchUnreadNotificationsCount();
-    cartStore.addToast("Всі сповіщення позначено як прочитані", "success");
+    cartStore.addToast(
+      t("account.notifications.toasts.allMarkedRead"),
+      "success",
+    );
   } catch (err) {
     console.error("Failed to mark all notifications as read:", err);
   }
@@ -142,15 +143,15 @@ onMounted(fetchNotifications);
     <!-- Header Controls -->
     <div class="flex justify-between items-center">
       <h2 class="text-lg font-extrabold text-zinc-800 dark:text-zinc-200">
-        Ваші сповіщення
+        {{ t("account.notifications.title") }}
       </h2>
       <button
-        v-if="notifications.length > 0 && notifications.some((n) => !n.read_at)"
+        v-if="notifications.length > 0 && notifications.some((n) => !n.readAt)"
         class="text-xs font-black text-[#00a046] hover:text-[#00b050] dark:text-[#00b050] dark:hover:text-[#00c060] transition-colors uppercase tracking-widest flex items-center gap-1.5"
         @click="markAllRead"
       >
         <span class="material-symbols-outlined text-[16px]">done_all</span>
-        Читати все
+        {{ t("account.notifications.markAllRead") }}
       </button>
     </div>
 
@@ -186,7 +187,7 @@ onMounted(fetchNotifications);
         :key="item.id"
         class="bg-white dark:bg-zinc-900 border rounded-xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-start justify-between gap-4"
         :class="[
-          item.read_at
+          item.readAt
             ? 'border-zinc-100 dark:border-zinc-800/80 opacity-75'
             : 'border-[#00a046]/30 dark:border-[#00a046]/40 shadow-[#00a046]/5',
         ]"
@@ -211,7 +212,7 @@ onMounted(fetchNotifications);
               <h3
                 class="text-sm md:text-base leading-snug"
                 :class="
-                  item.read_at
+                  item.readAt
                     ? 'font-medium text-zinc-550 dark:text-zinc-400'
                     : 'font-black text-zinc-900 dark:text-white'
                 "
@@ -219,10 +220,10 @@ onMounted(fetchNotifications);
                 {{ item.title }}
               </h3>
               <span
-                v-if="!item.read_at"
+                v-if="!item.readAt"
                 class="bg-[#00a046] text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider scale-90"
               >
-                Нове
+                {{ t("account.notifications.newBadge") }}
               </span>
             </div>
             <p
@@ -233,9 +234,11 @@ onMounted(fetchNotifications);
             <div
               class="flex items-center gap-3 pt-1 text-[10px] font-extrabold text-zinc-450 uppercase tracking-wider"
             >
-              <span>{{ formatDate(item.created_at) }}</span>
-              <span v-if="item.read_at" class="text-zinc-350 dark:text-zinc-650"
-                >• Прочитано</span
+              <span>{{ formatDate(item.createdAt) }}</span>
+              <span
+                v-if="item.readAt"
+                class="text-zinc-350 dark:text-zinc-650"
+                >{{ t("account.notifications.readSuffix") }}</span
               >
             </div>
           </div>
@@ -243,21 +246,21 @@ onMounted(fetchNotifications);
 
         <!-- Actions -->
         <div class="flex items-center gap-3 self-end md:self-center shrink-0">
-          <a
+          <router-link
             v-if="item.link"
-            :href="item.link"
-            class="bg-zinc-100 dark:bg-zinc-800 hover:bg-[#00a046]/10 hover:text-[#00a046] text-zinc-600 dark:text-zinc-300 px-4 py-2 rounded-xl font-extrabold text-xs transition-all uppercase tracking-wider flex items-center gap-1.5"
+            :to="item.link"
+            class="bg-zinc-100 dark:bg-zinc-800 hover:bg-[#00a046]/10 hover:text-[#00a046] text-zinc-600 dark:text-zinc-300 px-4 py-2 rounded-lg font-extrabold text-xs transition-all uppercase tracking-wider flex items-center gap-1.5"
             @click="markAsRead(item)"
           >
             <span class="material-symbols-outlined text-[16px]"
-              >open_in_new</span
+              >arrow_forward</span
             >
-            Детальніше
-          </a>
+            {{ t("account.notifications.details") }}
+          </router-link>
           <button
-            v-if="!item.read_at"
+            v-if="!item.readAt"
             class="text-[#00a046] hover:bg-[#00a046]/10 p-2 rounded-full transition-colors flex items-center justify-center"
-            title="Позначити як прочитане"
+            :title="t('account.notifications.markAsRead')"
             @click="markAsRead(item)"
           >
             <span class="material-symbols-outlined text-[18px]">done</span>
@@ -277,13 +280,12 @@ onMounted(fetchNotifications);
         <span class="material-symbols-outlined text-[32px]">notifications</span>
       </div>
       <h3 class="font-extrabold text-lg text-zinc-800 dark:text-zinc-200">
-        У вас немає нових сповіщень
+        {{ t("account.notifications.empty.title") }}
       </h3>
       <p
         class="text-xs md:text-sm text-zinc-450 dark:text-zinc-500 max-w-sm mx-auto mt-2"
       >
-        Тут будуть з'являтися системні повідомлення, спеціальні пропозиції та
-        інформація про ваші замовлення.
+        {{ t("account.notifications.empty.subtitle") }}
       </p>
     </div>
   </div>

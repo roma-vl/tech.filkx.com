@@ -31,10 +31,7 @@
             </p>
           </div>
         </div>
-        <div
-          v-if="selectedId === campaign.id"
-          class="text-primary-500"
-        >
+        <div v-if="selectedId === campaign.id" class="text-primary-500">
           <CheckCircleIcon class="w-8 h-8" />
         </div>
       </div>

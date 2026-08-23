@@ -10,25 +10,24 @@
           class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-primary-500"
         />
         <p class="text-gray-500 dark:text-gray-400 font-medium">
-          Завантаження даних...
+          {{ t("admin.common.loadingData") }}
         </p>
       </div>
     </div>
 
     <div v-else>
-      <BrandsTab
-        :brands="dbBrands"
-        @refresh="fetchBrands"
-      />
+      <BrandsTab :brands="dbBrands" @refresh="fetchBrands" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import BrandsTab from "@/components/admin/features/catalog/BrandsTab.vue";
 
+const { t } = useI18n();
 const isLoading = ref(false);
 const dbBrands = ref([]);
 

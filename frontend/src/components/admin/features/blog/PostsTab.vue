@@ -1,12 +1,14 @@
 <template>
   <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+    >
       <!-- Search bar & filters toggle button -->
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
           v-model="search"
-          placeholder="Пошук постів..."
+          :placeholder="t('admin.blog.posts.searchPlaceholder')"
           class="flex-1"
         />
         <AppButton
@@ -16,7 +18,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          title="Фільтри"
+          :title="t('admin.blog.posts.filtersButton')"
           @click="showFilters = !showFilters"
         >
           <svg
@@ -49,7 +51,7 @@
         @click="$emit('add-post')"
       >
         <PlusIcon class="w-4 h-4" />
-        Новий пост
+        {{ t("admin.blog.posts.newPost") }}
       </AppButton>
     </div>
 
@@ -62,44 +64,63 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <AppSelect
             v-model="statusFilter"
-            label="Статус"
-            placeholder="Всі статуси"
+            :label="t('admin.blog.posts.filters.statusLabel')"
+            :placeholder="t('admin.blog.posts.filters.statusPlaceholder')"
             :options="[
-              { id: '', name: 'Всі статуси' },
-              { id: 'published', name: 'Опубліковані' },
-              { id: 'draft', name: 'Чернетки' },
-              { id: 'archived', name: 'Архів' }
+              {
+                id: '',
+                name: t('admin.blog.posts.filters.statusPlaceholder'),
+              },
+              {
+                id: 'published',
+                name: t('admin.blog.posts.filters.statusPublished'),
+              },
+              {
+                id: 'draft',
+                name: t('admin.blog.posts.filters.statusDraft'),
+              },
+              {
+                id: 'archived',
+                name: t('admin.blog.posts.filters.statusArchived'),
+              },
             ]"
             option-value="id"
             option-label="name"
           />
           <AppSelect
             v-model="categoryFilter"
-            label="Категорія"
-            placeholder="Всі категорії"
-            :options="[{ id: '', nameUk: 'Всі категорії', nameEn: 'All categories' }, ...categories]"
+            :label="t('admin.blog.posts.filters.categoryLabel')"
+            :placeholder="t('admin.blog.posts.filters.categoryPlaceholder')"
+            :options="[
+              {
+                id: '',
+                nameUk: t('admin.blog.posts.filters.categoryPlaceholder'),
+              },
+              ...categories,
+            ]"
             option-value="id"
             option-label="nameUk"
           />
         </div>
-        <div class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end pt-4 border-t border-gray-150 dark:border-gray-700"
+        >
           <AppButton
             variant="text"
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
             @click="resetFilters"
           >
-            Скинути фільтри
+            {{ t("admin.blog.posts.filters.reset") }}
           </AppButton>
         </div>
       </div>
     </transition>
 
     <!-- Posts grid -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-20"
-    >
-      <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]" />
+    <div v-if="loading" class="flex items-center justify-center py-20">
+      <div
+        class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#00a046]"
+      />
     </div>
 
     <div
@@ -107,32 +128,26 @@
       class="text-center py-20 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-150 dark:border-gray-700 shadow-sm"
     >
       <DocumentTextIcon class="w-12 h-12 mx-auto mb-3 opacity-40" />
-      <p class="text-sm font-medium">
-        Постів не знайдено
-      </p>
+      <p class="text-sm font-medium">{{ t("admin.blog.posts.empty") }}</p>
     </div>
 
-    <div
-      v-else
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
-    >
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       <div
         v-for="post in posts"
         :key="post.id"
         class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-300"
       >
         <!-- Cover -->
-        <div class="relative h-44 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 overflow-hidden">
+        <div
+          class="relative h-44 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 overflow-hidden"
+        >
           <img
             v-if="post.coverImage"
             :src="post.coverImage"
             :alt="post.titleUk"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          >
-          <div
-            v-else
-            class="absolute inset-0 flex items-center justify-center"
-          >
+          />
+          <div v-else class="absolute inset-0 flex items-center justify-center">
             <DocumentTextIcon class="w-12 h-12 text-emerald-300" />
           </div>
           <!-- Status badge -->
@@ -147,7 +162,9 @@
         <!-- Content -->
         <div class="p-4 space-y-3">
           <div class="flex items-start justify-between gap-2">
-            <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-sm leading-snug line-clamp-2">
+            <h3
+              class="font-semibold text-gray-800 dark:text-gray-100 text-sm leading-snug line-clamp-2"
+            >
               {{ post.titleUk || post.titleEn }}
             </h3>
           </div>
@@ -160,10 +177,7 @@
           </p>
 
           <div class="flex items-center gap-3 text-xs text-gray-400">
-            <span
-              v-if="post.categoryName"
-              class="flex items-center gap-1"
-            >
+            <span v-if="post.categoryName" class="flex items-center gap-1">
               <TagIcon class="w-3 h-3" />
               {{ post.categoryName }}
             </span>
@@ -181,7 +195,7 @@
               class="flex-1 font-semibold text-xs bg-gray-50 dark:bg-gray-700/50 hover:bg-[#00a046]/10 text-gray-600 dark:text-gray-400 hover:text-[#00a046] dark:hover:text-[#00b050] transition-colors"
               @click="$emit('edit-post', post)"
             >
-              Редагувати
+              {{ t("admin.blog.posts.edit") }}
             </AppButton>
             <AppButton
               variant="ghost"
@@ -201,10 +215,7 @@
       v-if="pagination.last_page > 1"
       class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
     >
-      <AppPagination
-        :pagination="pagination"
-        @page-change="fetchPosts"
-      />
+      <AppPagination :pagination="pagination" @page-change="fetchPosts" />
     </div>
   </div>
 </template>
@@ -212,6 +223,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
@@ -222,19 +234,20 @@ import {
   TagIcon,
   EyeIcon,
   TrashIcon,
-  PlusIcon
+  PlusIcon,
 } from "@heroicons/vue/24/outline";
 
 defineProps({
   categories: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 defineEmits(["add-post", "edit-post", "delete-post"]);
 
 const toast = useToast();
+const { t } = useI18n();
 const posts = ref([]);
 const loading = ref(false);
 const pagination = ref({ current_page: 1, last_page: 1, total: 0 });
@@ -265,28 +278,38 @@ const fetchPosts = async (page = 1) => {
         page,
         search: search.value || undefined,
         status: statusFilter.value || undefined,
-        category_id: categoryFilter.value || undefined
-      }
+        category_id: categoryFilter.value || undefined,
+      },
     });
     posts.value = data.data.data;
     pagination.value = data.data.meta;
   } catch (e) {
-    toast.error("Помилка завантаження постів");
+    toast.error(t("admin.blog.posts.alerts.loadError"));
   } finally {
     loading.value = false;
   }
 };
 
-const statusLabel = (s) => ({ published: "Опубліковано", draft: "Чернетка", archived: "Архів" }[s] || s);
-const statusBadgeClass = (s) => ({
-  published: "bg-emerald-500/90 text-white",
-  draft: "bg-amber-400/90 text-white",
-  archived: "bg-gray-400/80 text-white"
-}[s] || "bg-gray-400 text-white");
+const statusLabel = (s) =>
+  ({
+    published: t("admin.blog.posts.status.published"),
+    draft: t("admin.blog.posts.status.draft"),
+    archived: t("admin.blog.posts.status.archived"),
+  })[s] || s;
+const statusBadgeClass = (s) =>
+  ({
+    published: "bg-emerald-500/90 text-white",
+    draft: "bg-amber-400/90 text-white",
+    archived: "bg-gray-400/80 text-white",
+  })[s] || "bg-gray-400 text-white";
 
 const formatDate = (d) => {
   if (!d) return "";
-  return new Date(d).toLocaleDateString("uk-UA", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 let debounce;
@@ -300,6 +323,6 @@ onMounted(() => {
 });
 
 defineExpose({
-  fetchPosts
+  fetchPosts,
 });
 </script>

@@ -42,10 +42,7 @@
     <!-- Main Workspace -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <!-- Left Sidebar: Ticket List -->
-      <div
-        v-if="activeTab !== 'Stats'"
-        class="lg:col-span-3 xl:col-span-3"
-      >
+      <div v-if="activeTab !== 'Stats'" class="lg:col-span-3 xl:col-span-3">
         <div
           class="bg-white dark:bg-gray-800 rounded-[2.5rem] border border-gray-100 dark:border-gray-700/50 shadow-sm overflow-hidden flex flex-col h-[850px]"
         >
@@ -135,10 +132,7 @@
       </div>
 
       <!-- Stats View -->
-      <div
-        v-else
-        class="lg:col-span-12"
-      >
+      <div v-else class="lg:col-span-12">
         <SupportStatsView />
       </div>
 

@@ -1,0 +1,78 @@
+export default {
+  breadcrumbs: {
+    home: "Головна",
+    catalog: "Каталог",
+  },
+  toolbar: {
+    resultsCount: "Знайдено {count} товарів",
+    grid4Title: "4 товари в рядок",
+    grid5Title: "5 товарів в рядок",
+    listViewTitle: "Список",
+  },
+  sort: {
+    byPopularity: "За популярністю",
+    newest: "Новинки",
+    priceAsc: "Ціна: дешевші спочатку",
+    priceDesc: "Ціна: дорожчі спочатку",
+  },
+  activeFilters: {
+    clearAll: "Скинути все",
+  },
+  empty: {
+    title: "Товари не знайдено",
+    description: "Спробуйте змінити фільтри або скинути пошук",
+    resetButton: "Скинути фільтри",
+  },
+  filters: {
+    title: "Фільтри",
+    resetButton: "Скинути",
+    applyButton: "Застосувати",
+    clearAllButton: "Скинути всі фільтри",
+    allProducts: "Всі товари",
+    inStock: "В наявності",
+    onlyDiscounts: "Зі знижкою",
+    ratingFrom: "від {rate}",
+    sections: {
+      category: "Категорія",
+      quickSwitches: "Швидкий вибір",
+      price: "Ціна",
+      brand: "Бренд",
+      rating: "Рейтинг",
+    },
+  },
+  productCard: {
+    outOfStock: "Немає",
+    buyTooltip: "Купити",
+    outOfStockTooltip: "Немає в наявності",
+    inCompareTooltip: "У порівнянні",
+    specs: {
+      processor: "Процесор",
+      os: "ОС",
+      weight: "Вага",
+    },
+  },
+  quickOrder: {
+    badge: "Швидке замовлення",
+    title: "Замовлення в один клік",
+    successTitle: "Замовлення успішно створено!",
+    orderNumberLabel: "Номер замовлення: {number}",
+    successMessagePrefix:
+      "Дякуємо за покупку! Наш менеджер зв'яжеться з вами найближчим часом за телефоном",
+    successMessageSuffix: "для підтвердження деталей відправки.",
+    gotItButton: "Зрозуміло",
+    nameLabel: "Ваше ім'я",
+    namePlaceholder: "Введіть ваше ім'я",
+    phoneLabel: "Номер телефону",
+    phonePlaceholder: "+380",
+    paymentLabel: "Оплата",
+    paymentCod: "Післяплата",
+    paymentCard: "Карткою онлайн",
+    submitRedirecting: "Перенаправлення на оплату...",
+    submitSending: "Надсилання...",
+    submitButton: "Оформити замовлення",
+    errorRequiredFields: "Будь ласка, заповніть обов'язкові поля.",
+    errorPaymentUnavailable:
+      "Онлайн-оплата тимчасово недоступна. Замовлення створено, наш менеджер зв'яжеться з вами для оплати.",
+    errorGeneric: "Не вдалося оформити замовлення. Спробуйте пізніше.",
+  },
+};

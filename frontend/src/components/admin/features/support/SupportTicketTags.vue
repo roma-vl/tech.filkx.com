@@ -9,7 +9,8 @@
       <TagIcon class="w-3.5 h-3.5 text-primary-500 opacity-50" />
       <span
         class="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover:text-primary-500 transition-colors"
-      >{{ tag }}</span>
+        >{{ tag }}</span
+      >
       <AppButton
         variant="ghost"
         class="!ml-1.5 !p-0 !min-h-0 !h-auto !text-gray-300 hover:!text-rose-500 !transition-colors"

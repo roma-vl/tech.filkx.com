@@ -23,16 +23,16 @@ class LoginNewDeviceNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $subject = $notifiable->locale === 'uk' ? 'Новий вхід у ваш акаунт' : 'New login from a new device';
+
         return (new MailMessage)
-            ->subject('New login from a new device')
-            ->greeting('Hello, '.$notifiable->name.'!')
-            ->line('We detected a new login to your account from an unrecognised device.')
-            ->line('**Device:** '.$this->deviceName)
-            ->line('**Location / IP:** '.$this->location)
-            ->line('**Time:** '.$this->time)
-            ->line('If this was you, you can safely ignore this email.')
-            ->line('If you did not log in, please change your password immediately.')
-            ->action('Change Password', url('/auth/password/reset'))
-            ->salutation('The '.config('app.name').' Team');
+            ->subject($subject)
+            ->view('emails.auth.login_new_device', [
+                'userName' => $notifiable->name,
+                'deviceName' => $this->deviceName,
+                'location' => $this->location,
+                'time' => $this->time,
+                'settingsUrl' => config('app.frontend_url').'/account',
+            ]);
     }
 }

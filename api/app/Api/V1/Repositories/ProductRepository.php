@@ -78,6 +78,40 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getHotDeals(int $limit = 8): Collection
     {
+        return $this->hotDealsQuery()->take($limit)->get();
+    }
+
+    /**
+     * Same "real deal" criteria as getHotDeals(), but rotated deterministically by
+     * $seed (typically the current year+month+day+hour) instead of relying on the
+     * database to shuffle. Postgres's grammar for inRandomOrder() ignores the seed
+     * argument entirely (only MySqlGrammar::compileRandom() honors it) and always
+     * compiles to a plain `ORDER BY RANDOM()`, so a DB-level seeded order would
+     * silently reshuffle on every request instead of staying stable for the hour.
+     */
+    public function getSeededHotDeals(int $limit, int $seed): Collection
+    {
+        $ids = $this->hotDealsQuery()->orderBy('id')->pluck('id')->all();
+
+        if (empty($ids)) {
+            return new Collection;
+        }
+
+        mt_srand($seed);
+        shuffle($ids);
+        mt_srand();
+
+        $selectedIds = array_slice($ids, 0, $limit);
+
+        return $this->hotDealsQuery()
+            ->whereIn('id', $selectedIds)
+            ->get()
+            ->sortBy(fn (Product $product) => array_search($product->id, $selectedIds))
+            ->values();
+    }
+
+    private function hotDealsQuery(): Builder
+    {
         return Product::with([
             'brand',
             'categories',
@@ -90,14 +124,13 @@ class ProductRepository implements ProductRepositoryInterface
             ->withCount('approvedReviews')
             ->withAvg('approvedReviews', 'rating')
             ->where('status', 'active')
-            ->where(function ($q) {
+            ->where(function (Builder $q) {
                 $q->where('is_hot', true)
                     ->orWhereHas('variants', function ($varQ) {
                         $varQ->whereNotNull('old_price')
                             ->whereRaw('old_price > price');
                     });
-            })
-            ->get();
+            });
     }
 
     public function getRecommended(int $limit = 8): Collection
@@ -117,6 +150,50 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('is_recommended', true)
             ->take($limit)
             ->get();
+    }
+
+    public function getRelated(Product $product, int $limit = 8): Collection
+    {
+        // Query fresh rather than reading $product->categories: Scout's Searchable trait
+        // indexes the model synchronously on create/save, which eager-loads (and caches
+        // empty) this relation before a caller has had a chance to attach categories to a
+        // newly created product.
+        $categoryIds = $product->categories()->pluck('categories.id');
+
+        $related = Product::with([
+            'brand',
+            'categories',
+            'variants.stocks',
+            'attributeValues.attribute',
+            'attributeValues.attributeValue',
+            'variants.attributeValues.attribute',
+            'variants.attributeValues.attributeValue',
+        ])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews', 'rating')
+            ->where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->when(
+                $categoryIds->isNotEmpty(),
+                fn (Builder $q) => $q->whereHas(
+                    'categories',
+                    fn (Builder $catQuery) => $catQuery->whereIn('categories.id', $categoryIds)
+                )
+            )
+            ->inRandomOrder()
+            ->take($limit)
+            ->get();
+
+        // Same category didn't have enough products - top up with random
+        // active products rather than showing a half-empty section.
+        if ($related->count() < $limit) {
+            $excludeIds = $related->pluck('id')->push($product->id)->all();
+            $related = $related->concat(
+                $this->getRandomFallback($excludeIds, $limit - $related->count())
+            );
+        }
+
+        return $related;
     }
 
     public function getRandomFallback(array $excludeIds, int $limit): Collection

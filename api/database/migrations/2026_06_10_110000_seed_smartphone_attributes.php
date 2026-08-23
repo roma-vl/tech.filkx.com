@@ -34,9 +34,9 @@ return new class extends Migration
                 $attributeId = $existing->id;
             } else {
                 $attributeId = DB::table('attributes')->insertGetId([
-                    'code'       => $attr['code'],
-                    'name'       => json_encode($attr['name'], JSON_UNESCAPED_UNICODE),
-                    'type'       => $attr['type'],
+                    'code' => $attr['code'],
+                    'name' => json_encode($attr['name'], JSON_UNESCAPED_UNICODE),
+                    'type' => $attr['type'],
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
@@ -54,9 +54,9 @@ return new class extends Migration
                 if (! $exists) {
                     DB::table('attribute_values')->insert([
                         'attribute_id' => $attributeId,
-                        'value'        => $encodedValue,
-                        'created_at'   => $now,
-                        'updated_at'   => $now,
+                        'value' => $encodedValue,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ]);
                 }
             }
@@ -70,7 +70,7 @@ return new class extends Migration
 
                 if (! $linked) {
                     DB::table('category_attribute')->insert([
-                        'category_id'  => $catId,
+                        'category_id' => $catId,
                         'attribute_id' => $attributeId,
                     ]);
                 }

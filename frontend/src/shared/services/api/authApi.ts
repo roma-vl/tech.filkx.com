@@ -31,6 +31,29 @@ export const authApi = {
     return apiClient.post("/v1/auth/login", credentials);
   },
 
+  verifyTwoFactor(challengeToken: string, code: string) {
+    return apiClient.post("/v1/auth/2fa/verify", {
+      challenge_token: challengeToken,
+      code,
+    });
+  },
+
+  enableTwoFactor() {
+    return apiClient.post("/user/2fa/enable");
+  },
+
+  confirmTwoFactor(code: string) {
+    return apiClient.post("/user/2fa/confirm", { code });
+  },
+
+  disableTwoFactor(password: string) {
+    return apiClient.post("/user/2fa/disable", { password });
+  },
+
+  regenerateTwoFactorRecoveryCodes(code: string) {
+    return apiClient.post("/user/2fa/recovery-codes/regenerate", { code });
+  },
+
   logout() {
     return apiClient.post("/v1/auth/logout");
   },
@@ -155,7 +178,7 @@ export const authApi = {
     return apiClient.post("/user/viewed-products/sync", { items: mappedItems });
   },
   clearViewedProducts() {
-    return apiClient.delete("/user/viewed-products");
+    return apiClient.delete("/user/viewed-products/clear");
   },
 };
 

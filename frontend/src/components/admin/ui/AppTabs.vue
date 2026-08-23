@@ -1,9 +1,6 @@
 <template>
   <div class="border-b border-gray-200/50 dark:border-gray-700/50 w-full">
-    <nav
-      class="-mb-px flex gap-6"
-      :aria-label="label"
-    >
+    <nav class="-mb-px flex gap-6" :aria-label="label">
       <router-link
         v-for="tab in tabs"
         :key="tab.name"

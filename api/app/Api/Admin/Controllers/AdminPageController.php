@@ -2,29 +2,79 @@
 
 namespace App\Api\Admin\Controllers;
 
-use App\Models\Page;
+use App\Api\Admin\Actions\Page\CreatePageAction;
+use App\Api\Admin\Actions\Page\DeletePageAction;
+use App\Api\Admin\Actions\Page\GetPageAction;
+use App\Api\Admin\Actions\Page\ListPagesAction;
+use App\Api\Admin\Actions\Page\UpdatePageAction;
+use App\Api\Admin\Requests\StorePageRequest;
+use App\Api\Admin\Requests\UpdatePageRequest;
+use App\Api\Admin\Resources\PageResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminPageController extends BaseApiController
 {
-    public function index(Request $request): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/pages',
+        summary: 'List static pages',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Pages'],
+        parameters: [
+            new OA\Parameter(
+                name: 'search',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+            ),
+            new OA\Parameter(
+                name: 'per_page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Paginated list of static pages',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(
+                                    property: 'data',
+                                    type: 'array',
+                                    items: new OA\Items(ref: '#/components/schemas/AdminPage'),
+                                ),
+                                new OA\Property(
+                                    property: 'meta',
+                                    properties: [
+                                        new OA\Property(property: 'total', type: 'integer'),
+                                        new OA\Property(property: 'per_page', type: 'integer'),
+                                        new OA\Property(property: 'current_page', type: 'integer'),
+                                        new OA\Property(property: 'last_page', type: 'integer'),
+                                    ],
+                                    type: 'object',
+                                ),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function index(Request $request, ListPagesAction $action): JsonResponse
     {
-        $query = Page::query()
-            ->when($request->filled('search'), function ($q) use ($request) {
-                $search = $request->search;
-                $q->where('slug', 'like', "%{$search}%")
-                  ->orWhereRaw("title->>'uk' ILIKE ?", ['%'.$search.'%'])
-                  ->orWhereRaw("title->>'en' ILIKE ?", ['%'.$search.'%']);
-            })
-            ->orderBy('id', 'desc');
-
-        $paginated = $query->paginate($request->input('per_page', 20));
+        $paginated = $action->execute($request->string('search')->value() ?: null, (int) $request->input('per_page', 20));
 
         return self::successfulResponseWithData([
-            'data' => $paginated->map(fn ($page) => $this->formatPage($page)),
+            'data' => PageResource::collection($paginated),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),
@@ -34,114 +84,136 @@ class AdminPageController extends BaseApiController
         ]);
     }
 
-    public function show(int $id): JsonResponse
+    #[OA\Get(
+        path: '/api/admin/pages/{id}',
+        summary: 'Get a static page',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Pages'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful operation',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminPage'),
+            ),
+            new OA\Response(response: 404, description: 'Page not found'),
+        ],
+    )]
+    public function show(int $id, GetPageAction $action): JsonResponse
     {
-        $page = Page::findOrFail($id);
-        return self::successfulResponseWithData($this->formatPage($page, true));
+        $page = $action->execute($id);
+
+        return self::successfulResponseWithData(new PageResource($page, withContent: true));
     }
 
-    public function store(Request $request): JsonResponse
+    #[OA\Post(
+        path: '/api/admin/pages',
+        summary: 'Create a static page',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['titleUk', 'titleEn', 'contentUk', 'contentEn', 'status'],
+                properties: [
+                    new OA\Property(property: 'titleUk', type: 'string', example: 'Про нас'),
+                    new OA\Property(property: 'titleEn', type: 'string', example: 'About us'),
+                    new OA\Property(property: 'contentUk', type: 'string'),
+                    new OA\Property(property: 'contentEn', type: 'string'),
+                    new OA\Property(property: 'slug', type: 'string', example: 'about-us'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['draft', 'published']),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Pages'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Page created successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminPage'),
+            ),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function store(StorePageRequest $request, CreatePageAction $action): JsonResponse
     {
-        $request->validate([
-            'titleUk' => 'required|string|max:500',
-            'titleEn' => 'required|string|max:500',
-            'contentUk' => 'required|string',
-            'contentEn' => 'required|string',
-            'slug' => 'nullable|string|max:255',
-            'status' => 'required|in:draft,published',
-        ]);
+        $page = $action->execute($request->validated());
 
-        $slug = $request->input('slug') ? Str::slug($request->input('slug')) : Str::slug($request->input('titleEn'));
-        if (!$slug) {
-            $slug = 'page-' . time();
-        }
-
-        // Ensure uniqueness
-        $originalSlug = $slug;
-        $count = 1;
-        while (Page::where('slug', $slug)->exists()) {
-            $slug = "{$originalSlug}-{$count}";
-            $count++;
-        }
-
-        $page = Page::create([
-            'slug' => $slug,
-            'title' => [
-                'uk' => $request->input('titleUk'),
-                'en' => $request->input('titleEn'),
-            ],
-            'content' => [
-                'uk' => $request->input('contentUk'),
-                'en' => $request->input('contentEn'),
-            ],
-            'status' => $request->input('status', 'published'),
-        ]);
-
-        return self::successfulResponseWithData($this->formatPage($page, true), Response::HTTP_CREATED);
+        return self::successfulResponseWithData(new PageResource($page, withContent: true), Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    #[OA\Put(
+        path: '/api/admin/pages/{id}',
+        summary: 'Update a static page',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['titleUk', 'titleEn', 'contentUk', 'contentEn', 'slug', 'status'],
+                properties: [
+                    new OA\Property(property: 'titleUk', type: 'string'),
+                    new OA\Property(property: 'titleEn', type: 'string'),
+                    new OA\Property(property: 'contentUk', type: 'string'),
+                    new OA\Property(property: 'contentEn', type: 'string'),
+                    new OA\Property(property: 'slug', type: 'string'),
+                    new OA\Property(property: 'status', type: 'string', enum: ['draft', 'published']),
+                ],
+            ),
+        ),
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Pages'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Page updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminPage'),
+            ),
+            new OA\Response(response: 404, description: 'Page not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(UpdatePageRequest $request, int $id, UpdatePageAction $action): JsonResponse
     {
-        $page = Page::findOrFail($id);
+        $page = $action->execute($id, $request->validated());
 
-        $request->validate([
-            'titleUk' => 'required|string|max:500',
-            'titleEn' => 'required|string|max:500',
-            'contentUk' => 'required|string',
-            'contentEn' => 'required|string',
-            'slug' => 'required|string|max:255',
-            'status' => 'required|in:draft,published',
-        ]);
-
-        $slug = Str::slug($request->input('slug'));
-        // Ensure uniqueness excluding this page
-        $originalSlug = $slug;
-        $count = 1;
-        while (Page::where('slug', $slug)->where('id', '!=', $id)->exists()) {
-            $slug = "{$originalSlug}-{$count}";
-            $count++;
-        }
-
-        $page->update([
-            'slug' => $slug,
-            'title' => [
-                'uk' => $request->input('titleUk'),
-                'en' => $request->input('titleEn'),
-            ],
-            'content' => [
-                'uk' => $request->input('contentUk'),
-                'en' => $request->input('contentEn'),
-            ],
-            'status' => $request->input('status'),
-        ]);
-
-        return self::successfulResponseWithData($this->formatPage($page, true));
+        return self::successfulResponseWithData(new PageResource($page, withContent: true));
     }
 
-    public function destroy(int $id): JsonResponse
+    #[OA\Delete(
+        path: '/api/admin/pages/{id}',
+        summary: 'Delete a static page',
+        security: [['bearerAuth' => []]],
+        tags: ['Admin Pages'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Page deleted successfully'),
+            new OA\Response(response: 404, description: 'Page not found'),
+        ],
+    )]
+    public function destroy(int $id, DeletePageAction $action): JsonResponse
     {
-        $page = Page::findOrFail($id);
-        $page->delete();
+        $action->execute($id);
+
         return self::successfulResponse();
-    }
-
-    private function formatPage(Page $page, bool $withContent = false): array
-    {
-        $data = [
-            'id' => $page->id,
-            'slug' => $page->slug,
-            'titleUk' => $page->title['uk'] ?? '',
-            'titleEn' => $page->title['en'] ?? '',
-            'status' => $page->status,
-            'createdAt' => $page->created_at->toIso8601String(),
-            'updatedAt' => $page->updated_at->toIso8601String(),
-        ];
-
-        if ($withContent) {
-            $data['contentUk'] = $page->content['uk'] ?? '';
-            $data['contentEn'] = $page->content['en'] ?? '';
-        }
-
-        return $data;
     }
 }

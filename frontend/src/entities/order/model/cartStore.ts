@@ -378,7 +378,9 @@ export const useCartStore = defineStore("cart", {
       }
       if (!Array.isArray(viewed)) viewed = [];
 
-      const existingIndex = viewed.findIndex((item) => String(item.id) === String(productId));
+      const existingIndex = viewed.findIndex(
+        (item) => String(item.id) === String(productId),
+      );
       if (existingIndex !== -1) {
         const existing = viewed[existingIndex];
         existing.viewCount = (existing.viewCount || 0) + 1;
@@ -690,7 +692,10 @@ export const useCartStore = defineStore("cart", {
                 "Різне",
               inStock: p.stock > 0 || true,
               viewCount: local?.viewCount || p.view_count || 1,
-              lastViewedAt: local?.lastViewedAt || p.last_viewed_at || new Date().toISOString(),
+              lastViewedAt:
+                local?.lastViewedAt ||
+                p.last_viewed_at ||
+                new Date().toISOString(),
             };
           });
           this.viewedDetailed = mappedViewed;

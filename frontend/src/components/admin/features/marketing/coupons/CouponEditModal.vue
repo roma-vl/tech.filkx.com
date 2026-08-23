@@ -1,16 +1,19 @@
 <template>
   <AppModal
     :model-value="isOpen"
-    :title="isEditing ? t('admin.marketing.coupons.edit') : t('admin.marketing.coupons.new')"
+    :title="
+      isEditing
+        ? t('admin.marketing.coupons.edit')
+        : t('admin.marketing.coupons.new')
+    "
     max-width="lg"
     @update:model-value="closeModal"
   >
-    <form
-      class="space-y-6"
-      @submit.prevent="submit"
-    >
+    <form class="space-y-6" @submit.prevent="submit">
       <div>
-        <label class="block text-sm font-medium text-gray-705 dark:text-gray-300 mb-1">
+        <label
+          class="block text-sm font-medium text-gray-705 dark:text-gray-300 mb-1"
+        >
           {{ t("admin.marketing.coupons.code") }}
         </label>
         <div class="flex gap-2">
@@ -20,7 +23,7 @@
             class="flex-1 px-4 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-655 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-[#00a046] focus:ring-1 focus:ring-[#00a046] focus:outline-none outline-none transition-all shadow-sm"
             placeholder="SUMMER2026"
             required
-          >
+          />
           <AppButton
             type="button"
             class="!px-5 rounded-lg !bg-[#00a046] hover:!bg-[#00b050] text-white font-semibold text-xs border-none shadow-sm transition-all"
@@ -37,7 +40,7 @@
           :label="t('admin.marketing.coupons.type')"
           :options="[
             { id: 'percent', name: t('admin.marketing.coupons.types.percent') },
-            { id: 'fixed', name: t('admin.marketing.coupons.types.fixed') }
+            { id: 'fixed', name: t('admin.marketing.coupons.types.fixed') },
           ]"
           option-value="id"
           option-label="name"
@@ -47,7 +50,10 @@
           type="number"
           step="0.01"
           min="0"
-          :label="t('admin.marketing.coupons.amount') + (form.type === 'percent' ? ' (%)' : ' (₴)')"
+          :label="
+            t('admin.marketing.coupons.amount') +
+            (form.type === 'percent' ? ' (%)' : ' (₴)')
+          "
           required
         />
       </div>
@@ -57,32 +63,48 @@
           v-model.number="form.usageLimit"
           type="number"
           min="1"
-          :label="t('admin.marketing.coupons.usage_limit') + ' (Опціонально)'"
-          placeholder="Необмежено"
+          :label="
+            t('admin.marketing.coupons.usage_limit') +
+            t('admin.marketing.coupons.optional_suffix')
+          "
+          :placeholder="t('admin.marketing.coupons.usage_limit_placeholder')"
         />
         <AppInput
           v-model="form.expiresAt"
           type="date"
-          :label="t('admin.marketing.coupons.expiry') + ' (Опціонально)'"
+          :label="
+            t('admin.marketing.coupons.expiry') +
+            t('admin.marketing.coupons.optional_suffix')
+          "
         />
       </div>
 
-      <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-xl border border-gray-205 dark:border-zinc-800">
+      <DiscountTargetingFields
+        v-model="targeting"
+        :categories="categories"
+        :products="products"
+      />
+
+      <div
+        class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-xl border border-gray-205 dark:border-zinc-800"
+      >
         <div>
-          <span class="text-sm font-semibold text-gray-905 dark:text-white block">
+          <span
+            class="text-sm font-semibold text-gray-905 dark:text-white block"
+          >
             {{ t("admin.marketing.coupons.active") }}
           </span>
-          <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <span
+            class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider"
+          >
             {{ t("admin.marketing.coupons.active_hint") }}
           </span>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
-          <input
-            v-model="form.isActive"
-            type="checkbox"
-            class="sr-only peer"
-          >
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm" />
+          <input v-model="form.isActive" type="checkbox" class="sr-only peer" />
+          <div
+            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#00a046] shadow-sm"
+          />
         </label>
       </div>
 
@@ -117,7 +139,11 @@
           @click="submit"
         >
           <CheckBadgeIcon class="w-4 h-4 mr-1.5 inline" />
-          {{ isEditing ? t("admin.marketing.coupons.save") : t("admin.marketing.coupons.create") }}
+          {{
+            isEditing
+              ? t("admin.marketing.coupons.save")
+              : t("admin.marketing.coupons.create")
+          }}
         </AppButton>
       </div>
     </template>
@@ -132,6 +158,7 @@ import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import DiscountTargetingFields from "@/components/admin/features/marketing/DiscountTargetingFields.vue";
 import {
   ExclamationCircleIcon,
   CheckBadgeIcon,
@@ -141,7 +168,15 @@ const props = defineProps({
   isOpen: Boolean,
   coupon: {
     type: Object,
-    default: null
+    default: null,
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  products: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -157,6 +192,19 @@ const form = ref({
   usageLimit: null,
   expiresAt: null,
   isActive: true,
+  categoryIds: [],
+  productIds: [],
+});
+
+const targeting = computed({
+  get: () => ({
+    categoryIds: form.value.categoryIds,
+    productIds: form.value.productIds,
+  }),
+  set: (val) => {
+    form.value.categoryIds = val.categoryIds;
+    form.value.productIds = val.productIds;
+  },
 });
 
 const loading = ref(false);
@@ -175,6 +223,8 @@ watch(
         expiresAt: newVal.expiresAt
           ? new Date(newVal.expiresAt).toISOString().split("T")[0]
           : null,
+        categoryIds: newVal.categoryIds || [],
+        productIds: newVal.productIds || [],
       };
     } else {
       form.value = {
@@ -184,6 +234,8 @@ watch(
         usageLimit: null,
         expiresAt: null,
         isActive: true,
+        categoryIds: [],
+        productIds: [],
       };
     }
   },
@@ -222,7 +274,9 @@ const submit = async () => {
     closeModal();
   } catch (e) {
     console.error(e);
-    error.value = e.response?.data?.message || "Failed to save coupon";
+    error.value =
+      e.response?.data?.message ||
+      t("admin.marketing.coupons.alerts.saveError");
   } finally {
     loading.value = false;
   }

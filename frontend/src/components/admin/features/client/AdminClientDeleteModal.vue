@@ -17,17 +17,14 @@
       <div class="space-y-4">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t("admin.users.deleteModal.confirmText") }}
-          <span class="font-bold text-gray-900 dark:text-white">"{{ client?.name }}"</span>?
+          <span class="font-bold text-gray-900 dark:text-white"
+            >"{{ client?.name }}"</span
+          >?
         </p>
 
         <div
           class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30 text-left"
         >
-          <p
-            class="text-[11px] font-black text-amber-800 dark:text-amber-500 uppercase tracking-wider mb-1.5"
-          >
-            {{ t("admin.videos.delete.clientVideoWarning") }}
-          </p>
           <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
             {{ t("admin.users.deleteModal.warning") }}
           </p>
@@ -43,17 +40,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <AppButton
-          variant="secondary"
-          @click="closeModal"
-        >
+        <AppButton variant="secondary" @click="closeModal">
           {{ t("admin.users.deleteModal.cancel") }}
         </AppButton>
-        <AppButton
-          variant="danger"
-          :loading="loading"
-          @click="submit"
-        >
+        <AppButton variant="danger" :loading="loading" @click="submit">
           {{ t("admin.users.deleteModal.confirm") }}
         </AppButton>
       </div>
@@ -78,7 +68,7 @@ const { t } = useI18n();
 
 const closeModal = () => {
   emit("close");
-};1
+};
 
 const submit = () => {
   emit("confirm");

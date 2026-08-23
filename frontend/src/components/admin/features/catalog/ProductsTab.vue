@@ -9,7 +9,7 @@
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="productSearch"
-              placeholder="Пошук товарів за назвою чи SKU..."
+              :placeholder="t('admin.products.list.searchPlaceholder')"
             >
               <template #prepend>
                 <svg
@@ -36,7 +36,7 @@
               'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
                 showFilters,
             }"
-            title="Фільтри"
+            :title="t('admin.products.list.filtersTitle')"
             @click="showFilters = !showFilters"
           >
             <svg
@@ -81,7 +81,7 @@
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
               />
             </svg>
-            Імпорт CSV
+            {{ t("admin.products.list.importCsv") }}
           </AppButton>
 
           <AppButton
@@ -102,7 +102,7 @@
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               />
             </svg>
-            Експорт CSV
+            {{ t("admin.products.list.exportCsv") }}
           </AppButton>
 
           <AppButton
@@ -123,7 +123,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Додати товар
+            {{ t("admin.products.list.addProduct") }}
           </AppButton>
         </div>
       </div>
@@ -137,31 +137,49 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <AppSelect
               v-model="productCategoryFilter"
-              label="Категорія"
-              placeholder="Усі категорії"
-              :options="[{ id: '', nameUk: 'Усі категорії' }, ...categories]"
+              :label="t('admin.products.list.filters.categoryLabel')"
+              :placeholder="t('admin.products.list.filters.allCategories')"
+              :options="[
+                {
+                  id: '',
+                  nameUk: t('admin.products.list.filters.allCategories'),
+                },
+                ...categories,
+              ]"
               option-value="id"
               option-label="nameUk"
             />
 
             <AppSelect
               v-model="productBrandFilter"
-              label="Бренд"
-              placeholder="Усі бренди"
-              :options="[{ id: '', name: 'Усі бренди' }, ...brands]"
+              :label="t('admin.products.list.filters.brandLabel')"
+              :placeholder="t('admin.products.list.filters.allBrands')"
+              :options="[
+                { id: '', name: t('admin.products.list.filters.allBrands') },
+                ...brands,
+              ]"
               option-value="id"
               option-label="name"
             />
 
             <AppSelect
               v-model="productStatusFilter"
-              label="Статус"
-              placeholder="Усі статуси"
+              :label="t('admin.products.list.filters.statusLabel')"
+              :placeholder="t('admin.products.list.filters.allStatuses')"
               :options="[
-                { id: '', name: 'Усі статуси' },
-                { id: 'active', name: 'Активний' },
-                { id: 'draft', name: 'Чернетка' },
-                { id: 'hidden', name: 'Прихований' },
+                { id: '', name: t('admin.products.list.filters.allStatuses') },
+                {
+                  id: 'active',
+                  name: t('admin.products.list.filters.statusActive'),
+                },
+                {
+                  id: 'draft',
+                  name: t('admin.products.list.filters.statusDraft'),
+                },
+                {
+                  id: 'hidden',
+                  name: t('admin.products.list.filters.statusHidden'),
+                },
               ]"
               option-value="id"
               option-label="name"
@@ -169,15 +187,33 @@
 
             <AppSelect
               v-model="productSortFilter"
-              label="Сортування"
-              placeholder="Сортування за замовчуванням"
+              :label="t('admin.products.list.filters.sortLabel')"
+              :placeholder="t('admin.products.list.filters.sortPlaceholder')"
               :options="[
-                { id: 'name-asc', name: 'Назва (А-Я)' },
-                { id: 'name-desc', name: 'Назва (Я-А)' },
-                { id: 'price-asc', name: 'Ціна (Від дешевих)' },
-                { id: 'price-desc', name: 'Ціна (Від дорогих)' },
-                { id: 'stock-desc', name: 'Наявність (Спочатку багато)' },
-                { id: 'stock-asc', name: 'Наявність (Спочатку мало)' },
+                {
+                  id: 'name-asc',
+                  name: t('admin.products.list.filters.sortNameAsc'),
+                },
+                {
+                  id: 'name-desc',
+                  name: t('admin.products.list.filters.sortNameDesc'),
+                },
+                {
+                  id: 'price-asc',
+                  name: t('admin.products.list.filters.sortPriceAsc'),
+                },
+                {
+                  id: 'price-desc',
+                  name: t('admin.products.list.filters.sortPriceDesc'),
+                },
+                {
+                  id: 'stock-desc',
+                  name: t('admin.products.list.filters.sortStockDesc'),
+                },
+                {
+                  id: 'stock-asc',
+                  name: t('admin.products.list.filters.sortStockAsc'),
+                },
               ]"
               option-value="id"
               option-label="name"
@@ -196,8 +232,8 @@
                   v-model="productHotFilter"
                   type="checkbox"
                   class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
-                >
-                Гарячі 🔥
+                />
+                {{ t("admin.products.list.filters.hot") }}
               </label>
 
               <label
@@ -207,8 +243,8 @@
                   v-model="productRecommendedFilter"
                   type="checkbox"
                   class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
-                >
-                Рекомендовані 👍
+                />
+                {{ t("admin.products.list.filters.recommended") }}
               </label>
             </div>
 
@@ -217,7 +253,7 @@
               class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
               @click="resetFilters"
             >
-              Скинути фільтри
+              {{ t("admin.products.list.filters.reset") }}
             </AppButton>
           </div>
         </div>
@@ -235,32 +271,32 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Товар
+                {{ t("admin.products.list.table.product") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Категорія
+                {{ t("admin.products.list.table.category") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Бренд
+                {{ t("admin.products.list.table.brand") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Варіанти (Ціна / Залишок)
+                {{ t("admin.products.list.table.variants") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Статус
+                {{ t("admin.products.list.table.status") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.products.list.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -276,7 +312,7 @@
                     :src="product.image"
                     alt=""
                     class="w-12 h-12 rounded-xl object-cover border border-gray-200 dark:border-gray-700 bg-gray-100"
-                  >
+                  />
                   <div>
                     <div class="flex items-center gap-1.5">
                       <div class="font-bold text-gray-900 dark:text-white">
@@ -284,14 +320,16 @@
                       </div>
                       <span
                         v-if="product.isHot"
-                        title="Гаряча пропозиція"
+                        :title="t('admin.products.list.hotTitle')"
                         class="text-xs"
-                      >🔥</span>
+                        >🔥</span
+                      >
                       <span
                         v-if="product.isRecommended"
-                        title="Рекомендовано"
+                        :title="t('admin.products.list.recommendedTitle')"
                         class="text-xs"
-                      >👍</span>
+                        >👍</span
+                      >
                     </div>
                     <div class="text-xs text-gray-400">
                       {{ product.nameEn }}
@@ -302,12 +340,14 @@
               <td
                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"
               >
-                {{ product.categoryName || "Без категорії" }}
+                {{
+                  product.categoryName || t("admin.products.list.noCategory")
+                }}
               </td>
               <td
                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"
               >
-                {{ product.brandName || "Без бренду" }}
+                {{ product.brandName || t("admin.products.list.noBrand") }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="space-y-1">
@@ -318,11 +358,18 @@
                   >
                     <span
                       class="font-mono bg-gray-100 dark:bg-gray-950 px-1 py-0.5 rounded text-[10px]"
-                    >{{ v.sku }}</span>:
+                      >{{ v.sku }}</span
+                    >:
                     <span class="font-bold text-gray-900 dark:text-white">{{
                       formatPrice(v.price)
                     }}</span>
-                    <span class="text-gray-400"> ({{ v.stock }} шт)</span>
+                    <span class="text-gray-400">
+                      ({{
+                        t("admin.products.list.stockCount", {
+                          count: v.stock,
+                        })
+                      }})</span
+                    >
                   </div>
                 </div>
               </td>
@@ -340,10 +387,10 @@
                 >
                   {{
                     product.status === "active"
-                      ? "Активний"
+                      ? t("admin.products.list.filters.statusActive")
                       : product.status === "draft"
-                        ? "Чернетка"
-                        : "Прихований"
+                        ? t("admin.products.list.filters.statusDraft")
+                        : t("admin.products.list.filters.statusHidden")
                   }}
                 </span>
               </td>
@@ -399,14 +446,16 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Товарів не знайдено за вашим запитом.
+                {{ t("admin.products.list.empty") }}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+      <div
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+      >
         <AppPagination
           :pagination="paginationMeta"
           @page-change="onPageChange"
@@ -436,10 +485,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення товару"
-      :message="`Ви впевнені, що хочете видалити товар &quot;${productToDelete?.nameUk || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.products.list.deleteModal.title')"
+      :message="
+        t('admin.products.list.deleteModal.message', {
+          name: productToDelete?.nameUk || '',
+        })
+      "
+      :confirm-text="t('admin.products.list.deleteModal.confirm')"
+      :cancel-text="t('admin.products.list.deleteModal.cancel')"
       :loading="deletingProduct"
       @confirm="confirmDeleteProduct"
     />
@@ -448,6 +501,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
@@ -456,6 +510,8 @@ import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import ProductImportModal from "./ProductImportModal.vue";
 import ProductFormModal from "./ProductFormModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   products: { type: Array, required: true },
@@ -516,7 +572,7 @@ watch(
   ],
   () => {
     currentPage.value = 1;
-  }
+  },
 );
 
 const activeFiltersCount = computed(() => {
@@ -625,28 +681,36 @@ const filteredProducts = computed(() => {
 
 const exportCsv = () => {
   const headers = [
-    "ID",
-    "Назва (UK)",
-    "Назва (EN)",
-    "Категорія",
-    "Бренд",
-    "SKU / Ціна / Кількість",
-    "Статус",
-    "Гаряча",
-    "Рекомендовано",
+    t("admin.products.list.export.headerId"),
+    t("admin.products.list.export.headerNameUk"),
+    t("admin.products.list.export.headerNameEn"),
+    t("admin.products.list.export.headerCategory"),
+    t("admin.products.list.export.headerBrand"),
+    t("admin.products.list.export.headerVariants"),
+    t("admin.products.list.export.headerStatus"),
+    t("admin.products.list.export.headerHot"),
+    t("admin.products.list.export.headerRecommended"),
   ];
   const rows = filteredProducts.value.map((p) => {
     const variantsStr = (p.variants || [])
-      .map((v) => `${v.sku} (${v.price} UAH, ${v.stock} шт)`)
+      .map(
+        (v) =>
+          `${v.sku} (${v.price} UAH, ${t("admin.products.list.stockCount", { count: v.stock })})`,
+      )
       .join(" | ");
+    const noneValue = t("admin.products.list.export.noneValue");
     return [
       p.id,
       p.nameUk,
       p.nameEn,
-      p.categoryName || "—",
-      p.brandName || "—",
+      p.categoryName || noneValue,
+      p.brandName || noneValue,
       variantsStr,
       p.status,
+      // "Так"/"Ні" are the CSV import format's expected literals for these
+      // columns (see ProductImportModal.vue's parser), not UI copy — keep
+      // them fixed regardless of the admin's locale so round-tripping an
+      // exported file back through the importer keeps working.
       p.isHot ? "Так" : "Ні",
       p.isRecommended ? "Так" : "Ні",
     ];

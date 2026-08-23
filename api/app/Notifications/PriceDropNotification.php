@@ -14,8 +14,8 @@ class PriceDropNotification extends Notification
 
     public function __construct(
         public readonly Product $product,
-        public readonly float   $oldPrice,
-        public readonly float   $newPrice,
+        public readonly float $oldPrice,
+        public readonly float $newPrice,
     ) {}
 
     public function via(object $notifiable): array
@@ -30,19 +30,19 @@ class PriceDropNotification extends Notification
             : $this->product->name;
 
         $dropPercent = round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
-        $saving      = round($this->oldPrice - $this->newPrice, 2);
-        $productUrl  = config('app.frontend_url', config('app.url')) . '/products/' . $this->product->slug;
+        $saving = round($this->oldPrice - $this->newPrice, 2);
+        $productUrl = config('app.frontend_url', config('app.url')).'/product/'.$this->product->slug;
 
         return (new MailMessage)
             ->subject("↓ Знижка {$dropPercent}% на «{$productName}»")
             ->view('emails.price-drop', [
-                'userName'    => $notifiable->name,
+                'userName' => $notifiable->name,
                 'productName' => $productName,
-                'oldPrice'    => $this->oldPrice,
-                'newPrice'    => $this->newPrice,
-                'saving'      => $saving,
+                'oldPrice' => $this->oldPrice,
+                'newPrice' => $this->newPrice,
+                'saving' => $saving,
                 'dropPercent' => $dropPercent,
-                'productUrl'  => $productUrl,
+                'productUrl' => $productUrl,
             ]);
     }
 
@@ -55,10 +55,10 @@ class PriceDropNotification extends Notification
         $dropPercent = round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
 
         return [
-            'type'    => 'price_drop',
-            'title'   => "Знижка {$dropPercent}% на «{$productName}»",
+            'type' => 'price_drop',
+            'title' => "Знижка {$dropPercent}% на «{$productName}»",
             'content' => "Ціна знизилась з {$this->oldPrice} до {$this->newPrice} грн",
-            'link'    => '/products/' . $this->product->slug,
+            'link' => '/product/'.$this->product->slug,
         ];
     }
 
