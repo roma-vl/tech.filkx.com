@@ -46,6 +46,13 @@ jobs:
       - name: Generate application key
         run: docker compose run --rm tech-api-php-cli php artisan key:generate
 
+      - name: Generate Passport keys
+        # storage/*.key is gitignored - Passport's RSA keypair only exists on a machine
+        # where `passport:keys`/`passport:install` was run manually. Without it, the
+        # `auth:api` guard throws (League\OAuth2\Server\CryptKey: "Invalid key supplied")
+        # on every request, including the tests asserting a 401 for unauthenticated ones.
+        run: docker compose run --rm tech-api-php-cli php artisan passport:keys
+
       - name: PHP style check (Pint)
         run: docker compose run --rm tech-api-php-cli ./vendor/bin/pint --test
 
