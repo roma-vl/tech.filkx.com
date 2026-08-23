@@ -3,7 +3,9 @@
     <!-- Loading state -->
     <div v-if="loading" class="max-w-container-max mx-auto px-4 md:px-8 py-10">
       <div class="animate-pulse space-y-8">
-        <div class="h-64 md:h-80 bg-zinc-200 dark:bg-zinc-800 rounded-2xl" />
+        <div
+          class="aspect-video md:aspect-auto md:h-80 bg-zinc-200 dark:bg-zinc-800 rounded-2xl"
+        />
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div
             v-for="i in 10"
@@ -34,7 +36,7 @@
     <!-- Content -->
     <template v-else>
       <!-- Hero header -->
-      <section class="relative h-64 md:h-80 overflow-hidden">
+      <section class="relative aspect-video md:aspect-auto md:h-80 overflow-hidden">
         <img
           class="absolute inset-0 w-full h-full object-cover opacity-60"
           :src="promoPage.imageUrl"

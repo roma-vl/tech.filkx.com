@@ -97,7 +97,7 @@ const setSlide = (index) => {
   resetTimer();
 };
 const startTimer = () => {
-  intervalId = setInterval(nextSlide, 7000);
+  intervalId = setInterval(nextSlide, 9000);
 };
 const resetTimer = () => {
   if (intervalId) {
@@ -190,7 +190,7 @@ onUnmounted(() => {
 
       <!-- ── Right: hero slider ── -->
       <div
-        class="flex-1 min-w-0 relative bg-zinc-950 h-[380px] md:h-[480px] flex items-center group z-10"
+        class="flex-1 min-w-0 relative bg-zinc-950 aspect-[16/9] md:aspect-auto md:h-[480px] flex items-center group z-10"
         @mouseenter="hoveredCat = null"
       >
         <!-- Slides -->
@@ -223,7 +223,7 @@ onUnmounted(() => {
           <div
             class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col"
             :class="
-              slide.hasOverlayText ? 'justify-center' : 'justify-end pb-28'
+              slide.hasOverlayText ? 'justify-center' : 'justify-end pb-8 md:pb-28'
             "
           >
             <div

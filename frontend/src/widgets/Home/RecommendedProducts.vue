@@ -87,6 +87,7 @@ const scrollCarousel = (direction: "left" | "right") => {
         :key="prod.id"
         :product="prod"
         view-mode="grid"
+        :scale-on-hover="false"
         class="w-1/2 md:w-1/3 lg:w-1/5 min-w-[220px] snap-start shrink-0"
       />
     </div>
