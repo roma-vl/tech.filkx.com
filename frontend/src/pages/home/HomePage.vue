@@ -51,12 +51,12 @@
             />
           </div>
           <div
-            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
           >
             <div
               v-for="i in 5"
               :key="`bestseller-${i}`"
-              class="flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
+              class="flex flex-col border border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
             >
               <div class="aspect-square bg-zinc-200 dark:bg-zinc-800" />
               <div class="h-3 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />
@@ -84,13 +84,11 @@
           <div
             class="h-8 w-64 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
           />
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-zinc-200 dark:border-zinc-800"
-          >
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div
               v-for="i in 4"
               :key="`deal-${i}`"
-              class="flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
+              class="flex flex-col border border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
             >
               <div class="aspect-square bg-zinc-200 dark:bg-zinc-800 mb-1" />
               <div class="h-3 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />
@@ -108,11 +106,11 @@
           <div
             class="h-8 w-64 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"
           />
-          <div class="flex gap-0 overflow-hidden">
+          <div class="flex overflow-hidden">
             <div
               v-for="i in 5"
               :key="`rec-${i}`"
-              class="flex flex-col border-t border-r border-b border-zinc-200 dark:border-zinc-800 first:border-l p-4 space-y-2.5 animate-pulse w-1/2 sm:w-1/3 lg:w-1/5 shrink-0"
+              class="flex flex-col border border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse w-1/2 sm:w-1/3 lg:w-1/5 shrink-0"
             >
               <div class="aspect-square bg-zinc-200 dark:bg-zinc-800" />
               <div class="h-3 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />

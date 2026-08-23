@@ -117,7 +117,7 @@ const clearAll = () => {
     <!-- Product History Grid -->
     <div
       v-if="viewedProducts.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-zinc-200 dark:border-zinc-800"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div
         v-for="product in catalogProducts"

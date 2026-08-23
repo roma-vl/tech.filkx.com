@@ -223,9 +223,7 @@ onUnmounted(() => {
           <div
             class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col"
             :class="
-              slide.hasOverlayText
-                ? 'justify-center'
-                : 'justify-end pb-8 md:pb-12'
+              slide.hasOverlayText ? 'justify-center' : 'justify-end pb-28'
             "
           >
             <div

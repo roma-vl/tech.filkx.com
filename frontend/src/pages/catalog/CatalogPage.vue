@@ -203,7 +203,7 @@
           :key="i"
           :class="
             viewMode === 'grid'
-              ? 'border-r border-b border-zinc-200 dark:border-zinc-800'
+              ? 'border border-zinc-200 dark:border-zinc-800'
               : 'rounded-md border border-zinc-100 dark:border-zinc-800'
           "
           class="animate-pulse bg-white dark:bg-zinc-900 overflow-hidden"
@@ -472,7 +472,7 @@ const densityColumnsClass: Record<number, string> = {
 
 const gridClass = computed(
   () =>
-    `grid grid-cols-1 sm:grid-cols-2 ${densityColumnsClass[gridDensity.value]} border-t border-l border-zinc-200 dark:border-zinc-800`,
+    `grid grid-cols-1 sm:grid-cols-2 ${densityColumnsClass[gridDensity.value]}`,
 );
 
 const sortOptions = computed(() => [

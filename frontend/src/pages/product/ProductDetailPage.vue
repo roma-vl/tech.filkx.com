@@ -210,7 +210,7 @@
           <div
             v-for="related in relatedProducts"
             :key="related.id"
-            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start border-t border-l border-zinc-200 dark:border-zinc-800"
+            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start"
           >
             <ProductCard :product="related" view-mode="grid" />
           </div>
@@ -257,7 +257,7 @@
           <div
             v-for="viewed in recentlyViewed"
             :key="viewed.id"
-            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start border-t border-l border-zinc-200 dark:border-zinc-800"
+            class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(20%-13px)] min-w-[180px] shrink-0 snap-start"
           >
             <ProductCard :product="viewed" view-mode="grid" />
           </div>

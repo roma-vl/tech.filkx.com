@@ -73,12 +73,13 @@
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-10">
         <div
           v-if="products.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
         >
           <ProductCard
             v-for="product in products"
             :key="product.id"
             :product="product"
+            view-mode="grid"
           />
         </div>
         <div

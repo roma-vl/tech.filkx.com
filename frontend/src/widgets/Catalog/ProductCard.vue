@@ -2,7 +2,7 @@
   <article
     :class="
       viewMode === 'grid'
-        ? 'flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:border hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10]'
+        ? 'flex-col border border-zinc-200 dark:border-zinc-800 hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10]'
         : 'flex-col sm:flex-row rounded-md border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 hover:-translate-y-0.5'
     "
     class="group flex relative hover:shadow-2xl transition-all duration-200"
