@@ -218,6 +218,19 @@
               option-value="id"
               option-label="name"
             />
+
+            <AppSelect
+              v-model="productImageFilter"
+              :label="t('admin.products.list.filters.imageLabel')"
+              :placeholder="t('admin.products.list.filters.allImages')"
+              :options="[
+                { id: '', name: t('admin.products.list.filters.allImages') },
+                { id: 'with', name: t('admin.products.list.filters.withImage') },
+                { id: 'without', name: t('admin.products.list.filters.withoutImage') },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
           </div>
 
           <div
@@ -258,6 +271,81 @@
           </div>
         </div>
       </transition>
+
+      <!-- Bulk Actions Toolbar -->
+      <transition name="expand">
+        <div
+          v-if="selectedIds.length > 0"
+          class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl border border-primary-200 dark:border-primary-800 flex flex-wrap items-center gap-3"
+        >
+          <span class="text-sm font-bold text-primary-700 dark:text-primary-300">
+            {{ t("admin.products.list.bulk.selectedCount", { count: selectedIds.length }) }}
+          </span>
+
+          <AppButton
+            variant="text"
+            size="sm"
+            class="!text-gray-500"
+            @click="clearSelection"
+          >
+            {{ t("admin.products.list.bulk.clearSelection") }}
+          </AppButton>
+
+          <div class="flex-1"></div>
+
+          <div class="flex items-center gap-2">
+            <AppSelect
+              v-model="bulkCategoryValue"
+              class="min-w-[180px]"
+              :placeholder="t('admin.products.list.bulk.categoryPlaceholder')"
+              :options="categories"
+              option-value="id"
+              option-label="nameUk"
+            />
+            <AppButton
+              variant="secondary"
+              size="sm"
+              :disabled="!bulkCategoryValue || bulkActionLoading"
+              @click="applyBulkCategory"
+            >
+              {{ t("admin.products.list.bulk.apply") }}
+            </AppButton>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <AppSelect
+              v-model="bulkStatusValue"
+              class="min-w-[160px]"
+              :placeholder="t('admin.products.list.bulk.statusPlaceholder')"
+              :options="[
+                { id: 'active', name: t('admin.products.list.filters.statusActive') },
+                { id: 'draft', name: t('admin.products.list.filters.statusDraft') },
+                { id: 'hidden', name: t('admin.products.list.filters.statusHidden') },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
+            <AppButton
+              variant="secondary"
+              size="sm"
+              :disabled="!bulkStatusValue || bulkActionLoading"
+              @click="applyBulkStatus"
+            >
+              {{ t("admin.products.list.bulk.apply") }}
+            </AppButton>
+          </div>
+
+          <AppButton
+            variant="text"
+            size="sm"
+            class="!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
+            :disabled="bulkActionLoading"
+            @click="showBulkDeleteModal = true"
+          >
+            {{ t("admin.products.list.bulk.delete") }}
+          </AppButton>
+        </div>
+      </transition>
     </div>
 
     <!-- Products Table -->
@@ -268,6 +356,15 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-900">
             <tr>
+              <th class="px-6 py-4 w-12">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
+                  :checked="allOnPageSelected"
+                  :indeterminate="someOnPageSelected && !allOnPageSelected"
+                  @change="toggleSelectAllOnPage"
+                />
+              </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
@@ -306,6 +403,14 @@
               :key="product.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
+              <td class="px-6 py-4">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 text-primary bg-gray-100 border border-gray-300 rounded focus:ring-primary dark:bg-gray-750 dark:border-gray-650"
+                  :checked="selectedIds.includes(product.id)"
+                  @change="toggleSelected(product.id)"
+                />
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
                   <img
@@ -443,7 +548,7 @@
             </tr>
             <tr v-if="filteredProducts.length === 0">
               <td
-                colspan="6"
+                colspan="7"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
                 {{ t("admin.products.list.empty") }}
@@ -454,14 +559,42 @@
       </div>
       <!-- Pagination -->
       <div
-        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30"
+        class="px-6 py-4 border-t border-gray-150 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 flex flex-col md:flex-row md:items-center gap-3"
       >
+        <div class="flex items-center gap-2 shrink-0">
+          <label class="text-sm text-gray-500 dark:text-gray-400">
+            {{ t("admin.products.list.perPageLabel") }}
+          </label>
+          <AppSelect
+            v-model="perPage"
+            class="min-w-[90px]"
+            :options="perPageOptions"
+            option-value="id"
+            option-label="name"
+          />
+        </div>
         <AppPagination
+          class="flex-1"
           :pagination="paginationMeta"
           @page-change="onPageChange"
         />
       </div>
     </div>
+
+    <!-- Bulk Delete Confirmation Modal -->
+    <AppConfirmModal
+      v-model="showBulkDeleteModal"
+      :title="t('admin.products.list.bulk.deleteModal.title')"
+      :message="
+        t('admin.products.list.bulk.deleteModal.message', {
+          count: selectedIds.length,
+        })
+      "
+      :confirm-text="t('admin.products.list.deleteModal.confirm')"
+      :cancel-text="t('admin.products.list.deleteModal.cancel')"
+      :loading="bulkActionLoading"
+      @confirm="confirmBulkDelete"
+    />
 
     <!-- Product Edit/Create Modal Component -->
     <ProductFormModal
@@ -529,6 +662,7 @@ const productStatusFilter = ref("");
 const productSortFilter = ref("name-asc");
 const productHotFilter = ref(false);
 const productRecommendedFilter = ref(false);
+const productImageFilter = ref("");
 const showFilters = ref(false);
 
 const showProductModal = ref(false);
@@ -540,9 +674,10 @@ const showDeleteModal = ref(false);
 const productToDelete = ref(null);
 const deletingProduct = ref(false);
 
-// Pagination logic (15 items per page)
+// Pagination logic
 const currentPage = ref(1);
 const perPage = ref(15);
+const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({ id: n, name: String(n) }));
 
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * perPage.value;
@@ -551,7 +686,7 @@ const paginatedProducts = computed(() => {
 
 const paginationMeta = computed(() => ({
   current_page: currentPage.value,
-  last_page: Math.ceil(filteredProducts.value.length / perPage.value),
+  last_page: Math.max(1, Math.ceil(filteredProducts.value.length / perPage.value)),
   per_page: perPage.value,
   total: filteredProducts.value.length,
 }));
@@ -569,11 +704,115 @@ watch(
     productSortFilter,
     productHotFilter,
     productRecommendedFilter,
+    productImageFilter,
+    perPage,
   ],
   () => {
     currentPage.value = 1;
   },
 );
+
+// Bulk selection - kept as an array of ids so a selection can span pages;
+// pruned below whenever the underlying product list changes (delete, etc.)
+// so it never holds ids for products that no longer exist.
+const selectedIds = ref([]);
+
+watch(
+  () => props.products,
+  (list) => {
+    const existingIds = new Set(list.map((p) => p.id));
+    selectedIds.value = selectedIds.value.filter((id) => existingIds.has(id));
+  },
+);
+
+const allOnPageSelected = computed(
+  () =>
+    paginatedProducts.value.length > 0 &&
+    paginatedProducts.value.every((p) => selectedIds.value.includes(p.id)),
+);
+
+const someOnPageSelected = computed(() =>
+  paginatedProducts.value.some((p) => selectedIds.value.includes(p.id)),
+);
+
+const toggleSelected = (id) => {
+  const index = selectedIds.value.indexOf(id);
+  if (index === -1) {
+    selectedIds.value.push(id);
+  } else {
+    selectedIds.value.splice(index, 1);
+  }
+};
+
+const toggleSelectAllOnPage = () => {
+  const pageIds = paginatedProducts.value.map((p) => p.id);
+  if (allOnPageSelected.value) {
+    selectedIds.value = selectedIds.value.filter((id) => !pageIds.includes(id));
+  } else {
+    selectedIds.value = [...new Set([...selectedIds.value, ...pageIds])];
+  }
+};
+
+const clearSelection = () => {
+  selectedIds.value = [];
+};
+
+const bulkActionLoading = ref(false);
+const bulkStatusValue = ref("");
+const bulkCategoryValue = ref("");
+const showBulkDeleteModal = ref(false);
+
+const confirmBulkDelete = async () => {
+  bulkActionLoading.value = true;
+  try {
+    await api.delete("/admin/products/bulk-delete", {
+      data: { ids: selectedIds.value },
+    });
+    clearSelection();
+    showBulkDeleteModal.value = false;
+    emit("refresh");
+  } catch (error) {
+    console.error("Failed to bulk delete products:", error);
+  } finally {
+    bulkActionLoading.value = false;
+  }
+};
+
+const applyBulkStatus = async () => {
+  if (!bulkStatusValue.value) return;
+  bulkActionLoading.value = true;
+  try {
+    await api.put("/admin/products/bulk-status", {
+      ids: selectedIds.value,
+      status: bulkStatusValue.value,
+    });
+    clearSelection();
+    bulkStatusValue.value = "";
+    emit("refresh");
+  } catch (error) {
+    console.error("Failed to bulk update product status:", error);
+  } finally {
+    bulkActionLoading.value = false;
+  }
+};
+
+const applyBulkCategory = async () => {
+  if (!bulkCategoryValue.value) return;
+  bulkActionLoading.value = true;
+  try {
+    await api.put("/admin/products/bulk-category", {
+      ids: selectedIds.value,
+      categoryId: bulkCategoryValue.value,
+    });
+    clearSelection();
+    bulkCategoryValue.value = "";
+    emit("refresh");
+  } catch (error) {
+    console.error("Failed to bulk update product category:", error);
+  } finally {
+    bulkActionLoading.value = false;
+  }
+};
 
 const activeFiltersCount = computed(() => {
   let count = 0;
@@ -584,6 +823,7 @@ const activeFiltersCount = computed(() => {
     count++;
   if (productHotFilter.value) count++;
   if (productRecommendedFilter.value) count++;
+  if (productImageFilter.value) count++;
   return count;
 });
 
@@ -595,6 +835,7 @@ const resetFilters = () => {
   productSortFilter.value = "name-asc";
   productHotFilter.value = false;
   productRecommendedFilter.value = false;
+  productImageFilter.value = "";
 };
 
 const filteredProducts = computed(() => {
@@ -619,9 +860,20 @@ const filteredProducts = computed(() => {
       product.status === productStatusFilter.value;
     const hotMatch = !productHotFilter.value || product.isHot;
     const recMatch = !productRecommendedFilter.value || product.isRecommended;
+    const imageMatch =
+      !productImageFilter.value ||
+      (productImageFilter.value === "with"
+        ? product.hasImage
+        : !product.hasImage);
 
     return (
-      nameMatch && catMatch && brandMatch && statusMatch && hotMatch && recMatch
+      nameMatch &&
+      catMatch &&
+      brandMatch &&
+      statusMatch &&
+      hotMatch &&
+      recMatch &&
+      imageMatch
     );
   });
 
@@ -732,6 +984,20 @@ const exportCsv = () => {
   link.click();
   document.body.removeChild(link);
 };
+
+// Deleting (or bulk-deleting) products can shrink the list below the page
+// the admin was on - e.g. removing the last product on page 16 - so clamp
+// back to the new last page instead of the table silently rendering empty.
+// Placed after filteredProducts (which paginationMeta depends on) since
+// watch() evaluates its getter synchronously on creation.
+watch(
+  () => paginationMeta.value.last_page,
+  (lastPage) => {
+    if (currentPage.value > lastPage) {
+      currentPage.value = lastPage;
+    }
+  },
+);
 
 const openAddProductModal = () => {
   editingProduct.value = null;

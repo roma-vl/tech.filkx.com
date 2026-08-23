@@ -108,6 +108,10 @@ export default {
       sortStockAsc: "Наявність (Спочатку мало)",
       hot: "Гарячі 🔥",
       recommended: "Рекомендовані 👍",
+      imageLabel: "Фото",
+      allImages: "Усі товари",
+      withImage: "З фото",
+      withoutImage: "Без фото",
       reset: "Скинути фільтри",
     },
     table: {
@@ -124,11 +128,24 @@ export default {
     noBrand: "Без бренду",
     stockCount: "{count} шт",
     empty: "Товарів не знайдено за вашим запитом.",
+    perPageLabel: "На сторінці:",
     deleteModal: {
       title: "Видалення товару",
       message: 'Ви впевнені, що хочете видалити товар "{name}"?',
       confirm: "Видалити",
       cancel: "Скасувати",
+    },
+    bulk: {
+      selectedCount: "Обрано: {count}",
+      clearSelection: "Зняти виділення",
+      apply: "Застосувати",
+      delete: "Видалити обрані",
+      categoryPlaceholder: "Перемістити в категорію...",
+      statusPlaceholder: "Змінити статус...",
+      deleteModal: {
+        title: "Видалення обраних товарів",
+        message: "Ви впевнені, що хочете видалити {count} обраних товарів?",
+      },
     },
     export: {
       headerId: "ID",

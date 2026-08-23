@@ -107,6 +107,10 @@ export default {
       sortStockAsc: "Stock (low to high)",
       hot: "Hot 🔥",
       recommended: "Recommended 👍",
+      imageLabel: "Photo",
+      allImages: "All products",
+      withImage: "With photo",
+      withoutImage: "Without photo",
       reset: "Reset filters",
     },
     table: {
@@ -123,11 +127,24 @@ export default {
     noBrand: "No brand",
     stockCount: "{count} pcs",
     empty: "No products found matching your search.",
+    perPageLabel: "Per page:",
     deleteModal: {
       title: "Delete product",
       message: 'Are you sure you want to delete the product "{name}"?',
       confirm: "Delete",
       cancel: "Cancel",
+    },
+    bulk: {
+      selectedCount: "Selected: {count}",
+      clearSelection: "Clear selection",
+      apply: "Apply",
+      delete: "Delete selected",
+      categoryPlaceholder: "Move to category...",
+      statusPlaceholder: "Change status...",
+      deleteModal: {
+        title: "Delete selected products",
+        message: "Are you sure you want to delete {count} selected products?",
+      },
     },
     export: {
       headerId: "ID",
