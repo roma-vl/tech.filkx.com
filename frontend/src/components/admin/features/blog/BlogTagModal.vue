@@ -1,22 +1,26 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    :title="tag ? 'Редагувати тег' : 'Новий тег'"
+    :title="
+      tag
+        ? t('admin.blog.tags.modal.editTitle')
+        : t('admin.blog.tags.modal.newTitle')
+    "
     max-width="sm"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <form class="space-y-4" @submit.prevent="saveTag">
       <AppInput
         v-model="tagForm.nameUk"
-        label="Назва (УК) *"
-        placeholder="напр. Новинки"
+        :label="t('admin.blog.tags.modal.nameUkLabel')"
+        :placeholder="t('admin.blog.tags.modal.nameUkPlaceholder')"
         required
       />
 
       <AppInput
         v-model="tagForm.nameEn"
-        label="Name (EN) *"
-        placeholder="e.g. New"
+        :label="t('admin.blog.tags.modal.nameEnLabel')"
+        :placeholder="t('admin.blog.tags.modal.nameEnPlaceholder')"
         required
       />
 
@@ -27,7 +31,7 @@
           type="button"
           @click="$emit('update:modelValue', false)"
         >
-          Скасувати
+          {{ t("admin.blog.tags.modal.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
@@ -35,7 +39,7 @@
           class="!px-5 !py-2 text-sm !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046]"
           type="submit"
         >
-          Зберегти
+          {{ t("admin.blog.tags.modal.save") }}
         </AppButton>
       </div>
     </form>
@@ -45,6 +49,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppInput from "@/components/admin/ui/AppInput.vue";
@@ -58,6 +63,7 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue", "refresh"]);
 
 const toast = useToast();
+const { t } = useI18n();
 const saving = ref(false);
 
 const defaultTagForm = () => ({
@@ -84,7 +90,7 @@ watch(
 
 const saveTag = async () => {
   if (!tagForm.value.nameUk || !tagForm.value.nameEn) {
-    toast.warning("Назва обов'язкова для обох мов");
+    toast.warning(t("admin.blog.tags.modal.alerts.nameRequired"));
     return;
   }
   saving.value = true;
@@ -94,11 +100,11 @@ const saveTag = async () => {
     } else {
       await api.post("/admin/blog/tags", tagForm.value);
     }
-    toast.success("Тег збережено");
+    toast.success(t("admin.blog.tags.modal.alerts.saved"));
     emit("update:modelValue", false);
     emit("refresh");
   } catch (e) {
-    toast.error("Помилка збереження тегу");
+    toast.error(t("admin.blog.tags.modal.alerts.saveError"));
   } finally {
     saving.value = false;
   }

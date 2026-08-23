@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
       <AppInput
         v-model="categorySearch"
-        placeholder="Пошук категорій за назвою чи slug..."
+        :placeholder="t('admin.blog.categories.searchPlaceholder')"
         class="flex-1 max-w-md"
       />
       <AppButton
@@ -13,7 +13,7 @@
         @click="$emit('add-category')"
       >
         <PlusIcon class="w-4 h-4" />
-        Нова категорія
+        {{ t("admin.blog.categories.newCategory") }}
       </AppButton>
     </div>
 
@@ -27,27 +27,27 @@
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              Назва (УК)
+              {{ t("admin.blog.categories.table.nameUk") }}
             </th>
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              Назва (EN)
+              {{ t("admin.blog.categories.table.nameEn") }}
             </th>
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              Slug
+              {{ t("admin.blog.categories.table.slug") }}
             </th>
             <th
               class="px-5 py-3.5 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              Пости
+              {{ t("admin.blog.categories.table.posts") }}
             </th>
             <th
               class="px-5 py-3.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              Дії
+              {{ t("admin.blog.categories.table.actions") }}
             </th>
           </tr>
         </thead>
@@ -57,7 +57,7 @@
               colspan="5"
               class="px-5 py-10 text-center text-gray-400 text-sm font-medium"
             >
-              Категорій не знайдено за вашим запитом
+              {{ t("admin.blog.categories.empty") }}
             </td>
           </tr>
           <tr
@@ -125,6 +125,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
@@ -139,6 +140,7 @@ const props = defineProps({
 
 defineEmits(["add-category", "edit-category", "delete-category"]);
 
+const { t } = useI18n();
 const categorySearch = ref("");
 const currentPageCategories = ref(1);
 const perPageCategories = ref(15);

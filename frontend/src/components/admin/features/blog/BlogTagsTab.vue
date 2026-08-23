@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
       <AppInput
         v-model="tagSearch"
-        placeholder="Пошук тегів..."
+        :placeholder="t('admin.blog.tags.searchPlaceholder')"
         class="flex-1 max-w-md"
       />
       <AppButton
@@ -13,7 +13,7 @@
         @click="$emit('add-tag')"
       >
         <PlusIcon class="w-4 h-4" />
-        Новий тег
+        {{ t("admin.blog.tags.newTag") }}
       </AppButton>
     </div>
 
@@ -53,7 +53,7 @@
         v-if="filteredTags.length === 0"
         class="text-sm text-gray-400 py-4 w-full text-center font-medium"
       >
-        Тегів не знайдено за вашим запитом
+        {{ t("admin.blog.tags.empty") }}
       </div>
     </div>
 
@@ -72,6 +72,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
@@ -86,6 +87,7 @@ const props = defineProps({
 
 defineEmits(["add-tag", "edit-tag", "delete-tag"]);
 
+const { t } = useI18n();
 const tagSearch = ref("");
 const currentPageTags = ref(1);
 const perPageTags = ref(15);

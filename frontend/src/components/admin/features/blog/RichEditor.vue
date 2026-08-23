@@ -9,35 +9,35 @@
       <!-- Text formatting -->
       <ToolbarButton
         :active="editor?.isActive('bold')"
-        title="Жирний"
+        :title="t('admin.blog.editor.bold')"
         @click="editor.chain().focus().toggleBold().run()"
       >
         <BoldIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('italic')"
-        title="Курсив"
+        :title="t('admin.blog.editor.italic')"
         @click="editor.chain().focus().toggleItalic().run()"
       >
         <ItalicIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('underline')"
-        title="Підкреслений"
+        :title="t('admin.blog.editor.underline')"
         @click="editor.chain().focus().toggleUnderline().run()"
       >
         <UnderlineIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('strike')"
-        title="Закреслений"
+        :title="t('admin.blog.editor.strikethrough')"
         @click="editor.chain().focus().toggleStrike().run()"
       >
         <StrikeIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('highlight')"
-        title="Підсвічування"
+        :title="t('admin.blog.editor.highlight')"
         @click="editor.chain().focus().toggleHighlight().run()"
       >
         <HighlightIcon />
@@ -50,7 +50,7 @@
         v-for="level in [1, 2, 3]"
         :key="level"
         :active="editor?.isActive('heading', { level })"
-        :title="`Заголовок ${level}`"
+        :title="t('admin.blog.editor.heading', { level })"
         class="text-xs font-bold"
         @click="editor.chain().focus().toggleHeading({ level }).run()"
       >
@@ -62,28 +62,28 @@
       <!-- Lists -->
       <ToolbarButton
         :active="editor?.isActive('bulletList')"
-        title="Маркований список"
+        :title="t('admin.blog.editor.bulletList')"
         @click="editor.chain().focus().toggleBulletList().run()"
       >
         <ListBulletIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('orderedList')"
-        title="Нумерований список"
+        :title="t('admin.blog.editor.orderedList')"
         @click="editor.chain().focus().toggleOrderedList().run()"
       >
         <ListOrderedIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('blockquote')"
-        title="Цитата"
+        :title="t('admin.blog.editor.blockquote')"
         @click="editor.chain().focus().toggleBlockquote().run()"
       >
         <QuoteIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive('codeBlock')"
-        title="Код"
+        :title="t('admin.blog.editor.codeBlock')"
         @click="editor.chain().focus().toggleCodeBlock().run()"
       >
         <CodeIcon />
@@ -94,21 +94,21 @@
       <!-- Alignment -->
       <ToolbarButton
         :active="editor?.isActive({ textAlign: 'left' })"
-        title="По лівому"
+        :title="t('admin.blog.editor.alignLeft')"
         @click="editor.chain().focus().setTextAlign('left').run()"
       >
         <AlignLeftIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive({ textAlign: 'center' })"
-        title="По центру"
+        :title="t('admin.blog.editor.alignCenter')"
         @click="editor.chain().focus().setTextAlign('center').run()"
       >
         <AlignCenterIcon />
       </ToolbarButton>
       <ToolbarButton
         :active="editor?.isActive({ textAlign: 'right' })"
-        title="По правому"
+        :title="t('admin.blog.editor.alignRight')"
         @click="editor.chain().focus().setTextAlign('right').run()"
       >
         <AlignRightIcon />
@@ -119,14 +119,17 @@
       <!-- Link -->
       <ToolbarButton
         :active="editor?.isActive('link')"
-        title="Посилання"
+        :title="t('admin.blog.editor.link')"
         @click="setLink"
       >
         <LinkIcon />
       </ToolbarButton>
 
       <!-- Image upload -->
-      <label class="toolbar-btn cursor-pointer" title="Вставити зображення">
+      <label
+        class="toolbar-btn cursor-pointer"
+        :title="t('admin.blog.editor.insertImage')"
+      >
         <ImageIcon />
         <input
           type="file"
@@ -140,20 +143,20 @@
 
       <!-- Undo / Redo -->
       <ToolbarButton
-        title="Скасувати"
+        :title="t('admin.blog.editor.undo')"
         @click="editor.chain().focus().undo().run()"
       >
         <UndoIcon />
       </ToolbarButton>
       <ToolbarButton
-        title="Повторити"
+        :title="t('admin.blog.editor.redo')"
         @click="editor.chain().focus().redo().run()"
       >
         <RedoIcon />
       </ToolbarButton>
 
       <ToolbarButton
-        title="Роздільник"
+        :title="t('admin.blog.editor.horizontalRule')"
         @click="editor.chain().focus().setHorizontalRule().run()"
       >
         <HrIcon />
@@ -171,8 +174,12 @@
       class="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between"
     >
       <span class="text-xs text-gray-400">
-        {{ editor?.storage.characterCount?.words() ?? 0 }} слів ·
-        {{ editor?.storage.characterCount?.characters() ?? 0 }} символів
+        {{
+          t("admin.blog.editor.wordCount", {
+            words: editor?.storage.characterCount?.words() ?? 0,
+            chars: editor?.storage.characterCount?.characters() ?? 0,
+          })
+        }}
       </span>
     </div>
   </div>
@@ -180,6 +187,7 @@
 
 <script setup>
 import { ref, watch, onBeforeUnmount, defineComponent, h } from "vue";
+import { useI18n } from "vue-i18n";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -195,6 +203,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "upload-image"]);
 
+const { t } = useI18n();
+
 const editor = useEditor({
   content: props.modelValue || "",
   extensions: [
@@ -204,7 +214,9 @@ const editor = useEditor({
     Image.configure({ inline: false, allowBase64: true }),
     Link.configure({ openOnClick: false }),
     Highlight,
-    Placeholder.configure({ placeholder: "Почніть писати тут..." }),
+    Placeholder.configure({
+      placeholder: t("admin.blog.editor.contentPlaceholder"),
+    }),
   ],
   onUpdate({ editor }) {
     emit("update:modelValue", editor.getHTML());
@@ -228,7 +240,7 @@ watch(
 
 const setLink = () => {
   const prev = editor.value?.getAttributes("link").href || "";
-  const url = prompt("URL посилання:", prev);
+  const url = prompt(t("admin.blog.editor.linkPromptLabel"), prev);
   if (url === null) return;
   if (!url) {
     editor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
