@@ -3,9 +3,8 @@
 namespace App\Api\Admin\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class HomeBannerRequest extends FormRequest
+class PromoPageRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,15 +15,14 @@ class HomeBannerRequest extends FormRequest
     {
         return [
             'badge' => 'nullable|string|max:100',
-            'subtitle' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'imagePath' => 'required|string',
-            'buttonLabel' => 'nullable|string|max:100',
-            'linkType' => ['required', Rule::in(['catalog', 'category', 'product', 'promo', 'url'])],
-            'linkValue' => 'nullable|string|max:2048',
             'isActive' => 'boolean',
             'sortOrder' => 'nullable|integer|min:0',
+            'productIds' => 'nullable|array',
+            'productIds.*' => 'integer|exists:products,id',
         ];
     }
 }

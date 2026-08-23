@@ -31,4 +31,5 @@ export default {
   blog: "Блог",
   pages: "Статичні сторінки",
   homeBanners: "Банери головної",
+  promoPages: "Акційні сторінки",
 };

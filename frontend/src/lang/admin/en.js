@@ -3,6 +3,7 @@ import nav from "./nav/en";
 import blog from "./blog/en";
 import pages from "./pages/en";
 import homeBanners from "./homeBanners/en";
+import promoPages from "./promoPages/en";
 import accounting from "./accounting/en";
 import common from "./common/en";
 import notifications from "./notifications/en";
@@ -28,6 +29,7 @@ export default {
   blog,
   pages,
   homeBanners,
+  promoPages,
   accounting,
   common,
   notifications,

@@ -36,6 +36,10 @@ const getBannerLink = (banner) => {
       return banner.linkValue
         ? { name: "product-detail", params: { id: banner.linkValue } }
         : { name: "catalog" };
+    case "promo":
+      return banner.linkValue
+        ? { name: "promo", params: { slug: banner.linkValue } }
+        : { name: "catalog" };
     case "url":
       return banner.linkValue || { name: "catalog" };
     case "catalog":

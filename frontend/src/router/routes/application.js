@@ -6,6 +6,7 @@ import UserCabinetPage from "@/pages/account/UserCabinetPage.vue";
 import BlogPage from "@/pages/blog/BlogPage.vue";
 import BlogPostPage from "@/pages/blog/BlogPostPage.vue";
 import StaticPage from "@/pages/static/StaticPage.vue";
+import PromoPage from "@/pages/promo/PromoPage.vue";
 
 import MainLayout from "@/layouts/main/MainLayout.vue";
 
@@ -44,6 +45,12 @@ export default [
         name: "category",
         component: CatalogPage,
         meta: { title: "Category" },
+      },
+      {
+        path: "promo/:slug",
+        name: "promo",
+        component: PromoPage,
+        meta: { title: "Promo" },
       },
       {
         path: "product/:id",

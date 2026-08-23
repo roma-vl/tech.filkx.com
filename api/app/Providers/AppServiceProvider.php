@@ -18,6 +18,8 @@ use App\Api\V1\Repositories\OrderRepository;
 use App\Api\V1\Repositories\OrderRepositoryInterface;
 use App\Api\V1\Repositories\ProductRepository;
 use App\Api\V1\Repositories\ProductRepositoryInterface;
+use App\Api\V1\Repositories\PromoPageRepository;
+use App\Api\V1\Repositories\PromoPageRepositoryInterface;
 use App\Api\V1\Repositories\PromotionRepository;
 use App\Api\V1\Repositories\PromotionRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(HomeBannerRepositoryInterface::class, HomeBannerRepository::class);
+        $this->app->bind(PromoPageRepositoryInterface::class, PromoPageRepository::class);
     }
 
     /**

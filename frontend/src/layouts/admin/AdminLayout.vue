@@ -400,6 +400,12 @@ const navItems = shallowRef<NavItem[]>([
     icon: markRaw(PhotoIcon),
   },
   {
+    key: "promoPages",
+    name: t("admin.nav.promoPages"),
+    path: "/admin/promo-pages",
+    icon: markRaw(TagIcon),
+  },
+  {
     key: "orders",
     name: t("admin.nav.orders"),
     path: "/admin/orders",

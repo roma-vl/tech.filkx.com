@@ -51,6 +51,10 @@ export const productApi = {
     return apiClient.get("/v1/catalog/home", { params });
   },
 
+  getPromoPage(slug: string) {
+    return apiClient.get(`/v1/promo/${slug}`);
+  },
+
   // Admin Catalog Management APIs
   adminGetProducts(params?: Record<string, any>) {
     return apiClient.get("/admin/products", { params });

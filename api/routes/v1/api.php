@@ -11,6 +11,7 @@ use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
 use App\Api\Admin\Controllers\AdminPageController;
 use App\Api\Admin\Controllers\AdminProductController;
+use App\Api\Admin\Controllers\AdminPromoPageController;
 use App\Api\Admin\Controllers\AdminRoleController;
 use App\Api\Admin\Controllers\AdminServerLogController;
 use App\Api\Admin\Controllers\AdminSettingsController;
@@ -36,6 +37,7 @@ use App\Api\V1\Controllers\NewsletterController;
 use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\PageController;
 use App\Api\V1\Controllers\PaymentController;
+use App\Api\V1\Controllers\PromoPageController;
 use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
@@ -82,6 +84,9 @@ Route::prefix('v1')->group(function () {
         Route::get('products/{slug}/related', [CatalogController::class, 'relatedProducts']);
         Route::get('products/{slug}/reviews', [ReviewController::class, 'index']);
     });
+
+    // Promo pages (curated landing pages linked from home banners)
+    Route::get('promo/{slug}', [PromoPageController::class, 'show']);
 
     // Blog public routes
     Route::prefix('blog')->group(function () {
@@ -391,6 +396,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::put('home-banners/{id}', [AdminHomeBannerController::class, 'update']);
         Route::delete('home-banners/{id}', [AdminHomeBannerController::class, 'destroy']);
         Route::post('home-banners/upload', [AdminHomeBannerController::class, 'uploadImage']);
+
+        // Promo Pages (curated landing pages linked from home banners)
+        Route::get('promo-pages', [AdminPromoPageController::class, 'index']);
+        Route::post('promo-pages', [AdminPromoPageController::class, 'store']);
+        Route::put('promo-pages/{id}', [AdminPromoPageController::class, 'update']);
+        Route::delete('promo-pages/{id}', [AdminPromoPageController::class, 'destroy']);
+        Route::post('promo-pages/upload', [AdminPromoPageController::class, 'uploadImage']);
     });
 
 });

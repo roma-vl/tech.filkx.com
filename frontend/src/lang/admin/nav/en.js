@@ -31,4 +31,5 @@ export default {
   blog: "Blog",
   pages: "Static Pages",
   homeBanners: "Homepage Banners",
+  promoPages: "Promo Pages",
 };

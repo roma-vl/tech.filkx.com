@@ -6,10 +6,10 @@
     >
       <div>
         <h3 class="font-bold text-gray-900 dark:text-white">
-          {{ t("admin.homeBanners.heading") }}
+          {{ t("admin.promoPages.heading") }}
         </h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ t("admin.homeBanners.headingDescription") }}
+          {{ t("admin.promoPages.headingDescription") }}
         </p>
       </div>
 
@@ -31,7 +31,7 @@
             d="M12 4v16m8-8H4"
           />
         </svg>
-        {{ t("admin.homeBanners.addBanner") }}
+        {{ t("admin.promoPages.addPromoPage") }}
       </AppButton>
     </div>
 
@@ -45,79 +45,80 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.preview") }}
+                {{ t("admin.promoPages.table.preview") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.title") }}
+                {{ t("admin.promoPages.table.title") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.link") }}
+                {{ t("admin.promoPages.table.slug") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.order") }}
+                {{ t("admin.promoPages.table.products") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.status") }}
+                {{ t("admin.promoPages.table.order") }}
+              </th>
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+              >
+                {{ t("admin.promoPages.table.status") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                {{ t("admin.homeBanners.table.actions") }}
+                {{ t("admin.promoPages.table.actions") }}
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr
-              v-for="banner in sortedBanners"
-              :key="banner.id"
+              v-for="promoPage in sortedPromoPages"
+              :key="promoPage.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
               <td class="px-6 py-4">
                 <img
-                  :src="banner.imageUrl"
-                  :alt="banner.title"
+                  :src="promoPage.imageUrl"
+                  :alt="promoPage.title"
                   class="w-20 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                 />
               </td>
               <td
                 class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate"
               >
-                {{ banner.title }}
+                {{ promoPage.title }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                <span class="font-mono text-xs">{{
-                  linkTypeLabels[banner.linkType]
-                }}</span>
-                <span
-                  v-if="banner.linkValue"
-                  class="block text-xs text-gray-400 truncate max-w-[160px]"
-                  >{{ banner.linkValue }}</span
-                >
+                <span class="font-mono text-xs">{{ promoPage.slug }}</span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                {{ banner.sortOrder }}
+                {{ promoPage.productsCount }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                {{ promoPage.sortOrder }}
               </td>
               <td class="px-6 py-4">
                 <span
                   class="px-2.5 py-1 rounded-full text-xs font-bold"
                   :class="
-                    banner.isActive
+                    promoPage.isActive
                       ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                   "
                 >
                   {{
-                    banner.isActive
-                      ? t("admin.homeBanners.statusLabels.active")
-                      : t("admin.homeBanners.statusLabels.inactive")
+                    promoPage.isActive
+                      ? t("admin.promoPages.statusLabels.active")
+                      : t("admin.promoPages.statusLabels.inactive")
                   }}
                 </span>
               </td>
@@ -129,7 +130,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-blue-600 dark:text-blue-400"
-                    @click="openEditModal(banner)"
+                    @click="openEditModal(promoPage)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -149,7 +150,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-red-600 dark:text-red-400"
-                    @click="deleteBanner(banner)"
+                    @click="deletePromoPage(promoPage)"
                   >
                     <svg
                       class="w-5 h-5"
@@ -168,12 +169,12 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="sortedBanners.length === 0">
+            <tr v-if="sortedPromoPages.length === 0">
               <td
-                colspan="6"
+                colspan="7"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                {{ t("admin.homeBanners.empty") }}
+                {{ t("admin.promoPages.empty") }}
               </td>
             </tr>
           </tbody>
@@ -181,22 +182,22 @@
       </div>
     </div>
 
-    <!-- Banner Modal -->
+    <!-- Promo Page Modal -->
     <AppModal
       v-model="showModal"
       :title="
         isEditing
-          ? t('admin.homeBanners.form.editTitle')
-          : t('admin.homeBanners.addBanner')
+          ? t('admin.promoPages.form.editTitle')
+          : t('admin.promoPages.addPromoPage')
       "
       max-width="lg"
     >
-      <form class="space-y-4" @submit.prevent="saveBanner">
+      <form class="space-y-4" @submit.prevent="savePromoPage">
         <div>
           <label
             class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
           >
-            {{ t("admin.homeBanners.form.imageLabel") }}
+            {{ t("admin.promoPages.form.imageLabel") }}
           </label>
           <div class="relative">
             <div
@@ -221,8 +222,8 @@
             >
               <span class="text-xs text-gray-400">{{
                 uploading
-                  ? t("admin.homeBanners.form.uploading")
-                  : t("admin.homeBanners.form.uploadPrompt")
+                  ? t("admin.promoPages.form.uploading")
+                  : t("admin.promoPages.form.uploadPrompt")
               }}</span>
               <input
                 type="file"
@@ -236,105 +237,98 @@
 
         <AppInput
           v-model="form.badge"
-          :label="t('admin.homeBanners.form.badgeLabel')"
-          :placeholder="t('admin.homeBanners.form.badgePlaceholder')"
-        />
-        <AppInput
-          v-model="form.subtitle"
-          :label="t('admin.homeBanners.form.subtitleLabel')"
+          :label="t('admin.promoPages.form.badgeLabel')"
+          :placeholder="t('admin.promoPages.form.badgePlaceholder')"
         />
         <AppInput
           v-model="form.title"
           required
-          :label="t('admin.homeBanners.table.title')"
+          :label="t('admin.promoPages.form.title')"
+        />
+        <AppInput
+          v-model="form.subtitle"
+          :label="t('admin.promoPages.form.subtitleLabel')"
         />
         <AppTextarea
           v-model="form.description"
           rows="3"
-          :label="t('admin.homeBanners.form.descriptionLabel')"
-        />
-        <AppInput
-          v-model="form.buttonLabel"
-          :label="t('admin.homeBanners.form.buttonLabelLabel')"
-          :placeholder="t('admin.homeBanners.form.buttonLabelPlaceholder')"
+          :label="t('admin.promoPages.form.descriptionLabel')"
         />
 
-        <AppSelect
-          v-model="form.linkType"
-          :label="t('admin.homeBanners.form.linkTypeLabel')"
-          :options="linkTypeOptions"
-          option-value="value"
-          option-label="label"
-        />
-        <AppSelect
-          v-if="form.linkType === 'category'"
-          v-model="form.linkValue"
-          searchable
-          required
-          :label="linkValueLabel"
-          :search-placeholder="linkValuePlaceholder"
-          :options="categories"
-          option-value="slug"
-          option-label="nameUk"
-        />
-        <AppSelect
-          v-else-if="form.linkType === 'product'"
-          v-model="form.linkValue"
-          searchable
-          required
-          :label="linkValueLabel"
-          :search-placeholder="linkValuePlaceholder"
-          :options="products"
-          option-value="id"
-          option-label="nameUk"
-        />
-        <AppSelect
-          v-else-if="form.linkType === 'promo'"
-          v-model="form.linkValue"
-          searchable
-          required
-          :label="linkValueLabel"
-          :search-placeholder="linkValuePlaceholder"
-          :options="promoPages"
-          option-value="slug"
-          option-label="title"
-        />
-        <AppInput
-          v-else-if="form.linkType === 'url'"
-          v-model="form.linkValue"
-          required
-          :label="linkValueLabel"
-          :placeholder="linkValuePlaceholder"
-        />
+        <div>
+          <label
+            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
+          >
+            {{ t("admin.promoPages.form.productsLabel") }}
+          </label>
+          <div class="flex gap-2">
+            <AppSelect
+              v-model="productToAdd"
+              searchable
+              :placeholder="t('admin.promoPages.form.addProductPlaceholder')"
+              :search-placeholder="
+                t('admin.promoPages.form.addProductPlaceholder')
+              "
+              :options="availableProducts"
+              option-value="id"
+              option-label="nameUk"
+              class="flex-1"
+            />
+            <AppButton
+              type="button"
+              variant="secondary"
+              class="whitespace-nowrap"
+              :disabled="!productToAdd"
+              @click="addProduct"
+            >
+              {{ t("admin.promoPages.form.addButton") }}
+            </AppButton>
+          </div>
+          <div v-if="selectedProducts.length" class="flex flex-wrap gap-2 mt-3">
+            <span
+              v-for="product in selectedProducts"
+              :key="product.id"
+              class="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 rounded-full text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
+            >
+              {{ product.nameUk }}
+              <button
+                type="button"
+                class="hover:text-red-500"
+                @click="removeProduct(product.id)"
+              >
+                &times;
+              </button>
+            </span>
+          </div>
+          <p v-else class="text-xs text-gray-400 italic mt-2">
+            {{ t("admin.promoPages.form.noProductsSelected") }}
+          </p>
+        </div>
 
         <AppInput
           v-model.number="form.sortOrder"
           type="number"
-          :label="t('admin.homeBanners.form.sortOrderLabel')"
+          :label="t('admin.promoPages.form.sortOrderLabel')"
         />
 
         <AppToggle
           v-model="form.isActive"
-          :label="t('admin.homeBanners.statusLabels.active')"
-          :description="t('admin.homeBanners.form.activeDescription')"
+          :label="t('admin.promoPages.statusLabels.active')"
+          :description="t('admin.promoPages.form.activeDescription')"
         />
       </form>
 
       <template #footer>
         <AppButton variant="secondary" class="mr-2" @click="showModal = false">
-          {{ t("admin.homeBanners.form.cancel") }}
+          {{ t("admin.promoPages.form.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
-          :disabled="
-            !form.title ||
-            !form.imagePath ||
-            (form.linkType !== 'catalog' && !form.linkValue)
-          "
-          @click="saveBanner"
+          :disabled="!form.title || !form.imagePath"
+          @click="savePromoPage"
         >
-          {{ t("admin.homeBanners.form.save") }}
+          {{ t("admin.promoPages.form.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -342,16 +336,16 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      :title="t('admin.homeBanners.deleteModal.title')"
+      :title="t('admin.promoPages.deleteModal.title')"
       :message="
-        t('admin.homeBanners.deleteModal.message', {
-          title: bannerToDelete?.title || '',
+        t('admin.promoPages.deleteModal.message', {
+          title: promoPageToDelete?.title || '',
         })
       "
-      :confirm-text="t('admin.homeBanners.deleteModal.confirm')"
-      :cancel-text="t('admin.homeBanners.form.cancel')"
-      :loading="deletingBanner"
-      @confirm="confirmDeleteBanner"
+      :confirm-text="t('admin.promoPages.deleteModal.confirm')"
+      :cancel-text="t('admin.promoPages.form.cancel')"
+      :loading="deletingPromoPage"
+      @confirm="confirmDeletePromoPage"
     />
   </div>
 </template>
@@ -372,83 +366,34 @@ import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 const { t } = useI18n();
 const toast = useToast();
 
-const linkTypeOptions = computed(() => [
-  { value: "catalog", label: t("admin.homeBanners.linkTypes.catalog") },
-  { value: "category", label: t("admin.homeBanners.linkTypes.category") },
-  { value: "product", label: t("admin.homeBanners.linkTypes.product") },
-  { value: "promo", label: t("admin.homeBanners.linkTypes.promo") },
-  { value: "url", label: t("admin.homeBanners.linkTypes.url") },
-]);
-const linkTypeLabels = computed(() =>
-  Object.fromEntries(linkTypeOptions.value.map((o) => [o.value, o.label])),
+const promoPages = ref([]);
+const sortedPromoPages = computed(() =>
+  [...promoPages.value].sort((a, b) => a.sortOrder - b.sortOrder),
 );
 
-const linkValueLabel = computed(() => {
-  switch (form.value.linkType) {
-    case "category":
-      return t("admin.homeBanners.linkValueLabels.category");
-    case "product":
-      return t("admin.homeBanners.linkValueLabels.product");
-    case "promo":
-      return t("admin.homeBanners.linkValueLabels.promo");
-    case "url":
-      return t("admin.homeBanners.linkValueLabels.url");
-    default:
-      return t("admin.homeBanners.linkValueLabels.default");
-  }
-});
-const linkValuePlaceholder = computed(() => {
-  switch (form.value.linkType) {
-    case "category":
-      return t("admin.homeBanners.linkValuePlaceholders.category");
-    case "product":
-      return t("admin.homeBanners.linkValuePlaceholders.product");
-    case "promo":
-      return t("admin.homeBanners.linkValuePlaceholders.promo");
-    case "url":
-      return t("admin.homeBanners.linkValuePlaceholders.url");
-    default:
-      return t("admin.homeBanners.linkValuePlaceholders.default");
-  }
-});
-
-const categories = ref([]);
-const products = ref([]);
-const promoPages = ref([]);
-
-const fetchPickerData = async () => {
+const fetchPromoPages = async () => {
   try {
-    const [categoriesRes, productsRes, promoPagesRes] = await Promise.all([
-      api.get("/admin/categories"),
-      api.get("/admin/products"),
-      api.get("/admin/promo-pages"),
-    ]);
-    categories.value = categoriesRes.data.data;
-    products.value = productsRes.data.data;
-    promoPages.value = promoPagesRes.data.data;
+    const { data } = await api.get("/admin/promo-pages");
+    promoPages.value = data.data;
   } catch (error) {
-    console.error("Failed to load categories/products/promo pages:", error);
+    console.error("Failed to load promo pages:", error);
+    toast.error(t("admin.promoPages.alerts.loadError"));
   }
 };
 
-const banners = ref([]);
-const sortedBanners = computed(() =>
-  [...banners.value].sort((a, b) => a.sortOrder - b.sortOrder),
-);
-
-const fetchBanners = async () => {
+const allProducts = ref([]);
+const fetchProducts = async () => {
   try {
-    const { data } = await api.get("/admin/home-banners");
-    banners.value = data.data;
+    const { data } = await api.get("/admin/products");
+    allProducts.value = data.data;
   } catch (error) {
-    console.error("Failed to load home banners:", error);
-    toast.error(t("admin.homeBanners.alerts.loadError"));
+    console.error("Failed to load products:", error);
   }
 };
 
 onMounted(() => {
-  fetchBanners();
-  fetchPickerData();
+  fetchPromoPages();
+  fetchProducts();
 });
 
 const showModal = ref(false);
@@ -458,19 +403,38 @@ const uploading = ref(false);
 const defaultForm = () => ({
   id: null,
   badge: "",
-  subtitle: "",
   title: "",
+  subtitle: "",
   description: "",
   imagePath: "",
   imageUrl: "",
-  buttonLabel: "",
-  linkType: "catalog",
-  linkValue: "",
   isActive: true,
-  sortOrder: banners.value.length,
+  sortOrder: promoPages.value.length,
+  productIds: [],
 });
 
 const form = ref(defaultForm());
+const productToAdd = ref("");
+
+const selectedProducts = computed(() =>
+  allProducts.value.filter((p) => form.value.productIds.includes(p.id)),
+);
+const availableProducts = computed(() =>
+  allProducts.value.filter((p) => !form.value.productIds.includes(p.id)),
+);
+
+const addProduct = () => {
+  if (!productToAdd.value) return;
+  form.value.productIds = [
+    ...form.value.productIds,
+    Number(productToAdd.value),
+  ];
+  productToAdd.value = "";
+};
+
+const removeProduct = (id) => {
+  form.value.productIds = form.value.productIds.filter((pid) => pid !== id);
+};
 
 const openAddModal = () => {
   isEditing.value = false;
@@ -478,9 +442,12 @@ const openAddModal = () => {
   showModal.value = true;
 };
 
-const openEditModal = (banner) => {
+const openEditModal = (promoPage) => {
   isEditing.value = true;
-  form.value = { ...banner };
+  form.value = {
+    ...promoPage,
+    productIds: (promoPage.products || []).map((p) => p.id),
+  };
   showModal.value = true;
 };
 
@@ -491,78 +458,69 @@ const uploadImage = async (e) => {
   formData.append("image", file);
   uploading.value = true;
   try {
-    const { data } = await api.post("/admin/home-banners/upload", formData, {
+    const { data } = await api.post("/admin/promo-pages/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     form.value.imagePath = data.data.path;
     form.value.imageUrl = data.data.url;
   } catch (error) {
-    console.error("Failed to upload banner image:", error);
-    toast.error(t("admin.homeBanners.alerts.uploadError"));
+    console.error("Failed to upload promo page image:", error);
+    toast.error(t("admin.promoPages.alerts.uploadError"));
   } finally {
     uploading.value = false;
   }
 };
 
-const saveBanner = async () => {
+const savePromoPage = async () => {
   if (!form.value.title || !form.value.imagePath) return;
-  if (form.value.linkType !== "catalog" && !form.value.linkValue) {
-    toast.warning(t("admin.homeBanners.alerts.linkValueRequired"));
-    return;
-  }
   const payload = {
     badge: form.value.badge || null,
-    subtitle: form.value.subtitle || null,
     title: form.value.title,
+    subtitle: form.value.subtitle || null,
     description: form.value.description || null,
     imagePath: form.value.imagePath,
-    buttonLabel: form.value.buttonLabel || null,
-    linkType: form.value.linkType,
-    // The "product" picker's option-value is a numeric id (AppSelect emits it
-    // as a number), but linkValue is validated as a string on the backend.
-    linkValue:
-      form.value.linkType === "catalog" ? null : String(form.value.linkValue),
     isActive: form.value.isActive,
     sortOrder: form.value.sortOrder,
+    productIds: form.value.productIds,
   };
 
   try {
     if (isEditing.value) {
-      await api.put(`/admin/home-banners/${form.value.id}`, payload);
+      await api.put(`/admin/promo-pages/${form.value.id}`, payload);
     } else {
-      await api.post("/admin/home-banners", payload);
+      await api.post("/admin/promo-pages", payload);
     }
     showModal.value = false;
-    toast.success(t("admin.homeBanners.alerts.saveSuccess"));
-    fetchBanners();
+    toast.success(t("admin.promoPages.alerts.saveSuccess"));
+    fetchPromoPages();
   } catch (error) {
-    console.error("Failed to save banner:", error);
-    toast.error(t("admin.homeBanners.alerts.saveError"));
+    console.error("Failed to save promo page:", error);
+    toast.error(t("admin.promoPages.alerts.saveError"));
   }
 };
 
 const showDeleteModal = ref(false);
-const bannerToDelete = ref(null);
-const deletingBanner = ref(false);
+const promoPageToDelete = ref(null);
+const deletingPromoPage = ref(false);
 
-const deleteBanner = (banner) => {
-  bannerToDelete.value = banner;
+const deletePromoPage = (promoPage) => {
+  promoPageToDelete.value = promoPage;
   showDeleteModal.value = true;
 };
 
-const confirmDeleteBanner = async () => {
-  if (!bannerToDelete.value) return;
-  deletingBanner.value = true;
+const confirmDeletePromoPage = async () => {
+  if (!promoPageToDelete.value) return;
+  deletingPromoPage.value = true;
   try {
-    await api.delete(`/admin/home-banners/${bannerToDelete.value.id}`);
-    toast.success(t("admin.homeBanners.alerts.deleteSuccess"));
+    await api.delete(`/admin/promo-pages/${promoPageToDelete.value.id}`);
+    toast.success(t("admin.promoPages.alerts.deleteSuccess"));
     showDeleteModal.value = false;
-    fetchBanners();
+    fetchPromoPages();
   } catch (error) {
-    console.error("Failed to delete banner:", error);
-    toast.error(t("admin.homeBanners.alerts.deleteError"));
+    console.error("Failed to delete promo page:", error);
+    toast.error(t("admin.promoPages.alerts.deleteError"));
   } finally {
-    deletingBanner.value = false;
+    deletingPromoPage.value = false;
   }
 };
 </script>
