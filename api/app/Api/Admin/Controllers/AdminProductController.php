@@ -8,6 +8,8 @@ use App\Api\Admin\Actions\Product\BulkUpdateProductStatusAction;
 use App\Api\Admin\Actions\Product\CreateAdminProductAction;
 use App\Api\Admin\Actions\Product\DeleteAdminProductAction;
 use App\Api\Admin\Actions\Product\ListAdminProductsAction;
+use App\Api\Admin\Actions\Product\ListTrashedAdminProductsAction;
+use App\Api\Admin\Actions\Product\RestoreAdminProductAction;
 use App\Api\Admin\Actions\Product\UpdateAdminProductAction;
 use App\Api\Admin\Actions\Product\UploadProductImageAction;
 use App\Api\Admin\Dto\ProductDto;
@@ -77,5 +79,19 @@ class AdminProductController extends BaseApiController
         $count = $action->execute($request->input('ids'), (int) $request->input('categoryId'));
 
         return self::successfulResponseWithData(['updated' => $count]);
+    }
+
+    public function trashed(ListTrashedAdminProductsAction $action): JsonResponse
+    {
+        $products = $action->execute();
+
+        return self::successfulResponseWithData(AdminProductResource::collection($products));
+    }
+
+    public function restore(int $id, RestoreAdminProductAction $action): JsonResponse
+    {
+        $product = $action->execute($id);
+
+        return self::successfulResponseWithData(new AdminProductResource($product));
     }
 }

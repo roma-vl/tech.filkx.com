@@ -87,6 +87,7 @@ class AdminProductResource extends JsonResource
             'image' => $primaryImage,
             'hasImage' => $hasImage,
             'description' => $this->description['uk'] ?? $this->description['en'] ?? '',
+            'deletedAt' => $this->deleted_at?->toISOString(),
         ];
     }
 }

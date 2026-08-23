@@ -54,6 +54,33 @@ class ProductRepository implements ProductRepositoryInterface
         return Product::where('slug', $slug)->exists();
     }
 
+    public function findTrashed(int $id): ?Product
+    {
+        return Product::onlyTrashed()->find($id);
+    }
+
+    public function trashed(): Collection
+    {
+        return Product::onlyTrashed()
+            ->with([
+                'brand',
+                'categories',
+                'variants' => fn ($query) => $query->withTrashed()->with([
+                    'stocks',
+                    'attributeValues.attribute',
+                    'attributeValues.attributeValue',
+                ]),
+            ])
+            ->get();
+    }
+
+    public function restore(Product $product): bool
+    {
+        $product->variants()->withTrashed()->restore();
+
+        return (bool) $product->restore();
+    }
+
     public function queryActive(): Builder
     {
         return Product::with([

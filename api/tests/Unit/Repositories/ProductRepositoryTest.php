@@ -125,6 +125,49 @@ class ProductRepositoryTest extends TestCase
         $this->assertSame('discontinued-product', $reusedSlugProduct->slug);
     }
 
+    public function test_find_trashed_returns_a_soft_deleted_product(): void
+    {
+        $product = $this->makeProduct();
+        $this->repository->delete($product);
+
+        $found = $this->repository->findTrashed($product->id);
+
+        $this->assertNotNull($found);
+        $this->assertSame($product->id, $found->id);
+    }
+
+    public function test_find_trashed_returns_null_for_a_product_that_is_not_deleted(): void
+    {
+        $product = $this->makeProduct();
+
+        $this->assertNull($this->repository->findTrashed($product->id));
+    }
+
+    public function test_trashed_returns_only_soft_deleted_products(): void
+    {
+        $deleted = $this->makeProduct();
+        $this->repository->delete($deleted);
+        $active = $this->makeProduct();
+
+        $result = $this->repository->trashed();
+
+        $this->assertTrue($result->contains('id', $deleted->id));
+        $this->assertFalse($result->contains('id', $active->id));
+    }
+
+    public function test_restore_undoes_the_soft_delete_of_the_product_and_its_variants(): void
+    {
+        $product = $this->makeProduct();
+        $variant = $this->makeVariant($product, 100);
+        $this->repository->delete($product);
+
+        $result = $this->repository->restore($this->repository->findTrashed($product->id));
+
+        $this->assertTrue($result);
+        $this->assertNotNull(Product::find($product->id));
+        $this->assertNotNull(ProductVariant::find($variant->id));
+    }
+
     public function test_slug_exists_returns_true_when_a_product_has_the_slug(): void
     {
         $product = $this->makeProduct(['slug' => 'taken-slug']);
