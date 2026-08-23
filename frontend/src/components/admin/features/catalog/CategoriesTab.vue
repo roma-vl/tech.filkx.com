@@ -11,7 +11,7 @@
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="categorySearch"
-              placeholder="Пошук категорій за назвою чи slug..."
+              :placeholder="t('admin.products.categories.searchPlaceholder')"
             >
               <template #prepend>
                 <svg
@@ -34,9 +34,12 @@
           <div class="w-full md:w-64">
             <AppSelect
               v-model="parentFilter"
-              placeholder="Усі батьківські категорії"
+              :placeholder="t('admin.products.categories.allParentCategories')"
               :options="[
-                { id: '', nameUk: 'Усі батьківські категорії' },
+                {
+                  id: '',
+                  nameUk: t('admin.products.categories.allParentCategories'),
+                },
                 ...categories,
               ]"
               option-value="id"
@@ -64,7 +67,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Додати категорію
+            {{ t("admin.products.categories.addCategory") }}
           </AppButton>
         </div>
       </div>
@@ -80,37 +83,37 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                ID
+                {{ t("admin.products.categories.table.id") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва (UK)
+                {{ t("admin.products.categories.table.nameUk") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва (EN)
+                {{ t("admin.products.categories.table.nameEn") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Slug
+                {{ t("admin.products.categories.table.slug") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Характеристики
+                {{ t("admin.products.categories.table.attributes") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Батьківська категорія
+                {{ t("admin.products.categories.table.parent") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.products.categories.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -146,13 +149,21 @@
                     v-if="getOwnAttributesCount(cat.id) > 0"
                     class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
                   >
-                    Власних: {{ getOwnAttributesCount(cat.id) }}
+                    {{
+                      t("admin.products.categories.ownCount", {
+                        count: getOwnAttributesCount(cat.id),
+                      })
+                    }}
                   </span>
                   <span
                     v-if="getInheritedAttributesCount(cat.id) > 0"
                     class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
                   >
-                    Успадкованих: {{ getInheritedAttributesCount(cat.id) }}
+                    {{
+                      t("admin.products.categories.inheritedCount", {
+                        count: getInheritedAttributesCount(cat.id),
+                      })
+                    }}
                   </span>
                   <span
                     v-if="
@@ -161,12 +172,12 @@
                     "
                     class="text-gray-400 dark:text-gray-500 text-xs italic"
                   >
-                    —
+                    {{ t("admin.products.common.none") }}
                   </span>
                 </div>
               </td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                {{ cat.parentName || "—" }}
+                {{ cat.parentName || t("admin.products.categories.noParent") }}
               </td>
               <td
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -176,7 +187,7 @@
                     variant="ghost"
                     size="sm"
                     class="!p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
-                    title="Характеристики"
+                    :title="t('admin.products.categories.table.attributes')"
                     @click="openCategoryAttributesModal(cat)"
                   >
                     <svg
@@ -241,7 +252,7 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Категорій не знайдено за вашим запитом.
+                {{ t("admin.products.categories.empty") }}
               </td>
             </tr>
           </tbody>
@@ -261,30 +272,37 @@
     <!-- Category Modal -->
     <AppModal
       v-model="showCategoryModal"
-      :title="isEditing ? 'Редагувати категорію' : 'Додати категорію'"
+      :title="
+        isEditing
+          ? t('admin.products.categories.modal.editTitle')
+          : t('admin.products.categories.modal.addTitle')
+      "
       max-width="md"
     >
       <form class="space-y-4" @submit.prevent="saveCategory">
         <AppInput
           v-model="categoryForm.nameUk"
           required
-          label="Назва категорії (UK)"
-          placeholder="напр. Планшети"
+          :label="t('admin.products.categories.modal.nameUkLabel')"
+          :placeholder="t('admin.products.categories.modal.nameUkPlaceholder')"
         />
 
         <AppInput
           v-model="categoryForm.nameEn"
           required
-          label="Назва категорії (EN)"
-          placeholder="e.g. Tablets"
+          :label="t('admin.products.categories.modal.nameEnLabel')"
+          :placeholder="t('admin.products.categories.modal.nameEnPlaceholder')"
         />
 
         <AppSelect
           v-model="categoryForm.parentId"
-          label="Батьківська категорія"
-          placeholder="Немає (Головна категорія)"
+          :label="t('admin.products.categories.modal.parentLabel')"
+          :placeholder="t('admin.products.categories.modal.noParentOption')"
           :options="[
-            { id: null, nameUk: 'Немає (Головна категорія)' },
+            {
+              id: null,
+              nameUk: t('admin.products.categories.modal.noParentOption'),
+            },
             ...categories.filter((c) => c.id !== categoryForm.id),
           ]"
           option-value="id"
@@ -294,7 +312,7 @@
         <AppInput
           v-model.number="categoryForm.order"
           type="number"
-          label="Порядок сортування"
+          :label="t('admin.products.categories.modal.orderLabel')"
         />
       </form>
 
@@ -304,14 +322,14 @@
           class="mr-2"
           @click="showCategoryModal = false"
         >
-          Скасувати
+          {{ t("admin.products.categories.modal.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveCategory"
         >
-          Зберегти
+          {{ t("admin.products.categories.modal.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -319,10 +337,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення категорії"
-      :message="`Ви впевнені, що хочете видалити категорію &quot;${categoryToDelete?.nameUk || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.products.categories.deleteModal.title')"
+      :message="
+        t('admin.products.categories.deleteModal.message', {
+          name: categoryToDelete?.nameUk || '',
+        })
+      "
+      :confirm-text="t('admin.products.categories.deleteModal.confirm')"
+      :cancel-text="t('admin.products.categories.deleteModal.cancel')"
       :loading="deletingCategory"
       @confirm="confirmDeleteCategory"
     />
@@ -340,6 +362,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
@@ -348,6 +371,8 @@ import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import CategoryAttributesModal from "./CategoryAttributesModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   categories: { type: Array, required: true },

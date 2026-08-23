@@ -1,7 +1,11 @@
 <template>
   <AppModal
     :model-value="modelValue"
-    :title="`Характеристики категорії: ${category?.nameUk || ''}`"
+    :title="
+      t('admin.products.categoryAttributes.title', {
+        name: category?.nameUk || '',
+      })
+    "
     max-width="3xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -16,8 +20,10 @@
           <div class="flex-1 flex items-end gap-2">
             <AppSelect
               v-model="selectedAttrToBind"
-              label="Додати наявну характеристику"
-              placeholder="Оберіть характеристику..."
+              :label="t('admin.products.categoryAttributes.bindLabel')"
+              :placeholder="
+                t('admin.products.categoryAttributes.bindPlaceholder')
+              "
               :options="bindableAttributes"
               option-value="id"
               option-label="nameUk"
@@ -30,7 +36,7 @@
               :disabled="!selectedAttrToBind"
               @click="bindAttribute"
             >
-              Додати
+              {{ t("admin.products.categoryAttributes.bindButton") }}
             </AppButton>
           </div>
 
@@ -41,7 +47,7 @@
             class="sm:self-end h-[46px] !bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
             @click="goToCreate"
           >
-            + Створити нову
+            {{ t("admin.products.categoryAttributes.createNew") }}
           </AppButton>
         </div>
 
@@ -58,32 +64,32 @@
                   <th
                     class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    ID
+                    {{ t("admin.products.categoryAttributes.table.id") }}
                   </th>
                   <th
                     class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    Код
+                    {{ t("admin.products.categoryAttributes.table.code") }}
                   </th>
                   <th
                     class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    Назва (UK)
+                    {{ t("admin.products.categoryAttributes.table.nameUk") }}
                   </th>
                   <th
                     class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    Тип
+                    {{ t("admin.products.categoryAttributes.table.type") }}
                   </th>
                   <th
                     class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    Варіанти
+                    {{ t("admin.products.categoryAttributes.table.values") }}
                   </th>
                   <th
                     class="px-4 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                   >
-                    Дії
+                    {{ t("admin.products.categoryAttributes.table.actions") }}
                   </th>
                 </tr>
               </thead>
@@ -111,9 +117,20 @@
                       <span
                         v-if="attr.isInherited"
                         class="inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
-                        :title="`Ця характеристика є успадкованою від категорії: ${attr.sourceCategoryName}`"
+                        :title="
+                          t(
+                            'admin.products.categoryAttributes.inheritedTooltip',
+                            {
+                              name: attr.sourceCategoryName,
+                            },
+                          )
+                        "
                       >
-                        Успадковано від {{ attr.sourceCategoryName }}
+                        {{
+                          t("admin.products.categoryAttributes.inheritedFrom", {
+                            name: attr.sourceCategoryName,
+                          })
+                        }}
                       </span>
                     </div>
                   </td>
@@ -163,14 +180,20 @@
                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                         />
                       </svg>
-                      Керування в {{ attr.sourceCategoryName }}
+                      {{
+                        t("admin.products.categoryAttributes.manageIn", {
+                          name: attr.sourceCategoryName,
+                        })
+                      }}
                     </div>
                     <div v-else class="flex justify-end gap-1.5">
                       <AppButton
                         variant="ghost"
                         size="sm"
                         class="!p-1.5 text-blue-600 dark:text-blue-400"
-                        title="Редагувати"
+                        :title="
+                          t('admin.products.categoryAttributes.editTitle')
+                        "
                         @click="goToEdit(attr)"
                       >
                         <svg
@@ -191,7 +214,9 @@
                         variant="ghost"
                         size="sm"
                         class="!p-1.5 text-amber-600 dark:text-amber-400"
-                        title="Відв'язати від категорії"
+                        :title="
+                          t('admin.products.categoryAttributes.unbindTitle')
+                        "
                         @click="unbindAttribute(attr)"
                       >
                         <svg
@@ -212,7 +237,9 @@
                         variant="ghost"
                         size="sm"
                         class="!p-1.5 text-red-600 dark:text-red-400"
-                        title="Видалити повністю"
+                        :title="
+                          t('admin.products.categoryAttributes.deleteTitle')
+                        "
                         @click="deleteAttribute(attr)"
                       >
                         <svg
@@ -237,7 +264,7 @@
                     colspan="6"
                     class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic"
                   >
-                    Немає характеристик, прив'язаних до цієї категорії.
+                    {{ t("admin.products.categoryAttributes.empty") }}
                   </td>
                 </tr>
               </tbody>
@@ -254,8 +281,8 @@
           <h4 class="font-bold text-gray-950 dark:text-white">
             {{
               isEditing
-                ? "Редагувати характеристику"
-                : "Створити характеристику"
+                ? t("admin.products.categoryAttributes.formEditTitle")
+                : t("admin.products.categoryAttributes.formCreateTitle")
             }}
           </h4>
           <AppButton
@@ -265,7 +292,7 @@
             class="flex items-center gap-1"
             @click="goToList"
           >
-            ← Назад до списку
+            {{ t("admin.products.categoryAttributes.backToList") }}
           </AppButton>
         </div>
 
@@ -273,35 +300,56 @@
           <AppInput
             v-model="attributeForm.code"
             required
-            label="Код атрибуту (системний)"
-            placeholder="напр. color, ram, screen_size"
+            :label="t('admin.products.categoryAttributes.codeLabel')"
+            :placeholder="
+              t('admin.products.categoryAttributes.codePlaceholder')
+            "
           />
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <AppInput
               v-model="attributeForm.nameUk"
               required
-              label="Назва атрибуту (UK)"
-              placeholder="напр. Колір чи ОЗП"
+              :label="t('admin.products.categoryAttributes.nameUkLabel')"
+              :placeholder="
+                t('admin.products.categoryAttributes.nameUkPlaceholder')
+              "
             />
             <AppInput
               v-model="attributeForm.nameEn"
               required
-              label="Назва атрибуту (EN)"
-              placeholder="e.g. Color or RAM"
+              :label="t('admin.products.categoryAttributes.nameEnLabel')"
+              :placeholder="
+                t('admin.products.categoryAttributes.nameEnPlaceholder')
+              "
             />
           </div>
 
           <AppSelect
             v-model="attributeForm.type"
             required
-            label="Тип поля"
+            :label="t('admin.products.categoryAttributes.typeLabel')"
             :options="[
-              { id: 'text', name: 'Текст (Вільне введення)' },
-              { id: 'select', name: 'Випадаючий список варіантів' },
-              { id: 'color', name: 'Кольоровий вибір' },
-              { id: 'number', name: 'Число' },
-              { id: 'boolean', name: 'Так / Ні (Булеве)' },
+              {
+                id: 'text',
+                name: t('admin.products.categoryAttributes.typeText'),
+              },
+              {
+                id: 'select',
+                name: t('admin.products.categoryAttributes.typeSelect'),
+              },
+              {
+                id: 'color',
+                name: t('admin.products.categoryAttributes.typeColor'),
+              },
+              {
+                id: 'number',
+                name: t('admin.products.categoryAttributes.typeNumber'),
+              },
+              {
+                id: 'boolean',
+                name: t('admin.products.categoryAttributes.typeBoolean'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -315,16 +363,16 @@
             class="space-y-2 mt-2 pt-4 border-t border-gray-150 dark:border-gray-800"
           >
             <div class="flex justify-between items-center">
-              <label class="block text-xs font-bold text-gray-500 uppercase"
-                >Список можливих значень</label
-              >
+              <label class="block text-xs font-bold text-gray-500 uppercase">{{
+                t("admin.products.categoryAttributes.valuesLabel")
+              }}</label>
               <AppButton
                 type="button"
                 variant="text"
                 size="sm"
                 @click="addAttributeValue"
               >
-                + Додати значення
+                {{ t("admin.products.categoryAttributes.addValue") }}
               </AppButton>
             </div>
 
@@ -341,7 +389,9 @@
                   v-model="val.value"
                   required
                   type="text"
-                  placeholder="#FF0000"
+                  :placeholder="
+                    t('admin.products.categoryAttributes.colorPlaceholder')
+                  "
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
                 />
                 <input
@@ -355,14 +405,18 @@
                   v-model="val.valueUk"
                   required
                   type="text"
-                  placeholder="Значення (UK)"
+                  :placeholder="
+                    t('admin.products.categoryAttributes.valueUkPlaceholder')
+                  "
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
                 />
                 <input
                   v-model="val.valueEn"
                   required
                   type="text"
-                  placeholder="Value (EN)"
+                  :placeholder="
+                    t('admin.products.categoryAttributes.valueEnPlaceholder')
+                  "
                   class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-950 dark:text-white"
                 />
               </div>
@@ -374,7 +428,7 @@
                 class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-950/20"
                 @click="removeAttributeValue(vIdx)"
               >
-                Х
+                {{ t("admin.products.categoryAttributes.removeValue") }}
               </AppButton>
             </div>
           </div>
@@ -388,7 +442,7 @@
           variant="secondary"
           @click="$emit('update:modelValue', false)"
         >
-          Закрити
+          {{ t("admin.products.categoryAttributes.close") }}
         </AppButton>
         <AppButton
           v-if="currentView === 'form'"
@@ -396,7 +450,7 @@
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveAttribute"
         >
-          Зберегти характеристику
+          {{ t("admin.products.categoryAttributes.save") }}
         </AppButton>
       </div>
     </template>
@@ -405,10 +459,14 @@
   <!-- Delete Confirmation Modal -->
   <AppConfirmModal
     v-model="showDeleteModal"
-    title="Видалення характеристики"
-    :message="`Ви впевнені, що хочете остаточно видалити характеристику &quot;${attributeToDelete?.nameUk || ''}&quot; із системи?`"
-    confirm-text="Видалити"
-    cancel-text="Скасувати"
+    :title="t('admin.products.categoryAttributes.deleteModal.title')"
+    :message="
+      t('admin.products.categoryAttributes.deleteModal.message', {
+        name: attributeToDelete?.nameUk || '',
+      })
+    "
+    :confirm-text="t('admin.products.categoryAttributes.deleteModal.confirm')"
+    :cancel-text="t('admin.products.categoryAttributes.deleteModal.cancel')"
     :loading="deletingAttribute"
     @confirm="confirmDeleteAttribute"
   />
@@ -416,12 +474,15 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -497,7 +558,7 @@ const categoryAttributes = computed(() => {
         isInherited: true,
         sourceCategoryName: sourceCat
           ? sourceCat.nameUk
-          : "Батьківська категорія",
+          : t("admin.products.categoryAttributes.parentCategoryFallback"),
       };
     });
 

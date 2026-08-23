@@ -3,6 +3,7 @@ export default {
   view: "Переглянути",
   filter: "Фільтр",
   no_data: "Даних не знайдено",
+  loadingData: "Завантаження даних...",
   confirmModal: {
     title: "Підтвердження",
     message: "Ви впевнені, що хочете виконати цю дію?",

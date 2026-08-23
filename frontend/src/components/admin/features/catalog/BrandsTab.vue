@@ -11,7 +11,7 @@
           <div class="flex-1 max-w-md">
             <AppInput
               v-model="brandSearch"
-              placeholder="Пошук брендів за назвою чи slug..."
+              :placeholder="t('admin.products.brands.searchPlaceholder')"
             >
               <template #prepend>
                 <svg
@@ -51,7 +51,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Додати бренд
+            {{ t("admin.products.brands.addBrand") }}
           </AppButton>
         </div>
       </div>
@@ -67,32 +67,32 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                ID
+                {{ t("admin.products.brands.table.id") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва бренду
+                {{ t("admin.products.brands.table.name") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Slug
+                {{ t("admin.products.brands.table.slug") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Логотип URL
+                {{ t("admin.products.brands.table.logo") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Опис
+                {{ t("admin.products.brands.table.description") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.products.brands.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -123,14 +123,14 @@
                   class="truncate max-w-[150px] inline-block font-mono text-xs"
                   >{{ brand.logoPath }}</span
                 >
-                <span v-else class="text-gray-300 dark:text-gray-600"
-                  >немає</span
-                >
+                <span v-else class="text-gray-300 dark:text-gray-600">{{
+                  t("admin.products.brands.noLogo")
+                }}</span>
               </td>
               <td
                 class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 truncate max-w-[200px]"
               >
-                {{ brand.description || "—" }}
+                {{ brand.description || t("admin.products.common.none") }}
               </td>
               <td
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -184,7 +184,7 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Брендів не знайдено за вашим запитом.
+                {{ t("admin.products.brands.empty") }}
               </td>
             </tr>
           </tbody>
@@ -204,28 +204,32 @@
     <!-- Brand Modal -->
     <AppModal
       v-model="showBrandModal"
-      :title="isEditing ? 'Редагувати бренд' : 'Додати бренд'"
+      :title="
+        isEditing
+          ? t('admin.products.brands.modal.editTitle')
+          : t('admin.products.brands.modal.addTitle')
+      "
       max-width="md"
     >
       <form class="space-y-4" @submit.prevent="saveBrand">
         <AppInput
           v-model="brandForm.name"
           required
-          label="Назва бренду"
-          placeholder="напр. Apple чи Samsung"
+          :label="t('admin.products.brands.modal.nameLabel')"
+          :placeholder="t('admin.products.brands.modal.namePlaceholder')"
         />
 
         <AppInput
           v-model="brandForm.logoPath"
-          label="Логотип (URL)"
-          placeholder="https://logo-url.com"
+          :label="t('admin.products.brands.modal.logoLabel')"
+          :placeholder="t('admin.products.brands.modal.logoPlaceholder')"
         />
 
         <AppTextarea
           v-model="brandForm.description"
           rows="3"
-          label="Опис бренду"
-          placeholder="Короткий опис..."
+          :label="t('admin.products.brands.modal.descriptionLabel')"
+          :placeholder="t('admin.products.brands.modal.descriptionPlaceholder')"
         />
       </form>
 
@@ -235,14 +239,14 @@
           class="mr-2"
           @click="showBrandModal = false"
         >
-          Скасувати
+          {{ t("admin.products.brands.modal.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveBrand"
         >
-          Зберегти
+          {{ t("admin.products.brands.modal.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -250,10 +254,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення бренду"
-      :message="`Ви впевнені, що хочете видалити бренд &quot;${brandToDelete?.name || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.products.brands.deleteModal.title')"
+      :message="
+        t('admin.products.brands.deleteModal.message', {
+          name: brandToDelete?.name || '',
+        })
+      "
+      :confirm-text="t('admin.products.brands.deleteModal.confirm')"
+      :cancel-text="t('admin.products.brands.deleteModal.cancel')"
       :loading="deletingBrand"
       @confirm="confirmDeleteBrand"
     />
@@ -262,6 +270,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppTextarea from "@/components/admin/ui/AppTextarea.vue";
@@ -269,6 +278,8 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   brands: { type: Array, required: true },

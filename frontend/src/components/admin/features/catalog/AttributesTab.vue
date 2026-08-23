@@ -4,14 +4,14 @@
       class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
     >
       <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-        Характеристики та атрибути
+        {{ t("admin.products.attributes.pageTitle") }}
       </h2>
       <AppButton
         variant="primary"
         class="flex items-center gap-2"
         @click="openAddAttributeModal"
       >
-        Додати атрибут
+        {{ t("admin.products.attributes.addAttribute") }}
       </AppButton>
     </div>
 
@@ -25,37 +25,37 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                ID
+                {{ t("admin.products.attributes.table.id") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Код атрибуту
+                {{ t("admin.products.attributes.table.code") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва (UK)
+                {{ t("admin.products.attributes.table.nameUk") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Тип поля
+                {{ t("admin.products.attributes.table.type") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Категорії
+                {{ t("admin.products.attributes.table.categories") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Варіанти значень
+                {{ t("admin.products.attributes.table.values") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.products.attributes.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -108,7 +108,7 @@
                     v-if="!attr.categoryIds || attr.categoryIds.length === 0"
                     class="text-gray-400 dark:text-gray-500 text-xs italic"
                   >
-                    Усі категорії
+                    {{ t("admin.products.attributes.allCategories") }}
                   </span>
                 </div>
               </td>
@@ -175,7 +175,7 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Характеристик не створено.
+                {{ t("admin.products.attributes.empty") }}
               </td>
             </tr>
           </tbody>
@@ -186,41 +186,57 @@
     <!-- Attribute Modal -->
     <AppModal
       v-model="showAttributeModal"
-      :title="isEditing ? 'Редагувати атрибут' : 'Додати атрибут'"
+      :title="
+        isEditing
+          ? t('admin.products.attributes.modal.editTitle')
+          : t('admin.products.attributes.modal.addTitle')
+      "
       max-width="md"
     >
       <form class="space-y-4" @submit.prevent="saveAttribute">
         <AppInput
           v-model="attributeForm.code"
           required
-          label="Код атрибуту (системний)"
-          placeholder="напр. color, ram, screen_size"
+          :label="t('admin.products.attributes.modal.codeLabel')"
+          :placeholder="t('admin.products.attributes.modal.codePlaceholder')"
         />
 
         <AppInput
           v-model="attributeForm.nameUk"
           required
-          label="Назва атрибуту (UK)"
-          placeholder="напр. Колір чи ОЗП"
+          :label="t('admin.products.attributes.modal.nameUkLabel')"
+          :placeholder="t('admin.products.attributes.modal.nameUkPlaceholder')"
         />
 
         <AppInput
           v-model="attributeForm.nameEn"
           required
-          label="Назва атрибуту (EN)"
-          placeholder="e.g. Color or RAM"
+          :label="t('admin.products.attributes.modal.nameEnLabel')"
+          :placeholder="t('admin.products.attributes.modal.nameEnPlaceholder')"
         />
 
         <AppSelect
           v-model="attributeForm.type"
           required
-          label="Тип поля"
+          :label="t('admin.products.attributes.modal.typeLabel')"
           :options="[
-            { id: 'text', name: 'Текст (Вільне введення)' },
-            { id: 'select', name: 'Випадаючий список варіантів' },
-            { id: 'color', name: 'Кольоровий вибір' },
-            { id: 'number', name: 'Число' },
-            { id: 'boolean', name: 'Так / Ні (Булеве)' },
+            { id: 'text', name: t('admin.products.attributes.modal.typeText') },
+            {
+              id: 'select',
+              name: t('admin.products.attributes.modal.typeSelect'),
+            },
+            {
+              id: 'color',
+              name: t('admin.products.attributes.modal.typeColor'),
+            },
+            {
+              id: 'number',
+              name: t('admin.products.attributes.modal.typeNumber'),
+            },
+            {
+              id: 'boolean',
+              name: t('admin.products.attributes.modal.typeBoolean'),
+            },
           ]"
           option-value="id"
           option-label="name"
@@ -234,16 +250,16 @@
           class="space-y-2 mt-4 pt-4 border-t border-gray-150 dark:border-gray-700"
         >
           <div class="flex justify-between items-center">
-            <label class="block text-xs font-bold text-gray-500 uppercase"
-              >Список можливих значень</label
-            >
+            <label class="block text-xs font-bold text-gray-500 uppercase">{{
+              t("admin.products.attributes.modal.valuesLabel")
+            }}</label>
             <AppButton
               type="button"
               variant="text"
               size="sm"
               @click="addAttributeValue"
             >
-              + Додати значення
+              {{ t("admin.products.attributes.modal.addValue") }}
             </AppButton>
           </div>
 
@@ -260,7 +276,9 @@
                 v-model="val.value"
                 required
                 type="text"
-                placeholder="#FF0000"
+                :placeholder="
+                  t('admin.products.attributes.modal.colorPlaceholder')
+                "
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
               />
               <input
@@ -274,14 +292,18 @@
                 v-model="val.valueUk"
                 required
                 type="text"
-                placeholder="Значення (UK)"
+                :placeholder="
+                  t('admin.products.attributes.modal.valueUkPlaceholder')
+                "
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
               />
               <input
                 v-model="val.valueEn"
                 required
                 type="text"
-                placeholder="Value (EN)"
+                :placeholder="
+                  t('admin.products.attributes.modal.valueEnPlaceholder')
+                "
                 class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-xs"
               />
             </div>
@@ -293,7 +315,7 @@
               class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-950/20"
               @click="removeAttributeValue(vIdx)"
             >
-              Х
+              {{ t("admin.products.attributes.modal.removeValue") }}
             </AppButton>
           </div>
         </div>
@@ -305,14 +327,14 @@
           class="mr-2"
           @click="showAttributeModal = false"
         >
-          Скасувати
+          {{ t("admin.products.attributes.modal.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
           @click="saveAttribute"
         >
-          Зберегти
+          {{ t("admin.products.attributes.modal.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -320,10 +342,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення характеристики"
-      :message="`Ви впевнені, що хочете видалити характеристику &quot;${attributeToDelete?.nameUk || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.products.attributes.deleteModal.title')"
+      :message="
+        t('admin.products.attributes.deleteModal.message', {
+          name: attributeToDelete?.nameUk || '',
+        })
+      "
+      :confirm-text="t('admin.products.attributes.deleteModal.confirm')"
+      :cancel-text="t('admin.products.attributes.deleteModal.cancel')"
       :loading="deletingAttribute"
       @confirm="confirmDeleteAttribute"
     />
@@ -332,12 +358,15 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   attributes: { type: Array, required: true },
@@ -366,7 +395,9 @@ const attributeForm = ref({
 
 const getCategoryName = (id) => {
   const cat = props.categories.find((c) => c.id === id);
-  return cat ? cat.nameUk : `ID: ${id}`;
+  return cat
+    ? cat.nameUk
+    : t("admin.products.attributes.categoryIdFallback", { id });
 };
 
 const buildIndentedCategories = (cats, parentId = null, depth = 0) => {
