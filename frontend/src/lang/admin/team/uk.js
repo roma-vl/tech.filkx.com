@@ -1,0 +1,36 @@
+export default {
+  title: "Управління командою",
+  description:
+    "Керування обліковими записами адміністраторів та рівнями доступу",
+  invite_admin: "Запросити адміна",
+  total_members: "Усього членів",
+  owner_access: "Доступ власника",
+  loading: "Завантаження членів команди...",
+  no_members: "Персонал управління не знайдено.",
+  member: {
+    email: "Email",
+    last_active: "Остання активність",
+    status: "Статус",
+    modify_roles: "Змінити ролі",
+    revoke_access: "Відкликати доступ",
+    restore_access: "Відновити доступ",
+  },
+  invite: {
+    title: "Запросити члена команди",
+    description: "Надішліть запрошення приєднатися до команди адміністрування.",
+    full_name: "Повне ім'я",
+    email_address: "Email адреса",
+    assigned_role: "Призначена роль",
+    select_role: "Виберіть роль",
+    cancel: "Скасувати",
+    send_invite: "Надіслати запрошення",
+    sending: "Відправка...",
+  },
+  alerts: {
+    loadError: "Не вдалося завантажити членів команди.",
+    inviteSuccess: "Запрошення успішно надіслано!",
+    inviteError: "Не вдалося надіслати запрошення.",
+    statusToggleSuccess: "Статус успішно оновлено.",
+    statusToggleError: "Не вдалося оновити статус.",
+  },
+};

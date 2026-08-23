@@ -1,0 +1,31 @@
+export default {
+  title: "Email Architect",
+  description: "Manage and dispatch automated system communications",
+  search: "Search templates...",
+  broadcast_settings: "Broadcast Settings",
+  target_audience: "Target Audience",
+  dispatch_warning:
+    "This will queue emails for immediate delivery. This action cannot be undone once started.",
+  preview: "Preview",
+  broadcast: "Broadcast",
+  dispatching: "Dispatching...",
+  select_template: "Select a campaign template to begin configuration",
+  confirm_dispatch: "Confirm Dispatch",
+  confirm_message: "You are about to send '{name}' to {audience}.",
+  confirm_send: "Confirm & Send",
+  cancel: "Cancel",
+  preview_title: "{name} Preview",
+  suggested_audience: "Suggested Audience:",
+  audience: {
+    all: "All Clients",
+    active_subscribers: "Active Subscribers",
+    trial_expired: "Expired Trials",
+    new_users: "New Users (Last 7 days)",
+  },
+  alerts: {
+    loadError: "Failed to load campaigns.",
+    previewError: "Failed to generate preview.",
+    dispatchSuccess: "Broadcast started successfully.",
+    dispatchError: "Failed to start broadcast. Please check logs.",
+  },
+};
