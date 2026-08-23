@@ -24,7 +24,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          title="Фільтри"
+          :title="t('admin.marketing.coupons.filterPanel.toggle')"
           @click="showFilters = !showFilters"
         >
           <svg
@@ -70,12 +70,21 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <AppSelect
             v-model="statusFilter"
-            label="Статус"
-            placeholder="Всі статуси"
+            :label="t('admin.marketing.coupons.filterPanel.statusLabel')"
+            :placeholder="t('admin.marketing.coupons.filterPanel.statusAll')"
             :options="[
-              { id: '', name: 'Всі статуси' },
-              { id: 'active', name: 'Активні' },
-              { id: 'inactive', name: 'Неактивні' },
+              {
+                id: '',
+                name: t('admin.marketing.coupons.filterPanel.statusAll'),
+              },
+              {
+                id: 'active',
+                name: t('admin.marketing.coupons.filterPanel.statusActive'),
+              },
+              {
+                id: 'inactive',
+                name: t('admin.marketing.coupons.filterPanel.statusInactive'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -89,7 +98,7 @@
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
             @click="resetFilters"
           >
-            Скинути фільтри
+            {{ t("admin.marketing.coupons.filterPanel.reset") }}
           </AppButton>
         </div>
       </div>
@@ -119,8 +128,8 @@
       v-model="showDeleteConfirm"
       :title="t('admin.marketing.coupons.alerts.delete_confirm_title')"
       :message="deleteConfirmMessage"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :confirm-text="t('admin.marketing.coupons.alerts.confirmButton')"
+      :cancel-text="t('admin.marketing.coupons.cancel')"
       :loading="deleteLoading"
       @confirm="handleDeleteConfirm"
     />

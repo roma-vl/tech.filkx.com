@@ -15,7 +15,7 @@
           class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
         >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Основна інформація
+          {{ t("admin.marketing.promotions.sections.basicInfo") }}
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -35,7 +35,7 @@
         <AppTextarea
           v-model="form.description"
           :label="t('admin.marketing.promotions.description')"
-          placeholder="Опис акції..."
+          :placeholder="t('admin.marketing.promotions.descriptionPlaceholder')"
           rows="2"
         />
       </div>
@@ -45,7 +45,7 @@
           class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
         >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Налаштування знижки
+          {{ t("admin.marketing.promotions.sections.discountSettings") }}
         </h4>
 
         <div class="grid grid-cols-2 gap-6">
@@ -83,7 +83,10 @@
           type="number"
           step="0.01"
           min="0"
-          label="Мінімальна сума покупки (Опціонально)"
+          :label="
+            t('admin.marketing.promotions.minimumAmount') +
+            t('admin.marketing.promotions.optional_suffix')
+          "
           placeholder="0.00"
         />
       </div>
@@ -93,7 +96,7 @@
           class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
         >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Розклад акції
+          {{ t("admin.marketing.promotions.sections.schedule") }}
         </h4>
 
         <div class="grid grid-cols-2 gap-6">
@@ -101,13 +104,17 @@
             v-model="form.startsAt"
             type="datetime-local"
             :label="
-              t('admin.marketing.promotions.starts_at') + ' (Опціонально)'
+              t('admin.marketing.promotions.starts_at') +
+              t('admin.marketing.promotions.optional_suffix')
             "
           />
           <AppInput
             v-model="form.endsAt"
             type="datetime-local"
-            :label="t('admin.marketing.promotions.ends_at') + ' (Опціонально)'"
+            :label="
+              t('admin.marketing.promotions.ends_at') +
+              t('admin.marketing.promotions.optional_suffix')
+            "
           />
         </div>
       </div>
@@ -117,7 +124,7 @@
           class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2"
         >
           <span class="w-1.5 h-4 bg-[#00a046] rounded-full" />
-          Параметри застосування
+          {{ t("admin.marketing.promotions.sections.applicationSettings") }}
         </h4>
 
         <div
@@ -125,11 +132,20 @@
         >
           <AppSelect
             v-model="form.applicationType"
-            label="Спосіб застосування"
+            :label="t('admin.marketing.promotions.applicationType')"
             :options="[
-              { id: 'code', name: 'За промокодом' },
-              { id: 'auto', name: 'Автоматично' },
-              { id: 'url', name: 'За спеціальним посиланням' },
+              {
+                id: 'code',
+                name: t('admin.marketing.promotions.applicationTypes.code'),
+              },
+              {
+                id: 'auto',
+                name: t('admin.marketing.promotions.applicationTypes.auto'),
+              },
+              {
+                id: 'url',
+                name: t('admin.marketing.promotions.applicationTypes.url'),
+              },
             ]"
             option-value="id"
             option-label="name"
@@ -147,7 +163,7 @@
               <span
                 class="text-[10px] text-gray-405 dark:text-gray-500 uppercase tracking-wider"
               >
-                Автоматично застосувати до всього каталогу
+                {{ t("admin.marketing.promotions.sitewideDescription") }}
               </span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
@@ -170,15 +186,25 @@
               v-model.number="form.usageLimit"
               type="number"
               min="0"
-              label="Загальний ліміт використань (Опціонально)"
-              placeholder="Необмежено"
+              :label="
+                t('admin.marketing.promotions.usageLimit') +
+                t('admin.marketing.promotions.optional_suffix')
+              "
+              :placeholder="
+                t('admin.marketing.promotions.usageLimitPlaceholder')
+              "
             />
             <AppInput
               v-model.number="form.usageLimitPerUser"
               type="number"
               min="0"
-              label="Ліміт на одного користувача (Опціонально)"
-              placeholder="Необмежено"
+              :label="
+                t('admin.marketing.promotions.usageLimitPerUser') +
+                t('admin.marketing.promotions.optional_suffix')
+              "
+              :placeholder="
+                t('admin.marketing.promotions.usageLimitPlaceholder')
+              "
             />
           </div>
 
@@ -191,13 +217,17 @@
                 v-model="form.bannerText"
                 type="text"
                 :label="t('admin.marketing.promotions.banner_text')"
-                placeholder="Введіть текст банера..."
+                :placeholder="
+                  t('admin.marketing.promotions.bannerTextPlaceholder')
+                "
               />
               <AppInput
                 v-model="form.bannerColor"
                 type="text"
-                label="Колір банера"
-                placeholder="напр. primary, red, green або #FF0000"
+                :label="t('admin.marketing.promotions.bannerColor')"
+                :placeholder="
+                  t('admin.marketing.promotions.bannerColorPlaceholder')
+                "
               />
             </div>
           </transition>
@@ -453,7 +483,7 @@ const submit = async () => {
     const errorMessage =
       e.response?.data?.message || e.response?.data?.errors
         ? Object.values(e.response.data.errors).flat().join(", ")
-        : "Failed to save promotion";
+        : t("admin.marketing.promotions.alerts.saveError");
     error.value = errorMessage;
   } finally {
     loading.value = false;

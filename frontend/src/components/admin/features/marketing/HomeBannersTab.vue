@@ -6,11 +6,10 @@
     >
       <div>
         <h3 class="font-bold text-gray-900 dark:text-white">
-          Банери на головній сторінці
+          {{ t("admin.homeBanners.heading") }}
         </h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Керує слайдами hero-блоку на головній сторінці магазину. Порядок
-          визначається полем "Порядок".
+          {{ t("admin.homeBanners.headingDescription") }}
         </p>
       </div>
 
@@ -32,7 +31,7 @@
             d="M12 4v16m8-8H4"
           />
         </svg>
-        Додати банер
+        {{ t("admin.homeBanners.addBanner") }}
       </AppButton>
     </div>
 
@@ -46,32 +45,32 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Прев'ю
+                {{ t("admin.homeBanners.table.preview") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Заголовок
+                {{ t("admin.homeBanners.table.title") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Посилання
+                {{ t("admin.homeBanners.table.link") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Порядок
+                {{ t("admin.homeBanners.table.order") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Статус
+                {{ t("admin.homeBanners.table.status") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.homeBanners.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -115,7 +114,11 @@
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                   "
                 >
-                  {{ banner.isActive ? "Активний" : "Вимкнено" }}
+                  {{
+                    banner.isActive
+                      ? t("admin.homeBanners.statusLabels.active")
+                      : t("admin.homeBanners.statusLabels.inactive")
+                  }}
                 </span>
               </td>
               <td
@@ -170,8 +173,7 @@
                 colspan="6"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
-                Банерів ще немає. Без жодного банера на головній показується
-                нейтральний заповнювач без промо-контенту.
+                {{ t("admin.homeBanners.empty") }}
               </td>
             </tr>
           </tbody>
@@ -182,7 +184,11 @@
     <!-- Banner Modal -->
     <AppModal
       v-model="showModal"
-      :title="isEditing ? 'Редагувати банер' : 'Додати банер'"
+      :title="
+        isEditing
+          ? t('admin.homeBanners.form.editTitle')
+          : t('admin.homeBanners.addBanner')
+      "
       max-width="lg"
     >
       <form class="space-y-4" @submit.prevent="saveBanner">
@@ -190,7 +196,7 @@
           <label
             class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
           >
-            Зображення
+            {{ t("admin.homeBanners.form.imageLabel") }}
           </label>
           <div class="relative">
             <div
@@ -215,8 +221,8 @@
             >
               <span class="text-xs text-gray-400">{{
                 uploading
-                  ? "Завантаження..."
-                  : "Завантажити зображення (обов'язково)"
+                  ? t("admin.homeBanners.form.uploading")
+                  : t("admin.homeBanners.form.uploadPrompt")
               }}</span>
               <input
                 type="file"
@@ -230,21 +236,32 @@
 
         <AppInput
           v-model="form.badge"
-          label="Бейдж"
-          placeholder="напр. Новинка"
+          :label="t('admin.homeBanners.form.badgeLabel')"
+          :placeholder="t('admin.homeBanners.form.badgePlaceholder')"
         />
-        <AppInput v-model="form.subtitle" label="Підзаголовок" />
-        <AppInput v-model="form.title" required label="Заголовок" />
-        <AppTextarea v-model="form.description" rows="3" label="Опис" />
+        <AppInput
+          v-model="form.subtitle"
+          :label="t('admin.homeBanners.form.subtitleLabel')"
+        />
+        <AppInput
+          v-model="form.title"
+          required
+          :label="t('admin.homeBanners.table.title')"
+        />
+        <AppTextarea
+          v-model="form.description"
+          rows="3"
+          :label="t('admin.homeBanners.form.descriptionLabel')"
+        />
         <AppInput
           v-model="form.buttonLabel"
-          label="Текст кнопки"
-          placeholder="Переглянути"
+          :label="t('admin.homeBanners.form.buttonLabelLabel')"
+          :placeholder="t('admin.homeBanners.form.buttonLabelPlaceholder')"
         />
 
         <AppSelect
           v-model="form.linkType"
-          label="Тип посилання"
+          :label="t('admin.homeBanners.form.linkTypeLabel')"
           :options="linkTypeOptions"
           option-value="value"
           option-label="label"
@@ -259,19 +276,19 @@
         <AppInput
           v-model.number="form.sortOrder"
           type="number"
-          label="Порядок сортування"
+          :label="t('admin.homeBanners.form.sortOrderLabel')"
         />
 
         <AppToggle
           v-model="form.isActive"
-          label="Активний"
-          description="Неактивні банери не показуються на сайті"
+          :label="t('admin.homeBanners.statusLabels.active')"
+          :description="t('admin.homeBanners.form.activeDescription')"
         />
       </form>
 
       <template #footer>
         <AppButton variant="secondary" class="mr-2" @click="showModal = false">
-          Скасувати
+          {{ t("admin.homeBanners.form.cancel") }}
         </AppButton>
         <AppButton
           variant="primary"
@@ -279,7 +296,7 @@
           :disabled="!form.title || !form.imagePath"
           @click="saveBanner"
         >
-          Зберегти
+          {{ t("admin.homeBanners.form.save") }}
         </AppButton>
       </template>
     </AppModal>
@@ -287,10 +304,14 @@
     <!-- Delete Confirmation Modal -->
     <AppConfirmModal
       v-model="showDeleteModal"
-      title="Видалення банера"
-      :message="`Ви впевнені, що хочете видалити банер &quot;${bannerToDelete?.title || ''}&quot;?`"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :title="t('admin.homeBanners.deleteModal.title')"
+      :message="
+        t('admin.homeBanners.deleteModal.message', {
+          title: bannerToDelete?.title || '',
+        })
+      "
+      :confirm-text="t('admin.homeBanners.deleteModal.confirm')"
+      :cancel-text="t('admin.homeBanners.form.cancel')"
       :loading="deletingBanner"
       @confirm="confirmDeleteBanner"
     />
@@ -299,6 +320,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
@@ -309,40 +331,41 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppModal from "@/components/admin/ui/AppModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
+const { t } = useI18n();
 const toast = useToast();
 
-const linkTypeOptions = [
-  { value: "catalog", label: "Весь каталог" },
-  { value: "category", label: "Категорія" },
-  { value: "product", label: "Товар" },
-  { value: "url", label: "Довільне посилання" },
-];
-const linkTypeLabels = Object.fromEntries(
-  linkTypeOptions.map((o) => [o.value, o.label]),
+const linkTypeOptions = computed(() => [
+  { value: "catalog", label: t("admin.homeBanners.linkTypes.catalog") },
+  { value: "category", label: t("admin.homeBanners.linkTypes.category") },
+  { value: "product", label: t("admin.homeBanners.linkTypes.product") },
+  { value: "url", label: t("admin.homeBanners.linkTypes.url") },
+]);
+const linkTypeLabels = computed(() =>
+  Object.fromEntries(linkTypeOptions.value.map((o) => [o.value, o.label])),
 );
 
 const linkValueLabel = computed(() => {
   switch (form.value.linkType) {
     case "category":
-      return "Slug категорії";
+      return t("admin.homeBanners.linkValueLabels.category");
     case "product":
-      return "Slug товару";
+      return t("admin.homeBanners.linkValueLabels.product");
     case "url":
-      return "URL / шлях";
+      return t("admin.homeBanners.linkValueLabels.url");
     default:
-      return "Значення посилання";
+      return t("admin.homeBanners.linkValueLabels.default");
   }
 });
 const linkValuePlaceholder = computed(() => {
   switch (form.value.linkType) {
     case "category":
-      return "napr. smartphones";
+      return t("admin.homeBanners.linkValuePlaceholders.category");
     case "product":
-      return "napr. iphone-15-pro";
+      return t("admin.homeBanners.linkValuePlaceholders.product");
     case "url":
-      return "/category/audio";
+      return t("admin.homeBanners.linkValuePlaceholders.url");
     default:
-      return "";
+      return t("admin.homeBanners.linkValuePlaceholders.default");
   }
 });
 
@@ -357,7 +380,7 @@ const fetchBanners = async () => {
     banners.value = data.data;
   } catch (error) {
     console.error("Failed to load home banners:", error);
-    toast.error("Помилка завантаження банерів");
+    toast.error(t("admin.homeBanners.alerts.loadError"));
   }
 };
 
@@ -410,7 +433,7 @@ const uploadImage = async (e) => {
     form.value.imageUrl = data.data.url;
   } catch (error) {
     console.error("Failed to upload banner image:", error);
-    toast.error("Помилка завантаження зображення");
+    toast.error(t("admin.homeBanners.alerts.uploadError"));
   } finally {
     uploading.value = false;
   }
@@ -438,11 +461,11 @@ const saveBanner = async () => {
       await api.post("/admin/home-banners", payload);
     }
     showModal.value = false;
-    toast.success("Банер збережено");
+    toast.success(t("admin.homeBanners.alerts.saveSuccess"));
     fetchBanners();
   } catch (error) {
     console.error("Failed to save banner:", error);
-    toast.error("Помилка збереження банера");
+    toast.error(t("admin.homeBanners.alerts.saveError"));
   }
 };
 
@@ -460,12 +483,12 @@ const confirmDeleteBanner = async () => {
   deletingBanner.value = true;
   try {
     await api.delete(`/admin/home-banners/${bannerToDelete.value.id}`);
-    toast.success("Банер видалено");
+    toast.success(t("admin.homeBanners.alerts.deleteSuccess"));
     showDeleteModal.value = false;
     fetchBanners();
   } catch (error) {
     console.error("Failed to delete banner:", error);
-    toast.error("Помилка видалення банера");
+    toast.error(t("admin.homeBanners.alerts.deleteError"));
   } finally {
     deletingBanner.value = false;
   }

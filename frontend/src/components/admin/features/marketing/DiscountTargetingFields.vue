@@ -4,12 +4,12 @@
   >
     <div>
       <span class="text-sm font-semibold text-gray-900 dark:text-white block">
-        Цільова аудиторія
+        {{ t("admin.marketing.discountTargeting.title") }}
       </span>
       <span
         class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider"
       >
-        Нічого не обрано — знижка діє на весь каталог
+        {{ t("admin.marketing.discountTargeting.description") }}
       </span>
     </div>
 
@@ -17,7 +17,7 @@
       <label
         class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
       >
-        Категорії
+        {{ t("admin.marketing.discountTargeting.categoriesLabel") }}
       </label>
       <div
         v-if="categories.length"
@@ -38,7 +38,7 @@
         </label>
       </div>
       <p v-else class="text-xs text-gray-400 italic">
-        Немає доступних категорій.
+        {{ t("admin.marketing.discountTargeting.noCategoriesText") }}
       </p>
     </div>
 
@@ -46,12 +46,14 @@
       <label
         class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
       >
-        Товари
+        {{ t("admin.marketing.discountTargeting.productsLabel") }}
       </label>
       <div class="flex gap-2">
         <AppSelect
           v-model="productToAdd"
-          placeholder="Додати товар..."
+          :placeholder="
+            t('admin.marketing.discountTargeting.addProductPlaceholder')
+          "
           :options="availableProducts"
           option-value="id"
           option-label="nameUk"
@@ -64,7 +66,7 @@
           :disabled="!productToAdd"
           @click="addProduct"
         >
-          Додати
+          {{ t("admin.marketing.discountTargeting.addButton") }}
         </AppButton>
       </div>
       <div v-if="selectedProducts.length" class="flex flex-wrap gap-2 mt-3">
@@ -89,8 +91,11 @@
 
 <script setup>
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {

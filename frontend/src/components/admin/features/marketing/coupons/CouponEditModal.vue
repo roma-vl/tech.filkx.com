@@ -63,13 +63,19 @@
           v-model.number="form.usageLimit"
           type="number"
           min="1"
-          :label="t('admin.marketing.coupons.usage_limit') + ' (Опціонально)'"
-          placeholder="Необмежено"
+          :label="
+            t('admin.marketing.coupons.usage_limit') +
+            t('admin.marketing.coupons.optional_suffix')
+          "
+          :placeholder="t('admin.marketing.coupons.usage_limit_placeholder')"
         />
         <AppInput
           v-model="form.expiresAt"
           type="date"
-          :label="t('admin.marketing.coupons.expiry') + ' (Опціонально)'"
+          :label="
+            t('admin.marketing.coupons.expiry') +
+            t('admin.marketing.coupons.optional_suffix')
+          "
         />
       </div>
 
@@ -268,7 +274,9 @@ const submit = async () => {
     closeModal();
   } catch (e) {
     console.error(e);
-    error.value = e.response?.data?.message || "Failed to save coupon";
+    error.value =
+      e.response?.data?.message ||
+      t("admin.marketing.coupons.alerts.saveError");
   } finally {
     loading.value = false;
   }
