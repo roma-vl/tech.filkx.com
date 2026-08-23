@@ -48,7 +48,7 @@
               <button
                 class="px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
                 type="button"
-                @click="updateCartQuantity(item.id, item.quantity - 1)"
+                @click="decreaseQuantity(item)"
               >
                 <span class="material-symbols-outlined text-body-md"
                   >remove</span
@@ -66,14 +66,6 @@
                 <span class="material-symbols-outlined text-body-md">add</span>
               </button>
             </div>
-            <button
-              class="text-red-500 flex items-center gap-1 hover:underline"
-              type="button"
-              @click="removeFromCart(item.id)"
-            >
-              <span class="material-symbols-outlined text-[18px]">delete</span>
-              {{ t("cart.items.remove") }}
-            </button>
           </div>
           <div
             v-if="item.stock !== undefined && item.stock <= 0"
@@ -134,11 +126,23 @@
       </div>
     </div>
   </div>
+
+  <UiConfirmModal
+    :open="pendingRemoveId !== null"
+    :title="t('cart.items.confirmRemoveTitle')"
+    :message="t('cart.items.confirmRemoveMessage')"
+    :confirm-label="t('cart.items.confirmRemoveYes')"
+    :cancel-label="t('cart.items.confirmRemoveNo')"
+    @confirm="confirmRemove"
+    @cancel="pendingRemoveId = null"
+  />
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { CartItem } from "@/entities/order/types";
+import { UiConfirmModal } from "@/shared/ui";
 
 const { t } = useI18n();
 
@@ -154,12 +158,25 @@ const emit = defineEmits<{
   (e: "moveToCart", item: any): void;
 }>();
 
+const pendingRemoveId = ref<number | string | null>(null);
+
 function updateCartQuantity(id: number | string, val: number) {
   if (val < 1) return;
   emit("updateQuantity", id, val);
 }
 
-function removeFromCart(id: number | string) {
-  emit("remove", id);
+function decreaseQuantity(item: CartItem) {
+  if (item.quantity <= 1) {
+    pendingRemoveId.value = item.id;
+    return;
+  }
+  updateCartQuantity(item.id, item.quantity - 1);
+}
+
+function confirmRemove() {
+  if (pendingRemoveId.value !== null) {
+    emit("remove", pendingRemoveId.value);
+  }
+  pendingRemoveId.value = null;
 }
 </script>

@@ -178,7 +178,7 @@ export const authApi = {
     return apiClient.post("/user/viewed-products/sync", { items: mappedItems });
   },
   clearViewedProducts() {
-    return apiClient.delete("/user/viewed-products");
+    return apiClient.delete("/user/viewed-products/clear");
   },
 };
 

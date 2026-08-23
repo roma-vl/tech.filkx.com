@@ -17,17 +17,17 @@ const getIcon = (type: string) => {
   }
 };
 
-const getBgColor = (type: string) => {
+const getIconColor = (type: string) => {
   switch (type) {
     case "success":
-      return "bg-emerald-600 text-white";
+      return "bg-emerald-50 dark:bg-emerald-900/20 text-[#00a046]";
     case "error":
-      return "bg-error text-white";
+      return "bg-red-50 dark:bg-red-900/20 text-red-500";
     case "warning":
-      return "bg-amber-500 text-black";
+      return "bg-amber-50 dark:bg-amber-900/20 text-amber-500";
     case "info":
     default:
-      return "bg-secondary text-white";
+      return "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400";
   }
 };
 </script>
@@ -48,17 +48,23 @@ const getBgColor = (type: string) => {
       <div
         v-for="toast in cartStore.toasts"
         :key="toast.id"
-        class="flex items-start gap-3 p-4 rounded-xl shadow-lg border border-white/10 backdrop-blur-md transition-all duration-300 pointer-events-auto"
-        :class="getBgColor(toast.type)"
+        class="flex items-start gap-3 p-4 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-all duration-300 pointer-events-auto"
       >
-        <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5">
-          {{ getIcon(toast.type) }}
+        <span
+          class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+          :class="getIconColor(toast.type)"
+        >
+          <span class="material-symbols-outlined text-[18px]">
+            {{ getIcon(toast.type) }}
+          </span>
         </span>
-        <div class="flex-grow text-xs font-semibold leading-normal">
+        <div
+          class="flex-grow text-sm font-semibold leading-normal text-zinc-900 dark:text-white pt-1.5"
+        >
           {{ toast.message }}
         </div>
         <button
-          class="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+          class="shrink-0 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors mt-1.5"
           @click="cartStore.removeToast(toast.id)"
         >
           <span class="material-symbols-outlined text-[16px]">close</span>

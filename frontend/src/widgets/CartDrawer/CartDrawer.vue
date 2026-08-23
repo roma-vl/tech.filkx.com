@@ -1,12 +1,31 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { UiConfirmModal } from "@/shared/ui";
+import { CartItem } from "@/entities/order/types";
 
 const { t } = useI18n();
 const router = useRouter();
 const cartStore = useCartStore();
+
+const pendingRemoveId = ref<number | string | null>(null);
+
+function decreaseQuantity(item: CartItem) {
+  if (item.quantity <= 1) {
+    pendingRemoveId.value = item.id;
+    return;
+  }
+  cartStore.updateCartQuantity(item.id, item.quantity - 1);
+}
+
+function confirmRemove() {
+  if (pendingRemoveId.value !== null) {
+    cartStore.removeFromCart(pendingRemoveId.value);
+  }
+  pendingRemoveId.value = null;
+}
 
 // Mirrors the free-shipping threshold, flat fee and tax rate used in the real
 // checkout flow (see useShoppingCart.ts) so the drawer preview never disagrees
@@ -188,9 +207,7 @@ const checkout = () => {
                 <button
                   class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300"
                   type="button"
-                  @click="
-                    cartStore.updateCartQuantity(item.id, item.quantity - 1)
-                  "
+                  @click="decreaseQuantity(item)"
                 >
                   <span class="material-symbols-outlined text-[16px]"
                     >remove</span
@@ -212,17 +229,18 @@ const checkout = () => {
               </div>
             </div>
           </div>
-
-          <!-- Delete button -->
-          <button
-            class="absolute top-2 right-2 text-zinc-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-            type="button"
-            @click="cartStore.removeFromCart(item.id)"
-          >
-            <span class="material-symbols-outlined text-[18px]">delete</span>
-          </button>
         </div>
       </div>
+
+      <UiConfirmModal
+        :open="pendingRemoveId !== null"
+        :title="t('cart.items.confirmRemoveTitle')"
+        :message="t('cart.items.confirmRemoveMessage')"
+        :confirm-label="t('cart.items.confirmRemoveYes')"
+        :cancel-label="t('cart.items.confirmRemoveNo')"
+        @confirm="confirmRemove"
+        @cancel="pendingRemoveId = null"
+      />
 
       <!-- Footer (Summary + Checkout button) -->
       <div
