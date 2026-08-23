@@ -13,43 +13,48 @@
     <div class="p-6 space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <AppSelect
-          v-model="modelValue.currency"
+          :model-value="modelValue.currency"
           :label="$t('admin.settings.shop.currency')"
           :options="currencyOptions"
           option-label="label"
           option-value="value"
+          @update:model-value="updateField('currency', $event)"
         />
         <AppInput
-          v-model="modelValue.defaultTaxRate"
+          :model-value="modelValue.defaultTaxRate"
           type="number"
           :label="$t('admin.settings.shop.tax_rate')"
           :placeholder="'20'"
+          @update:model-value="updateField('defaultTaxRate', $event)"
         >
           <template #append>
             <span class="text-gray-400 text-sm">%</span>
           </template>
         </AppInput>
         <AppInput
-          v-model="modelValue.minOrderAmount"
+          :model-value="modelValue.minOrderAmount"
           type="number"
           :label="$t('admin.settings.shop.min_order')"
           :placeholder="'0'"
+          @update:model-value="updateField('minOrderAmount', $event)"
         />
         <AppInput
-          v-model="modelValue.freeShippingThreshold"
+          :model-value="modelValue.freeShippingThreshold"
           type="number"
           :label="$t('admin.settings.shop.free_shipping')"
           :placeholder="'0'"
+          @update:model-value="updateField('freeShippingThreshold', $event)"
         />
       </div>
       <div
         class="p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
       >
         <AppToggle
-          v-model="modelValue.allowGuestCheckout"
+          :model-value="modelValue.allowGuestCheckout"
           :label="$t('admin.settings.shop.guest_checkout')"
           :description="$t('admin.settings.shop.guest_checkout_desc')"
           active-color="violet"
+          @update:model-value="updateField('allowGuestCheckout', $event)"
         />
       </div>
     </div>
@@ -62,12 +67,18 @@ import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppToggle from "@/components/admin/ui/AppToggle.vue";
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
   },
 });
+
+const emit = defineEmits(["update:modelValue"]);
+
+const updateField = (key, value) => {
+  emit("update:modelValue", { ...props.modelValue, [key]: value });
+};
 
 const currencyOptions = [
   { label: "UAH — Гривня", value: "UAH" },

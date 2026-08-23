@@ -781,7 +781,8 @@ const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({
 const buildFilterParams = () => {
   const params = { sort: productSortFilter.value };
   if (productSearch.value) params.search = productSearch.value;
-  if (productCategoryFilter.value) params.categoryId = productCategoryFilter.value;
+  if (productCategoryFilter.value)
+    params.categoryId = productCategoryFilter.value;
   if (productBrandFilter.value) params.brandId = productBrandFilter.value;
   if (productStatusFilter.value) params.status = productStatusFilter.value;
   if (productHotFilter.value) params.hot = true;
@@ -884,9 +885,8 @@ const clearSelection = () => {
 
 const selectAllMatching = async () => {
   try {
-    const response = await productApi.adminSearchProductIds(
-      buildFilterParams(),
-    );
+    const response =
+      await productApi.adminSearchProductIds(buildFilterParams());
     selectedIds.value = response.data.data.ids;
   } catch (error) {
     console.error("Failed to fetch matching product ids:", error);

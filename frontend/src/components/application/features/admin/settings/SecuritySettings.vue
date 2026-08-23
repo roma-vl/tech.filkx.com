@@ -15,10 +15,11 @@
         class="p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
       >
         <AppToggle
-          v-model="modelValue.rateLimiting"
+          :model-value="modelValue.rateLimiting"
           :label="$t('admin.settings.security.rate_limiting')"
           :description="$t('admin.settings.security.rate_limiting_desc')"
           active-color="emerald"
+          @update:model-value="updateField('rateLimiting', $event)"
         />
       </div>
     </div>
@@ -29,10 +30,16 @@
 import { ShieldCheckIcon } from "@heroicons/vue/24/outline";
 import AppToggle from "@/components/admin/ui/AppToggle.vue";
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
   },
 });
+
+const emit = defineEmits(["update:modelValue"]);
+
+const updateField = (key, value) => {
+  emit("update:modelValue", { ...props.modelValue, [key]: value });
+};
 </script>

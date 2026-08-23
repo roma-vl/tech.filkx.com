@@ -13,6 +13,7 @@ class BulkRestoreAdminProductsActionTest extends TestCase
     use RefreshDatabase;
 
     private BulkRestoreAdminProductsAction $action;
+
     private ProductRepository $repository;
 
     protected function setUp(): void

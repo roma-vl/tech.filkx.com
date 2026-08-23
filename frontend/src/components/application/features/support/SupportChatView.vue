@@ -52,12 +52,13 @@
         </p>
       </div>
 
-      <SupportMessageItem
-        v-for="msg in activeTicket?.messages"
-        v-if="activeTicket"
-        :key="msg.id"
-        :message="msg"
-      />
+      <template v-if="activeTicket">
+        <SupportMessageItem
+          v-for="msg in activeTicket.messages"
+          :key="msg.id"
+          :message="msg"
+        />
+      </template>
 
       <div
         v-if="activeTicket?.handled_by === 'ai'"
