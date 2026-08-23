@@ -18,14 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Match checkout ownership to the container's fixed UID
-        # docker-compose.yml hardcodes `user: "1000:1000"` on the api containers to
-        # match a local dev machine's UID. actions/checkout on GitHub-hosted runners
-        # writes files as the `runner` user (UID 1001), so without this the bind-mounted
-        # ./api directory isn't writable by the container and `composer install` fails
-        # with "vendor does not exist and could not be created".
-        run: sudo chown -R 1000:1000 api
-
       - name: Create the external docker network
         run: docker network create filkx
 
@@ -34,6 +26,16 @@ jobs:
         # defaults DB_CONNECTION=sqlite, matching phpunit.xml's test configuration, so
         # tests don't need the real Postgres/Redis/Meilisearch services to be reachable.
         run: cp api/.env.example api/.env
+
+      - name: Match checkout ownership to the container's fixed UID
+        # docker-compose.yml hardcodes `user: "1000:1000"` on the api containers to
+        # match a local dev machine's UID. actions/checkout on GitHub-hosted runners
+        # writes files as the `runner` user (UID 1001), so without this the bind-mounted
+        # ./api directory isn't writable by the container and `composer install` fails
+        # with "vendor does not exist and could not be created". Must run after the .env
+        # copy above, which itself runs as `runner` directly on the host (not in a
+        # container) and needs to still own the directory to write into it.
+        run: sudo chown -R 1000:1000 api
 
       - name: Bring up the docker-compose stack
         run: docker compose up -d
