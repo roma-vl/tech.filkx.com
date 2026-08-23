@@ -72,6 +72,18 @@ export const productApi = {
     return apiClient.delete(`/admin/products/${id}`);
   },
 
+  adminSearchProducts(params?: Record<string, any>) {
+    return apiClient.get("/admin/products/search", { params });
+  },
+
+  adminSearchProductIds(params?: Record<string, any>) {
+    return apiClient.get("/admin/products/search-ids", { params });
+  },
+
+  adminBulkRestoreProducts(ids: Array<number | string>) {
+    return apiClient.post("/admin/products/bulk-restore", { ids });
+  },
+
   adminImportProducts(formData: FormData) {
     return apiClient.post("/admin/products/import", formData, {
       headers: { "Content-Type": "multipart/form-data" },

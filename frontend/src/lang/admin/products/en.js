@@ -131,6 +131,7 @@ export default {
     noBrand: "No brand",
     stockCount: "{count} pcs",
     empty: "No products found matching your search.",
+    loadError: "Failed to load products. Please try again.",
     perPageLabel: "Per page:",
     trash: {
       openButton: "Trash",
@@ -141,6 +142,12 @@ export default {
       restoreSuccess: 'Restored "{name}"',
       restoreError: "Failed to restore the product. Please try again.",
       loadError: "Failed to load deleted products.",
+      selectedCount: "Selected: {count}",
+      restoreSelected: "Restore selected",
+      bulkRestoreSuccess: "Restored {count} products",
+      bulkRestorePartial:
+        "Restored: {restored}, failed: {failed} (slug already taken by another product)",
+      bulkRestoreError: "Failed to restore the selected products. Please try again.",
     },
     deleteModal: {
       title: "Delete product",
@@ -150,6 +157,8 @@ export default {
     },
     bulk: {
       selectedCount: "Selected: {count}",
+      selectAllMatching: "Select all {count} matching the filter",
+      selectAllError: "Failed to fetch the matching products. Please try again.",
       clearSelection: "Clear selection",
       apply: "Apply",
       delete: "Delete selected",
@@ -182,6 +191,7 @@ export default {
       headerHot: "Hot",
       headerRecommended: "Recommended",
       noneValue: "—",
+      exportError: "Failed to export products. Please try again.",
     },
   },
   categories: {

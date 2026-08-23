@@ -66,9 +66,7 @@ class CheckoutController extends BaseApiController
             $order = $action->execute(PlaceOrderDto::fromRequest($request));
 
             return self::successfulResponseWithData(new CheckoutOrderResource($order), Response::HTTP_CREATED);
-        } catch (EmptyCartException $e) {
-            return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        } catch (CheckoutValidationException $e) {
+        } catch (EmptyCartException|CheckoutValidationException $e) {
             return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {
             return self::errorResponse('Помилка при створенні замовлення: '.$e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

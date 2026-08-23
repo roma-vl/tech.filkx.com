@@ -1,8 +1,9 @@
 <template>
   <div class="space-y-6">
-    <!-- LOADING OVERLAY (initial load only - refreshes keep ProductsTab mounted) -->
+    <!-- LOADING OVERLAY (categories/brands/attributes only - ProductsTab
+         fetches its own paginated product list independently) -->
     <div
-      v-if="isInitialLoading"
+      v-if="isLoading"
       class="relative min-h-[400px] flex items-center justify-center bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"
     >
       <div class="flex flex-col items-center gap-3">
@@ -17,11 +18,9 @@
 
     <ProductsTab
       v-else
-      :products="dbProducts"
       :categories="dbCategories"
       :brands="dbBrands"
       :attributes="dbAttributes"
-      @refresh="fetchProducts"
     />
   </div>
 </template>
@@ -33,42 +32,26 @@ import api from "@/shared/services/api/apiClient";
 import ProductsTab from "@/components/admin/features/catalog/ProductsTab.vue";
 
 const { t } = useI18n();
-const isInitialLoading = ref(true);
-const dbProducts = ref([]);
+const isLoading = ref(true);
 const dbCategories = ref([]);
 const dbBrands = ref([]);
 const dbAttributes = ref([]);
 
-// Products change far more often than categories/brands/attributes (every
-// delete, status change, etc.) - refetching only the list keeps ProductsTab
-// mounted across a refresh instead of losing its local pagination/selection
-// state, which is what used to reset the admin back to page 1.
-const fetchProducts = async () => {
-  try {
-    const productsRes = await api.get("/admin/products");
-    dbProducts.value = productsRes.data.data;
-  } catch (error) {
-    console.error("Failed to load products:", error);
-  }
-};
-
 const fetchAllData = async () => {
-  isInitialLoading.value = true;
+  isLoading.value = true;
   try {
-    const [productsRes, catsRes, brandsRes, attrsRes] = await Promise.all([
-      api.get("/admin/products"),
+    const [catsRes, brandsRes, attrsRes] = await Promise.all([
       api.get("/admin/categories"),
       api.get("/admin/brands"),
       api.get("/admin/attributes"),
     ]);
-    dbProducts.value = productsRes.data.data;
     dbCategories.value = catsRes.data.data;
     dbBrands.value = brandsRes.data.data;
     dbAttributes.value = attrsRes.data.data;
   } catch (error) {
     console.error("Failed to load catalog data:", error);
   } finally {
-    isInitialLoading.value = false;
+    isLoading.value = false;
   }
 };
 

@@ -132,6 +132,7 @@ export default {
     noBrand: "Без бренду",
     stockCount: "{count} шт",
     empty: "Товарів не знайдено за вашим запитом.",
+    loadError: "Не вдалося завантажити товари. Спробуйте ще раз.",
     perPageLabel: "На сторінці:",
     trash: {
       openButton: "Кошик",
@@ -142,6 +143,12 @@ export default {
       restoreSuccess: 'Товар "{name}" відновлено',
       restoreError: "Не вдалося відновити товар. Спробуйте ще раз.",
       loadError: "Не вдалося завантажити видалені товари.",
+      selectedCount: "Обрано: {count}",
+      restoreSelected: "Відновити обрані",
+      bulkRestoreSuccess: "Відновлено товарів: {count}",
+      bulkRestorePartial:
+        "Відновлено: {restored}, не вдалося: {failed} (slug вже зайнято іншим товаром)",
+      bulkRestoreError: "Не вдалося відновити обрані товари. Спробуйте ще раз.",
     },
     deleteModal: {
       title: "Видалення товару",
@@ -151,6 +158,8 @@ export default {
     },
     bulk: {
       selectedCount: "Обрано: {count}",
+      selectAllMatching: "Виділити всі {count}, що відповідають фільтру",
+      selectAllError: "Не вдалося отримати список товарів. Спробуйте ще раз.",
       clearSelection: "Зняти виділення",
       apply: "Застосувати",
       delete: "Видалити обрані",
@@ -182,6 +191,7 @@ export default {
       headerHot: "Гаряча",
       headerRecommended: "Рекомендовано",
       noneValue: "—",
+      exportError: "Не вдалося експортувати товари. Спробуйте ще раз.",
     },
   },
   categories: {

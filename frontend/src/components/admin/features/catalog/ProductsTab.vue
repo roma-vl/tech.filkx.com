@@ -108,6 +108,7 @@
           <AppButton
             variant="secondary"
             class="flex items-center gap-2 shrink-0 h-[38px] !py-0"
+            :disabled="isExporting"
             @click="exportCsv"
           >
             <svg
@@ -335,6 +336,19 @@
           </span>
 
           <AppButton
+            v-if="meta.total > selectedIds.length"
+            variant="text"
+            size="sm"
+            @click="selectAllMatching"
+          >
+            {{
+              t("admin.products.list.bulk.selectAllMatching", {
+                count: meta.total,
+              })
+            }}
+          </AppButton>
+
+          <AppButton
             variant="text"
             size="sm"
             class="!text-gray-500"
@@ -460,7 +474,7 @@
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr
-              v-for="product in paginatedProducts"
+              v-for="product in items"
               :key="product.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
@@ -607,12 +621,19 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="filteredProducts.length === 0">
+            <tr v-if="!isLoading && items.length === 0">
               <td
                 colspan="7"
                 class="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
               >
                 {{ t("admin.products.list.empty") }}
+              </td>
+            </tr>
+            <tr v-if="isLoading">
+              <td colspan="7" class="px-6 py-12 text-center">
+                <div
+                  class="animate-spin mx-auto rounded-full h-8 w-8 border-t-4 border-b-4 border-primary-500"
+                />
               </td>
             </tr>
           </tbody>
@@ -636,7 +657,8 @@
         </div>
         <AppPagination
           class="flex-1"
-          :pagination="paginationMeta"
+          :pagination="meta"
+          :disabled="isLoading"
           @page-change="onPageChange"
         />
       </div>
@@ -658,10 +680,7 @@
     />
 
     <!-- Trashed Products Modal -->
-    <TrashedProductsModal
-      v-model="showTrashModal"
-      @restored="emit('refresh')"
-    />
+    <TrashedProductsModal v-model="showTrashModal" @restored="fetchProducts" />
 
     <!-- Product Edit/Create Modal Component -->
     <ProductFormModal
@@ -670,16 +689,16 @@
       :categories="categories"
       :brands="brands"
       :attributes="attributes"
-      @refresh="emit('refresh')"
+      @refresh="fetchProducts"
     />
 
     <!-- Import Modal Component -->
     <ProductImportModal
       v-model="showImportModal"
-      :products="products"
+      :products="allProductsForImport"
       :categories="categories"
       :brands="brands"
-      @refresh="emit('refresh')"
+      @refresh="fetchProducts"
     />
 
     <!-- Delete Confirmation Modal -->
@@ -700,10 +719,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
+import { productApi } from "@/shared/services/api/productApi";
+import { useDebounce } from "@/shared/composables/useDebounce";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
 import AppButton from "@/components/admin/ui/AppButton.vue";
@@ -717,13 +738,10 @@ const { t } = useI18n();
 const toast = useToast();
 
 const props = defineProps({
-  products: { type: Array, required: true },
   categories: { type: Array, required: true },
   brands: { type: Array, required: true },
   attributes: { type: Array, required: true },
 });
-
-const emit = defineEmits(["refresh"]);
 
 const productSearch = ref("");
 const productCategoryFilter = ref("");
@@ -735,9 +753,7 @@ const productRecommendedFilter = ref(false);
 const productImageFilter = ref("");
 const productStockFilter = ref("");
 const showFilters = ref(false);
-
-const getTotalStock = (product) =>
-  (product.variants || []).reduce((sum, v) => sum + (v.stock || 0), 0);
+const debouncedSearch = useDebounce(productSearch, 400);
 
 const showProductModal = ref(false);
 const editingProduct = ref(null);
@@ -749,7 +765,12 @@ const showDeleteModal = ref(false);
 const productToDelete = ref(null);
 const deletingProduct = ref(false);
 
-// Pagination logic
+// Server-side pagination/filtering/search (via SearchAdminProductsAction,
+// Meilisearch-backed) - the catalog is too large to keep fetching and
+// filtering the whole thing client-side on every page load.
+const isLoading = ref(false);
+const items = ref([]);
+const meta = ref({ currentPage: 1, lastPage: 1, perPage: 15, total: 0 });
 const currentPage = ref(1);
 const perPage = ref(15);
 const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({
@@ -757,28 +778,54 @@ const perPageOptions = [10, 15, 25, 50, 100].map((n) => ({
   name: String(n),
 }));
 
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  return filteredProducts.value.slice(start, start + perPage.value);
-});
+const buildFilterParams = () => {
+  const params = { sort: productSortFilter.value };
+  if (productSearch.value) params.search = productSearch.value;
+  if (productCategoryFilter.value) params.categoryId = productCategoryFilter.value;
+  if (productBrandFilter.value) params.brandId = productBrandFilter.value;
+  if (productStatusFilter.value) params.status = productStatusFilter.value;
+  if (productHotFilter.value) params.hot = true;
+  if (productRecommendedFilter.value) params.recommended = true;
+  if (productImageFilter.value) params.hasImage = productImageFilter.value;
+  if (productStockFilter.value) params.stock = productStockFilter.value;
+  return params;
+};
 
-const paginationMeta = computed(() => ({
-  current_page: currentPage.value,
-  last_page: Math.max(
-    1,
-    Math.ceil(filteredProducts.value.length / perPage.value),
-  ),
-  per_page: perPage.value,
-  total: filteredProducts.value.length,
-}));
+const fetchProducts = async () => {
+  isLoading.value = true;
+  try {
+    const response = await productApi.adminSearchProducts({
+      ...buildFilterParams(),
+      page: currentPage.value,
+      perPage: perPage.value,
+    });
+    items.value = response.data.data.items;
+    meta.value = response.data.data.meta;
+
+    // Deleting (or bulk-deleting) products can shrink the list below the page
+    // the admin was on - e.g. removing the last product on page 16 - so clamp
+    // back to the new last page instead of the table rendering empty.
+    if (currentPage.value > meta.value.lastPage && meta.value.lastPage >= 1) {
+      currentPage.value = meta.value.lastPage;
+      await fetchProducts();
+      return;
+    }
+  } catch (error) {
+    console.error("Failed to load products:", error);
+    toast.error(t("admin.products.list.loadError"));
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const onPageChange = (page) => {
   currentPage.value = page;
+  fetchProducts();
 };
 
 watch(
   [
-    productSearch,
+    debouncedSearch,
     productCategoryFilter,
     productBrandFilter,
     productStatusFilter,
@@ -791,30 +838,26 @@ watch(
   ],
   () => {
     currentPage.value = 1;
+    fetchProducts();
   },
 );
 
-// Bulk selection - kept as an array of ids so a selection can span pages;
-// pruned below whenever the underlying product list changes (delete, etc.)
-// so it never holds ids for products that no longer exist.
+onMounted(fetchProducts);
+
+// Bulk selection - kept as an array of ids so it can span pages (and even
+// hold ids beyond the current page via "select all matching"). Stale ids
+// left behind by a delete elsewhere are harmless: the bulk endpoints already
+// ignore ids that no longer exist.
 const selectedIds = ref([]);
-
-watch(
-  () => props.products,
-  (list) => {
-    const existingIds = new Set(list.map((p) => p.id));
-    selectedIds.value = selectedIds.value.filter((id) => existingIds.has(id));
-  },
-);
 
 const allOnPageSelected = computed(
   () =>
-    paginatedProducts.value.length > 0 &&
-    paginatedProducts.value.every((p) => selectedIds.value.includes(p.id)),
+    items.value.length > 0 &&
+    items.value.every((p) => selectedIds.value.includes(p.id)),
 );
 
 const someOnPageSelected = computed(() =>
-  paginatedProducts.value.some((p) => selectedIds.value.includes(p.id)),
+  items.value.some((p) => selectedIds.value.includes(p.id)),
 );
 
 const toggleSelected = (id) => {
@@ -827,7 +870,7 @@ const toggleSelected = (id) => {
 };
 
 const toggleSelectAllOnPage = () => {
-  const pageIds = paginatedProducts.value.map((p) => p.id);
+  const pageIds = items.value.map((p) => p.id);
   if (allOnPageSelected.value) {
     selectedIds.value = selectedIds.value.filter((id) => !pageIds.includes(id));
   } else {
@@ -837,6 +880,18 @@ const toggleSelectAllOnPage = () => {
 
 const clearSelection = () => {
   selectedIds.value = [];
+};
+
+const selectAllMatching = async () => {
+  try {
+    const response = await productApi.adminSearchProductIds(
+      buildFilterParams(),
+    );
+    selectedIds.value = response.data.data.ids;
+  } catch (error) {
+    console.error("Failed to fetch matching product ids:", error);
+    toast.error(t("admin.products.list.bulk.selectAllError"));
+  }
 };
 
 const bulkActionLoading = ref(false);
@@ -853,7 +908,7 @@ const confirmBulkDelete = async () => {
     });
     clearSelection();
     showBulkDeleteModal.value = false;
-    emit("refresh");
+    await fetchProducts();
     toast.success(
       t("admin.products.list.bulk.alerts.deleteSuccess", { count }),
     );
@@ -876,7 +931,7 @@ const applyBulkStatus = async () => {
     });
     clearSelection();
     bulkStatusValue.value = "";
-    emit("refresh");
+    await fetchProducts();
     toast.success(
       t("admin.products.list.bulk.alerts.statusSuccess", { count }),
     );
@@ -899,7 +954,7 @@ const applyBulkCategory = async () => {
     });
     clearSelection();
     bulkCategoryValue.value = "";
-    emit("refresh");
+    await fetchProducts();
     toast.success(
       t("admin.products.list.bulk.alerts.categorySuccess", { count }),
     );
@@ -937,172 +992,105 @@ const resetFilters = () => {
   productStockFilter.value = "";
 };
 
-const filteredProducts = computed(() => {
-  let list = props.products.filter((product) => {
-    const query = (productSearch.value || "").toLowerCase().trim();
-    const nameMatch =
-      !query ||
-      (product.nameUk || "").toLowerCase().includes(query) ||
-      (product.nameEn || "").toLowerCase().includes(query) ||
-      (product.variants || []).some((v) =>
-        (v.sku || "").toLowerCase().includes(query),
-      );
+// The main table only ever holds one page of products, so CSV export and the
+// CSV importer's duplicate-id lookup each fetch what they need separately
+// instead of reusing `items`.
+const isExporting = ref(false);
 
-    const catMatch =
-      !productCategoryFilter.value ||
-      product.categoryId === parseInt(productCategoryFilter.value);
-    const brandMatch =
-      !productBrandFilter.value ||
-      product.brandId === parseInt(productBrandFilter.value);
-    const statusMatch =
-      !productStatusFilter.value ||
-      product.status === productStatusFilter.value;
-    const hotMatch = !productHotFilter.value || product.isHot;
-    const recMatch = !productRecommendedFilter.value || product.isRecommended;
-    const imageMatch =
-      !productImageFilter.value ||
-      (productImageFilter.value === "with"
-        ? product.hasImage
-        : !product.hasImage);
-    const stockMatch =
-      !productStockFilter.value ||
-      (productStockFilter.value === "inStock"
-        ? getTotalStock(product) > 0
-        : getTotalStock(product) === 0);
+const exportCsv = async () => {
+  isExporting.value = true;
+  try {
+    const baseParams = buildFilterParams();
+    let all = [];
+    let page = 1;
+    let lastPage = 1;
+    do {
+      const response = await productApi.adminSearchProducts({
+        ...baseParams,
+        page,
+        perPage: 100,
+      });
+      all = all.concat(response.data.data.items);
+      lastPage = response.data.data.meta.lastPage;
+      page++;
+    } while (page <= lastPage);
 
-    return (
-      nameMatch &&
-      catMatch &&
-      brandMatch &&
-      statusMatch &&
-      hotMatch &&
-      recMatch &&
-      imageMatch &&
-      stockMatch
-    );
-  });
-
-  if (productSortFilter.value) {
-    list.sort((a, b) => {
-      if (productSortFilter.value === "name-asc") {
-        return (a.nameUk || "").localeCompare(b.nameUk || "");
-      } else if (productSortFilter.value === "name-desc") {
-        return (b.nameUk || "").localeCompare(a.nameUk || "");
-      } else if (productSortFilter.value === "price-asc") {
-        const aMin = Math.min(
-          ...(a.variants || []).map((v) => v.price),
-          Infinity,
-        );
-        const bMin = Math.min(
-          ...(b.variants || []).map((v) => v.price),
-          Infinity,
-        );
-        return aMin - bMin;
-      } else if (productSortFilter.value === "price-desc") {
-        const aMax = Math.max(
-          ...(a.variants || []).map((v) => v.price),
-          -Infinity,
-        );
-        const bMax = Math.max(
-          ...(b.variants || []).map((v) => v.price),
-          -Infinity,
-        );
-        return bMax - aMax;
-      } else if (productSortFilter.value === "stock-desc") {
-        const aStock = (a.variants || []).reduce(
-          (sum, v) => sum + (v.stock || 0),
-          0,
-        );
-        const bStock = (b.variants || []).reduce(
-          (sum, v) => sum + (v.stock || 0),
-          0,
-        );
-        return bStock - aStock;
-      } else if (productSortFilter.value === "stock-asc") {
-        const aStock = (a.variants || []).reduce(
-          (sum, v) => sum + (v.stock || 0),
-          0,
-        );
-        const bStock = (b.variants || []).reduce(
-          (sum, v) => sum + (v.stock || 0),
-          0,
-        );
-        return aStock - bStock;
-      }
-      return 0;
-    });
-  }
-
-  return list;
-});
-
-const exportCsv = () => {
-  const headers = [
-    t("admin.products.list.export.headerId"),
-    t("admin.products.list.export.headerNameUk"),
-    t("admin.products.list.export.headerNameEn"),
-    t("admin.products.list.export.headerCategory"),
-    t("admin.products.list.export.headerBrand"),
-    t("admin.products.list.export.headerVariants"),
-    t("admin.products.list.export.headerStatus"),
-    t("admin.products.list.export.headerHot"),
-    t("admin.products.list.export.headerRecommended"),
-  ];
-  const rows = filteredProducts.value.map((p) => {
-    const variantsStr = (p.variants || [])
-      .map(
-        (v) =>
-          `${v.sku} (${v.price} UAH, ${t("admin.products.list.stockCount", { count: v.stock })})`,
-      )
-      .join(" | ");
-    const noneValue = t("admin.products.list.export.noneValue");
-    return [
-      p.id,
-      p.nameUk,
-      p.nameEn,
-      p.categoryName || noneValue,
-      p.brandName || noneValue,
-      variantsStr,
-      p.status,
-      // "Так"/"Ні" are the CSV import format's expected literals for these
-      // columns (see ProductImportModal.vue's parser), not UI copy — keep
-      // them fixed regardless of the admin's locale so round-tripping an
-      // exported file back through the importer keeps working.
-      p.isHot ? "Так" : "Ні",
-      p.isRecommended ? "Так" : "Ні",
+    const headers = [
+      t("admin.products.list.export.headerId"),
+      t("admin.products.list.export.headerNameUk"),
+      t("admin.products.list.export.headerNameEn"),
+      t("admin.products.list.export.headerCategory"),
+      t("admin.products.list.export.headerBrand"),
+      t("admin.products.list.export.headerVariants"),
+      t("admin.products.list.export.headerStatus"),
+      t("admin.products.list.export.headerHot"),
+      t("admin.products.list.export.headerRecommended"),
     ];
-  });
+    const rows = all.map((p) => {
+      const variantsStr = (p.variants || [])
+        .map(
+          (v) =>
+            `${v.sku} (${v.price} UAH, ${t("admin.products.list.stockCount", { count: v.stock })})`,
+        )
+        .join(" | ");
+      const noneValue = t("admin.products.list.export.noneValue");
+      return [
+        p.id,
+        p.nameUk,
+        p.nameEn,
+        p.categoryName || noneValue,
+        p.brandName || noneValue,
+        variantsStr,
+        p.status,
+        // "Так"/"Ні" are the CSV import format's expected literals for these
+        // columns (see ProductImportModal.vue's parser), not UI copy — keep
+        // them fixed regardless of the admin's locale so round-tripping an
+        // exported file back through the importer keeps working.
+        p.isHot ? "Так" : "Ні",
+        p.isRecommended ? "Так" : "Ні",
+      ];
+    });
 
-  const csvContent =
-    "\uFEFF" +
-    [headers, ...rows]
-      .map((e) =>
-        e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(","),
-      )
-      .join("\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", `products-export-${new Date().getTime()}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    const csvContent =
+      "\uFEFF" +
+      [headers, ...rows]
+        .map((e) =>
+          e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(","),
+        )
+        .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `products-export-${new Date().getTime()}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Failed to export products:", error);
+    toast.error(t("admin.products.list.export.exportError"));
+  } finally {
+    isExporting.value = false;
+  }
 };
 
-// Deleting (or bulk-deleting) products can shrink the list below the page
-// the admin was on - e.g. removing the last product on page 16 - so clamp
-// back to the new last page instead of the table silently rendering empty.
-// Placed after filteredProducts (which paginationMeta depends on) since
-// watch() evaluates its getter synchronously on creation.
-watch(
-  () => paginationMeta.value.last_page,
-  (lastPage) => {
-    if (currentPage.value > lastPage) {
-      currentPage.value = lastPage;
-    }
-  },
-);
+// The CSV importer matches rows against existing products by id, which needs
+// the full catalog rather than the current page - fetched lazily only when
+// the modal is actually opened.
+const allProductsForImport = ref([]);
+
+watch(showImportModal, async (isOpen) => {
+  if (!isOpen) return;
+  try {
+    const response = await productApi.adminGetProducts();
+    allProductsForImport.value = response.data.data;
+  } catch (error) {
+    console.error("Failed to load products for import:", error);
+  }
+});
 
 const openAddProductModal = () => {
   editingProduct.value = null;
@@ -1124,7 +1112,7 @@ const confirmDeleteProduct = async () => {
   deletingProduct.value = true;
   try {
     await api.delete(`/admin/products/${productToDelete.value.id}`);
-    emit("refresh");
+    await fetchProducts();
     showDeleteModal.value = false;
   } catch (error) {
     console.error("Failed to delete product:", error);
