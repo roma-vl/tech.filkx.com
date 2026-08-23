@@ -154,7 +154,11 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getRelated(Product $product, int $limit = 8): Collection
     {
-        $categoryIds = $product->categories->pluck('id');
+        // Query fresh rather than reading $product->categories: Scout's Searchable trait
+        // indexes the model synchronously on create/save, which eager-loads (and caches
+        // empty) this relation before a caller has had a chance to attach categories to a
+        // newly created product.
+        $categoryIds = $product->categories()->pluck('categories.id');
 
         $related = Product::with([
             'brand',
