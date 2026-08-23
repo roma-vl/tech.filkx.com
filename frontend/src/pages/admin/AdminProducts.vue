@@ -1,6 +1,7 @@
 <template>
   <div class="space-y-6">
-    <!-- LOADING OVERLAY -->
+    <!-- LOADING OVERLAY (categories/brands/attributes only - ProductsTab
+         fetches its own paginated product list independently) -->
     <div
       v-if="isLoading"
       class="relative min-h-[400px] flex items-center justify-center bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"
@@ -15,15 +16,12 @@
       </div>
     </div>
 
-    <div v-else>
-      <ProductsTab
-        :products="dbProducts"
-        :categories="dbCategories"
-        :brands="dbBrands"
-        :attributes="dbAttributes"
-        @refresh="fetchAllData"
-      />
-    </div>
+    <ProductsTab
+      v-else
+      :categories="dbCategories"
+      :brands="dbBrands"
+      :attributes="dbAttributes"
+    />
   </div>
 </template>
 
@@ -34,8 +32,7 @@ import api from "@/shared/services/api/apiClient";
 import ProductsTab from "@/components/admin/features/catalog/ProductsTab.vue";
 
 const { t } = useI18n();
-const isLoading = ref(false);
-const dbProducts = ref([]);
+const isLoading = ref(true);
 const dbCategories = ref([]);
 const dbBrands = ref([]);
 const dbAttributes = ref([]);
@@ -43,16 +40,13 @@ const dbAttributes = ref([]);
 const fetchAllData = async () => {
   isLoading.value = true;
   try {
-    const productsRes = await api.get("/admin/products");
-    dbProducts.value = productsRes.data.data;
-
-    const catsRes = await api.get("/admin/categories");
+    const [catsRes, brandsRes, attrsRes] = await Promise.all([
+      api.get("/admin/categories"),
+      api.get("/admin/brands"),
+      api.get("/admin/attributes"),
+    ]);
     dbCategories.value = catsRes.data.data;
-
-    const brandsRes = await api.get("/admin/brands");
     dbBrands.value = brandsRes.data.data;
-
-    const attrsRes = await api.get("/admin/attributes");
     dbAttributes.value = attrsRes.data.data;
   } catch (error) {
     console.error("Failed to load catalog data:", error);

@@ -44,7 +44,8 @@ class AdminProductResource extends JsonResource
 
         // Mapped properties for list view (take first variant's details)
         $firstVar = $variantsMapped->first();
-        $primaryImage = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop';
+        $placeholderImage = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop';
+        $primaryImage = $placeholderImage;
         if ($firstVar && ! empty($firstVar['images'])) {
             foreach ($firstVar['images'] as $img) {
                 if (! empty($img['isPrimary'])) {
@@ -52,10 +53,13 @@ class AdminProductResource extends JsonResource
                     break;
                 }
             }
-            if ($primaryImage === 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&fit=crop') {
+            if ($primaryImage === $placeholderImage) {
                 $primaryImage = $firstVar['images'][0]['url'] ?? $primaryImage;
             }
         }
+        // Distinguishes a real uploaded image from the placeholder fallback above,
+        // since $primaryImage is never empty and can't be used for that on its own.
+        $hasImage = $primaryImage !== $placeholderImage;
 
         $firstCategory = $this->categories->first();
 
@@ -81,7 +85,9 @@ class AdminProductResource extends JsonResource
             'discountPrice' => $firstVar ? $firstVar['oldPrice'] : null,
             'stock' => $firstVar ? $firstVar['stock'] : 0,
             'image' => $primaryImage,
+            'hasImage' => $hasImage,
             'description' => $this->description['uk'] ?? $this->description['en'] ?? '',
+            'deletedAt' => $this->deleted_at?->toISOString(),
         ];
     }
 }

@@ -19,7 +19,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          :title="$t('common.filter')"
+          :title="$t('admin.common.filter')"
           @click="showFilters = !showFilters"
         >
           <FunnelIcon

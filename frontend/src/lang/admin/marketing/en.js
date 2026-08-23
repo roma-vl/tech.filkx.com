@@ -78,6 +78,7 @@ export default {
   },
   promotions: {
     title: "Marketing Promotions",
+    description: "Manage discount campaigns and their rules",
     new: "New Campaign",
     new_subtitle: "Launch a new marketing promotion",
     edit: "Edit Campaign",

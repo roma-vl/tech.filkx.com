@@ -321,6 +321,7 @@ class AdminAccountingController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/billing/payments/{id}/confirm',
         summary: 'Approve or reject a pending payment',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -330,7 +331,6 @@ class AdminAccountingController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Accounting'],
         parameters: [
             new OA\Parameter(
@@ -382,7 +382,7 @@ class AdminAccountingController extends BaseApiController
                             property: 'data',
                             properties: [
                                 new OA\Property(property: 'id', type: 'integer', example: 1),
-                                new OA\Property(property: 'proofUrl', type: 'string', nullable: true, example: null),
+                                new OA\Property(property: 'proofUrl', type: 'string', example: null, nullable: true),
                                 new OA\Property(property: 'note', type: 'string', example: 'No payment proof uploaded for this order.'),
                             ],
                             type: 'object',

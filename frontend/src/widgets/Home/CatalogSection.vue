@@ -141,12 +141,12 @@ onServerPrefetch(async () => {
     <!-- Products Grid -->
     <div
       v-if="isLoadingProds"
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
     >
       <div
         v-for="i in TEASER_SIZE"
         :key="i"
-        class="flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
+        class="flex flex-col border border-zinc-200 dark:border-zinc-800 p-4 space-y-2.5 animate-pulse"
       >
         <div class="aspect-square bg-zinc-200 dark:bg-zinc-800" />
         <div class="h-3 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />
@@ -166,7 +166,7 @@ onServerPrefetch(async () => {
 
     <div
       v-else-if="bestsellers.length > 0"
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 border-t border-l border-zinc-200 dark:border-zinc-800 animate-in fade-in duration-300"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 animate-in fade-in duration-300"
     >
       <ProductCard
         v-for="prod in bestsellers"

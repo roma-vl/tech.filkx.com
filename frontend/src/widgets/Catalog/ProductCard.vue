@@ -1,11 +1,12 @@
 <template>
   <article
-    :class="
+    :class="[
       viewMode === 'grid'
-        ? 'flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:border hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10]'
-        : 'flex-col sm:flex-row rounded-md border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 hover:-translate-y-0.5'
-    "
-    class="group flex relative hover:shadow-2xl transition-all duration-200"
+        ? 'flex-col border border-zinc-200 dark:border-zinc-800 hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10]'
+        : 'flex-col sm:flex-row rounded-md border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 hover:-translate-y-0.5',
+      scaleOnHover ? 'hover:z-20 hover:scale-[1.1] hover:shadow-2xl' : '',
+    ]"
+    class="group flex relative transition-all duration-200"
   >
     <!-- Image Section -->
     <div
@@ -294,10 +295,21 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 
-const props = defineProps<{
-  product: any;
-  viewMode?: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    product: any;
+    viewMode?: string;
+    // The hover zoom + shadow pop looks good in a plain grid, but inside a
+    // horizontally scrolling strip (overflow-x-auto) the browser also clips
+    // the vertical axis, so the enlarged card gets cropped top/bottom
+    // instead of standing out - callers embedding cards in a scroll strip
+    // should turn this off.
+    scaleOnHover?: boolean;
+  }>(),
+  {
+    scaleOnHover: true,
+  },
+);
 
 const { t } = useI18n();
 const cartStore = useCartStore();

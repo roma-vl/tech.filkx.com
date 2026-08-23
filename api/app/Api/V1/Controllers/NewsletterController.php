@@ -12,9 +12,6 @@ class NewsletterController extends BaseApiController
     #[OA\Post(
         path: '/api/v1/newsletter/subscribe',
         summary: 'Subscribe an email address to the newsletter (idempotent)',
-        tags: [
-            'Newsletter',
-        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -24,6 +21,9 @@ class NewsletterController extends BaseApiController
                 ],
             ),
         ),
+        tags: [
+            'Newsletter',
+        ],
         responses: [
             new OA\Response(
                 response: 200,

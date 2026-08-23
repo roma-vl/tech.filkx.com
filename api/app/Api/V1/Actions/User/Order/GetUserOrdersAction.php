@@ -25,7 +25,13 @@ class GetUserOrdersAction
 
     public function execute(User $user): Collection
     {
-        $orders = Order::with(['items.variant.product'])
+        // withTrashed(): a product/variant discontinued after this order was
+        // placed is soft-deleted, not gone - order history should still show
+        // its real slug/image rather than treating it as unknown.
+        $orders = Order::with([
+            'items.variant' => fn ($query) => $query->withTrashed(),
+            'items.variant.product' => fn ($query) => $query->withTrashed(),
+        ])
             ->where('user_id', $user->id)
             ->orWhere('customer_email', $user->email)
             ->orderBy('created_at', 'desc')

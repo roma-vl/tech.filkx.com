@@ -236,7 +236,7 @@ class CartController extends BaseApiController
             content: new OA\JsonContent(
                 required: ['sessionId'],
                 properties: [
-                    new OA\Property(property: 'sessionId', type: 'string', description: 'Guest cart session id to merge into the authenticated cart'),
+                    new OA\Property(property: 'sessionId', description: 'Guest cart session id to merge into the authenticated cart', type: 'string'),
                 ],
             ),
         ),

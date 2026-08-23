@@ -295,7 +295,6 @@ import {
   MegaphoneIcon,
   NewspaperIcon,
   DocumentTextIcon,
-  PhotoIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   SignalIcon,
@@ -394,12 +393,6 @@ const navItems = shallowRef<NavItem[]>([
     icon: markRaw(DocumentTextIcon),
   },
   {
-    key: "homeBanners",
-    name: t("admin.nav.homeBanners"),
-    path: "/admin/home-banners",
-    icon: markRaw(PhotoIcon),
-  },
-  {
     key: "orders",
     name: t("admin.nav.orders"),
     path: "/admin/orders",
@@ -432,6 +425,8 @@ const navItems = shallowRef<NavItem[]>([
     name: t("admin.nav.marketing"),
     icon: markRaw(TagIcon),
     children: [
+      { name: t("admin.nav.homeBanners"), path: "/admin/home-banners" },
+      { name: t("admin.nav.promoPages"), path: "/admin/promo-pages" },
       { name: t("admin.nav.coupons"), path: "/admin/coupons" },
       { name: t("admin.nav.promotions"), path: "/admin/promotions" },
     ],

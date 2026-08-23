@@ -15,7 +15,10 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findWithItems(int $id): ?Order
     {
-        return Order::with('items.variant.stocks')->find($id);
+        // withTrashed(): a variant discontinued after this order was placed is
+        // soft-deleted, not gone - order/invoice details should still show it.
+        return Order::with(['items.variant' => fn ($query) => $query->withTrashed()->with('stocks')])
+            ->find($id);
     }
 
     public function find(int $id): ?Order

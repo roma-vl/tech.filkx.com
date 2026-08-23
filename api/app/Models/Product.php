@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use OpenApi\Attributes as OA;
 
@@ -19,8 +20,8 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: 'id', type: 'integer'),
         new OA\Property(property: 'slug', type: 'string'),
-        new OA\Property(property: 'name', type: 'object', description: 'Localized name keyed by locale (uk, en)'),
-        new OA\Property(property: 'description', type: 'object', description: 'Localized description keyed by locale (uk, en)'),
+        new OA\Property(property: 'name', description: 'Localized name keyed by locale (uk, en)', type: 'object'),
+        new OA\Property(property: 'description', description: 'Localized description keyed by locale (uk, en)', type: 'object'),
         new OA\Property(property: 'status', type: 'string', example: 'active'),
         new OA\Property(property: 'isHot', type: 'boolean'),
         new OA\Property(property: 'isRecommended', type: 'boolean'),
@@ -34,7 +35,7 @@ use OpenApi\Attributes as OA;
 )]
 class Product extends Model
 {
-    use HasFactory, Searchable;
+    use HasFactory, Searchable, SoftDeletes;
 
     protected $fillable = [
         'brand_id',

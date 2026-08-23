@@ -4298,6 +4298,49 @@
                 }
             }
         },
+        "/api/v1/promo/{slug}": {
+            "get": {
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Get an active promo page by slug, with its curated product list",
+                "operationId": "12059c2ca880e069ed387f2a9b3aea01",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Promo page with its products",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Promo page not found or inactive"
+                    }
+                }
+            }
+        },
         "/api/v1/catalog/products/{slug}/reviews": {
             "get": {
                 "tags": [
@@ -7194,6 +7237,10 @@
         {
             "name": "Payments",
             "description": "Payments"
+        },
+        {
+            "name": "Promo",
+            "description": "Promo"
         },
         {
             "name": "Reviews",

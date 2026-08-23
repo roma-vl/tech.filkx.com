@@ -7,9 +7,9 @@ use App\Traits\HasApiJsonResponse;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    title: 'Filkx API',
-    description: 'API documentation for the Tech Filkx e-commerce platform',
     version: '1.0.0',
+    description: 'API documentation for the Tech Filkx e-commerce platform',
+    title: 'Filkx API',
     contact: new OA\Contact(email: 'admin@filkx.com'),
 )]
 #[OA\Server(

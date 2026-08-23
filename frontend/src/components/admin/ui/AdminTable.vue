@@ -6,7 +6,7 @@
           class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-4"
         />
         <p class="text-gray-500 dark:text-gray-400">
-          {{ loadingText || $t("ui.loading") }}
+          {{ loadingText || $t("admin.common.loadingData") }}
         </p>
       </div>
     </div>

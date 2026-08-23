@@ -36,7 +36,7 @@ class PaymentController extends BaseApiController
                         new OA\Property(
                             property: 'data',
                             properties: [
-                                new OA\Property(property: 'data', type: 'string', description: 'Base64-encoded LiqPay parameters'),
+                                new OA\Property(property: 'data', description: 'Base64-encoded LiqPay parameters', type: 'string'),
                                 new OA\Property(property: 'signature', type: 'string'),
                                 new OA\Property(property: 'checkoutUrl', type: 'string'),
                             ],
@@ -73,16 +73,16 @@ class PaymentController extends BaseApiController
     #[OA\Post(
         path: '/api/v1/payments/liqpay/callback',
         summary: 'LiqPay server-to-server payment status callback',
-        tags: ['Payments'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'data', type: 'string', description: 'Base64-encoded LiqPay callback payload'),
+                    new OA\Property(property: 'data', description: 'Base64-encoded LiqPay callback payload', type: 'string'),
                     new OA\Property(property: 'signature', type: 'string'),
                 ],
             ),
         ),
+        tags: ['Payments'],
         responses: [
             new OA\Response(
                 response: 200,

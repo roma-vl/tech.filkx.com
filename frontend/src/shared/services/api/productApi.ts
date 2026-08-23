@@ -51,6 +51,10 @@ export const productApi = {
     return apiClient.get("/v1/catalog/home", { params });
   },
 
+  getPromoPage(slug: string) {
+    return apiClient.get(`/v1/promo/${slug}`);
+  },
+
   // Admin Catalog Management APIs
   adminGetProducts(params?: Record<string, any>) {
     return apiClient.get("/admin/products", { params });
@@ -66,6 +70,18 @@ export const productApi = {
 
   adminDeleteProduct(id: number | string) {
     return apiClient.delete(`/admin/products/${id}`);
+  },
+
+  adminSearchProducts(params?: Record<string, any>) {
+    return apiClient.get("/admin/products/search", { params });
+  },
+
+  adminSearchProductIds(params?: Record<string, any>) {
+    return apiClient.get("/admin/products/search-ids", { params });
+  },
+
+  adminBulkRestoreProducts(ids: Array<number | string>) {
+    return apiClient.post("/admin/products/bulk-restore", { ids });
   },
 
   adminImportProducts(formData: FormData) {

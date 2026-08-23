@@ -90,7 +90,7 @@
               <td
                 class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold max-w-[240px] truncate"
               >
-                {{ banner.title }}
+                {{ banner.title || t("admin.homeBanners.table.noTitle") }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                 <span class="font-mono text-xs">{{
@@ -234,6 +234,9 @@
           </div>
         </div>
 
+        <p class="text-xs text-gray-400 dark:text-gray-500 italic">
+          {{ t("admin.homeBanners.form.overlayHint") }}
+        </p>
         <AppInput
           v-model="form.badge"
           :label="t('admin.homeBanners.form.badgeLabel')"
@@ -245,7 +248,6 @@
         />
         <AppInput
           v-model="form.title"
-          required
           :label="t('admin.homeBanners.table.title')"
         />
         <AppTextarea
@@ -266,9 +268,43 @@
           option-value="value"
           option-label="label"
         />
-        <AppInput
-          v-if="form.linkType !== 'catalog'"
+        <AppSelect
+          v-if="form.linkType === 'category'"
           v-model="form.linkValue"
+          searchable
+          required
+          :label="linkValueLabel"
+          :search-placeholder="linkValuePlaceholder"
+          :options="categories"
+          option-value="slug"
+          option-label="nameUk"
+        />
+        <AppSelect
+          v-else-if="form.linkType === 'product'"
+          v-model="form.linkValue"
+          searchable
+          required
+          :label="linkValueLabel"
+          :search-placeholder="linkValuePlaceholder"
+          :options="products"
+          option-value="id"
+          option-label="nameUk"
+        />
+        <AppSelect
+          v-else-if="form.linkType === 'promo'"
+          v-model="form.linkValue"
+          searchable
+          required
+          :label="linkValueLabel"
+          :search-placeholder="linkValuePlaceholder"
+          :options="promoPages"
+          option-value="slug"
+          option-label="title"
+        />
+        <AppInput
+          v-else-if="form.linkType === 'url'"
+          v-model="form.linkValue"
+          required
           :label="linkValueLabel"
           :placeholder="linkValuePlaceholder"
         />
@@ -293,7 +329,9 @@
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
-          :disabled="!form.title || !form.imagePath"
+          :disabled="
+            !form.imagePath || (form.linkType !== 'catalog' && !form.linkValue)
+          "
           @click="saveBanner"
         >
           {{ t("admin.homeBanners.form.save") }}
@@ -338,6 +376,7 @@ const linkTypeOptions = computed(() => [
   { value: "catalog", label: t("admin.homeBanners.linkTypes.catalog") },
   { value: "category", label: t("admin.homeBanners.linkTypes.category") },
   { value: "product", label: t("admin.homeBanners.linkTypes.product") },
+  { value: "promo", label: t("admin.homeBanners.linkTypes.promo") },
   { value: "url", label: t("admin.homeBanners.linkTypes.url") },
 ]);
 const linkTypeLabels = computed(() =>
@@ -350,6 +389,8 @@ const linkValueLabel = computed(() => {
       return t("admin.homeBanners.linkValueLabels.category");
     case "product":
       return t("admin.homeBanners.linkValueLabels.product");
+    case "promo":
+      return t("admin.homeBanners.linkValueLabels.promo");
     case "url":
       return t("admin.homeBanners.linkValueLabels.url");
     default:
@@ -362,12 +403,33 @@ const linkValuePlaceholder = computed(() => {
       return t("admin.homeBanners.linkValuePlaceholders.category");
     case "product":
       return t("admin.homeBanners.linkValuePlaceholders.product");
+    case "promo":
+      return t("admin.homeBanners.linkValuePlaceholders.promo");
     case "url":
       return t("admin.homeBanners.linkValuePlaceholders.url");
     default:
       return t("admin.homeBanners.linkValuePlaceholders.default");
   }
 });
+
+const categories = ref([]);
+const products = ref([]);
+const promoPages = ref([]);
+
+const fetchPickerData = async () => {
+  try {
+    const [categoriesRes, productsRes, promoPagesRes] = await Promise.all([
+      api.get("/admin/categories"),
+      api.get("/admin/products"),
+      api.get("/admin/promo-pages"),
+    ]);
+    categories.value = categoriesRes.data.data;
+    products.value = productsRes.data.data;
+    promoPages.value = promoPagesRes.data.data;
+  } catch (error) {
+    console.error("Failed to load categories/products/promo pages:", error);
+  }
+};
 
 const banners = ref([]);
 const sortedBanners = computed(() =>
@@ -384,7 +446,10 @@ const fetchBanners = async () => {
   }
 };
 
-onMounted(fetchBanners);
+onMounted(() => {
+  fetchBanners();
+  fetchPickerData();
+});
 
 const showModal = ref(false);
 const isEditing = ref(false);
@@ -440,7 +505,11 @@ const uploadImage = async (e) => {
 };
 
 const saveBanner = async () => {
-  if (!form.value.title || !form.value.imagePath) return;
+  if (!form.value.imagePath) return;
+  if (form.value.linkType !== "catalog" && !form.value.linkValue) {
+    toast.warning(t("admin.homeBanners.alerts.linkValueRequired"));
+    return;
+  }
   const payload = {
     badge: form.value.badge || null,
     subtitle: form.value.subtitle || null,
@@ -449,7 +518,10 @@ const saveBanner = async () => {
     imagePath: form.value.imagePath,
     buttonLabel: form.value.buttonLabel || null,
     linkType: form.value.linkType,
-    linkValue: form.value.linkType === "catalog" ? null : form.value.linkValue,
+    // The "product" picker's option-value is a numeric id (AppSelect emits it
+    // as a number), but linkValue is validated as a string on the backend.
+    linkValue:
+      form.value.linkType === "catalog" ? null : String(form.value.linkValue),
     isActive: form.value.isActive,
     sortOrder: form.value.sortOrder,
   };

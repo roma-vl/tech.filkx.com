@@ -26,7 +26,7 @@ const wishlistProducts = computed(() =>
   <div class="space-y-6 animate-fade font-sans">
     <div
       v-if="wishlistProducts.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-zinc-200 dark:border-zinc-800"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
     >
       <ProductCard
         v-for="product in wishlistProducts"

@@ -44,7 +44,7 @@
                   <template #prefix>
                     <PencilSquareIcon class="w-4 h-4 mr-2" />
                   </template>
-                  {{ t("common.actions.edit") }}
+                  {{ t("admin.common.actions.edit") }}
                 </AppButton>
                 <AppButton
                   v-if="!role.isSystem"
@@ -55,7 +55,7 @@
                   <template #prefix>
                     <TrashIcon class="w-4 h-4 mr-2" />
                   </template>
-                  {{ t("common.actions.delete") }}
+                  {{ t("admin.common.actions.delete") }}
                 </AppButton>
               </div>
             </template>

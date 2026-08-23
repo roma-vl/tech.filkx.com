@@ -32,7 +32,7 @@ class DeleteAdminProductActionTest extends TestCase
 
         $this->action->execute($product->id);
 
-        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 
     public function test_execute_throws_when_the_product_does_not_exist(): void

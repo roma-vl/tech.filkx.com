@@ -253,6 +253,7 @@ class CatalogControllerTest extends TestCase
     {
         $parent = Category::create(['slug' => 'parent-'.uniqid(), 'name' => ['uk' => 'P', 'en' => 'P'], 'order' => 0]);
         $child = Category::create(['slug' => 'child-'.uniqid(), 'name' => ['uk' => 'C', 'en' => 'C'], 'order' => 0, 'parent_id' => $parent->id]);
+        $this->makeProduct()->categories()->attach($child->id);
 
         $response = $this->getJson('/api/v1/catalog/categories');
 

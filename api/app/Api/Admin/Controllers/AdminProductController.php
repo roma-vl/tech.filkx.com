@@ -2,12 +2,24 @@
 
 namespace App\Api\Admin\Controllers;
 
+use App\Api\Admin\Actions\Product\BulkDeleteAdminProductsAction;
+use App\Api\Admin\Actions\Product\BulkRestoreAdminProductsAction;
+use App\Api\Admin\Actions\Product\BulkUpdateProductCategoryAction;
+use App\Api\Admin\Actions\Product\BulkUpdateProductStatusAction;
 use App\Api\Admin\Actions\Product\CreateAdminProductAction;
 use App\Api\Admin\Actions\Product\DeleteAdminProductAction;
 use App\Api\Admin\Actions\Product\ListAdminProductsAction;
+use App\Api\Admin\Actions\Product\ListTrashedAdminProductsAction;
+use App\Api\Admin\Actions\Product\RestoreAdminProductAction;
+use App\Api\Admin\Actions\Product\SearchAdminProductsAction;
 use App\Api\Admin\Actions\Product\UpdateAdminProductAction;
 use App\Api\Admin\Actions\Product\UploadProductImageAction;
 use App\Api\Admin\Dto\ProductDto;
+use App\Api\Admin\Requests\BulkDeleteProductsRequest;
+use App\Api\Admin\Requests\BulkRestoreProductsRequest;
+use App\Api\Admin\Requests\BulkUpdateProductCategoryRequest;
+use App\Api\Admin\Requests\BulkUpdateProductStatusRequest;
+use App\Api\Admin\Requests\SearchAdminProductsRequest;
 use App\Api\Admin\Requests\StoreProductRequest;
 use App\Api\Admin\Requests\UpdateProductRequest;
 use App\Api\Admin\Requests\UploadProductImageRequest;
@@ -50,5 +62,65 @@ class AdminProductController extends BaseApiController
         $result = $action->execute($request->file('image'));
 
         return self::successfulResponseWithData($result);
+    }
+
+    public function bulkDestroy(BulkDeleteProductsRequest $request, BulkDeleteAdminProductsAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'));
+
+        return self::successfulResponseWithData(['deleted' => $count]);
+    }
+
+    public function bulkUpdateStatus(BulkUpdateProductStatusRequest $request, BulkUpdateProductStatusAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'), $request->input('status'));
+
+        return self::successfulResponseWithData(['updated' => $count]);
+    }
+
+    public function bulkUpdateCategory(BulkUpdateProductCategoryRequest $request, BulkUpdateProductCategoryAction $action): JsonResponse
+    {
+        $count = $action->execute($request->input('ids'), (int) $request->input('categoryId'));
+
+        return self::successfulResponseWithData(['updated' => $count]);
+    }
+
+    public function trashed(ListTrashedAdminProductsAction $action): JsonResponse
+    {
+        $products = $action->execute();
+
+        return self::successfulResponseWithData(AdminProductResource::collection($products));
+    }
+
+    public function restore(int $id, RestoreAdminProductAction $action): JsonResponse
+    {
+        $product = $action->execute($id);
+
+        return self::successfulResponseWithData(new AdminProductResource($product));
+    }
+
+    public function bulkRestore(BulkRestoreProductsRequest $request, BulkRestoreAdminProductsAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData($action->execute($request->input('ids')));
+    }
+
+    public function search(SearchAdminProductsRequest $request, SearchAdminProductsAction $action): JsonResponse
+    {
+        $paginated = $action->execute($request->validated());
+
+        return self::successfulResponseWithData([
+            'items' => AdminProductResource::collection($paginated)->resolve(),
+            'meta' => [
+                'currentPage' => $paginated->currentPage(),
+                'lastPage' => $paginated->lastPage(),
+                'perPage' => $paginated->perPage(),
+                'total' => $paginated->total(),
+            ],
+        ]);
+    }
+
+    public function searchIds(SearchAdminProductsRequest $request, SearchAdminProductsAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData(['ids' => $action->executeIds($request->validated())]);
     }
 }

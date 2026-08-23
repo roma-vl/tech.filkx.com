@@ -50,6 +50,14 @@ class WishlistController extends BaseApiController
         path: '/api/v1/wishlist/{product}',
         summary: 'Add a product to the wishlist',
         security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: false,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'notify_on_drop', type: 'boolean', default: true),
+                ],
+            ),
+        ),
         tags: ['Wishlist'],
         parameters: [
             new OA\Parameter(
@@ -60,14 +68,6 @@ class WishlistController extends BaseApiController
                 schema: new OA\Schema(type: 'integer'),
             ),
         ],
-        requestBody: new OA\RequestBody(
-            required: false,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: 'notify_on_drop', type: 'boolean', default: true),
-                ],
-            ),
-        ),
         responses: [
             new OA\Response(
                 response: 200,

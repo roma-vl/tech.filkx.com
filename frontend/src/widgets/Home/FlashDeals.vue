@@ -75,9 +75,7 @@ const formatNumber = (num: number) => {
 </script>
 
 <template>
-  <section
-    class="bg-zinc-50 dark:bg-zinc-950 py-14 border-y border-zinc-100 dark:border-zinc-900 font-sans"
-  >
+  <section class="bg-zinc-50 dark:bg-zinc-950 py-14 font-sans">
     <div class="max-w-container-max mx-auto px-4 md:px-8">
       <!-- Section Header -->
       <div
@@ -115,16 +113,15 @@ const formatNumber = (num: number) => {
       </div>
 
       <!-- Products Grid -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-zinc-200 dark:border-zinc-800"
-      >
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div
           v-for="prod in products"
           :key="prod.id"
-          class="bg-white dark:bg-zinc-900 group relative flex flex-col border-r border-b border-zinc-200 dark:border-zinc-800 hover:border hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10] hover:shadow-2xl transition-all duration-200"
+          class="bg-white dark:bg-zinc-900 group relative flex flex-col border border-zinc-200 dark:border-zinc-800 hover:z-20 hover:scale-[1.1] hover:bg-[#fcfcfd] dark:hover:bg-[#0b0c10] hover:shadow-2xl transition-all duration-200"
         >
-          <!-- Sale Badge -->
-          <div class="absolute top-3 left-3 z-10">
+          <!-- Sale Badge (only for products with an actual discount - is_hot alone
+               doesn't imply one) -->
+          <div v-if="prod.discount" class="absolute top-3 left-3 z-10">
             <span
               class="bg-rose-600 text-white px-2.5 py-0.5 rounded font-black text-xs shadow-sm"
             >

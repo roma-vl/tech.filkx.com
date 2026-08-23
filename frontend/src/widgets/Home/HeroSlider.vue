@@ -29,10 +29,16 @@ const mappedCategories = computed(() =>
 const getBannerLink = (banner) => {
   switch (banner.linkType) {
     case "category":
-      return { name: "category", params: { slug: banner.linkValue } };
+      return banner.linkValue
+        ? { name: "category", params: { slug: banner.linkValue } }
+        : { name: "catalog" };
     case "product":
       return banner.linkValue
         ? { name: "product-detail", params: { id: banner.linkValue } }
+        : { name: "catalog" };
+    case "promo":
+      return banner.linkValue
+        ? { name: "promo", params: { slug: banner.linkValue } }
         : { name: "catalog" };
     case "url":
       return banner.linkValue || { name: "catalog" };
@@ -49,6 +55,13 @@ const slides = computed(() => {
       subtitle: banner.subtitle,
       title: banner.title,
       description: banner.description,
+      // A banner image can already carry its own baked-in design and copy -
+      // in that case every overlay field is left blank, and the dark
+      // gradient + text block below would only wash out the image's own
+      // design for nothing.
+      hasOverlayText: Boolean(
+        banner.badge || banner.subtitle || banner.title || banner.description,
+      ),
       image: banner.imageUrl,
       buttonLabel: banner.buttonLabel || t("home.hero.viewButton"),
       link: getBannerLink(banner),
@@ -63,6 +76,7 @@ const slides = computed(() => {
       subtitle: "",
       title: t("home.hero.welcomeTitle"),
       description: t("home.hero.welcomeDescription"),
+      hasOverlayText: true,
       image: null,
       buttonLabel: t("home.hero.goToCatalog"),
       link: { name: "catalog" },
@@ -83,7 +97,7 @@ const setSlide = (index) => {
   resetTimer();
 };
 const startTimer = () => {
-  intervalId = setInterval(nextSlide, 7000);
+  intervalId = setInterval(nextSlide, 9000);
 };
 const resetTimer = () => {
   if (intervalId) {
@@ -176,7 +190,7 @@ onUnmounted(() => {
 
       <!-- ── Right: hero slider ── -->
       <div
-        class="flex-1 min-w-0 relative bg-zinc-950 h-[380px] md:h-[480px] flex items-center group z-10"
+        class="flex-1 min-w-0 relative bg-zinc-950 aspect-[16/9] md:aspect-auto md:h-[480px] flex items-center group z-10"
         @mouseenter="hoveredCat = null"
       >
         <!-- Slides -->
@@ -192,7 +206,8 @@ onUnmounted(() => {
         >
           <img
             v-if="slide.image"
-            class="absolute inset-0 w-full h-full object-cover opacity-60"
+            class="absolute inset-0 w-full h-full object-cover"
+            :class="slide.hasOverlayText ? 'opacity-60' : ''"
             :src="slide.image"
             alt=""
           />
@@ -201,11 +216,17 @@ onUnmounted(() => {
             class="absolute inset-0 bg-gradient-to-br from-[#1c2229] via-zinc-900 to-[#00a046]/20"
           />
           <div
+            v-if="slide.hasOverlayText"
             class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
           />
 
           <div
-            class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col justify-center"
+            class="relative z-10 px-8 md:px-14 max-w-2xl text-white h-full flex flex-col"
+            :class="
+              slide.hasOverlayText
+                ? 'justify-center'
+                : 'justify-end pb-8 md:pb-28'
+            "
           >
             <div
               v-if="slide.badge || slide.subtitle"
@@ -224,6 +245,7 @@ onUnmounted(() => {
               >
             </div>
             <h1
+              v-if="slide.title"
               class="font-extrabold text-3xl md:text-5xl mb-4 leading-tight text-white"
             >
               {{ slide.title }}

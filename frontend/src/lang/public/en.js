@@ -13,6 +13,7 @@ import product from "./product/en";
 import blog from "./blog/en";
 import errors from "./errors/en";
 import staticPage from "./static/en";
+import promoPage from "./promoPage/en";
 
 export default {
   auth,
@@ -30,4 +31,5 @@ export default {
   blog,
   errors,
   staticPage,
+  promoPage,
 };

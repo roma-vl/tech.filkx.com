@@ -2,6 +2,7 @@
 
 use App\Api\Admin\Controllers\AdminAccountingController;
 use App\Api\Admin\Controllers\AdminAttributeController;
+use App\Api\Admin\Controllers\AdminAuditLogController;
 use App\Api\Admin\Controllers\AdminBlogController;
 use App\Api\Admin\Controllers\AdminBrandController;
 use App\Api\Admin\Controllers\AdminCategoryController;
@@ -11,6 +12,7 @@ use App\Api\Admin\Controllers\AdminNotificationController;
 use App\Api\Admin\Controllers\AdminOrderController;
 use App\Api\Admin\Controllers\AdminPageController;
 use App\Api\Admin\Controllers\AdminProductController;
+use App\Api\Admin\Controllers\AdminPromoPageController;
 use App\Api\Admin\Controllers\AdminRoleController;
 use App\Api\Admin\Controllers\AdminServerLogController;
 use App\Api\Admin\Controllers\AdminSettingsController;
@@ -36,6 +38,7 @@ use App\Api\V1\Controllers\NewsletterController;
 use App\Api\V1\Controllers\NotificationController;
 use App\Api\V1\Controllers\PageController;
 use App\Api\V1\Controllers\PaymentController;
+use App\Api\V1\Controllers\PromoPageController;
 use App\Api\V1\Controllers\ReviewController;
 use App\Api\V1\Controllers\SupportController;
 use App\Api\V1\Controllers\SystemController;
@@ -82,6 +85,9 @@ Route::prefix('v1')->group(function () {
         Route::get('products/{slug}/related', [CatalogController::class, 'relatedProducts']);
         Route::get('products/{slug}/reviews', [ReviewController::class, 'index']);
     });
+
+    // Promo pages (curated landing pages linked from home banners)
+    Route::get('promo/{slug}', [PromoPageController::class, 'show']);
 
     // Blog public routes
     Route::prefix('blog')->group(function () {
@@ -299,12 +305,25 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::get('server-logs/{filename}', [AdminServerLogController::class, 'show']);
         Route::delete('server-logs/{filename}', [AdminServerLogController::class, 'clear']);
 
+        // Audit Log (activity feed - AdminLogs.vue)
+        Route::get('logs', [AdminAuditLogController::class, 'index']);
+
         // Product Management
         Route::get('products', [AdminProductController::class, 'index']);
         Route::post('products', [AdminProductController::class, 'store']);
+        Route::post('products/upload', [AdminProductController::class, 'uploadImage']);
+        Route::get('products/trashed', [AdminProductController::class, 'trashed']);
+        Route::get('products/search', [AdminProductController::class, 'search']);
+        Route::get('products/search-ids', [AdminProductController::class, 'searchIds']);
+        // Bulk routes must be registered before the products/{id} wildcards below,
+        // otherwise "bulk-delete" etc. would be matched as {id}.
+        Route::delete('products/bulk-delete', [AdminProductController::class, 'bulkDestroy']);
+        Route::put('products/bulk-status', [AdminProductController::class, 'bulkUpdateStatus']);
+        Route::put('products/bulk-category', [AdminProductController::class, 'bulkUpdateCategory']);
+        Route::post('products/bulk-restore', [AdminProductController::class, 'bulkRestore']);
         Route::put('products/{id}', [AdminProductController::class, 'update']);
         Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
-        Route::post('products/upload', [AdminProductController::class, 'uploadImage']);
+        Route::post('products/{id}/restore', [AdminProductController::class, 'restore']);
 
         // Order Management
         Route::get('orders', [AdminOrderController::class, 'index']);
@@ -391,6 +410,13 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::put('home-banners/{id}', [AdminHomeBannerController::class, 'update']);
         Route::delete('home-banners/{id}', [AdminHomeBannerController::class, 'destroy']);
         Route::post('home-banners/upload', [AdminHomeBannerController::class, 'uploadImage']);
+
+        // Promo Pages (curated landing pages linked from home banners)
+        Route::get('promo-pages', [AdminPromoPageController::class, 'index']);
+        Route::post('promo-pages', [AdminPromoPageController::class, 'store']);
+        Route::put('promo-pages/{id}', [AdminPromoPageController::class, 'update']);
+        Route::delete('promo-pages/{id}', [AdminPromoPageController::class, 'destroy']);
+        Route::post('promo-pages/upload', [AdminPromoPageController::class, 'uploadImage']);
     });
 
 });

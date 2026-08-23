@@ -22,7 +22,10 @@ class HomeBannerDto
         return new self(
             badge: $request->input('badge'),
             subtitle: $request->input('subtitle'),
-            title: $request->input('title'),
+            // title is optional (a banner image can already carry its own
+            // baked-in text) - the "title" column isn't nullable, so a
+            // missing value is coerced to an empty string rather than null.
+            title: $request->input('title') ?? '',
             description: $request->input('description'),
             imagePath: $request->input('imagePath'),
             buttonLabel: $request->input('buttonLabel'),

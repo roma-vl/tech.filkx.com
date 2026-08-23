@@ -74,7 +74,7 @@ class AdminPageController extends BaseApiController
         $paginated = $action->execute($request->string('search')->value() ?: null, (int) $request->input('per_page', 20));
 
         return self::successfulResponseWithData([
-            'data' => PageResource::collection($paginated),
+            'data' => PageResource::collection($paginated->items()),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),
@@ -116,6 +116,7 @@ class AdminPageController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/pages',
         summary: 'Create a static page',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -130,7 +131,6 @@ class AdminPageController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Pages'],
         responses: [
             new OA\Response(
@@ -151,6 +151,7 @@ class AdminPageController extends BaseApiController
     #[OA\Put(
         path: '/api/admin/pages/{id}',
         summary: 'Update a static page',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -165,7 +166,6 @@ class AdminPageController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Pages'],
         parameters: [
             new OA\Parameter(

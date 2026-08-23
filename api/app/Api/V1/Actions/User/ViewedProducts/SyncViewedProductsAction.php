@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Actions\User\ViewedProducts;
 
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
@@ -18,9 +19,16 @@ class SyncViewedProductsAction
      */
     public function execute(User $user, array $items): Collection
     {
+        // A stale client-side id (e.g. from a product removed since the browser
+        // last synced) would otherwise hit the product_views.product_id foreign
+        // key and 500 instead of just being dropped.
+        $validIds = Product::whereIn('id', collect($items)->pluck('id')->filter())
+            ->pluck('id')
+            ->flip();
+
         foreach ($items as $item) {
             $productId = $item['id'] ?? null;
-            if (! $productId) {
+            if (! $productId || ! $validIds->has($productId)) {
                 continue;
             }
 

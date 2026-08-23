@@ -107,6 +107,14 @@ export default {
       sortStockAsc: "Stock (low to high)",
       hot: "Hot 🔥",
       recommended: "Recommended 👍",
+      imageLabel: "Photo",
+      allImages: "All products",
+      withImage: "With photo",
+      withoutImage: "Without photo",
+      stockLabel: "Stock",
+      allStock: "All products",
+      inStock: "In stock",
+      outOfStock: "Out of stock",
       reset: "Reset filters",
     },
     table: {
@@ -123,11 +131,54 @@ export default {
     noBrand: "No brand",
     stockCount: "{count} pcs",
     empty: "No products found matching your search.",
+    loadError: "Failed to load products. Please try again.",
+    perPageLabel: "Per page:",
+    trash: {
+      openButton: "Trash",
+      title: "Deleted products",
+      empty: "No deleted products.",
+      deletedAt: "Deleted: {date}",
+      restore: "Restore",
+      restoreSuccess: 'Restored "{name}"',
+      restoreError: "Failed to restore the product. Please try again.",
+      loadError: "Failed to load deleted products.",
+      selectedCount: "Selected: {count}",
+      restoreSelected: "Restore selected",
+      bulkRestoreSuccess: "Restored {count} products",
+      bulkRestorePartial:
+        "Restored: {restored}, failed: {failed} (slug already taken by another product)",
+      bulkRestoreError: "Failed to restore the selected products. Please try again.",
+    },
     deleteModal: {
       title: "Delete product",
       message: 'Are you sure you want to delete the product "{name}"?',
       confirm: "Delete",
       cancel: "Cancel",
+    },
+    bulk: {
+      selectedCount: "Selected: {count}",
+      selectAllMatching: "Select all {count} matching the filter",
+      selectAllError: "Failed to fetch the matching products. Please try again.",
+      clearSelection: "Clear selection",
+      apply: "Apply",
+      delete: "Delete selected",
+      categoryPlaceholder: "Move to category...",
+      statusPlaceholder: "Change status...",
+      deleteModal: {
+        title: "Delete selected products",
+        message: "Are you sure you want to delete {count} selected products?",
+      },
+      alerts: {
+        deleteSuccess: "Deleted {count} products",
+        deleteError:
+          "Failed to delete the selected products. Please try again.",
+        statusSuccess: "Updated status for {count} products",
+        statusError:
+          "Failed to update the status of the selected products. Please try again.",
+        categorySuccess: "Updated category for {count} products",
+        categoryError:
+          "Failed to update the category of the selected products. Please try again.",
+      },
     },
     export: {
       headerId: "ID",
@@ -140,6 +191,7 @@ export default {
       headerHot: "Hot",
       headerRecommended: "Recommended",
       noneValue: "—",
+      exportError: "Failed to export products. Please try again.",
     },
   },
   categories: {

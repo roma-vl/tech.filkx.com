@@ -3,10 +3,13 @@ import nav from "./nav/en";
 import blog from "./blog/en";
 import pages from "./pages/en";
 import homeBanners from "./homeBanners/en";
+import promoPages from "./promoPages/en";
 import accounting from "./accounting/en";
 import common from "./common/en";
 import notifications from "./notifications/en";
 import products from "./products/en";
+import categories from "./categories/en";
+import brands from "./brands/en";
 import orders from "./orders/en";
 import users from "./users/en";
 import impersonation from "./impersonation/en";
@@ -28,10 +31,13 @@ export default {
   blog,
   pages,
   homeBanners,
+  promoPages,
   accounting,
   common,
   notifications,
   products,
+  categories,
+  brands,
   orders,
   users,
   impersonation,

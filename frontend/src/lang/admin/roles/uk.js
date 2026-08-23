@@ -6,6 +6,8 @@ export default {
   create_permission: "Створити дозвіл",
   create_role: "Створити нову роль",
   delete_role: "Видалити",
+  view_grid: "Плиткою",
+  view_list: "Списком",
   table: {
     role_name: "Назва ролі",
     description: "Опис",

@@ -174,8 +174,8 @@
                 </template>
                 {{
                   entry.expanded
-                    ? $t("common.hide_stack")
-                    : $t("common.show_stack")
+                    ? $t("admin.common.hide_stack")
+                    : $t("admin.common.show_stack")
                 }}
               </AppButton>
 

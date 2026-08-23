@@ -36,8 +36,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminBlogController extends BaseApiController
 {
-    // ─── Posts ────────────────────────────────────────────────────────────────
-
     #[OA\Get(
         path: '/api/admin/blog/posts',
         summary: 'List blog posts',
@@ -88,7 +86,7 @@ class AdminBlogController extends BaseApiController
         );
 
         return self::successfulResponseWithData([
-            'data' => AdminBlogPostResource::collection($paginated),
+            'data' => AdminBlogPostResource::collection($paginated->items()),
             'meta' => [
                 'total' => $paginated->total(),
                 'per_page' => $paginated->perPage(),
@@ -125,6 +123,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/blog/posts',
         summary: 'Create a blog post',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -144,7 +143,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         responses: [
             new OA\Response(
@@ -165,6 +163,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Put(
         path: '/api/admin/blog/posts/{id}',
         summary: 'Update a blog post',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -184,7 +183,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
@@ -229,6 +227,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/blog/upload',
         summary: 'Upload a blog cover/content image',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -241,7 +240,6 @@ class AdminBlogController extends BaseApiController
                 ),
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         responses: [
             new OA\Response(
@@ -300,6 +298,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/blog/categories',
         summary: 'Create a blog category',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -313,7 +312,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         responses: [
             new OA\Response(
@@ -334,6 +332,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Put(
         path: '/api/admin/blog/categories/{id}',
         summary: 'Update a blog category',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -347,7 +346,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
@@ -419,6 +417,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/blog/tags',
         summary: 'Create a blog tag',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -429,7 +428,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         responses: [
             new OA\Response(
@@ -450,6 +448,7 @@ class AdminBlogController extends BaseApiController
     #[OA\Put(
         path: '/api/admin/blog/tags/{id}',
         summary: 'Update a blog tag',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -460,7 +459,6 @@ class AdminBlogController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Blog'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),

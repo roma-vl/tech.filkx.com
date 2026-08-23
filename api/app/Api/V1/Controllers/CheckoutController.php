@@ -28,12 +28,12 @@ class CheckoutController extends BaseApiController
                     new OA\Property(property: 'customerName', type: 'string', maxLength: 255),
                     new OA\Property(property: 'customerPhone', type: 'string', maxLength: 50),
                     new OA\Property(property: 'customerEmail', type: 'string', format: 'email', maxLength: 255),
-                    new OA\Property(property: 'shippingCountry', type: 'string', maxLength: 100, nullable: true),
-                    new OA\Property(property: 'shippingCity', type: 'string', maxLength: 100, nullable: true),
+                    new OA\Property(property: 'shippingCountry', type: 'string', nullable: true, maxLength: 100),
+                    new OA\Property(property: 'shippingCity', type: 'string', nullable: true, maxLength: 100),
                     new OA\Property(property: 'shippingAddress', type: 'string', maxLength: 500),
                     new OA\Property(property: 'deliveryMethod', type: 'string', maxLength: 100),
                     new OA\Property(property: 'paymentMethod', type: 'string', maxLength: 100),
-                    new OA\Property(property: 'sessionId', type: 'string', nullable: true, description: 'Alternative to the X-Cart-Session-ID header.'),
+                    new OA\Property(property: 'sessionId', description: 'Alternative to the X-Cart-Session-ID header.', type: 'string', nullable: true),
                     new OA\Property(property: 'couponCode', type: 'string', nullable: true),
                 ],
             ),
@@ -66,9 +66,7 @@ class CheckoutController extends BaseApiController
             $order = $action->execute(PlaceOrderDto::fromRequest($request));
 
             return self::successfulResponseWithData(new CheckoutOrderResource($order), Response::HTTP_CREATED);
-        } catch (EmptyCartException $e) {
-            return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        } catch (CheckoutValidationException $e) {
+        } catch (EmptyCartException|CheckoutValidationException $e) {
             return self::errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {
             return self::errorResponse('Помилка при створенні замовлення: '.$e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -86,7 +84,7 @@ class CheckoutController extends BaseApiController
                     new OA\Property(property: 'customerName', type: 'string', maxLength: 255),
                     new OA\Property(property: 'customerPhone', type: 'string', maxLength: 50),
                     new OA\Property(property: 'variantId', type: 'integer'),
-                    new OA\Property(property: 'paymentMethod', type: 'string', enum: ['cod', 'card'], default: 'cod'),
+                    new OA\Property(property: 'paymentMethod', type: 'string', default: 'cod', enum: ['cod', 'card']),
                 ],
             ),
         ),

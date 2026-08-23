@@ -149,7 +149,7 @@ class UpdateAdminProductActionTest extends TestCase
         $this->action->execute($product->id, $dto);
 
         $this->assertDatabaseHas('product_variants', ['id' => $keptVariant->id]);
-        $this->assertDatabaseMissing('product_variants', ['id' => $removedVariant->id]);
+        $this->assertSoftDeleted('product_variants', ['id' => $removedVariant->id]);
     }
 
     public function test_execute_updates_stock_quantity_for_an_existing_stock_row(): void

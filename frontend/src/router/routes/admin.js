@@ -22,6 +22,7 @@ import AdminBrands from "@/pages/admin/AdminBrands.vue";
 import AdminBlog from "@/pages/admin/AdminBlog.vue";
 import AdminPages from "@/pages/admin/AdminPages.vue";
 import AdminHomeBanners from "@/pages/admin/AdminHomeBanners.vue";
+import AdminPromoPages from "@/pages/admin/AdminPromoPages.vue";
 
 export default {
   path: "/admin",
@@ -92,6 +93,15 @@ export default {
       meta: {
         titleKey: "admin.homeBanners.title",
         descriptionKey: "admin.homeBanners.description",
+      },
+    },
+    {
+      path: "promo-pages",
+      name: "admin-promo-pages",
+      component: AdminPromoPages,
+      meta: {
+        titleKey: "admin.promoPages.title",
+        descriptionKey: "admin.promoPages.description",
       },
     },
 
@@ -181,8 +191,8 @@ export default {
       name: "admin-promotions",
       component: AdminPromotions,
       meta: {
-        titleKey: "admin.promotions.title",
-        descriptionKey: "admin.promotions.description",
+        titleKey: "admin.marketing.promotions.title",
+        descriptionKey: "admin.marketing.promotions.description",
       },
     },
     {
