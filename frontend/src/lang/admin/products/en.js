@@ -111,6 +111,10 @@ export default {
       allImages: "All products",
       withImage: "With photo",
       withoutImage: "Without photo",
+      stockLabel: "Stock",
+      allStock: "All products",
+      inStock: "In stock",
+      outOfStock: "Out of stock",
       reset: "Reset filters",
     },
     table: {
@@ -128,6 +132,16 @@ export default {
     stockCount: "{count} pcs",
     empty: "No products found matching your search.",
     perPageLabel: "Per page:",
+    trash: {
+      openButton: "Trash",
+      title: "Deleted products",
+      empty: "No deleted products.",
+      deletedAt: "Deleted: {date}",
+      restore: "Restore",
+      restoreSuccess: 'Restored "{name}"',
+      restoreError: "Failed to restore the product. Please try again.",
+      loadError: "Failed to load deleted products.",
+    },
     deleteModal: {
       title: "Delete product",
       message: 'Are you sure you want to delete the product "{name}"?',
@@ -144,6 +158,14 @@ export default {
       deleteModal: {
         title: "Delete selected products",
         message: "Are you sure you want to delete {count} selected products?",
+      },
+      alerts: {
+        deleteSuccess: "Deleted {count} products",
+        deleteError: "Failed to delete the selected products. Please try again.",
+        statusSuccess: "Updated status for {count} products",
+        statusError: "Failed to update the status of the selected products. Please try again.",
+        categorySuccess: "Updated category for {count} products",
+        categoryError: "Failed to update the category of the selected products. Please try again.",
       },
     },
     export: {

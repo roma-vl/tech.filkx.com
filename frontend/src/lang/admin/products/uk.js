@@ -112,6 +112,10 @@ export default {
       allImages: "Усі товари",
       withImage: "З фото",
       withoutImage: "Без фото",
+      stockLabel: "Наявність",
+      allStock: "Усі товари",
+      inStock: "В наявності",
+      outOfStock: "Немає в наявності",
       reset: "Скинути фільтри",
     },
     table: {
@@ -129,6 +133,16 @@ export default {
     stockCount: "{count} шт",
     empty: "Товарів не знайдено за вашим запитом.",
     perPageLabel: "На сторінці:",
+    trash: {
+      openButton: "Кошик",
+      title: "Видалені товари",
+      empty: "Немає видалених товарів.",
+      deletedAt: "Видалено: {date}",
+      restore: "Відновити",
+      restoreSuccess: 'Товар "{name}" відновлено',
+      restoreError: "Не вдалося відновити товар. Спробуйте ще раз.",
+      loadError: "Не вдалося завантажити видалені товари.",
+    },
     deleteModal: {
       title: "Видалення товару",
       message: 'Ви впевнені, що хочете видалити товар "{name}"?',
@@ -145,6 +159,14 @@ export default {
       deleteModal: {
         title: "Видалення обраних товарів",
         message: "Ви впевнені, що хочете видалити {count} обраних товарів?",
+      },
+      alerts: {
+        deleteSuccess: "Видалено товарів: {count}",
+        deleteError: "Не вдалося видалити обрані товари. Спробуйте ще раз.",
+        statusSuccess: "Статус змінено для товарів: {count}",
+        statusError: "Не вдалося змінити статус обраних товарів. Спробуйте ще раз.",
+        categorySuccess: "Категорію змінено для товарів: {count}",
+        categoryError: "Не вдалося змінити категорію обраних товарів. Спробуйте ще раз.",
       },
     },
     export: {

@@ -66,6 +66,27 @@
           <AppButton
             variant="secondary"
             class="flex items-center gap-2 shrink-0 h-[38px] !py-0"
+            @click="showTrashModal = true"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+            {{ t("admin.products.list.trash.openButton") }}
+          </AppButton>
+
+          <AppButton
+            variant="secondary"
+            class="flex items-center gap-2 shrink-0 h-[38px] !py-0"
             @click="showImportModal = true"
           >
             <svg
@@ -214,6 +235,19 @@
                   id: 'stock-asc',
                   name: t('admin.products.list.filters.sortStockAsc'),
                 },
+              ]"
+              option-value="id"
+              option-label="name"
+            />
+
+            <AppSelect
+              v-model="productStockFilter"
+              :label="t('admin.products.list.filters.stockLabel')"
+              :placeholder="t('admin.products.list.filters.allStock')"
+              :options="[
+                { id: '', name: t('admin.products.list.filters.allStock') },
+                { id: 'inStock', name: t('admin.products.list.filters.inStock') },
+                { id: 'outOfStock', name: t('admin.products.list.filters.outOfStock') },
               ]"
               option-value="id"
               option-label="name"
@@ -596,6 +630,12 @@
       @confirm="confirmBulkDelete"
     />
 
+    <!-- Trashed Products Modal -->
+    <TrashedProductsModal
+      v-model="showTrashModal"
+      @restored="emit('refresh')"
+    />
+
     <!-- Product Edit/Create Modal Component -->
     <ProductFormModal
       v-model="showProductModal"
@@ -635,6 +675,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppSelect from "@/components/admin/ui/AppSelect.vue";
@@ -642,9 +683,11 @@ import AppButton from "@/components/admin/ui/AppButton.vue";
 import AppPagination from "@/components/admin/ui/AppPagination.vue";
 import ProductImportModal from "./ProductImportModal.vue";
 import ProductFormModal from "./ProductFormModal.vue";
+import TrashedProductsModal from "./TrashedProductsModal.vue";
 import AppConfirmModal from "@/components/admin/ui/AppConfirmModal.vue";
 
 const { t } = useI18n();
+const toast = useToast();
 
 const props = defineProps({
   products: { type: Array, required: true },
@@ -663,12 +706,17 @@ const productSortFilter = ref("name-asc");
 const productHotFilter = ref(false);
 const productRecommendedFilter = ref(false);
 const productImageFilter = ref("");
+const productStockFilter = ref("");
 const showFilters = ref(false);
+
+const getTotalStock = (product) =>
+  (product.variants || []).reduce((sum, v) => sum + (v.stock || 0), 0);
 
 const showProductModal = ref(false);
 const editingProduct = ref(null);
 
 const showImportModal = ref(false);
+const showTrashModal = ref(false);
 
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
@@ -705,6 +753,7 @@ watch(
     productHotFilter,
     productRecommendedFilter,
     productImageFilter,
+    productStockFilter,
     perPage,
   ],
   () => {
@@ -763,6 +812,7 @@ const bulkCategoryValue = ref("");
 const showBulkDeleteModal = ref(false);
 
 const confirmBulkDelete = async () => {
+  const count = selectedIds.value.length;
   bulkActionLoading.value = true;
   try {
     await api.delete("/admin/products/bulk-delete", {
@@ -771,8 +821,10 @@ const confirmBulkDelete = async () => {
     clearSelection();
     showBulkDeleteModal.value = false;
     emit("refresh");
+    toast.success(t("admin.products.list.bulk.alerts.deleteSuccess", { count }));
   } catch (error) {
     console.error("Failed to bulk delete products:", error);
+    toast.error(t("admin.products.list.bulk.alerts.deleteError"));
   } finally {
     bulkActionLoading.value = false;
   }
@@ -780,6 +832,7 @@ const confirmBulkDelete = async () => {
 
 const applyBulkStatus = async () => {
   if (!bulkStatusValue.value) return;
+  const count = selectedIds.value.length;
   bulkActionLoading.value = true;
   try {
     await api.put("/admin/products/bulk-status", {
@@ -789,8 +842,10 @@ const applyBulkStatus = async () => {
     clearSelection();
     bulkStatusValue.value = "";
     emit("refresh");
+    toast.success(t("admin.products.list.bulk.alerts.statusSuccess", { count }));
   } catch (error) {
     console.error("Failed to bulk update product status:", error);
+    toast.error(t("admin.products.list.bulk.alerts.statusError"));
   } finally {
     bulkActionLoading.value = false;
   }
@@ -798,6 +853,7 @@ const applyBulkStatus = async () => {
 
 const applyBulkCategory = async () => {
   if (!bulkCategoryValue.value) return;
+  const count = selectedIds.value.length;
   bulkActionLoading.value = true;
   try {
     await api.put("/admin/products/bulk-category", {
@@ -807,8 +863,10 @@ const applyBulkCategory = async () => {
     clearSelection();
     bulkCategoryValue.value = "";
     emit("refresh");
+    toast.success(t("admin.products.list.bulk.alerts.categorySuccess", { count }));
   } catch (error) {
     console.error("Failed to bulk update product category:", error);
+    toast.error(t("admin.products.list.bulk.alerts.categoryError"));
   } finally {
     bulkActionLoading.value = false;
   }
@@ -824,6 +882,7 @@ const activeFiltersCount = computed(() => {
   if (productHotFilter.value) count++;
   if (productRecommendedFilter.value) count++;
   if (productImageFilter.value) count++;
+  if (productStockFilter.value) count++;
   return count;
 });
 
@@ -836,6 +895,7 @@ const resetFilters = () => {
   productHotFilter.value = false;
   productRecommendedFilter.value = false;
   productImageFilter.value = "";
+  productStockFilter.value = "";
 };
 
 const filteredProducts = computed(() => {
@@ -865,6 +925,11 @@ const filteredProducts = computed(() => {
       (productImageFilter.value === "with"
         ? product.hasImage
         : !product.hasImage);
+    const stockMatch =
+      !productStockFilter.value ||
+      (productStockFilter.value === "inStock"
+        ? getTotalStock(product) > 0
+        : getTotalStock(product) === 0);
 
     return (
       nameMatch &&
@@ -873,7 +938,8 @@ const filteredProducts = computed(() => {
       statusMatch &&
       hotMatch &&
       recMatch &&
-      imageMatch
+      imageMatch &&
+      stockMatch
     );
   });
 
