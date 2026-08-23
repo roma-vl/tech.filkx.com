@@ -29,7 +29,9 @@ const mappedCategories = computed(() =>
 const getBannerLink = (banner) => {
   switch (banner.linkType) {
     case "category":
-      return { name: "category", params: { slug: banner.linkValue } };
+      return banner.linkValue
+        ? { name: "category", params: { slug: banner.linkValue } }
+        : { name: "catalog" };
     case "product":
       return banner.linkValue
         ? { name: "product-detail", params: { id: banner.linkValue } }

@@ -269,6 +269,7 @@
         <AppInput
           v-if="form.linkType !== 'catalog'"
           v-model="form.linkValue"
+          required
           :label="linkValueLabel"
           :placeholder="linkValuePlaceholder"
         />
@@ -293,7 +294,11 @@
         <AppButton
           variant="primary"
           class="!bg-[#00a046] hover:!bg-[#00b050] text-white border-none shadow-sm hover:shadow-lg focus:ring-[#00a046] transition-all duration-200 active:scale-[0.98]"
-          :disabled="!form.title || !form.imagePath"
+          :disabled="
+            !form.title ||
+            !form.imagePath ||
+            (form.linkType !== 'catalog' && !form.linkValue)
+          "
           @click="saveBanner"
         >
           {{ t("admin.homeBanners.form.save") }}
@@ -441,6 +446,10 @@ const uploadImage = async (e) => {
 
 const saveBanner = async () => {
   if (!form.value.title || !form.value.imagePath) return;
+  if (form.value.linkType !== "catalog" && !form.value.linkValue) {
+    toast.warning(t("admin.homeBanners.alerts.linkValueRequired"));
+    return;
+  }
   const payload = {
     badge: form.value.badge || null,
     subtitle: form.value.subtitle || null,

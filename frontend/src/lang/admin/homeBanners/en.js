@@ -60,6 +60,7 @@ export default {
     confirm: "Delete",
   },
   alerts: {
+    linkValueRequired: "Please provide a value for the selected link type",
     loadError: "Failed to load banners",
     uploadError: "Failed to upload image",
     saveSuccess: "Banner saved",

@@ -60,6 +60,7 @@ export default {
     confirm: "Видалити",
   },
   alerts: {
+    linkValueRequired: "Вкажіть значення для обраного типу посилання",
     loadError: "Помилка завантаження банерів",
     uploadError: "Помилка завантаження зображення",
     saveSuccess: "Банер збережено",
