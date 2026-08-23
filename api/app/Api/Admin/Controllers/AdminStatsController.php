@@ -14,8 +14,8 @@ class AdminStatsController extends BaseApiController
 {
     #[OA\Get(
         path: '/api/admin/stats',
-        summary: 'Get administrative statistics overview',
         description: 'Returns high-level statistics for users, streams, videos, and revenue, including trends and recent activity.',
+        summary: 'Get administrative statistics overview',
         security: [['bearerAuth' => []]],
         tags: ['Admin Settings'],
         responses: [

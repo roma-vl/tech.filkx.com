@@ -47,18 +47,18 @@ class BlogController extends BaseApiController
                                             new OA\Property(property: 'publishedAt', type: 'string', format: 'date-time', nullable: true),
                                             new OA\Property(
                                                 property: 'category',
-                                                nullable: true,
                                                 properties: [
                                                     new OA\Property(property: 'slug', type: 'string'),
                                                     new OA\Property(property: 'name', type: 'object'),
                                                 ],
                                                 type: 'object',
+                                                nullable: true,
                                             ),
                                             new OA\Property(
                                                 property: 'author',
-                                                nullable: true,
                                                 properties: [new OA\Property(property: 'name', type: 'string')],
                                                 type: 'object',
+                                                nullable: true,
                                             ),
                                             new OA\Property(
                                                 property: 'tags',
@@ -134,18 +134,18 @@ class BlogController extends BaseApiController
                                 new OA\Property(property: 'publishedAt', type: 'string', format: 'date-time', nullable: true),
                                 new OA\Property(
                                     property: 'category',
-                                    nullable: true,
                                     properties: [
                                         new OA\Property(property: 'slug', type: 'string'),
                                         new OA\Property(property: 'name', type: 'object'),
                                     ],
                                     type: 'object',
+                                    nullable: true,
                                 ),
                                 new OA\Property(
                                     property: 'author',
-                                    nullable: true,
                                     properties: [new OA\Property(property: 'name', type: 'string')],
                                     type: 'object',
+                                    nullable: true,
                                 ),
                                 new OA\Property(
                                     property: 'tags',

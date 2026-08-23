@@ -48,6 +48,7 @@ class AdminCategoryController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/categories',
         summary: 'Create a catalog category',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -60,7 +61,6 @@ class AdminCategoryController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Categories'],
         responses: [
             new OA\Response(
@@ -81,6 +81,7 @@ class AdminCategoryController extends BaseApiController
     #[OA\Put(
         path: '/api/admin/categories/{id}',
         summary: 'Update a catalog category',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -93,7 +94,6 @@ class AdminCategoryController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Categories'],
         parameters: [
             new OA\Parameter(

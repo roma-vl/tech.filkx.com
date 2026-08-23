@@ -77,11 +77,11 @@ class UserController extends BaseApiController
         path: '/api/user/locale',
         summary: 'Update user locale',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserLocaleRequest'),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -106,11 +106,11 @@ class UserController extends BaseApiController
         path: '/api/user/profile',
         summary: 'Update user profile',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserProfileRequest'),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -143,11 +143,11 @@ class UserController extends BaseApiController
         path: '/api/user/password',
         summary: 'Update user password',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/UpdateUserPasswordRequest'),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -198,7 +198,6 @@ class UserController extends BaseApiController
         path: '/api/user/avatar',
         summary: 'Upload user avatar',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -206,6 +205,7 @@ class UserController extends BaseApiController
                 schema: new OA\Schema(ref: '#/components/schemas/UploadAvatarRequest'),
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -256,14 +256,14 @@ class UserController extends BaseApiController
 
     #[OA\Post(
         path: '/api/user/password/set',
-        summary: 'Set password for OAuth users',
         description: 'Lets a user who registered via OAuth (and therefore has no password) set one for the first time.',
+        summary: 'Set password for OAuth users',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/SetUserPasswordRequest'),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Password set successfully'),
             new OA\Response(response: 400, description: 'A password is already set for this account'),
@@ -342,11 +342,11 @@ class UserController extends BaseApiController
         path: '/api/user/settings/preferences',
         summary: 'Update notification preferences',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/UpdateNotificationPreferencesRequest'),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -430,8 +430,8 @@ class UserController extends BaseApiController
 
     #[OA\Get(
         path: '/api/user/restore',
-        summary: 'Restore a soft-deleted account via signed link',
         description: 'The signed link is issued by AccountDeletionScheduledNotification, sent when initiateDelete runs.',
+        summary: 'Restore a soft-deleted account via signed link',
         tags: ['User'],
         parameters: [
             new OA\Parameter(name: 'userId', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
@@ -467,8 +467,8 @@ class UserController extends BaseApiController
 
     #[OA\Get(
         path: '/api/user/email/confirm-change',
-        summary: 'Confirm a pending email change via signed link',
         description: 'Not currently wired to any route - the signed link is never issued by any notification in this codebase. Kept documented for when the email-change flow is implemented.',
+        summary: 'Confirm a pending email change via signed link',
         tags: ['User'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
@@ -514,7 +514,6 @@ class UserController extends BaseApiController
         path: '/api/user/favorites/toggle',
         summary: 'Add or remove a product from favorites',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -522,6 +521,7 @@ class UserController extends BaseApiController
                 properties: [new OA\Property(property: 'product_id', type: 'integer')],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Updated list of favorited products'),
             new OA\Response(response: 400, description: 'Product ID is required'),
@@ -547,7 +547,6 @@ class UserController extends BaseApiController
         path: '/api/user/favorites/sync',
         summary: 'Merge a client-side favorites list into the user\'s account',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -556,6 +555,7 @@ class UserController extends BaseApiController
                 ],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Full list of favorited products after sync'),
         ],
@@ -585,7 +585,6 @@ class UserController extends BaseApiController
         path: '/api/user/compares/toggle',
         summary: 'Add or remove a product from the comparison list',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -593,6 +592,7 @@ class UserController extends BaseApiController
                 properties: [new OA\Property(property: 'product_id', type: 'integer')],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Updated comparison list'),
             new OA\Response(response: 400, description: 'Product ID is required'),
@@ -612,7 +612,6 @@ class UserController extends BaseApiController
         path: '/api/user/compares/sync',
         summary: 'Merge a client-side comparison list into the user\'s account',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -621,6 +620,7 @@ class UserController extends BaseApiController
                 ],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Full comparison list after sync'),
         ],
@@ -650,7 +650,6 @@ class UserController extends BaseApiController
         path: '/api/user/viewed-products/track',
         summary: 'Record a product view',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -658,6 +657,7 @@ class UserController extends BaseApiController
                 properties: [new OA\Property(property: 'product_id', type: 'integer')],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Product tracked successfully'),
             new OA\Response(response: 400, description: 'Product ID is required'),
@@ -679,7 +679,6 @@ class UserController extends BaseApiController
         path: '/api/user/viewed-products/sync',
         summary: 'Merge a client-side viewing history into the user\'s account',
         security: [['bearerAuth' => []]],
-        tags: ['User'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -699,6 +698,7 @@ class UserController extends BaseApiController
                 ],
             ),
         ),
+        tags: ['User'],
         responses: [
             new OA\Response(response: 200, description: 'Recently viewed products after merge'),
         ],

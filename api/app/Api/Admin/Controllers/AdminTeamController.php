@@ -103,6 +103,7 @@ class AdminTeamController extends BaseApiController
     #[OA\Post(
         path: '/api/admin/team/invite',
         summary: 'Invite a new admin team member',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -114,7 +115,6 @@ class AdminTeamController extends BaseApiController
                 ],
             ),
         ),
-        security: [['bearerAuth' => []]],
         tags: ['Admin Team'],
         responses: [
             new OA\Response(
