@@ -40,63 +40,6 @@ Services:
 
 ---
 
-## Dev Commands
-
-The Docker network must exist before starting:
-
-```bash
-docker network create filkx    # one-time
-make init                      # docker-down-clear, docker-pull, docker-build, docker-up, api-init, frontend-init
-make up / make down / make restart
-```
-
-### API
-
-```bash
-make api-init                  # composer install + migrate + passport:client
-make migrate
-make passport-client
-make pint                      # PHP lint: tech-api-php-cli ./vendor/bin/pint --parallel --max-processes=4
-make swagger                   # l5-swagger:generate (OpenAPI docs)
-make test / make test-backend  # NOTE: currently broken — Makefile runs `php artisan` with no `test`
-                                # argument (Makefile:27-28). Fix this before relying on it; the
-                                # intended command is `php artisan test`.
-make test-coverage             # php artisan test --coverage-html=coverage (XDEBUG_MODE=coverage)
-docker compose run --rm tech-api-php-cli php artisan <command>
-```
-
-`api/tests/` currently only contains the Laravel-generated stub tests — there is no real backend
-test coverage yet (see `docs/DEVELOPMENT_PLAN.md` §2.4).
-
-### Frontend
-
-```bash
-make frontend-install
-make frontend-dev              # Vite dev server
-make frontend-build
-make frontend-ssr              # runs `npm run serve:ssr` → currently fails, server.js is missing
-make format                    # prettier + eslint --fix via tech-frontend-node-cli
-make test-frontend             # npm run test:unit (vitest) — NOTE: no vitest.config.* and no
-                                # spec/test files exist yet; this currently has nothing to run
-docker compose run --rm tech-frontend-node-cli npm run test:e2e   # playwright — same caveat, no config/tests exist yet
-```
-
-### Docker services (docker-compose.yml)
-
-`tech-api`, `tech-api-php-fpm`, `tech-api-php-cli`, `tech-api-scheduler`, `tech-api-postgres`,
-`tech-api-queue`, `tech-frontend-spa`, `tech-frontend-node-cli`, `tech-redis`, `tech-meilisearch`,
-`tech-nginx-temp`. `filkx` (network) and `api-postgres`/`redis`/`meilisearch-data` (volumes) in the
-compose file are named volume/network declarations, not separate services — nothing dead there,
-just inconsistent naming (they don't carry the `tech-` prefix the services use).
-`docker-compose-production.yml` uses `tech-frontend` (nginx+static dist) instead of the dev
-`tech-frontend-spa`+`tech-frontend-node-cli` pair; otherwise mirrors the dev service set.
-
-One real leftover bug: `tech-api-postgres`'s healthcheck in `docker-compose.yml` runs
-`pg_isready -U live -d live` while the actual configured user/db is `tech`/`tech` — copy-pasted
-from an unrelated project and never fixed.
-
----
-
 ## Architecture Priorities
 
 This is a long-lived production e-commerce platform. When making any change, prioritize in this order:
@@ -109,36 +52,6 @@ This is a long-lived production e-commerce platform. When making any change, pri
 
 Never sacrifice maintainability for speed of delivery.
 Never introduce technical debt to solve a task faster.
-
----
-
-## Coding Principles
-
-Apply these across both services and all languages:
-
-**SOLID**
-- Single Responsibility: one class, one reason to change
-- Open/Closed: open for extension, closed for modification
-- Liskov Substitution: subtypes must be substitutable for their base types
-- Interface Segregation: prefer narrow interfaces over fat ones
-- Dependency Inversion: depend on abstractions, not concretions
-
-**DRY** — every piece of knowledge has a single authoritative representation.
-Duplication is not just copy-paste; it is two places that must change together.
-
-**KISS** — the simplest solution that correctly solves the problem is the right solution.
-Complexity is a liability, not an asset.
-
-**YAGNI** — do not implement functionality until it is needed.
-Do not design for hypothetical future requirements.
-
-**Tell, Don't Ask** — objects should do things, not expose state for the caller to decide.
-
-**Command Query Separation** — a method either changes state (command) or returns data (query), never both.
-
-**Composition over Inheritance** — prefer composing small focused objects over deep inheritance chains.
-
-**Dependency Injection** — dependencies are passed in, never instantiated inside a class.
 
 ---
 
@@ -165,9 +78,7 @@ Do not design for hypothetical future requirements.
 - Prefer editing existing files over creating new ones
 - Keep changes scoped to what the task requires — no opportunistic refactoring
 - Verify that new code does not break existing tests before declaring done
-- Write tests for new code (unit and/or feature/integration) — note the project currently has
-  near-zero test coverage on both sides; new code is a good place to start actually building it
-  rather than compounding the gap
+- Write tests for new code (unit and/or feature/integration)
 - Update the OpenAPI/Swagger annotations and run `make swagger` when API endpoints are added or changed
 - Write code that a new team member can understand without asking questions
 - Use `frontend/src/shared/services/api/` for new frontend API calls, not direct `axios.*` — a
@@ -179,32 +90,6 @@ Default: write no comments.
 Only add a comment when the **why** is non-obvious: a hidden constraint, a workaround for a specific bug,
 a subtle invariant that would surprise a reader. If removing the comment would not confuse a future reader, do not write it.
 Never write docblocks that restate the method signature.
-
----
-
-## i18n
-
-Every user-visible string must be translated — this includes toast messages (`cartStore.addToast(...)`)
-and `confirm()`/alert-style text, not just template interpolations.
-
-- Uses `vue-i18n` (Composition API mode, `legacy: false`), configured in `frontend/src/i18n.js`.
-- Translation keys live under `frontend/src/lang/public/` (customer-facing) and
-  `frontend/src/lang/admin/` (admin panel) — **one file per feature per language**, not one flat
-  file per language: `lang/public/{feature}/{en,uk}.js`, e.g. `lang/public/cart/uk.js`,
-  `lang/public/header/en.js`. Each feature folder's `en.js`/`uk.js` default-exports a plain nested
-  object; `lang/public/en.js`/`uk.js` are aggregators that import every feature submodule and merge
-  them into one object (mirrors `lang/admin/en.js`/`uk.js` doing the same for the admin submodules),
-  and `lang/index.js` merges both namespaces for `vue-i18n`.
-- Keys are nested by feature, then by page/section: `cart.items.remove`, `header.search.placeholder`,
-  `home.catalogSection.title`. A feature that's both a homepage widget and a full page gets two
-  namespaces (`home.blog.*` for the homepage teaser vs. `blog.*` for the actual blog page) — don't
-  collapse them into one just because the words overlap.
-- **Only two locales**: `en` (default/fallback) and `uk`. Add both for every new key — never add one
-  without the other.
-- In `<script setup>`: `const { t } = useI18n();` then `t('key')` (also in the template). Interpolate
-  with `t('key', { name: value })` matching `{name}` placeholders in the string.
-- Skip `frontend/src/lang/admin/` and admin pages/components — the admin panel's i18n coverage is a
-  separate, later pass, not part of the customer-facing (`lang/public/`) effort.
 
 ---
 
