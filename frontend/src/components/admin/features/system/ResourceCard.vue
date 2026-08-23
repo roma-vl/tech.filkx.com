@@ -180,7 +180,9 @@ defineProps({
     type: String,
     default: "progress", // progress, circular, stats
   },
-  icon: Object,
+  // Heroicons components are functional components, which Vue's prop
+  // validator sees as type Function, not Object.
+  icon: [Object, Function],
   title: String,
   subtitle: String,
   label: String,
