@@ -43,6 +43,15 @@ export default {
   filters: {
     all_tags: "Усі мітки",
   },
+  list: {
+    unknown_user: "Невідомий користувач",
+    you_prefix: "Ви:",
+    no_messages: "Немає повідомлень",
+    photo: "Фото",
+    video: "Відео",
+    file: "Файл",
+    yesterday: "Вчора",
+  },
   actions: {
     accept: "Прийняти",
     done: "Виконано",

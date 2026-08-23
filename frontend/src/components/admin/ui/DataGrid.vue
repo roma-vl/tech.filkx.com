@@ -1,6 +1,6 @@
 <template>
   <div class="md:hidden text-xs text-gray-400 px-4">
-    ← Проведіть пальцем, щоб побачити більше
+    {{ t("admin.common.dataGrid.swipeHint") }}
   </div>
 
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 space-y-4 grid">
@@ -13,7 +13,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search..."
+            :placeholder="t('admin.common.dataGrid.searchPlaceholder')"
             class="flex-1 pl-3 pr-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:bg-gray-900 dark:text-gray-200"
           />
         </div>
@@ -22,7 +22,7 @@
           <Dropdown v-if="headings?.length">
             <template #trigger>
               <button class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded">
-                Columns
+                {{ t("admin.common.dataGrid.columns") }}
               </button>
             </template>
             <template #content>
@@ -98,7 +98,7 @@
               :colspan="visibleHeadings.length"
               class="text-center py-4 text-gray-400 dark:text-gray-300"
             >
-              {{ emptyText || $t("ui.no_data") }}
+              {{ emptyText || t("admin.common.no_data") }}
             </td>
           </tr>
         </tbody>
@@ -115,9 +115,12 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import ArrowUpDownIcon from "@/components/Icon/ArrowUpDownIcon.vue";
 import Dropdown from "./AppDropdown.vue";
 import Pagination from "./AppPagination.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   items: { type: Array, required: true },
@@ -135,10 +138,8 @@ const props = defineProps({
   perPageOptions: { type: Array, default: () => [5, 10, 20, 50] },
 
   /* UX */
-  /* UX */
   emptyText: { type: String, default: null },
 });
-/* Note: We will handle default inside template or computed if null using $t */
 
 const emit = defineEmits([
   "sort",

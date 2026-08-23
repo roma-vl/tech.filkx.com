@@ -18,6 +18,8 @@ export default {
   },
   table: {
     client: "Client",
+    roles: "Roles",
+    defaultRole: "Customer",
     joinDate: "Join Date",
     actions: "Actions",
     empty: "No clients found",

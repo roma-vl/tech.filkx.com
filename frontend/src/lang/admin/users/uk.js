@@ -18,6 +18,8 @@ export default {
   },
   table: {
     client: "Клієнт",
+    roles: "Ролі",
+    defaultRole: "Покупець",
     joinDate: "Дата приєднання",
     actions: "Дії",
     empty: "Клієнтів не знайдено",

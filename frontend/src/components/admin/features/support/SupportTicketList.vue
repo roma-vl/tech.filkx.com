@@ -35,7 +35,10 @@
               :alt="ticket.user.name"
             />
             <template v-else>
-              {{ ticket.user?.name?.charAt(0)?.toUpperCase() || "U" }}
+              {{
+                ticket.user?.name?.charAt(0)?.toUpperCase() ||
+                unknownUserLabel.charAt(0)
+              }}
             </template>
           </div>
           <div
@@ -53,7 +56,7 @@
             <h4
               class="text-sm font-black text-gray-900 dark:text-white truncate tracking-tight"
             >
-              {{ ticket.user?.name || "Unknown User" }}
+              {{ ticket.user?.name || unknownUserLabel }}
             </h4>
             <span
               class="text-[9px] font-black text-gray-400 uppercase tracking-widest flex-shrink-0"
@@ -70,7 +73,7 @@
               <span
                 v-if="ticket.lastMessage?.isAdmin"
                 class="text-primary-500 font-black uppercase tracking-tighter mr-1"
-                >You:</span
+                >{{ t("admin.support.list.you_prefix") }}</span
               >
               {{ getMessagePreview(ticket) }}
             </p>
@@ -106,10 +109,13 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { SparklesIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
+
+const unknownUserLabel = computed(() => t("admin.support.list.unknown_user"));
 
 defineProps({
   tickets: {
@@ -136,7 +142,7 @@ const formatDate = (dateString) => {
       minute: "2-digit",
     });
   } else if (days === 1) {
-    return "Вчора";
+    return t("admin.support.list.yesterday");
   } else if (days < 7) {
     return date.toLocaleDateString("uk-UA", { weekday: "short" });
   }
@@ -152,15 +158,17 @@ const isVideo = (fileType) => {
 };
 
 const getMessagePreview = (ticket) => {
-  if (!ticket.lastMessage) return "Немає повідомлень";
+  if (!ticket.lastMessage) return t("admin.support.list.no_messages");
 
   if (ticket.lastMessage.filePath && !ticket.lastMessage.message) {
-    if (isImage(ticket.lastMessage.fileType)) return "Фото";
-    if (isVideo(ticket.lastMessage.fileType)) return "Відео";
-    return "Файл";
+    if (isImage(ticket.lastMessage.fileType))
+      return t("admin.support.list.photo");
+    if (isVideo(ticket.lastMessage.fileType))
+      return t("admin.support.list.video");
+    return t("admin.support.list.file");
   }
 
-  return ticket.lastMessage.message || "Немає повідомлень";
+  return ticket.lastMessage.message || t("admin.support.list.no_messages");
 };
 
 const getStatusStyle = (status) => {

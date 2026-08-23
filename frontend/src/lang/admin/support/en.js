@@ -43,6 +43,15 @@ export default {
   filters: {
     all_tags: "All Tags",
   },
+  list: {
+    unknown_user: "Unknown User",
+    you_prefix: "You:",
+    no_messages: "No messages",
+    photo: "Photo",
+    video: "Video",
+    file: "File",
+    yesterday: "Yesterday",
+  },
   actions: {
     accept: "Accept",
     done: "Done",

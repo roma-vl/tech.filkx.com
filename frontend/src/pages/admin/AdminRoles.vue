@@ -121,10 +121,10 @@
     <!-- Delete confirmation modal -->
     <AppConfirmModal
       v-model="showDeleteConfirm"
-      :title="t('admin.roles.alerts.delete_confirm_title') || 'Видалення ролі'"
+      :title="t('admin.roles.alerts.delete_confirm_title')"
       :message="t('admin.roles.alerts.delete_confirm')"
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
+      :confirm-text="t('admin.roles.delete_role')"
+      :cancel-text="t('admin.roles.modal.cancel')"
       :loading="deleteLoading"
       @confirm="confirmDelete"
     />

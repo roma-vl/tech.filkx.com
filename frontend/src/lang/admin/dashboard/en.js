@@ -21,6 +21,10 @@ export default {
       label: "Client Management",
       desc: "Manage platform users",
     },
+    productManagement: {
+      label: "Product Management",
+      desc: "Add, edit, and review products",
+    },
     supportTickets: {
       label: "Support Tickets",
       desc: "Respond to inquiries",

@@ -4,6 +4,7 @@ export default {
   search_placeholder: "Search roles...",
   create_permission: "Create Permission",
   create_role: "Create New Role",
+  delete_role: "Delete",
   loading_roles: "Loading roles and permissions...",
   table: {
     role_name: "Role Name",
@@ -50,6 +51,7 @@ export default {
     creating: "Creating...",
   },
   alerts: {
+    delete_confirm_title: "Delete Role",
     delete_confirm:
       "Are you sure you want to delete this role? This might affect users assigned to it.",
     save_error: "Failed to save role",

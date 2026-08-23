@@ -8,7 +8,7 @@
       <div class="flex items-center gap-3 flex-1 max-w-md">
         <AppInput
           v-model="search"
-          placeholder="Пошук за назвою або slug..."
+          :placeholder="t('admin.pages.list.searchPlaceholder')"
           class="flex-1"
         />
         <AppButton
@@ -18,7 +18,7 @@
             'ring-2 ring-primary-500 !bg-primary-50 dark:!bg-primary-900/20 !border-primary-200 dark:!border-primary-800':
               showFilters,
           }"
-          title="Фільтри"
+          :title="t('admin.pages.list.filters')"
           @click="showFilters = !showFilters"
         >
           <svg
@@ -51,7 +51,7 @@
         @click="$emit('add-page')"
       >
         <PlusIcon class="w-4 h-4" />
-        Створити сторінку
+        {{ t("admin.pages.list.createPage") }}
       </AppButton>
     </div>
 
@@ -64,12 +64,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <AppSelect
             v-model="statusFilter"
-            label="Статус"
-            placeholder="Всі статуси"
+            :label="t('admin.pages.list.status')"
+            :placeholder="t('admin.pages.list.allStatuses')"
             :options="[
-              { id: '', name: 'Всі статуси' },
-              { id: 'published', name: 'Опубліковані' },
-              { id: 'draft', name: 'Чернетки' },
+              { id: '', name: t('admin.pages.list.allStatuses') },
+              { id: 'published', name: t('admin.pages.list.published') },
+              { id: 'draft', name: t('admin.pages.list.draft') },
             ]"
             option-value="id"
             option-label="name"
@@ -83,7 +83,7 @@
             class="!text-red-500 hover:!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20 !px-4 !py-2 !rounded-xl font-bold"
             @click="resetFilters"
           >
-            Скинути фільтри
+            {{ t("admin.pages.list.resetFilters") }}
           </AppButton>
         </div>
       </div>
@@ -107,10 +107,10 @@
           class="w-16 h-16 mx-auto mb-4 opacity-30 text-[#00a046]"
         />
         <p class="text-base font-semibold text-gray-700 dark:text-gray-300">
-          Сторінок не знайдено
+          {{ t("admin.pages.list.empty") }}
         </p>
         <p class="text-xs mt-1 text-gray-400 dark:text-gray-500">
-          Спробуйте змінити пошуковий запит або створіть нову сторінку
+          {{ t("admin.pages.list.emptySubtitle") }}
         </p>
       </div>
 
@@ -123,27 +123,27 @@
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Назва сторінки (UK / EN)
+                {{ t("admin.pages.list.table.title") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Адреса (Slug)
+                {{ t("admin.pages.list.table.slug") }}
               </th>
               <th
                 class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Статус
+                {{ t("admin.pages.list.table.status") }}
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Оновлено
+                {{ t("admin.pages.list.table.updated") }}
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
-                Дії
+                {{ t("admin.pages.list.table.actions") }}
               </th>
             </tr>
           </thead>
@@ -155,10 +155,10 @@
             >
               <td class="px-6 py-4">
                 <div class="font-semibold text-gray-800 dark:text-gray-100">
-                  {{ page.titleUk || "Без назви" }}
+                  {{ page.titleUk || t("admin.pages.list.noTitle") }}
                 </div>
                 <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  {{ page.titleEn || "No title" }}
+                  {{ page.titleEn || t("admin.pages.list.noTitleEn") }}
                 </div>
               </td>
               <td class="px-6 py-4">
@@ -170,7 +170,7 @@
                   </span>
                   <button
                     class="p-1 text-gray-400 hover:text-[#00a046] transition-colors"
-                    title="Копіювати посилання"
+                    :title="t('admin.pages.list.copyLink')"
                     @click="copyLink(page.slug)"
                   >
                     <DocumentDuplicateIcon class="w-3.5 h-3.5" />
@@ -187,7 +187,9 @@
                   ]"
                 >
                   {{
-                    page.status === "published" ? "Опубліковано" : "Чернетка"
+                    page.status === "published"
+                      ? t("admin.pages.form.statusPublished")
+                      : t("admin.pages.form.statusDraft")
                   }}
                 </span>
               </td>
@@ -200,20 +202,20 @@
                     :href="`/pages/${page.slug}`"
                     target="_blank"
                     class="p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-[#00a046]/10 text-gray-500 hover:text-[#00a046] transition-colors"
-                    title="Переглянути на сайті"
+                    :title="t('admin.pages.list.viewOnSite')"
                   >
                     <ArrowTopRightOnSquareIcon class="w-4 h-4" />
                   </a>
                   <button
                     class="p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-[#00a046]/10 text-gray-500 hover:text-[#00a046] transition-colors"
-                    title="Редагувати"
+                    :title="t('admin.pages.list.edit')"
                     @click="$emit('edit-page', page)"
                   >
                     <PencilIcon class="w-4 h-4" />
                   </button>
                   <button
                     class="p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
-                    title="Видалити"
+                    :title="t('admin.pages.list.delete')"
                     @click="$emit('delete-page', page)"
                   >
                     <TrashIcon class="w-4 h-4" />
@@ -238,6 +240,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import api from "@/shared/services/api/apiClient";
 import AppInput from "@/components/admin/ui/AppInput.vue";
@@ -255,6 +258,7 @@ import {
 
 defineEmits(["add-page", "edit-page", "delete-page"]);
 
+const { t } = useI18n();
 const toast = useToast();
 
 const pages = ref([]);
@@ -289,7 +293,7 @@ const fetchPages = async (page = 1) => {
     pages.value = data.data.data;
     pagination.value = data.data.meta;
   } catch (e) {
-    toast.error("Помилка завантаження сторінок");
+    toast.error(t("admin.pages.list.loadError"));
     console.error(e);
   } finally {
     loading.value = false;
@@ -300,8 +304,8 @@ const copyLink = (slug) => {
   const url = `${window.location.origin}/pages/${slug}`;
   navigator.clipboard
     .writeText(url)
-    .then(() => toast.success("Посилання скопійовано в буфер обміну"))
-    .catch(() => toast.error("Не вдалося скопіювати посилання"));
+    .then(() => toast.success(t("admin.pages.list.linkCopied")))
+    .catch(() => toast.error(t("admin.pages.list.linkCopyError")));
 };
 
 const formatDate = (d) => {

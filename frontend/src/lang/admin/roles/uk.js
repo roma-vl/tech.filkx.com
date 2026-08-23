@@ -5,6 +5,7 @@ export default {
   search_placeholder: "Пошук ролей...",
   create_permission: "Створити дозвіл",
   create_role: "Створити нову роль",
+  delete_role: "Видалити",
   table: {
     role_name: "Назва ролі",
     description: "Опис",
@@ -51,6 +52,7 @@ export default {
     creating: "Створення...",
   },
   alerts: {
+    delete_confirm_title: "Видалення ролі",
     delete_confirm:
       "Ви впевнені, що хочете видалити цю роль? Це може вплинути на користувачів, яким вона призначена.",
     save_error: "Не вдалося зберегти роль",
