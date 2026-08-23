@@ -118,4 +118,42 @@ class AdminProductTrashControllerTest extends TestCase
             ->postJson("/api/admin/products/{$product->id}/restore")
             ->assertStatus(422);
     }
+
+    public function test_non_admin_cannot_bulk_restore_products(): void
+    {
+        $customer = $this->makeCustomer();
+        $product = $this->makeProduct('restorable');
+        app(ProductRepository::class)->delete($product);
+
+        $this->withHeaders($this->authHeader($customer))
+            ->postJson('/api/admin/products/bulk-restore', ['ids' => [$product->id]])
+            ->assertForbidden();
+    }
+
+    public function test_admin_can_bulk_restore_products(): void
+    {
+        $admin = $this->makeAdmin();
+        $first = $this->makeProduct('first');
+        $second = $this->makeProduct('second');
+        app(ProductRepository::class)->delete($first);
+        app(ProductRepository::class)->delete($second);
+
+        $response = $this->withHeaders($this->authHeader($admin))
+            ->postJson('/api/admin/products/bulk-restore', ['ids' => [$first->id, $second->id]]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.restored', 2)
+            ->assertJsonPath('data.failed', []);
+        $this->assertNotNull(Product::find($first->id));
+        $this->assertNotNull(Product::find($second->id));
+    }
+
+    public function test_bulk_restore_requires_a_non_empty_ids_array(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->withHeaders($this->authHeader($admin))
+            ->postJson('/api/admin/products/bulk-restore', ['ids' => []])
+            ->assertStatus(422);
+    }
 }

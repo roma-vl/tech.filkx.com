@@ -224,7 +224,7 @@ class ProductRepository implements ProductRepositoryInterface
         if ($related->count() < $limit) {
             $excludeIds = $related->pluck('id')->push($product->id)->all();
             $related = $related->concat(
-                (array) $this->getRandomFallback($excludeIds, $limit - $related->count())
+                $this->getRandomFallback($excludeIds, $limit - $related->count())
             );
         }
 

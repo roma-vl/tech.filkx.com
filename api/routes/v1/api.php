@@ -309,11 +309,14 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::post('products', [AdminProductController::class, 'store']);
         Route::post('products/upload', [AdminProductController::class, 'uploadImage']);
         Route::get('products/trashed', [AdminProductController::class, 'trashed']);
+        Route::get('products/search', [AdminProductController::class, 'search']);
+        Route::get('products/search-ids', [AdminProductController::class, 'searchIds']);
         // Bulk routes must be registered before the products/{id} wildcards below,
         // otherwise "bulk-delete" etc. would be matched as {id}.
         Route::delete('products/bulk-delete', [AdminProductController::class, 'bulkDestroy']);
         Route::put('products/bulk-status', [AdminProductController::class, 'bulkUpdateStatus']);
         Route::put('products/bulk-category', [AdminProductController::class, 'bulkUpdateCategory']);
+        Route::post('products/bulk-restore', [AdminProductController::class, 'bulkRestore']);
         Route::put('products/{id}', [AdminProductController::class, 'update']);
         Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
         Route::post('products/{id}/restore', [AdminProductController::class, 'restore']);

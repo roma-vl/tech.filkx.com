@@ -29,20 +29,33 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        DB::statement('ALTER TABLE products DROP CONSTRAINT IF EXISTS products_slug_unique');
+        // dropUnique()/unique() go through the schema grammar so they compile
+        // correctly on both Postgres (real constraints) and SQLite (plain
+        // indexes, used by the test suite) - unlike the partial index below,
+        // which needs to stay raw SQL since Blueprint has no "unique...where"
+        // helper, but is otherwise valid on both drivers as-is.
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropUnique(['slug']);
+        });
         DB::statement('CREATE UNIQUE INDEX products_slug_unique ON products (slug) WHERE deleted_at IS NULL');
 
-        DB::statement('ALTER TABLE product_variants DROP CONSTRAINT IF EXISTS product_variants_sku_unique');
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->dropUnique(['sku']);
+        });
         DB::statement('CREATE UNIQUE INDEX product_variants_sku_unique ON product_variants (sku) WHERE deleted_at IS NULL');
     }
 
     public function down(): void
     {
         DB::statement('DROP INDEX IF EXISTS product_variants_sku_unique');
-        DB::statement('ALTER TABLE product_variants ADD CONSTRAINT product_variants_sku_unique UNIQUE (sku)');
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->unique('sku');
+        });
 
         DB::statement('DROP INDEX IF EXISTS products_slug_unique');
-        DB::statement('ALTER TABLE products ADD CONSTRAINT products_slug_unique UNIQUE (slug)');
+        Schema::table('products', function (Blueprint $table) {
+            $table->unique('slug');
+        });
 
         Schema::table('product_variants', function (Blueprint $table) {
             $table->dropSoftDeletes();
