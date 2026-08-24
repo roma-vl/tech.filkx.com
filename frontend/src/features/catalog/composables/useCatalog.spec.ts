@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { defineComponent } from "vue";
 import { mount } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
@@ -26,7 +26,9 @@ import { productApi } from "@/shared/services/api/productApi";
 import { useCatalog } from "./useCatalog";
 
 // Mounts the composable inside a real component so useRouter()/useRoute() resolve.
-function withSetup<T>(composable: () => T) {
+// initialPath lets a test start the router on a URL with query params already
+// present, e.g. to exercise restoring a filter selection from a shared/refreshed link.
+async function withSetup<T>(composable: () => T, initialPath = "/") {
   let result!: T;
   const router = createRouter({
     history: createMemoryHistory(),
@@ -34,6 +36,9 @@ function withSetup<T>(composable: () => T) {
       { path: "/", name: "catalog", component: { template: "<div />" } },
     ],
   });
+
+  await router.push(initialPath);
+  await router.isReady();
 
   const TestComponent = defineComponent({
     setup() {
@@ -84,8 +89,7 @@ describe("useCatalog product mapping", () => {
       },
     });
 
-    const { result, router } = withSetup(useCatalog);
-    await router.isReady();
+    const { result } = await withSetup(useCatalog);
     await flushPromises();
 
     expect(result.rawProducts.value).toHaveLength(1);
@@ -119,13 +123,57 @@ describe("useCatalog product mapping", () => {
       },
     });
 
-    const { result, router } = withSetup(useCatalog);
-    await router.isReady();
+    const { result } = await withSetup(useCatalog);
     await flushPromises();
 
     const product = result.rawProducts.value[0];
     expect(product.brand).toBe("Apple");
     expect(product.ram).toBe("8GB");
     expect(product.specs.weight).toBe("0.05 кг");
+  });
+});
+
+describe("useCatalog filter URL persistence", () => {
+  beforeEach(() => {
+    (productApi.catalogGetProducts as any).mockResolvedValue({
+      data: {
+        status: "success",
+        data: { data: [], currentPage: 1, lastPage: 1, total: 0 },
+      },
+    });
+  });
+
+  it("writes a selected brand into the URL query", async () => {
+    const { result, router } = await withSetup(useCatalog);
+    await flushPromises();
+
+    result.selectedBrands.value = ["samsung"];
+    await flushPromises();
+
+    expect(router.currentRoute.value.query.brand).toBe("samsung");
+  });
+
+  // Otherwise a reload/shared link/browser back loses the selection entirely,
+  // since these refs were previously the only place it lived.
+  it("restores brand/discount/rating filters from the initial URL", async () => {
+    const { result } = await withSetup(
+      useCatalog,
+      "/?brand=samsung,xiaomi&discounts=1&rating=4",
+    );
+    await flushPromises();
+
+    expect(result.selectedBrands.value).toEqual(["samsung", "xiaomi"]);
+    expect(result.onlyDiscounts.value).toBe(true);
+    expect(result.selectedRating.value).toBe("4");
+  });
+
+  it("clears the URL query when a filter is unset", async () => {
+    const { result, router } = await withSetup(useCatalog, "/?brand=samsung");
+    await flushPromises();
+
+    result.selectedBrands.value = [];
+    await flushPromises();
+
+    expect(router.currentRoute.value.query.brand).toBeUndefined();
   });
 });
