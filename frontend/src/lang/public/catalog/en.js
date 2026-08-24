@@ -18,6 +18,9 @@ export default {
   activeFilters: {
     clearAll: "Clear all",
   },
+  categoryNav: {
+    allIn: "All in “{name}”",
+  },
   empty: {
     title: "No products found",
     description: "Try adjusting your filters or resetting your search",
