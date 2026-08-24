@@ -108,6 +108,12 @@ class UpdateAdminProductAction
                 ->whereNotIn('id', $incomingVariantIds)
                 ->delete();
 
+            // categories()->sync() and the variant/attribute writes above go
+            // through the pivot table and other models, not $product itself, so
+            // none of them fire $product's save event - Scout's index needs an
+            // explicit nudge to pick up the category/price/attribute changes.
+            $product->searchable();
+
             return $product;
         });
     }

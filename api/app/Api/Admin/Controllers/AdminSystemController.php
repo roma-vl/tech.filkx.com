@@ -3,6 +3,7 @@
 namespace App\Api\Admin\Controllers;
 
 use App\Api\Admin\Actions\System\GetSystemHealthAction;
+use App\Api\Admin\Actions\System\RebuildSearchIndexAction;
 use Illuminate\Http\JsonResponse;
 
 class AdminSystemController extends BaseApiController
@@ -39,5 +40,31 @@ class AdminSystemController extends BaseApiController
     public function health(GetSystemHealthAction $action): JsonResponse
     {
         return self::successfulResponseWithData($action->execute()->toArray());
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/admin/system/search-index/rebuild",
+     *     summary="Wipe and fully rebuild the Meilisearch product index from the database",
+     *     tags={"Admin System"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="indexed", type="integer")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function rebuildSearchIndex(RebuildSearchIndexAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData($action->execute());
     }
 }

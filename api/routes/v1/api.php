@@ -257,6 +257,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
         Route::get('analytics/charts', [AdminStatsController::class, 'charts']);
         Route::get('analytics/distributions', [AdminStatsController::class, 'distributions']);
         Route::get('system/health', [AdminSystemController::class, 'health']);
+        Route::post('system/search-index/rebuild', [AdminSystemController::class, 'rebuildSearchIndex']);
 
         Route::get('settings', [AdminSettingsController::class, 'index']);
         Route::post('settings', [AdminSettingsController::class, 'update']);
