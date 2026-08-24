@@ -24,10 +24,10 @@
           :to="{ name: 'category', params: { slug: cat.slug } }"
           class="hover:text-[#00a046] transition-colors font-semibold"
         >
-          {{ cat.name?.uk || cat.name?.en || cat.name }}
+          {{ pickLocalized(cat.name, locale) }}
         </router-link>
         <span v-else class="text-zinc-800 dark:text-zinc-200 font-bold">
-          {{ cat.name?.uk || cat.name?.en || cat.name }}
+          {{ pickLocalized(cat.name, locale) }}
         </span>
       </template>
     </template>
@@ -402,13 +402,14 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
+import { pickLocalized } from "@/shared/utils/categoryMapper";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
 import CatalogCategoryNav from "@/widgets/Catalog/CatalogCategoryNav.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const {
   route,

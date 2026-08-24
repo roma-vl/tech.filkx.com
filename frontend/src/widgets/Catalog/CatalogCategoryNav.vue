@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { getCategoryIcon } from "@/shared/utils/categoryMapper";
+import { getCategoryIcon, pickLocalized } from "@/shared/utils/categoryMapper";
 
 const props = defineProps<{
   selectedCategory: string;
@@ -53,10 +53,10 @@ const emit = defineEmits<{
   "select-category": [slug: string];
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const localizedName = (cat: any): string =>
-  cat.name?.uk || cat.name?.en || cat.name || "";
+  pickLocalized(cat.name, locale.value);
 
 interface NavItem {
   slug: string;

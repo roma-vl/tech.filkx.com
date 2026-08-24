@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { defineComponent } from "vue";
 import { mount } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
+import { createI18n } from "vue-i18n";
 import { flushPromises } from "@vue/test-utils";
 
 vi.mock("@/shared/services/api/productApi", () => ({
@@ -40,6 +41,11 @@ async function withSetup<T>(composable: () => T, initialPath = "/") {
   await router.push(initialPath);
   await router.isReady();
 
+  // useCatalog() reads the active locale (for the label/name translations
+  // it picks between) via useI18n(), which throws unless the plugin is
+  // installed - no real messages needed since this composable never calls t().
+  const i18n = createI18n({ legacy: false, locale: "uk", messages: {} });
+
   const TestComponent = defineComponent({
     setup() {
       result = composable();
@@ -48,7 +54,7 @@ async function withSetup<T>(composable: () => T, initialPath = "/") {
   });
 
   const wrapper = mount(TestComponent, {
-    global: { plugins: [router] },
+    global: { plugins: [router, i18n] },
   });
 
   return { result, wrapper, router };

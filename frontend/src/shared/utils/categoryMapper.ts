@@ -24,7 +24,7 @@ export const getCategoryIcon = (slug: string): string => {
  * active locale, falling back to the other language rather than always defaulting
  * to Ukrainian regardless of what the visitor has selected.
  */
-const pickLocalized = (value: any, locale: string): string => {
+export const pickLocalized = (value: any, locale: string): string => {
   if (value && typeof value === "object") {
     return value[locale] || value.uk || value.en || "";
   }

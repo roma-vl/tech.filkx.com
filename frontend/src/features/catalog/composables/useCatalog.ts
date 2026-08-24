@@ -1,12 +1,14 @@
 import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
-import { getCategoryPath } from "@/shared/utils/categoryMapper";
+import { getCategoryPath, pickLocalized } from "@/shared/utils/categoryMapper";
 
 export function useCatalog() {
   const route = useRoute();
   const router = useRouter();
+  const { locale } = useI18n();
 
   // A snapshot of the URL filters/were navigated in with, taken once before
   // anything below starts writing to route.query - restores a shared/refreshed
@@ -303,7 +305,7 @@ export function useCatalog() {
     Object.keys(selectedAttrs.value).forEach((code) => {
       const values = selectedAttrs.value[code] || [];
       const attr = dynamicAttributes.value.find((a) => a.code === code);
-      const attrName = attr ? attr.name.uk || attr.name.en || attr.name : code;
+      const attrName = attr ? pickLocalized(attr.name, locale.value) : code;
       values.forEach((val) => {
         filters.push({
           type: "attribute",

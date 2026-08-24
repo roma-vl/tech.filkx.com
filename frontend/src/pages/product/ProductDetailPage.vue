@@ -106,7 +106,7 @@
             :to="{ name: 'category', params: { slug: cat.slug } }"
             class="hover:text-[#00a046] transition-colors font-semibold"
           >
-            {{ cat.name?.uk || cat.name?.en || cat.name }}
+            {{ pickLocalized(cat.name, locale) }}
           </router-link>
           <span
             class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
@@ -351,7 +351,7 @@ import { useHead } from "@vueuse/head";
 import { useI18n } from "vue-i18n";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import { productApi } from "@/shared/services/api/productApi";
-import { getCategoryPath } from "@/shared/utils/categoryMapper";
+import { getCategoryPath, pickLocalized } from "@/shared/utils/categoryMapper";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
 import ComboDeal from "@/widgets/ProductDetail/ComboDeal.vue";
@@ -399,7 +399,7 @@ const {
   closeQuickOrder,
 } = useProductDetail();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const categoriesList = ref<any[]>([]);
 const fetchCategoriesForBreadcrumbs = async () => {
