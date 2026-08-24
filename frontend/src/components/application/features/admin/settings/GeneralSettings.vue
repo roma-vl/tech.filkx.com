@@ -13,23 +13,26 @@
     <div class="p-6 space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <AppInput
-          v-model="modelValue.platformName"
+          :model-value="modelValue.platformName"
           :label="$t('admin.settings.general.platform_name')"
+          @update:model-value="updateField('platformName', $event)"
         />
         <AppInput
-          v-model="modelValue.supportEmail"
+          :model-value="modelValue.supportEmail"
           type="email"
           :label="$t('admin.settings.general.support_email')"
+          @update:model-value="updateField('supportEmail', $event)"
         />
       </div>
       <div
         class="p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
       >
         <AppToggle
-          v-model="modelValue.allowRegistration"
+          :model-value="modelValue.allowRegistration"
           :label="$t('admin.settings.general.registration')"
           :description="$t('admin.settings.general.registration_desc')"
           active-color="indigo"
+          @update:model-value="updateField('allowRegistration', $event)"
         />
       </div>
     </div>
@@ -41,10 +44,16 @@ import { GlobeAltIcon } from "@heroicons/vue/24/outline";
 import AppInput from "@/components/admin/ui/AppInput.vue";
 import AppToggle from "@/components/admin/ui/AppToggle.vue";
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
   },
 });
+
+const emit = defineEmits(["update:modelValue"]);
+
+const updateField = (key, value) => {
+  emit("update:modelValue", { ...props.modelValue, [key]: value });
+};
 </script>

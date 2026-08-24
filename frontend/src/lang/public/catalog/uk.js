@@ -18,6 +18,9 @@ export default {
   activeFilters: {
     clearAll: "Скинути все",
   },
+  categoryNav: {
+    allIn: "Усі в «{name}»",
+  },
   empty: {
     title: "Товари не знайдено",
     description: "Спробуйте змінити фільтри або скинути пошук",

@@ -42,18 +42,12 @@
     </template>
   </nav>
 
-  <!-- Page Header -->
-  <header
-    class="max-w-container-max mx-auto px-4 md:px-8 pt-4 pb-2 font-sans flex items-end justify-between"
-  >
-    <div>
-      <h1
-        class="font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white tracking-tight"
-      >
-        {{ currentCategoryName }}
-      </h1>
-    </div>
-  </header>
+  <!-- Category Quick Nav -->
+  <CatalogCategoryNav
+    :selected-category="categorySlug"
+    :current-category-path="currentCategoryPath"
+    @select-category="selectCategory"
+  />
 
   <!-- Toolbar -->
   <div
@@ -409,6 +403,7 @@ import { useI18n } from "vue-i18n";
 import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
 import CatalogFiltersWidget from "@/widgets/Catalog/CatalogFiltersWidget.vue";
+import CatalogCategoryNav from "@/widgets/Catalog/CatalogCategoryNav.vue";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 import UiButton from "@/shared/ui/UiButton.vue";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";

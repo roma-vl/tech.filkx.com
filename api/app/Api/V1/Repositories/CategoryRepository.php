@@ -61,9 +61,12 @@ class CategoryRepository
     }
 
     /**
-     * Resolves a category slug to its id plus its direct children's ids - the same
-     * category-scope resolution catalog product listing/filtering uses. Returns an
-     * empty array when the slug doesn't match any category.
+     * Resolves a category slug to its id plus every descendant id (children,
+     * grandchildren, ...) - the same category-scope resolution catalog product
+     * listing/filtering uses. Recursive rather than one level deep so a product
+     * tagged only on a leaf category still surfaces when browsing an ancestor
+     * further up the tree. Returns an empty array when the slug doesn't match
+     * any category.
      */
     public function resolveCategoryIdsBySlug(string $slug): array
     {
@@ -72,6 +75,6 @@ class CategoryRepository
             return [];
         }
 
-        return array_merge([$category->id], $category->children()->pluck('id')->toArray());
+        return array_merge([$category->id], $category->getDescendantIds());
     }
 }

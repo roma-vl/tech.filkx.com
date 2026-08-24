@@ -89,14 +89,8 @@ jobs:
         continue-on-error: true
         run: npx prettier --check .
 
-      - name: ESLint check (advisory)
-        # Same reasoning as above, non-blocking for the same reason - `eslint.config.js`
-        # has no TypeScript parser wired up for `.vue` files with `lang="ts"`, so it
-        # currently errors on `defineProps<{...}>()` generics in most components
-        # (~80 parsing errors, ~8100 warnings repo-wide, verified independently of this
-        # workflow) - a config fix, not something to paper over with `--fix` in CI.
-        # Drop `continue-on-error` once that's fixed, so this becomes a real gate.
-        continue-on-error: true
+      - name: ESLint check
+        # Check-only, never --fix (same reasoning as the Prettier step above).
         run: npx eslint --config=eslint.config.js --no-cache
 
       - name: Build

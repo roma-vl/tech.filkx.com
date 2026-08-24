@@ -147,7 +147,8 @@ export default {
       bulkRestoreSuccess: "Restored {count} products",
       bulkRestorePartial:
         "Restored: {restored}, failed: {failed} (slug already taken by another product)",
-      bulkRestoreError: "Failed to restore the selected products. Please try again.",
+      bulkRestoreError:
+        "Failed to restore the selected products. Please try again.",
     },
     deleteModal: {
       title: "Delete product",
@@ -158,7 +159,8 @@ export default {
     bulk: {
       selectedCount: "Selected: {count}",
       selectAllMatching: "Select all {count} matching the filter",
-      selectAllError: "Failed to fetch the matching products. Please try again.",
+      selectAllError:
+        "Failed to fetch the matching products. Please try again.",
       clearSelection: "Clear selection",
       apply: "Apply",
       delete: "Delete selected",
