@@ -47,21 +47,23 @@ class ListBrandsActionTest extends TestCase
 
     public function test_execute_orders_brands_alphabetically_by_name(): void
     {
-        Brand::create(['name' => 'Zebra', 'slug' => 'zebra-'.uniqid()]);
-        Brand::create(['name' => 'Alpha', 'slug' => 'alpha-'.uniqid()]);
+        $zebra = Brand::create(['name' => 'Zebra', 'slug' => 'zebra-'.uniqid()]);
+        $this->makeProduct($zebra, 'active');
+        $alpha = Brand::create(['name' => 'Alpha', 'slug' => 'alpha-'.uniqid()]);
+        $this->makeProduct($alpha, 'active');
 
         $result = $this->action->execute();
 
         $this->assertSame(['Alpha', 'Zebra'], $result->pluck('name')->all());
     }
 
-    public function test_execute_includes_brands_with_no_products(): void
+    public function test_execute_excludes_brands_with_no_products(): void
     {
-        $brand = Brand::create(['name' => 'Empty Brand', 'slug' => 'empty-brand-'.uniqid()]);
+        Brand::create(['name' => 'Empty Brand', 'slug' => 'empty-brand-'.uniqid()]);
 
         $result = $this->action->execute();
 
-        $this->assertSame(0, $result->firstWhere('id', $brand->id)->products_count);
+        $this->assertCount(0, $result);
     }
 
     public function test_execute_scopes_the_product_count_to_the_given_category(): void
