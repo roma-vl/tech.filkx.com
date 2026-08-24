@@ -104,28 +104,63 @@
         />
       </div>
     </div>
+
+    <!-- Search Index Maintenance -->
+    <AppCard>
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
+        <div>
+          <h3 class="font-bold text-lg">
+            {{ t("admin.system.search_index.title") }}
+          </h3>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">
+            {{ t("admin.system.search_index.description") }}
+          </p>
+        </div>
+        <AppButton
+          variant="white"
+          class="!px-6 !py-3 !rounded-2xl shrink-0"
+          :loading="rebuildingIndex"
+          @click="rebuildSearchIndex"
+        >
+          <template #prepend>
+            <MagnifyingGlassIcon class="w-4 h-4" />
+          </template>
+          {{
+            rebuildingIndex
+              ? t("admin.system.search_index.rebuilding")
+              : t("admin.system.search_index.rebuild")
+          }}
+        </AppButton>
+      </div>
+    </AppCard>
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 import {
   ArrowPathIcon,
   CircleStackIcon,
   CpuChipIcon,
   FolderIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 import api from "@/shared/services/api/apiClient";
 
 // Feature Components
 import AppButton from "@/components/admin/ui/AppButton.vue";
+import AppCard from "@/components/admin/ui/AppCard.vue";
 import SystemHealthStatus from "@/components/admin/features/system/SystemHealthStatus.vue";
 import ResourceCard from "@/components/admin/features/system/ResourceCard.vue";
 import NetworkCard from "@/components/admin/features/system/NetworkCard.vue";
 import ServicesTable from "@/components/admin/features/system/ServicesTable.vue";
 
 const { t } = useI18n();
+const toast = useToast();
 
 const health = ref({
   server: { cpu: {}, ram: {}, disk: {} },
@@ -134,6 +169,7 @@ const health = ref({
   network: { incoming: 0, outgoing: 0 },
 });
 const loading = ref(true);
+const rebuildingIndex = ref(false);
 let pollInterval = null;
 
 const fetchHealth = async () => {
@@ -145,6 +181,20 @@ const fetchHealth = async () => {
     console.error("Failed to fetch system health", error);
   } finally {
     loading.value = false;
+  }
+};
+
+const rebuildSearchIndex = async () => {
+  rebuildingIndex.value = true;
+  try {
+    const response = await api.post("/admin/system/search-index/rebuild");
+    const count = response.data?.data?.indexed ?? 0;
+    toast.success(t("admin.system.search_index.success", { count }));
+  } catch (error) {
+    console.error("Failed to rebuild search index", error);
+    toast.error(t("admin.system.search_index.error"));
+  } finally {
+    rebuildingIndex.value = false;
   }
 };
 

@@ -24,11 +24,35 @@ export const getCategoryIcon = (slug: string): string => {
  * active locale, falling back to the other language rather than always defaulting
  * to Ukrainian regardless of what the visitor has selected.
  */
-const pickLocalized = (value: any, locale: string): string => {
+export const pickLocalized = (value: any, locale: string): string => {
   if (value && typeof value === "object") {
     return value[locale] || value.uk || value.en || "";
   }
   return value || "";
+};
+
+/**
+ * Finds the root-to-leaf chain of categories for a given slug within a nested
+ * category tree (as returned by /v1/catalog/categories), e.g. for breadcrumbs -
+ * shared between the catalog page and the product detail page so both build the
+ * same chain the same way.
+ */
+export const getCategoryPath = (
+  categories: any[],
+  slug: string,
+  path: any[] = [],
+): any[] | null => {
+  for (const cat of categories) {
+    const currentPath = [...path, cat];
+    if (cat.slug === slug) {
+      return currentPath;
+    }
+    if (cat.children && cat.children.length > 0) {
+      const result = getCategoryPath(cat.children, slug, currentPath);
+      if (result) return result;
+    }
+  }
+  return null;
 };
 
 export const mapDbCategoriesToMenu = (

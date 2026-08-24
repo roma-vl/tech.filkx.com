@@ -49,4 +49,14 @@ export default {
     database: "Database",
     health_status: "Health Status",
   },
+  search_index: {
+    title: "Search Index",
+    subtitle: "Meilisearch",
+    description:
+      "Rebuilds the product search index from the database. Use this if catalog filtering looks stale or incomplete after a bulk data change.",
+    rebuild: "Rebuild Index",
+    rebuilding: "Rebuilding...",
+    success: "Search index rebuilt: {count} products indexed.",
+    error: "Failed to rebuild the search index.",
+  },
 };

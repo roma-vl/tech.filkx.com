@@ -135,29 +135,31 @@ class BrandRepositoryTest extends TestCase
         $result = $this->repository->getBrandsWithActiveProductsCount();
 
         $alpha = $result->firstWhere('id', $brandA->id);
-        $beta = $result->firstWhere('id', $brandB->id);
         $this->assertSame(2, $alpha->products_count);
-        $this->assertSame(0, $beta->products_count);
+        $this->assertNull($result->firstWhere('id', $brandB->id));
     }
 
     public function test_get_brands_with_active_products_count_orders_brands_by_name(): void
     {
-        $this->makeBrand(['name' => 'Zeta']);
-        $this->makeBrand(['name' => 'Alpha']);
-        $this->makeBrand(['name' => 'Mu']);
+        $zeta = $this->makeBrand(['name' => 'Zeta']);
+        $this->makeProduct($zeta, 'active');
+        $alpha = $this->makeBrand(['name' => 'Alpha']);
+        $this->makeProduct($alpha, 'active');
+        $mu = $this->makeBrand(['name' => 'Mu']);
+        $this->makeProduct($mu, 'active');
 
         $result = $this->repository->getBrandsWithActiveProductsCount();
 
         $this->assertSame(['Alpha', 'Mu', 'Zeta'], $result->pluck('name')->all());
     }
 
-    public function test_get_brands_with_active_products_count_returns_zero_for_brand_without_products(): void
+    public function test_get_brands_with_active_products_count_excludes_brand_without_products(): void
     {
-        $brand = $this->makeBrand();
+        $this->makeBrand();
 
         $result = $this->repository->getBrandsWithActiveProductsCount();
 
-        $this->assertSame(0, $result->first()->products_count);
+        $this->assertCount(0, $result);
     }
 
     public function test_get_brands_with_active_products_count_scopes_to_the_given_category_ids(): void

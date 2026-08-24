@@ -1,31 +1,58 @@
 import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
+import { getCategoryPath, pickLocalized } from "@/shared/utils/categoryMapper";
 
 export function useCatalog() {
   const route = useRoute();
   const router = useRouter();
+  const { locale } = useI18n();
+
+  // A snapshot of the URL filters/were navigated in with, taken once before
+  // anything below starts writing to route.query - restores a shared/refreshed
+  // link's filters (including price, which needs the category's fetched bounds
+  // first - see the fetchFilterSchema().then() in onMounted) without fighting
+  // this composable's own later query updates.
+  const initialQuery = { ...route.query };
+  const initialPriceFrom = initialQuery.price_from
+    ? Number(initialQuery.price_from)
+    : null;
+  const initialPriceTo = initialQuery.price_to
+    ? Number(initialQuery.price_to)
+    : null;
 
   const viewMode = ref("grid");
   // How many product cards per row from the lg breakpoint up - 4 is the default,
   // 5 is the denser option. Smaller breakpoints below lg still scale down to 1/2
   // columns responsively regardless of this setting.
   const gridDensity = ref<4 | 5>(4);
-  const sortBy = ref("popularity");
+  const sortBy = ref((initialQuery.sort_by as string) || "popularity");
   const initialPriceMin = ref(0);
   const initialPriceMax = ref(200000);
   const priceMin = ref(0);
   const priceMax = ref(200000);
   const selectedBrands = ref<string[]>(
-    route.query.brand ? (route.query.brand as string).split(",") : [],
+    initialQuery.brand ? (initialQuery.brand as string).split(",") : [],
   );
-  const selectedAttrs = ref<Record<string, string[]>>({});
-  const selectedRating = ref("");
+  const selectedAttrs = ref<Record<string, string[]>>(
+    Object.fromEntries(
+      Object.entries(initialQuery)
+        .filter(([key]) => /^attrs\[.+\]$/.test(key))
+        .map(([key, value]) => [
+          key.slice(6, -1),
+          (value as string).split(","),
+        ]),
+    ),
+  );
+  const selectedRating = ref((initialQuery.rating as string) || "");
   const onlyDiscounts = ref(
-    route.query.discounts === "1" || route.query.discounts === "true",
+    initialQuery.discounts === "1" || initialQuery.discounts === "true",
   );
-  const onlyInStock = ref(false);
+  const onlyInStock = ref(
+    initialQuery.in_stock === "1" || initialQuery.in_stock === "true",
+  );
 
   const isMobileFilterOpen = ref(false);
 
@@ -173,6 +200,64 @@ export function useCatalog() {
     }
   };
 
+  // Mirrors the current filter selection into the URL query so a reload,
+  // browser back/forward, or a shared link all restore it - previously these
+  // refs were the only place the selection lived, so refreshing the page lost
+  // every filter but the page number (changePage() already wrote that one).
+  const syncFiltersToUrl = () => {
+    const query: Record<string, any> = { ...route.query };
+
+    delete query.brand;
+    if (selectedBrands.value.length > 0) {
+      query.brand = selectedBrands.value.join(",");
+    }
+
+    delete query.price_from;
+    if (priceMin.value > initialPriceMin.value) {
+      query.price_from = priceMin.value;
+    }
+    delete query.price_to;
+    if (priceMax.value < initialPriceMax.value) {
+      query.price_to = priceMax.value;
+    }
+
+    delete query.rating;
+    if (selectedRating.value) {
+      query.rating = selectedRating.value;
+    }
+
+    delete query.discounts;
+    if (onlyDiscounts.value) {
+      query.discounts = "1";
+    }
+
+    delete query.in_stock;
+    if (onlyInStock.value) {
+      query.in_stock = "1";
+    }
+
+    delete query.sort_by;
+    if (sortBy.value && sortBy.value !== "popularity") {
+      query.sort_by = sortBy.value;
+    }
+
+    Object.keys(query).forEach((key) => {
+      if (/^attrs\[.+\]$/.test(key)) delete query[key];
+    });
+    Object.entries(selectedAttrs.value).forEach(([code, values]) => {
+      if (values && values.length > 0) {
+        query[`attrs[${code}]`] = values.join(",");
+      }
+    });
+
+    delete query.page;
+    if (pagination.value.page > 1) {
+      query.page = pagination.value.page;
+    }
+
+    router.replace({ name: route.name as string, params: route.params, query });
+  };
+
   const selectCategory = (slug: string) => {
     if (slug) {
       router.push({ name: "category", params: { slug } });
@@ -220,7 +305,7 @@ export function useCatalog() {
     Object.keys(selectedAttrs.value).forEach((code) => {
       const values = selectedAttrs.value[code] || [];
       const attr = dynamicAttributes.value.find((a) => a.code === code);
-      const attrName = attr ? attr.name.uk || attr.name.en || attr.name : code;
+      const attrName = attr ? pickLocalized(attr.name, locale.value) : code;
       values.forEach((val) => {
         filters.push({
           type: "attribute",
@@ -307,24 +392,6 @@ export function useCatalog() {
     onlyInStock.value = false;
   };
 
-  const getCategoryPath = (
-    categories: any[],
-    slug: string,
-    path: any[] = [],
-  ): any[] | null => {
-    for (const cat of categories) {
-      const currentPath = [...path, cat];
-      if (cat.slug === slug) {
-        return currentPath;
-      }
-      if (cat.children && cat.children.length > 0) {
-        const result = getCategoryPath(cat.children, slug, currentPath);
-        if (result) return result;
-      }
-    }
-    return null;
-  };
-
   const currentCategoryPath = computed(() => {
     if (!categorySlug.value) return [];
     return getCategoryPath(categoriesList.value, categorySlug.value) || [];
@@ -373,12 +440,14 @@ export function useCatalog() {
       priceMax.value,
       selectedBrands.value,
       selectedAttrs.value,
+      selectedRating.value,
       onlyDiscounts.value,
       onlyInStock.value,
     ],
     () => {
       pagination.value.page = 1;
       fetchProducts();
+      syncFiltersToUrl();
     },
     { deep: true },
   );
@@ -387,7 +456,19 @@ export function useCatalog() {
     window.scrollTo(0, 0);
     fetchCategories();
     fetchBrands();
-    fetchFilterSchema();
+    // Bounds aren't known until this resolves, so a shared/refreshed link's
+    // price_from/price_to (captured in initialPriceFrom/To before anything
+    // else in this composable could touch priceMin/priceMax) is only applied
+    // once they arrive - applying it against the 0-200000 placeholder above
+    // would just get overwritten by fetchFilterSchema's own assignment.
+    fetchFilterSchema().then(() => {
+      if (initialPriceFrom !== null) {
+        priceMin.value = Math.max(initialPriceFrom, initialPriceMin.value);
+      }
+      if (initialPriceTo !== null) {
+        priceMax.value = Math.min(initialPriceTo, initialPriceMax.value);
+      }
+    });
     pagination.value.page = parseInt(route.query.page as string) || 1;
     fetchProducts();
   });

@@ -36,14 +36,23 @@ class BrandRepository implements BrandRepositoryInterface
 
     public function getBrandsWithActiveProductsCount(array $categoryIds = []): Collection
     {
-        return Brand::withCount(['products' => function ($q) use ($categoryIds) {
+        // This feeds the public catalog's brand filter, not brand management -
+        // a brand with nothing to show for the current scope would just be a
+        // dead filter option, so whereHas() excludes it instead of listing it
+        // at count 0 alongside withCount().
+        $matchingProducts = function ($q) use ($categoryIds) {
             $q->where('status', 'active');
             if (! empty($categoryIds)) {
                 $q->whereHas('categories', function ($c) use ($categoryIds) {
                     $c->whereIn('categories.id', $categoryIds);
                 });
             }
-        }])->orderBy('name')->get();
+        };
+
+        return Brand::withCount(['products' => $matchingProducts])
+            ->whereHas('products', $matchingProducts)
+            ->orderBy('name')
+            ->get();
     }
 
     public function findIdsBySlugs(array $slugs): array
