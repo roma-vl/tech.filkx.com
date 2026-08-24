@@ -2,6 +2,7 @@ import { ref, computed, watch, onMounted, onServerPrefetch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
+import { getCategoryPath } from "@/shared/utils/categoryMapper";
 
 export function useCatalog() {
   const route = useRoute();
@@ -305,24 +306,6 @@ export function useCatalog() {
     selectedRating.value = "";
     onlyDiscounts.value = false;
     onlyInStock.value = false;
-  };
-
-  const getCategoryPath = (
-    categories: any[],
-    slug: string,
-    path: any[] = [],
-  ): any[] | null => {
-    for (const cat of categories) {
-      const currentPath = [...path, cat];
-      if (cat.slug === slug) {
-        return currentPath;
-      }
-      if (cat.children && cat.children.length > 0) {
-        const result = getCategoryPath(cat.children, slug, currentPath);
-        if (result) return result;
-      }
-    }
-    return null;
   };
 
   const currentCategoryPath = computed(() => {

@@ -100,16 +100,32 @@
         class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
         >chevron_right</span
       >
-      <router-link
-        :to="{ name: 'catalog' }"
-        class="hover:text-[#00a046] transition-colors font-semibold"
-      >
-        {{ t("product.page.breadcrumbs.catalog") }}
-      </router-link>
-      <span
-        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
-        >chevron_right</span
-      >
+      <template v-if="categoryPath.length">
+        <template v-for="cat in categoryPath" :key="cat.slug">
+          <router-link
+            :to="{ name: 'category', params: { slug: cat.slug } }"
+            class="hover:text-[#00a046] transition-colors font-semibold"
+          >
+            {{ cat.name?.uk || cat.name?.en || cat.name }}
+          </router-link>
+          <span
+            class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+            >chevron_right</span
+          >
+        </template>
+      </template>
+      <template v-else>
+        <router-link
+          :to="{ name: 'catalog' }"
+          class="hover:text-[#00a046] transition-colors font-semibold"
+        >
+          {{ t("product.page.breadcrumbs.catalog") }}
+        </router-link>
+        <span
+          class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+          >chevron_right</span
+        >
+      </template>
       <span
         class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]"
         >{{ product.name }}</span
@@ -330,10 +346,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onServerPrefetch, ref } from "vue";
 import { useHead } from "@vueuse/head";
 import { useI18n } from "vue-i18n";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
+import { productApi } from "@/shared/services/api/productApi";
+import { getCategoryPath } from "@/shared/utils/categoryMapper";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
 import ComboDeal from "@/widgets/ProductDetail/ComboDeal.vue";
@@ -382,6 +400,26 @@ const {
 } = useProductDetail();
 
 const { t } = useI18n();
+
+const categoriesList = ref<any[]>([]);
+const fetchCategoriesForBreadcrumbs = async () => {
+  try {
+    const response = await productApi.catalogGetCategories();
+    categoriesList.value = response.data.data || [];
+  } catch (error) {
+    console.error("Failed to load categories for breadcrumbs", error);
+  }
+};
+onMounted(fetchCategoriesForBreadcrumbs);
+// No DOM/onMounted during prerendering - fetch the same data here so the
+// static HTML still gets the full category breadcrumb chain.
+onServerPrefetch(fetchCategoriesForBreadcrumbs);
+
+const categoryPath = computed(() => {
+  const leafSlug = product.value?.categorySlug;
+  if (!leafSlug) return [];
+  return getCategoryPath(categoriesList.value, leafSlug) || [];
+});
 
 const relatedScrollRef = ref<HTMLElement | null>(null);
 const scrollRelated = (direction: "left" | "right") => {

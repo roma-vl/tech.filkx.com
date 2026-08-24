@@ -154,6 +154,7 @@ export function useProductDetail() {
             ? rawProduct.value.categories[0].name.uk ||
               rawProduct.value.categories[0].name.en
             : null,
+        categorySlug: rawProduct.value.categories?.[0]?.slug || null,
         subtitle: subtitle,
         price: price,
         oldPrice: oldPrice,
