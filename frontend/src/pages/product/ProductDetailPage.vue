@@ -346,11 +346,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onServerPrefetch, ref } from "vue";
+import {
+  computed,
+  onMounted,
+  onServerPrefetch,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import { useHead } from "@vueuse/head";
 import { useI18n } from "vue-i18n";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import { productApi } from "@/shared/services/api/productApi";
+import { useUiStore } from "@/shared/model/uiStore";
 import { getCategoryPath, pickLocalized } from "@/shared/utils/categoryMapper";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
@@ -400,6 +408,16 @@ const {
 } = useProductDetail();
 
 const { t, locale } = useI18n();
+
+// The sticky buy bar below is fixed to the bottom of the viewport, same as
+// the globally-mounted support-chat bubble - without this, the bubble sits
+// on top of the bar's add-to-cart button once the bar slides up.
+const STICKY_BAR_HEIGHT_PX = 68;
+const uiStore = useUiStore();
+watch(showStickyBar, (visible) => {
+  uiStore.setStickyBottomBarHeight(visible ? STICKY_BAR_HEIGHT_PX : 0);
+});
+onUnmounted(() => uiStore.setStickyBottomBarHeight(0));
 
 const categoriesList = ref<any[]>([]);
 const fetchCategoriesForBreadcrumbs = async () => {

@@ -3,12 +3,18 @@ import { defineStore } from "pinia";
 export interface UiState {
   darkMode: boolean;
   initialized: boolean;
+  // Height (px) of whatever page-specific bar is currently pinned to the
+  // bottom of the viewport (e.g. the product page's sticky buy bar) - lets
+  // globally-mounted fixed elements (the support widget bubble) move out of
+  // its way instead of sitting on top of it. 0 when nothing is pinned.
+  stickyBottomBarHeight: number;
 }
 
 export const useUiStore = defineStore("ui", {
   state: (): UiState => ({
     darkMode: false,
     initialized: false,
+    stickyBottomBarHeight: 0,
   }),
 
   actions: {
@@ -32,6 +38,10 @@ export const useUiStore = defineStore("ui", {
       if (typeof localStorage !== "undefined") {
         localStorage.theme = v ? "dark" : "light";
       }
+    },
+
+    setStickyBottomBarHeight(px: number) {
+      this.stickyBottomBarHeight = px;
     },
   },
 });

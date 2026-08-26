@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useSupportStore } from "@/entities/support/model/supportStore";
+import { useUiStore } from "@/shared/model/uiStore";
 import SupportHomeView from "./SupportHomeView.vue";
 import SupportChatView from "./SupportChatView.vue";
 
 const { t } = useI18n();
 const supportStore = useSupportStore();
+const uiStore = useUiStore();
 const { isOpen, view, unreadCount, activeTicket } = storeToRefs(supportStore);
+const { stickyBottomBarHeight } = storeToRefs(uiStore);
+
+// Clears the page's own bottom bar (e.g. the product page's sticky buy bar,
+// gap included) before adding this bubble's own 1rem resting offset - avoids
+// sitting on top of it instead of floating above it.
+const bubbleBottomStyle = computed(
+  () =>
+    `bottom: calc(1rem + env(safe-area-inset-bottom) + ${stickyBottomBarHeight.value}px)`,
+);
 
 const handleVisibilityChange = () => {
   if (document.hidden) {
@@ -31,8 +42,8 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="fixed right-4 sm:right-6 z-[95]"
-    style="bottom: calc(1rem + env(safe-area-inset-bottom))"
+    class="fixed right-4 sm:right-6 z-[95] transition-[bottom] duration-300"
+    :style="bubbleBottomStyle"
   >
     <div class="relative flex flex-col items-end">
       <Transition
