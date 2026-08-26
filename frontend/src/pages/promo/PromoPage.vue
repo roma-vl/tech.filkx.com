@@ -123,39 +123,14 @@
             <section
               class="relative rounded-xl overflow-hidden aspect-video md:aspect-auto md:h-64"
             >
+              <!-- Visually hidden - keeps the page's actual title available to
+                   screen readers/SEO now that the banner is image-only. -->
+              <h1 class="sr-only">{{ promoPage.title }}</h1>
               <img
-                class="absolute inset-0 w-full h-full object-cover opacity-60"
+                class="absolute inset-0 w-full h-full object-cover"
                 :src="promoPage.imageUrl"
                 :alt="promoPage.title"
               />
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
-              />
-              <div
-                class="relative z-10 h-full flex flex-col justify-center text-white px-6 md:px-10"
-              >
-                <div
-                  v-if="promoPage.badge"
-                  class="mb-3 inline-flex w-fit items-center bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 text-[10px]"
-                >
-                  {{ promoPage.badge }}
-                </div>
-                <h1 class="font-extrabold text-2xl md:text-4xl mb-3 leading-tight">
-                  {{ promoPage.title }}
-                </h1>
-                <p
-                  v-if="promoPage.subtitle"
-                  class="text-zinc-200 font-bold text-sm uppercase tracking-widest mb-2"
-                >
-                  {{ promoPage.subtitle }}
-                </p>
-                <p
-                  v-if="promoPage.description"
-                  class="text-sm md:text-[15px] text-zinc-300 max-w-2xl leading-relaxed"
-                >
-                  {{ promoPage.description }}
-                </p>
-              </div>
             </section>
 
             <section>
