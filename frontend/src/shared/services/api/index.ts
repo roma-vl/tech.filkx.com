@@ -6,3 +6,4 @@ export { default as deliveryApi } from "./deliveryApi";
 export { default as billingApi } from "./billingApi";
 export { default as accountingApi } from "./accountingApi";
 export { default as newsletterApi } from "./newsletterApi";
+export { default as supportApi } from "./supportApi";

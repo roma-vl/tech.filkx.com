@@ -333,7 +333,7 @@
           <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
             {{ t("product.tabs.advisor.text") }}
           </p>
-          <UiButton class="w-full">
+          <UiButton class="w-full" @click="handleStartChat">
             <template #prefix>
               <span class="material-symbols-outlined text-[16px]"
                 >chat_bubble</span
@@ -401,10 +401,26 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import api from "@/shared/services/api/apiClient";
 import { UiButton } from "@/shared/ui";
+import { useSupportStore } from "@/entities/support/model/supportStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const supportStore = useSupportStore();
+const authStore = useAuthStore();
+
+const handleStartChat = () => {
+  if (!authStore.isAuthenticated) {
+    router.push({ path: "/login", query: { redirect: route.fullPath } });
+    return;
+  }
+
+  supportStore.startNewChat();
+};
 
 interface TabItem {
   id: string;

@@ -7,6 +7,7 @@ import {
 } from "@/shared/services/api/authApi";
 import { User } from "../types";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { useSupportStore } from "@/entities/support/model/supportStore";
 
 const TOKEN_KEY = "filkx_auth";
 const ADMIN_TOKEN_KEY = "filkx_admin_auth";
@@ -96,6 +97,9 @@ export const useAuthStore = defineStore("auth", {
 
       const cartStore = useCartStore();
       cartStore.clearCart();
+
+      const supportStore = useSupportStore();
+      supportStore.reset();
     },
 
     async updateLocale(locale: string) {
