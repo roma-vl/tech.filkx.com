@@ -17,7 +17,7 @@ class NovaPoshtaServiceTest extends TestCase
         parent::setUp();
 
         $this->service = new NovaPoshtaService;
-        config(['services.nova_poshta.api_key' => null]);
+        config(['services.nova_poshta.api_key' => null, 'services.nova_poshta.sender_city_ref' => null]);
     }
 
     public function test_is_configured_returns_false_when_api_key_is_not_set(): void
@@ -219,5 +219,104 @@ class NovaPoshtaServiceTest extends TestCase
         $this->expectException(ConnectionException::class);
 
         $this->service->getWarehouses('city-ref-1');
+    }
+
+    public function test_can_estimate_delivery_date_requires_both_api_key_and_sender_city(): void
+    {
+        config(['services.nova_poshta.api_key' => null, 'services.nova_poshta.sender_city_ref' => null]);
+        $this->assertFalse($this->service->canEstimateDeliveryDate());
+
+        config(['services.nova_poshta.api_key' => 'test-key', 'services.nova_poshta.sender_city_ref' => null]);
+        $this->assertFalse($this->service->canEstimateDeliveryDate());
+
+        config(['services.nova_poshta.api_key' => null, 'services.nova_poshta.sender_city_ref' => 'sender-city-ref']);
+        $this->assertFalse($this->service->canEstimateDeliveryDate());
+
+        config(['services.nova_poshta.api_key' => 'test-key', 'services.nova_poshta.sender_city_ref' => 'sender-city-ref']);
+        $this->assertTrue($this->service->canEstimateDeliveryDate());
+    }
+
+    public function test_get_delivery_date_estimate_throws_without_an_http_call_when_sender_city_is_not_set(): void
+    {
+        config(['services.nova_poshta.api_key' => 'test-key', 'services.nova_poshta.sender_city_ref' => null]);
+
+        Http::fake();
+
+        $this->expectException(DeliveryProviderUnavailableException::class);
+
+        try {
+            $this->service->getDeliveryDateEstimate('city-ref-1');
+        } finally {
+            Http::assertNothingSent();
+        }
+    }
+
+    public function test_get_delivery_date_estimate_sends_the_expected_request_payload(): void
+    {
+        config([
+            'services.nova_poshta.api_key' => 'test-key',
+            'services.nova_poshta.sender_city_ref' => 'sender-city-ref',
+        ]);
+
+        Http::fake([
+            NovaPoshtaService::API_URL => Http::response([
+                'success' => true,
+                'data' => [
+                    ['DeliveryDate' => ['date' => '2026-08-28 00:00:00.000000']],
+                ],
+            ]),
+        ]);
+
+        $this->service->getDeliveryDateEstimate('city-ref-1');
+
+        Http::assertSent(function ($request) {
+            return $request->url() === NovaPoshtaService::API_URL
+                && $request['apiKey'] === 'test-key'
+                && $request['modelName'] === 'Common'
+                && $request['calledMethod'] === 'getDocumentDeliveryDate'
+                && $request['methodProperties']['ServiceType'] === 'WarehouseWarehouse'
+                && $request['methodProperties']['CitySender'] === 'sender-city-ref'
+                && $request['methodProperties']['CityRecipient'] === 'city-ref-1'
+                && isset($request['methodProperties']['DateTime']);
+        });
+    }
+
+    public function test_get_delivery_date_estimate_returns_the_first_result_entry(): void
+    {
+        config([
+            'services.nova_poshta.api_key' => 'test-key',
+            'services.nova_poshta.sender_city_ref' => 'sender-city-ref',
+        ]);
+
+        $entry = ['DeliveryDate' => ['date' => '2026-08-28 00:00:00.000000']];
+
+        Http::fake([
+            NovaPoshtaService::API_URL => Http::response([
+                'success' => true,
+                'data' => [$entry],
+            ]),
+        ]);
+
+        $this->assertSame($entry, $this->service->getDeliveryDateEstimate('city-ref-1'));
+    }
+
+    public function test_get_delivery_date_estimate_throws_when_nova_poshta_reports_an_error(): void
+    {
+        config([
+            'services.nova_poshta.api_key' => 'test-key',
+            'services.nova_poshta.sender_city_ref' => 'sender-city-ref',
+        ]);
+
+        Http::fake([
+            NovaPoshtaService::API_URL => Http::response([
+                'success' => false,
+                'data' => [],
+                'errors' => ['Invalid API key'],
+            ]),
+        ]);
+
+        $this->expectException(DeliveryProviderUnavailableException::class);
+
+        $this->service->getDeliveryDateEstimate('city-ref-1');
     }
 }

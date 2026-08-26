@@ -15,6 +15,37 @@ class NovaPoshtaService
     }
 
     /**
+     * Whether a delivery-date estimate can be requested: needs the API key plus our own
+     * shipping-origin city (Nova Poshta "CitySender"), which the city/warehouse autocomplete
+     * doesn't require.
+     */
+    public function canEstimateDeliveryDate(): bool
+    {
+        return $this->isConfigured() && filled(config('services.nova_poshta.sender_city_ref'));
+    }
+
+    /**
+     * @return array<string, mixed> The single "DeliveryDate" entry Nova Poshta's
+     *                              Common/getDocumentDeliveryDate returns, e.g.
+     *                              ['DeliveryDate' => ['date' => '2026-08-28 00:00:00.000000', ...]]
+     */
+    public function getDeliveryDateEstimate(string $cityRecipientRef, string $serviceType = 'WarehouseWarehouse'): array
+    {
+        if (! $this->canEstimateDeliveryDate()) {
+            throw new DeliveryProviderUnavailableException;
+        }
+
+        $result = $this->call('Common', 'getDocumentDeliveryDate', [
+            'DateTime' => now()->format('d.m.Y'),
+            'ServiceType' => $serviceType,
+            'CitySender' => config('services.nova_poshta.sender_city_ref'),
+            'CityRecipient' => $cityRecipientRef,
+        ]);
+
+        return $result[0] ?? [];
+    }
+
+    /**
      * @return array<int, array<string, mixed>> Raw "Addresses" entries from Nova Poshta's
      *                                          searchSettlements response (Ref, Present, etc.)
      */

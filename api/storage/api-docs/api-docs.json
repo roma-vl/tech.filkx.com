@@ -3836,6 +3836,54 @@
                 }
             }
         },
+        "/api/v1/delivery/estimate": {
+            "get": {
+                "tags": [
+                    "Delivery"
+                ],
+                "summary": "Estimate the delivery date to a Nova Poshta recipient city",
+                "description": "Always returns 200. When the integration is not configured, the shipping-origin city is not set, or Nova Poshta is unreachable, `available` is false rather than an error - callers should fall back to a generic delivery message in that case.",
+                "operationId": "36ef81f03bd9adb1275e3074fcf37b0d",
+                "parameters": [
+                    {
+                        "name": "cityRef",
+                        "in": "query",
+                        "description": "Recipient city ref, as returned by /delivery/cities",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estimate result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/catalog/home": {
             "get": {
                 "tags": [

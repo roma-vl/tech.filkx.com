@@ -136,6 +136,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:30,1');
         Route::get('/warehouses', [DeliveryController::class, 'warehouses'])
             ->middleware('throttle:30,1');
+        Route::get('/estimate', [DeliveryController::class, 'estimate'])
+            ->middleware('throttle:30,1');
     });
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
         ->middleware('throttle:5,1');
