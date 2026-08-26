@@ -57,6 +57,7 @@ export function useCatalog() {
   const isMobileFilterOpen = ref(false);
 
   const isLoading = ref(false);
+  const isLoadingMore = ref(false);
   const rawProducts = ref<any[]>([]);
   const categoriesList = ref<any[]>([]);
   const dbBrands = ref<any[]>([]);
@@ -140,11 +141,19 @@ export function useCatalog() {
     }
   };
 
-  const fetchProducts = async () => {
-    isLoading.value = true;
+  // "reset" replaces the list with a fresh page 1 (initial load, or any filter/
+  // sort/category change); "append" fetches the next page and adds it to the
+  // list, driven by the infinite-scroll sentinel in CatalogPage.vue.
+  const fetchProducts = async (mode: "reset" | "append" = "reset") => {
+    const nextPage = mode === "append" ? pagination.value.page + 1 : 1;
+    if (mode === "append") {
+      isLoadingMore.value = true;
+    } else {
+      isLoading.value = true;
+    }
     try {
       const params: Record<string, any> = {
-        page: pagination.value.page,
+        page: nextPage,
         sort_by: sortBy.value,
         price_from:
           priceMin.value > initialPriceMin.value ? priceMin.value : undefined,
@@ -184,9 +193,9 @@ export function useCatalog() {
       const response = await productApi.catalogGetProducts(params);
       if (response.data && response.data.status === "success") {
         const apiData = response.data.data;
-        rawProducts.value = (apiData.data || [])
-          .map(mapProduct)
-          .filter(Boolean);
+        const mapped = (apiData.data || []).map(mapProduct).filter(Boolean);
+        rawProducts.value =
+          mode === "append" ? [...rawProducts.value, ...mapped] : mapped;
         pagination.value = {
           page: apiData.currentPage || 1,
           lastPage: apiData.lastPage || 1,
@@ -196,14 +205,27 @@ export function useCatalog() {
     } catch (error) {
       console.error("Failed to fetch products:", error);
     } finally {
-      isLoading.value = false;
+      if (mode === "append") {
+        isLoadingMore.value = false;
+      } else {
+        isLoading.value = false;
+      }
     }
+  };
+
+  // Called by the infinite-scroll sentinel once it enters the viewport -
+  // guarded so a fast scroll can't fire an overlapping request, and so it's a
+  // no-op once the last page has already been fetched.
+  const loadMore = () => {
+    if (isLoading.value || isLoadingMore.value) return;
+    if (pagination.value.page >= pagination.value.lastPage) return;
+    fetchProducts("append");
   };
 
   // Mirrors the current filter selection into the URL query so a reload,
   // browser back/forward, or a shared link all restore it - previously these
   // refs were the only place the selection lived, so refreshing the page lost
-  // every filter but the page number (changePage() already wrote that one).
+  // every filter.
   const syncFiltersToUrl = () => {
     const query: Record<string, any> = { ...route.query };
 
@@ -250,10 +272,9 @@ export function useCatalog() {
       }
     });
 
+    // Infinite scroll has no page-number concept to persist - drop a stale
+    // `page` param from an old bookmarked/shared link instead of writing one.
     delete query.page;
-    if (pagination.value.page > 1) {
-      query.page = pagination.value.page;
-    }
 
     router.replace({ name: route.name as string, params: route.params, query });
   };
@@ -263,20 +284,6 @@ export function useCatalog() {
       router.push({ name: "category", params: { slug } });
     } else {
       router.push({ name: "catalog" });
-    }
-  };
-
-  const changePage = (page: number) => {
-    if (page >= 1 && page <= pagination.value.lastPage) {
-      pagination.value.page = page;
-      router.push({
-        name: route.name as string,
-        params: route.params,
-        query: {
-          ...route.query,
-          page: page,
-        },
-      });
     }
   };
 
@@ -410,9 +417,8 @@ export function useCatalog() {
   });
 
   watch(
-    () => [categorySlug.value, route.query.search, route.query.page],
+    () => [categorySlug.value, route.query.search],
     async ([newCategory], [oldCategory]) => {
-      pagination.value.page = parseInt(route.query.page as string) || 1;
       if (newCategory !== oldCategory) {
         // A category switch invalidates filters chosen for the previous category's
         // facets (e.g. a phone attribute carrying over into laptops) - clear them and
@@ -445,7 +451,6 @@ export function useCatalog() {
       onlyInStock.value,
     ],
     () => {
-      pagination.value.page = 1;
       fetchProducts();
       syncFiltersToUrl();
     },
@@ -469,7 +474,6 @@ export function useCatalog() {
         priceMax.value = Math.min(initialPriceTo, initialPriceMax.value);
       }
     });
-    pagination.value.page = parseInt(route.query.page as string) || 1;
     fetchProducts();
   });
 
@@ -484,7 +488,6 @@ export function useCatalog() {
   // filter sidebar isn't SEO content, so it's fine for it to render with
   // its client-side defaults until onMounted runs in the browser.
   onServerPrefetch(async () => {
-    pagination.value.page = parseInt(route.query.page as string) || 1;
     await Promise.all([fetchCategories(), fetchBrands(), fetchProducts()]);
   });
 
@@ -505,6 +508,7 @@ export function useCatalog() {
     onlyInStock,
     isMobileFilterOpen,
     isLoading,
+    isLoadingMore,
     rawProducts,
     categorySlug,
     categoriesList,
@@ -513,7 +517,7 @@ export function useCatalog() {
     pagination,
     formatPrice,
     selectCategory,
-    changePage,
+    loadMore,
     filteredProducts,
     activeFilters,
     removeFilter,

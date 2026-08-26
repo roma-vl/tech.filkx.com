@@ -183,3 +183,103 @@ describe("useCatalog filter URL persistence", () => {
     expect(router.currentRoute.value.query.brand).toBeUndefined();
   });
 });
+
+describe("useCatalog infinite scroll pagination", () => {
+  // mockResolvedValueOnce queues persist on the shared mock across the whole
+  // file - reset before each test so only this test's queued responses (in
+  // the order it defines them) are ever consumed.
+  beforeEach(() => {
+    (productApi.catalogGetProducts as any).mockReset();
+  });
+
+  function pageResponse(id: number, currentPage: number, lastPage: number) {
+    return {
+      data: {
+        status: "success",
+        data: {
+          data: [{ id, slug: `p${id}`, name: { uk: `P${id}` }, variants: [] }],
+          currentPage,
+          lastPage,
+          total: lastPage,
+        },
+      },
+    };
+  }
+
+  it("appends the next page to rawProducts instead of replacing it", async () => {
+    (productApi.catalogGetProducts as any)
+      .mockResolvedValueOnce(pageResponse(1, 1, 2))
+      .mockResolvedValueOnce(pageResponse(2, 2, 2));
+
+    const { result } = await withSetup(useCatalog);
+    await flushPromises();
+
+    expect(result.rawProducts.value.map((p: any) => p.id)).toEqual([1]);
+    expect(result.pagination.value).toMatchObject({ page: 1, lastPage: 2 });
+
+    result.loadMore();
+    await flushPromises();
+
+    expect(result.rawProducts.value.map((p: any) => p.id)).toEqual([1, 2]);
+    expect(result.pagination.value.page).toBe(2);
+    expect(productApi.catalogGetProducts).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 2 }),
+    );
+  });
+
+  it("is a no-op once the last page has already loaded", async () => {
+    (productApi.catalogGetProducts as any).mockResolvedValueOnce(
+      pageResponse(1, 1, 1),
+    );
+
+    const { result } = await withSetup(useCatalog);
+    await flushPromises();
+    const callsBefore = (productApi.catalogGetProducts as any).mock.calls
+      .length;
+
+    result.loadMore();
+    await flushPromises();
+
+    expect(
+      (productApi.catalogGetProducts as any).mock.calls.length,
+    ).toBe(callsBefore);
+  });
+
+  it("resets (replaces) the list on a filter change instead of appending", async () => {
+    (productApi.catalogGetProducts as any)
+      .mockResolvedValueOnce(pageResponse(1, 1, 2))
+      .mockResolvedValueOnce(pageResponse(2, 2, 2))
+      .mockResolvedValueOnce(pageResponse(3, 1, 1));
+
+    const { result } = await withSetup(useCatalog);
+    await flushPromises();
+    result.loadMore();
+    await flushPromises();
+    expect(result.rawProducts.value).toHaveLength(2);
+
+    result.selectedBrands.value = ["samsung"];
+    await flushPromises();
+
+    expect(result.rawProducts.value.map((p: any) => p.id)).toEqual([3]);
+    expect(productApi.catalogGetProducts).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1 }),
+    );
+  });
+
+  it("never writes a page number into the URL query", async () => {
+    (productApi.catalogGetProducts as any)
+      .mockResolvedValueOnce(pageResponse(1, 1, 2))
+      .mockResolvedValueOnce(pageResponse(2, 2, 2));
+
+    const { result, router } = await withSetup(useCatalog);
+    await flushPromises();
+
+    result.loadMore();
+    await flushPromises();
+
+    result.selectedBrands.value = ["samsung"];
+    await flushPromises();
+
+    expect(router.currentRoute.value.query.page).toBeUndefined();
+  });
+});
