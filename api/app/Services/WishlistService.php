@@ -45,6 +45,27 @@ class WishlistService
         return $newValue;
     }
 
+    /**
+     * Subscribes the user to a one-shot "back in stock" email for a currently
+     * out-of-stock product. Favoriting the product is a side effect (matching
+     * how `add()` already behaves) rather than a separate opt-in, since the
+     * only place this is called from is the product page's "notify me" CTA.
+     */
+    public function subscribeToRestock(User $user, Product $product): Wishlist
+    {
+        if (! $user->favorites()->where('product_id', $product->id)->exists()) {
+            $this->add($user, $product);
+        }
+
+        $user->favorites()->updateExistingPivot($product->id, [
+            'notify_on_restock' => true,
+        ]);
+
+        return Wishlist::where('user_id', $user->id)
+            ->where('product_id', $product->id)
+            ->firstOrFail();
+    }
+
     public function getPendingSubscriptions(): Collection
     {
         return Wishlist::with(['user', 'product.variants'])

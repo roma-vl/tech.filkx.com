@@ -205,6 +205,7 @@ Route::middleware(['auth:api', IdentifyImpersonation::class])->group(function ()
     Route::get('/user/favorites', [UserController::class, 'getFavorites']);
     Route::post('/user/favorites/toggle', [UserController::class, 'toggleFavorite']);
     Route::post('/user/favorites/sync', [UserController::class, 'syncFavorites']);
+    Route::post('/user/favorites/notify-restock', [UserController::class, 'subscribeRestock']);
 
     // Compare database-backed endpoints
     Route::get('/user/compares', [UserController::class, 'getCompares']);

@@ -39,9 +39,17 @@ export default {
     configLabel: "Конфігурація",
     addToCart: "Додати в кошик",
     quickOrder: "Швидке замовлення",
+    outOfStockBadge: "Немає в наявності",
+    notifyMe: "Повідомити про надходження",
+    notifyMeSubscribed: "Ми повідомимо вас, коли товар з'явиться",
+    notifyMeSuccessToast:
+      "Ми повідомимо вас, коли «{name}» з'явиться в наявності.",
+    notifyMeErrorToast: "Не вдалося оформити підписку. Спробуйте ще раз.",
     delivery: {
       inStockTitle: "В наявності",
       inStockSubtitle: "Відправка сьогодні",
+      outOfStockTitle: "Немає в наявності",
+      outOfStockSubtitle: "Очікується поповнення",
       shippingTitle: "Доставка",
       shippingSubtitle: "Безкоштовно від 2000 ₴",
       returnsTitle: "Повернення",

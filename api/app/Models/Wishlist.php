@@ -14,11 +14,13 @@ class Wishlist extends Pivot
         'product_id',
         'price_at_add',
         'notify_on_drop',
+        'notify_on_restock',
     ];
 
     protected $casts = [
         'price_at_add' => 'decimal:2',
         'notify_on_drop' => 'boolean',
+        'notify_on_restock' => 'boolean',
     ];
 
     public function user(): BelongsTo

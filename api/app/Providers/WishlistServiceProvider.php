@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\ProductVariant;
+use App\Models\Stock;
 use App\Observers\ProductVariantObserver;
+use App\Observers\StockObserver;
 use App\Services\WishlistService;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +26,7 @@ class WishlistServiceProvider extends ServiceProvider
 
         if (config('wishlist.enabled', true)) {
             ProductVariant::observe(ProductVariantObserver::class);
+            Stock::observe(StockObserver::class);
         }
     }
 }

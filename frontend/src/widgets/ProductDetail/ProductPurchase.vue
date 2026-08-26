@@ -192,28 +192,48 @@
 
       <!-- Action buttons -->
       <div class="space-y-2.5 pt-1">
+        <template v-if="product.inStock">
+          <UiButton
+            size="lg"
+            class="w-full"
+            @click="cartStore.addToCart(product)"
+          >
+            <template #prefix>
+              <span class="material-symbols-outlined text-[19px]"
+                >shopping_cart</span
+              >
+            </template>
+            {{ t("product.purchase.addToCart") }}
+          </UiButton>
+          <UiButton
+            variant="secondary"
+            size="lg"
+            class="w-full"
+            @click="$emit('quick-order')"
+          >
+            <template #prefix>
+              <span class="material-symbols-outlined text-[17px]">bolt</span>
+            </template>
+            {{ t("product.purchase.quickOrder") }}
+          </UiButton>
+        </template>
         <UiButton
+          v-else
           size="lg"
           class="w-full"
-          @click="cartStore.addToCart(product)"
+          :disabled="notifyRequested"
+          @click="handleNotifyRestock"
         >
           <template #prefix>
-            <span class="material-symbols-outlined text-[19px]"
-              >shopping_cart</span
-            >
+            <span class="material-symbols-outlined text-[19px]">{{
+              notifyRequested ? "check" : "notifications"
+            }}</span>
           </template>
-          {{ t("product.purchase.addToCart") }}
-        </UiButton>
-        <UiButton
-          variant="secondary"
-          size="lg"
-          class="w-full"
-          @click="$emit('quick-order')"
-        >
-          <template #prefix>
-            <span class="material-symbols-outlined text-[17px]">bolt</span>
-          </template>
-          {{ t("product.purchase.quickOrder") }}
+          {{
+            notifyRequested
+              ? t("product.purchase.notifyMeSubscribed")
+              : t("product.purchase.notifyMe")
+          }}
         </UiButton>
       </div>
     </div>
@@ -226,15 +246,24 @@
         class="flex-1 flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900"
       >
         <span
-          class="material-symbols-outlined text-[#00a046] text-[22px] shrink-0"
+          class="material-symbols-outlined text-[22px] shrink-0"
+          :class="product.inStock ? 'text-[#00a046]' : 'text-zinc-400'"
           >inventory_2</span
         >
         <div>
           <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            {{ t("product.purchase.delivery.inStockTitle") }}
+            {{
+              product.inStock
+                ? t("product.purchase.delivery.inStockTitle")
+                : t("product.purchase.delivery.outOfStockTitle")
+            }}
           </p>
           <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
-            {{ t("product.purchase.delivery.inStockSubtitle") }}
+            {{
+              product.inStock
+                ? t("product.purchase.delivery.inStockSubtitle")
+                : t("product.purchase.delivery.outOfStockSubtitle")
+            }}
           </p>
         </div>
       </div>
@@ -275,11 +304,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
 import { UiButton } from "@/shared/ui";
 
-defineProps<{
+const props = defineProps<{
   product: any;
   availableColors: string[];
   selectedColor: string;
@@ -294,5 +326,27 @@ defineEmits<{
 }>();
 
 const cartStore = useCartStore();
+const authStore = useAuthStore();
+const route = useRoute();
+const router = useRouter();
 const { t } = useI18n();
+
+const notifyRequested = ref(false);
+
+const handleNotifyRestock = async () => {
+  if (!authStore.isAuthenticated) {
+    router.push({ path: "/login", query: { redirect: route.fullPath } });
+    return;
+  }
+
+  const subscribed = await cartStore.subscribeRestock(props.product.productId);
+  if (subscribed) {
+    notifyRequested.value = true;
+    cartStore.addToast(
+      t("product.purchase.notifyMeSuccessToast", { name: props.product.name }),
+    );
+  } else {
+    cartStore.addToast(t("product.purchase.notifyMeErrorToast"), "error");
+  }
+};
 </script>

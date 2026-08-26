@@ -5755,6 +5755,49 @@
                 ]
             }
         },
+        "/api/user/favorites/notify-restock": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Subscribe to a one-time email when an out-of-stock product is back in stock",
+                "operationId": "dd2016aa7e4bac7e6486a513fa31aa47",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subscribed"
+                    },
+                    "400": {
+                        "description": "Product ID is required"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/user/compares": {
             "get": {
                 "tags": [
