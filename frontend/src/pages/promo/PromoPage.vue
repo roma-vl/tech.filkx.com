@@ -39,9 +39,10 @@
     <!-- Content -->
     <template v-else>
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-6 lg:py-10">
-        <!-- Category strip (Mobile) - above everything, including the banner -->
+        <!-- Category strip (Mobile) - above everything, including the banner.
+             Top level only (a horizontal strip has no room to nest). -->
         <div
-          v-if="categoryFacets.length > 1"
+          v-if="categoryTree.length > 1"
           class="lg:hidden mb-5 -mx-1 px-1 flex gap-2 overflow-x-auto hide-scrollbar"
         >
           <button
@@ -57,72 +58,62 @@
             <span class="opacity-70">({{ rawProducts.length }})</span>
           </button>
           <button
-            v-for="cat in categoryFacets"
-            :key="cat.slug"
+            v-for="node in categoryTree"
+            :key="node.slug"
             :class="[
               'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-all',
-              selectedCategory === cat.slug
+              selectedCategory === node.slug
                 ? 'bg-[#00a046] text-white shadow-sm'
                 : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
             ]"
-            @click="selectCategory(cat.slug)"
+            @click="selectCategory(node.slug)"
           >
-            {{ pickLocalized(cat.name, locale) }}
-            <span class="opacity-70">({{ cat.count }})</span>
+            <span class="material-symbols-outlined text-[15px]">{{
+              getCategoryIcon(node.slug)
+            }}</span>
+            {{ pickLocalized(node.name, locale) }}
+            <span class="opacity-70">({{ node.count }})</span>
           </button>
         </div>
 
         <div class="flex gap-6 items-start">
           <!-- Sidebar (Desktop) - starts from the very top of the page, level
-               with the banner, not below it -->
+               with the banner, not below it. First level gets a category
+               icon; everything under it is a plain nested tree. -->
           <aside
-            v-if="categoryFacets.length > 1"
+            v-if="categoryTree.length > 1"
             class="hidden lg:block w-64 flex-shrink-0"
           >
-            <div
-              class="sticky top-24 bg-white dark:bg-zinc-900 p-5"
-            >
+            <div class="sticky top-24 bg-white dark:bg-zinc-900 p-5">
               <h3
                 class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
               >
                 {{ t("promoPage.categories.title") }}
               </h3>
-              <div class="space-y-1">
-                <button
-                  :class="[
-                    'w-full flex items-center justify-between px-3 py-2 text-sm font-medium transition-all',
-                    !selectedCategory
-                      ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
-                      : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
-                  ]"
-                  @click="selectCategory('')"
+              <button
+                type="button"
+                class="w-full flex items-center justify-between py-2 px-3 text-sm font-medium transition-all mb-1"
+                :class="
+                  !selectedCategory
+                    ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
+                    : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                "
+                @click="selectCategory('')"
+              >
+                <span>{{ t("promoPage.categories.all") }}</span>
+                <span
+                  class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 font-bold"
+                  >{{ rawProducts.length }}</span
                 >
-                  <span>{{ t("promoPage.categories.all") }}</span>
-                  <span
-                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 font-bold"
-                    >{{ rawProducts.length }}</span
-                  >
-                </button>
-                <button
-                  v-for="cat in categoryFacets"
-                  :key="cat.slug"
-                  :class="[
-                    'w-full flex items-center justify-between px-3 py-2 text-sm font-medium transition-all',
-                    selectedCategory === cat.slug
-                      ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
-                      : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
-                  ]"
-                  @click="selectCategory(cat.slug)"
-                >
-                  <span class="truncate pr-2">{{
-                    pickLocalized(cat.name, locale)
-                  }}</span>
-                  <span
-                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 font-bold"
-                    >{{ cat.count }}</span
-                  >
-                </button>
-              </div>
+              </button>
+              <PromoCategoryTree
+                :nodes="categoryTree"
+                :selected-category="selectedCategory"
+                :expanded-slugs="expandedSlugs"
+                :locale="locale"
+                @select="selectCategory"
+                @toggle="toggleExpanded"
+              />
             </div>
           </aside>
 
@@ -201,11 +192,13 @@ import { useHead } from "@vueuse/head";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 import {
-  derivePromoCategories,
-  filterProductsByCategory,
+  buildPromoCategoryTree,
+  categoryPathSlugs,
+  filterProductsByCategoryPath,
 } from "@/entities/product/lib/derivePromoCategories";
-import { pickLocalized } from "@/shared/utils/categoryMapper";
+import { pickLocalized, getCategoryIcon } from "@/shared/utils/categoryMapper";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
+import PromoCategoryTree from "@/widgets/Promo/PromoCategoryTree.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -214,19 +207,43 @@ const { t, locale } = useI18n();
 const loading = ref(true);
 const promoPage = ref(null);
 const selectedCategory = ref(route.query.category || "");
+// The full site category tree (same one breadcrumbs/mega-menu use) - needed
+// to resolve each promo product's leaf category up to its ancestors.
+const fullCategoryTree = ref([]);
+const expandedSlugs = ref(new Set());
 
 const rawProducts = computed(() => promoPage.value?.products || []);
 
-const categoryFacets = computed(() => derivePromoCategories(rawProducts.value));
+const categoryTree = computed(() =>
+  buildPromoCategoryTree(rawProducts.value, fullCategoryTree.value),
+);
 
 const products = computed(() =>
-  filterProductsByCategory(rawProducts.value, selectedCategory.value)
+  filterProductsByCategoryPath(
+    rawProducts.value,
+    selectedCategory.value,
+    fullCategoryTree.value,
+  )
     .map(mapCatalogProduct)
     .filter(Boolean),
 );
 
+const toggleExpanded = (slug) => {
+  const next = new Set(expandedSlugs.value);
+  if (next.has(slug)) {
+    next.delete(slug);
+  } else {
+    next.add(slug);
+  }
+  expandedSlugs.value = next;
+};
+
 const selectCategory = (slug) => {
   selectedCategory.value = slug;
+  // Reveal where the newly selected category actually sits in the tree
+  // instead of leaving its ancestors collapsed.
+  expandedSlugs.value = new Set(categoryPathSlugs(slug, fullCategoryTree.value));
+
   const query = { ...route.query };
   if (slug) {
     query.category = slug;
@@ -242,13 +259,28 @@ useHead({
   ),
 });
 
+const fetchCategoryTree = async () => {
+  try {
+    const response = await productApi.catalogGetCategories();
+    fullCategoryTree.value = response.data.data || [];
+  } catch (e) {
+    console.error("Failed to load categories for the promo page filter:", e);
+  }
+};
+
 const fetchPromoPage = async () => {
   loading.value = true;
   promoPage.value = null;
   selectedCategory.value = route.query.category || "";
   try {
-    const { data } = await productApi.getPromoPage(route.params.slug);
+    const [{ data }] = await Promise.all([
+      productApi.getPromoPage(route.params.slug),
+      fullCategoryTree.value.length ? null : fetchCategoryTree(),
+    ]);
     promoPage.value = data.data;
+    expandedSlugs.value = new Set(
+      categoryPathSlugs(selectedCategory.value, fullCategoryTree.value),
+    );
   } catch (e) {
     console.error("Failed to load promo page:", e);
   } finally {
