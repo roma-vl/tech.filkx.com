@@ -75,22 +75,112 @@
       </section>
 
       <div class="max-w-container-max mx-auto px-4 md:px-8 py-10">
+        <!-- Category strip (Mobile) -->
         <div
-          v-if="products.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
+          v-if="categoryFacets.length > 1"
+          class="lg:hidden mb-5 -mx-1 px-1 flex gap-2 overflow-x-auto hide-scrollbar"
         >
-          <ProductCard
-            v-for="product in products"
-            :key="product.id"
-            :product="product"
-            view-mode="grid"
-          />
+          <button
+            :class="[
+              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all',
+              !selectedCategory
+                ? 'bg-[#00a046] text-white border-transparent shadow-sm'
+                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
+            ]"
+            @click="selectCategory('')"
+          >
+            {{ t("promoPage.categories.all") }}
+            <span class="opacity-70">({{ rawProducts.length }})</span>
+          </button>
+          <button
+            v-for="cat in categoryFacets"
+            :key="cat.slug"
+            :class="[
+              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all',
+              selectedCategory === cat.slug
+                ? 'bg-[#00a046] text-white border-transparent shadow-sm'
+                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
+            ]"
+            @click="selectCategory(cat.slug)"
+          >
+            {{ pickLocalized(cat.name, locale) }}
+            <span class="opacity-70">({{ cat.count }})</span>
+          </button>
         </div>
-        <div
-          v-else
-          class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center text-zinc-500 dark:text-zinc-400"
-        >
-          {{ t("promoPage.empty") }}
+
+        <div class="flex gap-6 items-start">
+          <!-- Sidebar (Desktop) -->
+          <aside
+            v-if="categoryFacets.length > 1"
+            class="hidden lg:block w-64 flex-shrink-0"
+          >
+            <div
+              class="sticky top-24 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm"
+            >
+              <h3
+                class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
+              >
+                {{ t("promoPage.categories.title") }}
+              </h3>
+              <div class="space-y-1">
+                <button
+                  :class="[
+                    'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
+                    !selectedCategory
+                      ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
+                      : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
+                  ]"
+                  @click="selectCategory('')"
+                >
+                  <span>{{ t("promoPage.categories.all") }}</span>
+                  <span
+                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                    >{{ rawProducts.length }}</span
+                  >
+                </button>
+                <button
+                  v-for="cat in categoryFacets"
+                  :key="cat.slug"
+                  :class="[
+                    'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
+                    selectedCategory === cat.slug
+                      ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
+                      : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
+                  ]"
+                  @click="selectCategory(cat.slug)"
+                >
+                  <span class="truncate pr-2">{{
+                    pickLocalized(cat.name, locale)
+                  }}</span>
+                  <span
+                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                    >{{ cat.count }}</span
+                  >
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Products Workspace -->
+          <section class="flex-1 min-w-0">
+            <div
+              v-if="products.length"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
+            >
+              <ProductCard
+                v-for="product in products"
+                :key="product.id"
+                :product="product"
+                view-mode="grid"
+              />
+            </div>
+            <div
+              v-else
+              class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center text-zinc-500 dark:text-zinc-400"
+            >
+              {{ t("promoPage.empty") }}
+            </div>
+          </section>
         </div>
       </div>
     </template>
@@ -99,22 +189,46 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useHead } from "@vueuse/head";
 import { productApi } from "@/shared/services/api/productApi";
 import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
+import {
+  derivePromoCategories,
+  filterProductsByCategory,
+} from "@/entities/product/lib/derivePromoCategories";
+import { pickLocalized } from "@/shared/utils/categoryMapper";
 import ProductCard from "@/widgets/Catalog/ProductCard.vue";
 
 const route = useRoute();
-const { t } = useI18n();
+const router = useRouter();
+const { t, locale } = useI18n();
 
 const loading = ref(true);
 const promoPage = ref(null);
+const selectedCategory = ref(route.query.category || "");
+
+const rawProducts = computed(() => promoPage.value?.products || []);
+
+const categoryFacets = computed(() => derivePromoCategories(rawProducts.value));
 
 const products = computed(() =>
-  (promoPage.value?.products || []).map(mapCatalogProduct).filter(Boolean),
+  filterProductsByCategory(rawProducts.value, selectedCategory.value)
+    .map(mapCatalogProduct)
+    .filter(Boolean),
 );
+
+const selectCategory = (slug) => {
+  selectedCategory.value = slug;
+  const query = { ...route.query };
+  if (slug) {
+    query.category = slug;
+  } else {
+    delete query.category;
+  }
+  router.replace({ query });
+};
 
 useHead({
   title: computed(
@@ -125,6 +239,7 @@ useHead({
 const fetchPromoPage = async () => {
   loading.value = true;
   promoPage.value = null;
+  selectedCategory.value = route.query.category || "";
   try {
     const { data } = await productApi.getPromoPage(route.params.slug);
     promoPage.value = data.data;

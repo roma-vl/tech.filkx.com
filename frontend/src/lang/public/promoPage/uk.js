@@ -4,4 +4,8 @@ export default {
     backToCatalog: "До каталогу",
   },
   empty: "У цій акції поки немає товарів",
+  categories: {
+    title: "Категорія",
+    all: "Всі товари",
+  },
 };

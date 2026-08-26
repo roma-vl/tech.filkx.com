@@ -4,4 +4,8 @@ export default {
     backToCatalog: "Back to catalog",
   },
   empty: "No products in this promo yet",
+  categories: {
+    title: "Category",
+    all: "All products",
+  },
 };
