@@ -45,10 +45,20 @@
 </template>
 
 <script setup>
+import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
+
 const emit = defineEmits(["loading"]);
+
+const toast = useToast();
+const { t } = useI18n();
 
 function handleOAuth(provider) {
   // Social login is skipped/ignored as per user instruction: "поки можем пропустити"
-  alert(`OAuth through ${provider} is not configured yet.`);
+  toast.info(t("auth.oauth.notConfigured", { provider: providerLabel(provider) }));
+}
+
+function providerLabel(provider) {
+  return provider === "google" ? "Google" : "Facebook";
 }
 </script>

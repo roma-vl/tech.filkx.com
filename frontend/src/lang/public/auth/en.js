@@ -1,5 +1,20 @@
 export default {
   or_continue_with: "Or continue with",
+  oauth: {
+    notConfigured: "Sign in with {provider} isn't available yet.",
+  },
+  oauthCallback: {
+    completing: "Completing sign in...",
+    successMessage: "Successfully signed in!",
+    noToken: "Authentication failed. No token received.",
+    genericError: "Failed to complete authentication.",
+    errorTitle: "Authentication Failed",
+    backToLogin: "Back to Login",
+    needHelp: "Need help? Contact support.",
+    restoredTitle: "Welcome Back!",
+    restoredSubtitle: "Your account has been successfully restored.",
+    continueToDashboard: "Continue to Dashboard",
+  },
   login: {
     title: "Sign In",
     subtitle: "Welcome back! Enter your details to log in to your account.",

@@ -1,5 +1,20 @@
 export default {
   or_continue_with: "Або увійдіть за допомогою",
+  oauth: {
+    notConfigured: "Вхід через {provider} поки що недоступний.",
+  },
+  oauthCallback: {
+    completing: "Завершення входу...",
+    successMessage: "Успішний вхід!",
+    noToken: "Помилка автентифікації. Токен не отримано.",
+    genericError: "Не вдалося завершити автентифікацію.",
+    errorTitle: "Помилка автентифікації",
+    backToLogin: "Повернутися до входу",
+    needHelp: "Потрібна допомога? Зверніться до підтримки.",
+    restoredTitle: "З поверненням!",
+    restoredSubtitle: "Ваш акаунт успішно відновлено.",
+    continueToDashboard: "Перейти до кабінету",
+  },
   login: {
     title: "Вхід",
     subtitle: "З поверненням! Введіть свої дані для входу в акаунт.",
