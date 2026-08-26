@@ -1,24 +1,28 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#00a046')
+
+@section('badge')
+    {{ __('emails.verify_email.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Welcome to {{ config('app.name') }}!</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.verify_email.heading', ['app' => config('app.name')], $locale) }}</h2>
 
-    <p>Hello {{ $userName }},</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.verify_email.greeting', ['name' => $userName], $locale) }}</p>
 
-    <p>Thank you for joining {{ config('app.name') }}! Please verify your email address by clicking the button below to
-        activate your account:</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.verify_email.body', ['app' => config('app.name')], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $verificationUrl])
-        Verify Email Address
+        {{ __('emails.verify_email.button', [], $locale) }}
     @endcomponent
 
-    <p>If you did not create an account, no further action is required.</p>
+    <p class="text-muted" style="color: #6b7280; font-size: 13px;">{{ __('emails.verify_email.note', [], $locale) }}</p>
 
     @include('emails.components.divider')
 
-    <p>Need help? Simply reply to this email or visit our <a href="{{ config('app.url') }}/support"
-                                                             style="color: #3182ce; text-decoration: none;">Support
-            Center</a>.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.verify_email.help', [], $locale) }}
+        <a href="{{ config('app.frontend_url', config('app.url')) }}/support" style="color: #00a046; text-decoration: none; font-weight: 600;">{{ __('emails.verify_email.support_center', [], $locale) }}</a>.
+    </p>
 
-    <p>Thanks,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.verify_email.thanks', [], $locale) }}<br>{{ __('emails.verify_email.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

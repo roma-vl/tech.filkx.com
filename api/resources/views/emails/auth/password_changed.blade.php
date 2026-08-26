@@ -1,33 +1,37 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#d97706')
+
+@section('badge')
+    {{ __('emails.password_changed.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Password Changed</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.password_changed.heading', [], $locale) }}</h2>
 
-    <p>Hello {{ $userName }},</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.password_changed.greeting', ['name' => $userName], $locale) }}</p>
 
-    <p>The password for your <strong>{{ config('app.name') }}</strong> account was recently changed.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.password_changed.body', ['app' => config('app.name')], $locale) }}</p>
 
-    <table width="100%" style="margin: 24px 0; border-collapse: collapse;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;">
         <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #718096;">Time</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right; color: #2d3748;">{{ $time }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">{{ __('emails.password_changed.time', [], $locale) }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 700; text-align: right; color: #111827; font-size: 13px;">{{ $time }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #718096;">IP Address</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right; color: #2d3748;">{{ $ipAddress }}</td>
+            <td style="padding: 14px 20px; color: #6b7280; font-size: 13px;">{{ __('emails.password_changed.ip_address', [], $locale) }}</td>
+            <td style="padding: 14px 20px; font-weight: 700; text-align: right; color: #111827; font-size: 13px;">{{ $ipAddress }}</td>
         </tr>
     </table>
 
-    <p>If you did this, you can safely ignore this email.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.password_changed.safe', [], $locale) }}</p>
 
-    <p><strong>If you did not change your password</strong>, please secure your account immediately by resetting your
-        password or contacting support.</p>
+    <p class="text-body" style="color: #374151;"><strong>{{ __('emails.password_changed.warning_lead', [], $locale) }}</strong>{{ __('emails.password_changed.warning_tail', [], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $settingsUrl])
-        Review Security Settings
+        {{ __('emails.password_changed.button', [], $locale) }}
     @endcomponent
 
     @include('emails.components.divider')
 
-    <p>Thanks,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.password_changed.thanks', [], $locale) }}<br>{{ __('emails.password_changed.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

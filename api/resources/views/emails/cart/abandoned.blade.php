@@ -1,12 +1,11 @@
 @extends('emails.layouts.system')
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Ви залишили товари в кошику</h2>
+    <h2 style="color: #2d3748; margin-top: 0;">{{ __('emails.abandoned_cart.heading', [], $locale) }}</h2>
 
-    <p>Вітаємо, {{ $userName }}!</p>
+    <p>{{ __('emails.abandoned_cart.greeting', ['name' => $userName], $locale) }}</p>
 
-    <p>Ми помітили, що ви додали товари до кошика, але не завершили оформлення замовлення. Вони
-        досі чекають на вас:</p>
+    <p>{{ __('emails.abandoned_cart.body', [], $locale) }}</p>
 
     <table width="100%" style="margin: 24px 0; border-collapse: collapse;">
         @foreach ($items as $item)
@@ -20,7 +19,7 @@
             </tr>
         @endforeach
         <tr>
-            <td style="padding: 12px 0 0 0; color: #718096;">Разом</td>
+            <td style="padding: 12px 0 0 0; color: #718096;">{{ __('emails.abandoned_cart.total', [], $locale) }}</td>
             <td style="padding: 12px 0 0 0; font-weight: bold; text-align: right; color: #2d3748;">
                 {{ number_format($total, 2) }} грн
             </td>
@@ -28,12 +27,12 @@
     </table>
 
     @component('emails.components.button', ['url' => $cartUrl])
-        Повернутися до кошика
+        {{ __('emails.abandoned_cart.button', [], $locale) }}
     @endcomponent
 
     @include('emails.components.divider')
 
-    <p>Якщо у вас виникли питання, звертайтесь до нашої служби підтримки.</p>
+    <p>{{ __('emails.abandoned_cart.help', [], $locale) }}</p>
 
-    <p>Команда {{ config('app.name') }}</p>
+    <p>{{ __('emails.abandoned_cart.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

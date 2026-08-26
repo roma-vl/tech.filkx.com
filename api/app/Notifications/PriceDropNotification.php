@@ -3,14 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Product;
+use App\Models\User;
 use App\Notifications\Channels\AppDatabaseChannel;
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PriceDropNotification extends Notification
 {
-    use Queueable;
+    use Queueable, ResolvesRecipientLocale;
 
     public function __construct(
         public readonly Product $product,
@@ -25,16 +27,14 @@ class PriceDropNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $productName = is_array($this->product->name)
-            ? ($this->product->name[$notifiable->locale ?? 'uk'] ?? $this->product->name['uk'] ?? '')
-            : $this->product->name;
-
-        $dropPercent = round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
+        $locale = $this->recipientLocale($notifiable);
+        $productName = $this->productName($locale);
+        $dropPercent = $this->dropPercent();
         $saving = round($this->oldPrice - $this->newPrice, 2);
         $productUrl = config('app.frontend_url', config('app.url')).'/product/'.$this->product->slug;
 
         return (new MailMessage)
-            ->subject("↓ Знижка {$dropPercent}% на «{$productName}»")
+            ->subject(__('emails.price_drop.subject', ['percent' => $dropPercent, 'product' => $productName], $locale))
             ->view('emails.price-drop', [
                 'userName' => $notifiable->name,
                 'productName' => $productName,
@@ -43,21 +43,23 @@ class PriceDropNotification extends Notification
                 'saving' => $saving,
                 'dropPercent' => $dropPercent,
                 'productUrl' => $productUrl,
+                'locale' => $locale,
             ]);
     }
 
     public function toDatabase(object $notifiable): array
     {
-        $productName = is_array($this->product->name)
-            ? ($this->product->name[$notifiable->locale ?? 'uk'] ?? $this->product->name['uk'] ?? '')
-            : $this->product->name;
-
-        $dropPercent = round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
+        $locale = $this->recipientLocale($notifiable);
+        $productName = $this->productName($locale);
+        $dropPercent = $this->dropPercent();
 
         return [
             'type' => 'price_drop',
-            'title' => "Знижка {$dropPercent}% на «{$productName}»",
-            'content' => "Ціна знизилась з {$this->oldPrice} до {$this->newPrice} грн",
+            'title' => __('emails.price_drop.db_title', ['percent' => $dropPercent, 'product' => $productName], $locale),
+            'content' => __('emails.price_drop.db_content', [
+                'old' => $this->oldPrice,
+                'new' => $this->newPrice,
+            ], $locale),
             'link' => '/product/'.$this->product->slug,
         ];
     }
@@ -65,5 +67,17 @@ class PriceDropNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return $this->toDatabase($notifiable);
+    }
+
+    private function productName(string $locale): string
+    {
+        return is_array($this->product->name)
+            ? ($this->product->name[$locale] ?? $this->product->name[User::DEFAULT_LOCALE] ?? '')
+            : $this->product->name;
+    }
+
+    private function dropPercent(): float
+    {
+        return round((($this->oldPrice - $this->newPrice) / $this->oldPrice) * 100, 1);
     }
 }

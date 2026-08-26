@@ -2,11 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Auth\Notifications\ResetPassword as BaseResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class ResetPasswordNotification extends BaseResetPassword
 {
+    use ResolvesRecipientLocale;
+
     /**
      * Build reset URL для SPA на окремому домені
      */
@@ -23,14 +26,14 @@ class ResetPasswordNotification extends BaseResetPassword
     public function toMail($notifiable): MailMessage
     {
         $url = $this->resetUrl($notifiable);
-
-        $subject = $notifiable->locale === 'uk' ? 'Відновлення пароля' : 'Reset Password Notification';
+        $locale = $this->recipientLocale($notifiable);
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject(__('emails.reset_password.subject', [], $locale))
             ->view('emails.auth.reset_password', [
                 'resetUrl' => $url,
                 'expire' => config('auth.passwords.users.expire'),
+                'locale' => $locale,
             ]);
     }
 }

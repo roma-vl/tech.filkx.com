@@ -1,12 +1,11 @@
 @extends('emails.layouts.system')
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Дякуємо за замовлення!</h2>
+    <h2 style="color: #2d3748; margin-top: 0;">{{ __('emails.order_confirmed.heading', [], $locale) }}</h2>
 
-    <p>Вітаємо, {{ $order->customer_name }},</p>
+    <p>{{ __('emails.order_confirmed.greeting', ['name' => $order->customer_name], $locale) }}</p>
 
-    <p>Ми отримали ваше замовлення <strong>№ {{ $order->order_number }}</strong>. Як тільки статус зміниться, ми
-        надішлемо вам повідомлення.</p>
+    <p>{{ __('emails.order_confirmed.body', ['number' => $order->order_number], $locale) }}</p>
 
     <table width="100%" style="margin: 24px 0; border-collapse: collapse;">
         @foreach ($order->items as $item)
@@ -20,22 +19,22 @@
             </tr>
         @endforeach
         <tr>
-            <td style="padding: 12px 0 0 0; color: #718096;">Разом</td>
+            <td style="padding: 12px 0 0 0; color: #718096;">{{ __('emails.order_confirmed.total', [], $locale) }}</td>
             <td style="padding: 12px 0 0 0; font-weight: bold; text-align: right; color: #2d3748;">
                 {{ number_format($order->total_price, 2) }} грн
             </td>
         </tr>
     </table>
 
-    <p style="color: #718096;">Доставка: {{ $order->shipping_city }}, {{ $order->shipping_address }}</p>
+    <p style="color: #718096;">{{ __('emails.order_confirmed.shipping', [], $locale) }}: {{ $order->shipping_city }}, {{ $order->shipping_address }}</p>
 
     @component('emails.components.button', ['url' => $accountUrl])
-        Переглянути замовлення
+        {{ __('emails.order_confirmed.button', [], $locale) }}
     @endcomponent
 
     @include('emails.components.divider')
 
-    <p>Якщо у вас виникли питання, звертайтесь до нашої служби підтримки.</p>
+    <p>{{ __('emails.order_confirmed.help', [], $locale) }}</p>
 
-    <p>Дякуємо, що обрали нас!<br>Команда {{ config('app.name') }}</p>
+    <p>{{ __('emails.order_confirmed.thanks', [], $locale) }}<br>{{ __('emails.order_confirmed.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

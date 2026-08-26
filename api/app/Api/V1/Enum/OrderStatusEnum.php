@@ -2,6 +2,8 @@
 
 namespace App\Api\V1\Enum;
 
+use App\Models\User;
+
 enum OrderStatusEnum: string
 {
     case PENDING_PAYMENT = 'pending_payment';
@@ -19,18 +21,15 @@ enum OrderStatusEnum: string
         return array_column(self::cases(), 'value');
     }
 
-    public function label(): string
+    /**
+     * Human-readable status label, translated for the given locale.
+     *
+     * Only consumed by OrderStatusChangedNotification today, hence the translation
+     * strings living under the `emails.order_status.*` keys rather than a general-purpose
+     * `order_status.*` namespace.
+     */
+    public function label(string $locale = User::DEFAULT_LOCALE): string
     {
-        return match ($this) {
-            self::PENDING_PAYMENT => 'Очікує оплати',
-            self::PAID => 'Оплачено',
-            self::PROCESSING => 'В обробці',
-            self::PACKED => 'Зібрано',
-            self::SHIPPED => 'Відправлено',
-            self::DELIVERED => 'Доставлено',
-            self::COMPLETED => 'Виконано',
-            self::CANCELLED => 'Скасовано',
-            self::REFUNDED => 'Повернено',
-        };
+        return __('emails.order_status.'.$this->value, [], $locale);
     }
 }

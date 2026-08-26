@@ -2,13 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class AccountRestoredNotification extends Notification
 {
-    use Queueable;
+    use Queueable, ResolvesRecipientLocale;
 
     public function __construct(
         public readonly string $loginUrl,
@@ -21,13 +22,14 @@ class AccountRestoredNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $notifiable->locale === 'uk' ? 'Акаунт відновлено' : 'Account Restored';
+        $locale = $this->recipientLocale($notifiable);
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject(__('emails.account_restored.subject', [], $locale))
             ->view('emails.auth.account_restored', [
                 'userName' => $notifiable->name,
                 'loginUrl' => $this->loginUrl,
+                'locale' => $locale,
             ]);
     }
 }

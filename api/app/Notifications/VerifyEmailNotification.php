@@ -2,11 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class VerifyEmailNotification extends BaseVerifyEmail
 {
+    use ResolvesRecipientLocale;
+
     /**
      * Build verification URL для SPA на окремому домені
      */
@@ -25,14 +28,14 @@ class VerifyEmailNotification extends BaseVerifyEmail
     public function toMail($notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);
-
-        $subject = $notifiable->locale === 'uk' ? 'Підтвердження електронної адреси' : 'Verify Email Address';
+        $locale = $this->recipientLocale($notifiable);
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject(__('emails.verify_email.subject', [], $locale))
             ->view('emails.auth.verify_email', [
                 'userName' => $notifiable->name,
                 'verificationUrl' => $verificationUrl,
+                'locale' => $locale,
             ]);
     }
 }

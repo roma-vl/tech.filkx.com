@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ str_replace('_', '-', $locale) }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Знижка на товар у вашому списку бажань</title>
+  <title>{{ __('emails.price_drop.badge', [], $locale) }}</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
@@ -25,7 +25,7 @@
           <tr>
             <td style="background:#059669;padding:14px 40px;text-align:center;">
               <span style="font-size:13px;font-weight:700;color:#ffffff;letter-spacing:1.5px;text-transform:uppercase;">
-                🎉 &nbsp;Ціна знизилась на товар з вашого списку бажань
+                🎉 &nbsp;{{ __('emails.price_drop.badge', [], $locale) }}
               </span>
             </td>
           </tr>
@@ -36,7 +36,7 @@
 
               <!-- Greeting -->
               <p style="margin:0 0 24px;font-size:16px;color:#374151;">
-                Вітаємо, <strong>{{ $userName }}</strong>!
+                {{ __('emails.price_drop.greeting_prefix', [], $locale) }} <strong>{{ $userName }}</strong>!
               </p>
 
               <!-- Product name -->
@@ -49,12 +49,12 @@
                 <tr>
                   <!-- Old price -->
                   <td width="50%" style="padding:20px 24px;text-align:center;border-right:1px solid #e5e7eb;">
-                    <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Була</div>
+                    <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">{{ __('emails.price_drop.was', [], $locale) }}</div>
                     <div style="font-size:24px;font-weight:800;color:#9ca3af;text-decoration:line-through;">{{ number_format($oldPrice, 0, '.', ' ') }} ₴</div>
                   </td>
                   <!-- New price -->
                   <td width="50%" style="padding:20px 24px;text-align:center;background:#ecfdf5;">
-                    <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Стала</div>
+                    <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">{{ __('emails.price_drop.now', [], $locale) }}</div>
                     <div style="font-size:28px;font-weight:800;color:#059669;">{{ number_format($newPrice, 0, '.', ' ') }} ₴</div>
                   </td>
                 </tr>
@@ -65,7 +65,7 @@
                 <tr>
                   <td style="background:linear-gradient(135deg,#059669,#10b981);border-radius:10px;padding:16px 24px;text-align:center;">
                     <span style="font-size:15px;font-weight:700;color:#ffffff;">
-                      Ваша економія:&nbsp;
+                      {{ __('emails.price_drop.savings', [], $locale) }}&nbsp;
                       <span style="font-size:18px;">{{ number_format($saving, 0, '.', ' ') }} ₴</span>
                       &nbsp;({{ $dropPercent }}%)
                     </span>
@@ -79,7 +79,7 @@
                   <td align="center">
                     <a href="{{ $productUrl }}"
                        style="display:inline-block;background:#111827;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:10px;letter-spacing:0.3px;">
-                      Переглянути товар →
+                      {{ __('emails.price_drop.button', [], $locale) }}
                     </a>
                   </td>
                 </tr>
@@ -87,8 +87,8 @@
 
               <!-- Note -->
               <p style="margin:0;font-size:13px;color:#9ca3af;text-align:center;line-height:1.6;">
-                Ви отримали цей лист, бо підписані на сповіщення про зниження ціни.<br>
-                Щоб вимкнути — зайдіть у <a href="{{ $productUrl }}" style="color:#059669;text-decoration:none;">список бажань</a>.
+                {{ __('emails.price_drop.note_1', [], $locale) }}<br>
+                {{ __('emails.price_drop.note_2', [], $locale) }} <a href="{{ $productUrl }}" style="color:#059669;text-decoration:none;">{{ __('emails.price_drop.wishlist', [], $locale) }}</a>.
               </p>
 
             </td>
@@ -98,7 +98,7 @@
           <tr>
             <td style="background:#f9fafb;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
               <p style="margin:0;font-size:12px;color:#9ca3af;">
-                © {{ date('Y') }} {{ config('app.name') }}. Всі права захищені.
+                © {{ date('Y') }} {{ config('app.name') }}. {{ __('emails.price_drop.rights', [], $locale) }}
               </p>
             </td>
           </tr>
