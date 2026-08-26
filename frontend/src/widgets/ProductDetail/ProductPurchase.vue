@@ -192,28 +192,48 @@
 
       <!-- Action buttons -->
       <div class="space-y-2.5 pt-1">
+        <template v-if="product.inStock">
+          <UiButton
+            size="lg"
+            class="w-full"
+            @click="cartStore.addToCart(product)"
+          >
+            <template #prefix>
+              <span class="material-symbols-outlined text-[19px]"
+                >shopping_cart</span
+              >
+            </template>
+            {{ t("product.purchase.addToCart") }}
+          </UiButton>
+          <UiButton
+            variant="secondary"
+            size="lg"
+            class="w-full"
+            @click="$emit('quick-order')"
+          >
+            <template #prefix>
+              <span class="material-symbols-outlined text-[17px]">bolt</span>
+            </template>
+            {{ t("product.purchase.quickOrder") }}
+          </UiButton>
+        </template>
         <UiButton
+          v-else
           size="lg"
           class="w-full"
-          @click="cartStore.addToCart(product)"
+          :disabled="notifyRequested"
+          @click="handleNotifyRestock"
         >
           <template #prefix>
-            <span class="material-symbols-outlined text-[19px]"
-              >shopping_cart</span
-            >
+            <span class="material-symbols-outlined text-[19px]">{{
+              notifyRequested ? "check" : "notifications"
+            }}</span>
           </template>
-          {{ t("product.purchase.addToCart") }}
-        </UiButton>
-        <UiButton
-          variant="secondary"
-          size="lg"
-          class="w-full"
-          @click="$emit('quick-order')"
-        >
-          <template #prefix>
-            <span class="material-symbols-outlined text-[17px]">bolt</span>
-          </template>
-          {{ t("product.purchase.quickOrder") }}
+          {{
+            notifyRequested
+              ? t("product.purchase.notifyMeSubscribed")
+              : t("product.purchase.notifyMe")
+          }}
         </UiButton>
       </div>
     </div>
@@ -226,32 +246,66 @@
         class="flex-1 flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900"
       >
         <span
-          class="material-symbols-outlined text-[#00a046] text-[22px] shrink-0"
+          class="material-symbols-outlined text-[22px] shrink-0"
+          :class="product.inStock ? 'text-[#00a046]' : 'text-zinc-400'"
           >inventory_2</span
         >
         <div>
           <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            {{ t("product.purchase.delivery.inStockTitle") }}
+            {{
+              product.inStock
+                ? t("product.purchase.delivery.inStockTitle")
+                : t("product.purchase.delivery.outOfStockTitle")
+            }}
           </p>
           <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
-            {{ t("product.purchase.delivery.inStockSubtitle") }}
+            {{
+              product.inStock
+                ? t("product.purchase.delivery.inStockSubtitle")
+                : t("product.purchase.delivery.outOfStockSubtitle")
+            }}
           </p>
         </div>
       </div>
       <div
-        class="flex-1 flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900"
+        class="flex-1 flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900 min-w-0"
       >
         <span
           class="material-symbols-outlined text-[#00a046] text-[22px] shrink-0"
           >local_shipping</span
         >
-        <div>
-          <p class="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-            {{ t("product.purchase.delivery.shippingTitle") }}
+        <div class="min-w-0">
+          <p
+            class="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate"
+          >
+            {{
+              deliveryEstimate
+                ? t("product.purchase.delivery.estimateTitle", {
+                    city: deliveryEstimate.cityName,
+                  })
+                : t("product.purchase.delivery.shippingTitle")
+            }}
           </p>
-          <p class="text-[11px] text-zinc-400 dark:text-zinc-500">
-            {{ t("product.purchase.delivery.shippingSubtitle") }}
+          <p class="text-[11px] text-zinc-400 dark:text-zinc-500 truncate">
+            {{
+              deliveryEstimate
+                ? t("product.purchase.delivery.estimateSubtitle", {
+                    date: deliveryEstimate.formattedDate,
+                  })
+                : t("product.purchase.delivery.shippingSubtitle")
+            }}
           </p>
+          <button
+            type="button"
+            class="text-[10px] font-semibold text-[#00a046] hover:underline mt-0.5"
+            @click="isCityModalOpen = true"
+          >
+            {{
+              deliveryStore.city
+                ? t("product.purchase.delivery.changeCityLink")
+                : t("product.purchase.delivery.setCityLink")
+            }}
+          </button>
         </div>
       </div>
       <div
@@ -271,15 +325,30 @@
         </div>
       </div>
     </div>
+
+    <DeliveryCityPickerModal
+      :is-open="isCityModalOpen"
+      @close="isCityModalOpen = false"
+      @select="handleCitySelected"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "@/entities/order/model/cartStore";
+import { useAuthStore } from "@/entities/user/model/authStore";
+import {
+  useDeliveryStore,
+  type DeliveryCity,
+} from "@/entities/delivery/model/deliveryStore";
+import DeliveryCityPickerModal from "@/features/delivery/ui/DeliveryCityPickerModal.vue";
+import { deliveryApi } from "@/shared/services/api/deliveryApi";
 import { UiButton } from "@/shared/ui";
 
-defineProps<{
+const props = defineProps<{
   product: any;
   availableColors: string[];
   selectedColor: string;
@@ -294,5 +363,69 @@ defineEmits<{
 }>();
 
 const cartStore = useCartStore();
-const { t } = useI18n();
+const authStore = useAuthStore();
+const deliveryStore = useDeliveryStore();
+const route = useRoute();
+const router = useRouter();
+const { t, locale } = useI18n();
+
+const notifyRequested = ref(false);
+const isCityModalOpen = ref(false);
+
+// null unless the shopper has a city set AND the backend confirmed a real estimate for it -
+// any other outcome (no city, Nova Poshta not configured, request failure) keeps the tile on
+// the original static delivery text further down in the template.
+const estimatedDateIso = ref<string | null>(null);
+
+async function refreshDeliveryEstimate() {
+  const city = deliveryStore.city;
+  if (!city) {
+    estimatedDateIso.value = null;
+    return;
+  }
+
+  try {
+    const response = await deliveryApi.getEstimate(city.ref);
+    const data = response.data?.data;
+    estimatedDateIso.value = data?.available && data?.date ? data.date : null;
+  } catch {
+    estimatedDateIso.value = null;
+  }
+}
+
+watch(() => deliveryStore.city, refreshDeliveryEstimate, { immediate: true });
+
+const deliveryEstimate = computed(() => {
+  if (!deliveryStore.city || !estimatedDateIso.value) {
+    return null;
+  }
+
+  const formattedDate = new Intl.DateTimeFormat(
+    locale.value === "uk" ? "uk-UA" : "en-US",
+    { day: "numeric", month: "long" },
+  ).format(new Date(estimatedDateIso.value));
+
+  return { cityName: deliveryStore.city.name, formattedDate };
+});
+
+function handleCitySelected(city: DeliveryCity) {
+  deliveryStore.setCity(city);
+}
+
+const handleNotifyRestock = async () => {
+  if (!authStore.isAuthenticated) {
+    router.push({ path: "/login", query: { redirect: route.fullPath } });
+    return;
+  }
+
+  const subscribed = await cartStore.subscribeRestock(props.product.productId);
+  if (subscribed) {
+    notifyRequested.value = true;
+    cartStore.addToast(
+      t("product.purchase.notifyMeSuccessToast", { name: props.product.name }),
+    );
+  } else {
+    cartStore.addToast(t("product.purchase.notifyMeErrorToast"), "error");
+  }
+};
 </script>

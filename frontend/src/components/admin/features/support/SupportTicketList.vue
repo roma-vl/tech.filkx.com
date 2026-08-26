@@ -101,6 +101,13 @@
             >
               #{{ tag }}
             </span>
+            <span
+              v-if="ticket.product"
+              class="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-widest flex items-center gap-1 border border-emerald-100 dark:border-emerald-800/30 truncate max-w-[140px]"
+            >
+              <ShoppingBagIcon class="w-2.5 h-2.5 shrink-0" />
+              {{ productLabel(ticket.product) }}
+            </span>
           </div>
         </div>
       </div>
@@ -111,7 +118,7 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { SparklesIcon } from "@heroicons/vue/24/outline";
+import { ShoppingBagIcon, SparklesIcon } from "@heroicons/vue/24/outline";
 
 const { t } = useI18n();
 
@@ -156,6 +163,11 @@ const isImage = (fileType) => {
 const isVideo = (fileType) => {
   return fileType?.startsWith("video/");
 };
+
+const productLabel = (product) =>
+  typeof product.name === "object"
+    ? product.name.uk || product.name.en
+    : product.name;
 
 const getMessagePreview = (ticket) => {
   if (!ticket.lastMessage) return t("admin.support.list.no_messages");

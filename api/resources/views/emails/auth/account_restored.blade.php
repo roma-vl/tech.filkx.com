@@ -1,21 +1,26 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#00a046')
+
+@section('badge')
+    {{ __('emails.account_restored.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Welcome back, {{ $userName }}!</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.account_restored.heading', ['name' => $userName], $locale) }}</h2>
 
-    <p>Your account at <strong>{{ config('app.name') }}</strong> has been successfully restored.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_restored.body_1', ['app' => config('app.name')], $locale) }}</p>
 
-    <p>All your data, orders, and settings have been preserved exactly as you left them.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_restored.body_2', [], $locale) }}</p>
 
-    <p>You can now log in to your account and resume your activities:</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_restored.body_3', [], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $loginUrl])
-        Login to Your Account
+        {{ __('emails.account_restored.button', [], $locale) }}
     @endcomponent
 
     @include('emails.components.divider')
 
-    <p>If you have any questions or noticed anything unusual, please contact our support team.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_restored.help', [], $locale) }}</p>
 
-    <p>Best regards,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_restored.regards', [], $locale) }}<br>{{ __('emails.account_restored.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

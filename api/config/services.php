@@ -47,6 +47,9 @@ return [
 
     'nova_poshta' => [
         'api_key' => env('NOVA_POSHTA_API_KEY'),
+        // Our own shipping-origin city (Nova Poshta "CitySender" ref) - required for delivery-date
+        // estimates in addition to the API key; city/warehouse autocomplete doesn't need it.
+        'sender_city_ref' => env('NOVA_POSHTA_SENDER_CITY_REF'),
     ],
 
 ];

@@ -24,11 +24,11 @@
     >
       <!-- Items list -->
       <div
-        class="flex flex-wrap items-center justify-center lg:justify-start gap-4 flex-1"
+        class="flex flex-nowrap lg:flex-wrap items-center justify-start gap-4 flex-1 overflow-x-auto lg:overflow-visible hide-scrollbar"
       >
         <template v-for="(item, index) in bundleItems" :key="item.id">
           <div
-            class="relative w-36 text-center transition-all bg-white dark:bg-zinc-800 p-4 rounded-xl border"
+            class="relative w-36 shrink-0 text-center transition-all bg-white dark:bg-zinc-800 p-4 rounded-xl border"
             :class="{
               'border-[#00a046]/30 shadow-sm ring-1 ring-[#00a046]/10':
                 item.locked || selectedBundleIds.includes(item.id),
@@ -79,7 +79,7 @@
 
           <span
             v-if="index < bundleItems.length - 1"
-            class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-2xl"
+            class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-2xl shrink-0"
             >add</span
           >
         </template>

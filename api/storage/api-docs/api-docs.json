@@ -3836,6 +3836,54 @@
                 }
             }
         },
+        "/api/v1/delivery/estimate": {
+            "get": {
+                "tags": [
+                    "Delivery"
+                ],
+                "summary": "Estimate the delivery date to a Nova Poshta recipient city",
+                "description": "Always returns 200. When the integration is not configured, the shipping-origin city is not set, or Nova Poshta is unreachable, `available` is false rather than an error - callers should fall back to a generic delivery message in that case.",
+                "operationId": "36ef81f03bd9adb1275e3074fcf37b0d",
+                "parameters": [
+                    {
+                        "name": "cityRef",
+                        "in": "query",
+                        "description": "Recipient city ref, as returned by /delivery/cities",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estimate result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/catalog/home": {
             "get": {
                 "tags": [
@@ -4843,6 +4891,11 @@
                                         "description": "Up to 10 MB",
                                         "type": "string",
                                         "format": "binary"
+                                    },
+                                    "product_id": {
+                                        "description": "The product this ticket is about, if opened from a product page",
+                                        "type": "integer",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -5746,6 +5799,49 @@
                 "responses": {
                     "200": {
                         "description": "Full list of favorited products after sync"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/favorites/notify-restock": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Subscribe to a one-time email when an out-of-stock product is back in stock",
+                "operationId": "dd2016aa7e4bac7e6486a513fa31aa47",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subscribed"
+                    },
+                    "400": {
+                        "description": "Product ID is required"
+                    },
+                    "404": {
+                        "description": "Product not found"
                     }
                 },
                 "security": [
@@ -6899,6 +6995,11 @@
                         "items": {
                             "$ref": "#/components/schemas/SupportMessageResource"
                         }
+                    },
+                    "product": {
+                        "description": "The product this ticket was opened about, if the customer started it from a product page - same raw shape as /catalog/products/{slug}",
+                        "type": "object",
+                        "nullable": true
                     },
                     "createdAt": {
                         "type": "string",

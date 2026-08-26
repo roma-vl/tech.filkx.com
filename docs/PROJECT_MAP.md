@@ -413,11 +413,18 @@ commits changed the picture; items 11-15 were found during the 2026-08-20 pass a
    §2.2 for the full list.
 9. ~~No CI~~ **fixed 2026-08-21, commit `480d661`** — `.github/workflows/ci.yml` now runs Pint +
    the full backend test suite (via the same `docker-compose.yml` stack local dev uses) and an
-   `npm run build` compile-error gate on every push/PR to `develop`/`master`. Prettier/ESLint checks
-   are included but `continue-on-error` for now — 223 files already fail Prettier and ESLint has
-   ~80 parsing errors repo-wide (no TypeScript parser configured for `.vue` files with `lang="ts"`),
-   neither introduced by this change; making them blocking today would redden every future PR
-   regardless of content. Drop `continue-on-error` once that debt is cleared.
+   `npm run build` compile-error gate on every push/PR to `develop`/`master`. **Update 2026-08-25**:
+   the ESLint TS-parser gap this paragraph used to describe is gone — commit `0455010` ("Fix ESLint
+   TS parsing, add Prettier config, mass-reformat frontend", 2026-08-21, already on
+   `develop`/`master`) wired `tseslint.parser` into `.vue` files' `<script>`/`<script setup>` blocks
+   and mass-reformatted the repo; the CI `ESLint check` step (`.github/workflows/ci.yml:92-94`) has
+   never carried `continue-on-error` since — verified live, `npx eslint --config=eslint.config.js
+   --no-cache` now reports 0 errors (230 warnings, down from ~80 parsing errors + ~8100 warnings).
+   The same commit brought Prettier's 223-file backlog down to 1 drifted file
+   (`src/widgets/Catalog/CatalogCategoryNav.vue`). Only the `Prettier check (advisory)` CI step
+   still carries `continue-on-error: true` (`.github/workflows/ci.yml:83-90`), with a comment
+   citing the now-stale 223-file count — reformatting that one file and dropping the flag is a
+   trivial follow-up, not done as part of this doc pass.
 10. **Largest Vue files** (candidates for splitting, not re-measured this pass — line counts may
     have shifted slightly with the homepage/header/cart rewrites, but the same files are still the
     largest): `widgets/Account/tabs/AccountSettingsTab.vue` (1225 lines),
@@ -446,14 +453,12 @@ commits changed the picture; items 11-15 were found during the 2026-08-20 pass a
 15. ~~Catalog attribute filters are single-select in the UI despite the backend supporting
     comma-separated multi-value~~ **fixed 2026-08-20, commit `6fabbee`** — `selectedAttrs` is now
     `Record<string, string[]>`, live-verified accumulating and OR-matching two values at once.
-16. **Frontend lint tooling is repo-wide broken, quantified 2026-08-21 while wiring up CI**
-    (commit `480d661`): `npx prettier --check .` fails on 223 files; `npx eslint --config=eslint.config.js`
-    reports ~80 parsing errors (`eslint.config.js` never configures a TypeScript parser for `.vue`
-    files, so any `defineProps<{...}>()` generic in a `lang="ts"` component fails to parse) plus
-    ~8100 warnings. Neither is new — both predate this doc's tracking — but they were only ever
-    described qualitatively before ("a pre-existing repo-wide ESLint/TS-parsing misconfiguration");
-    now confirmed with real numbers. The new CI workflow runs both checks but marks them
-    `continue-on-error` because of this. Fixing the parser config is the higher-leverage first step
-    (it would likely resolve most of the 8100 warnings as a side effect, not just the 80 errors);
-    the Prettier pass is a separate, large, mechanical reformat once someone's ready to review a
-    223-file diff.
+16. ~~Frontend lint tooling is repo-wide broken~~ **fixed 2026-08-21, commit `0455010`** ("Fix
+    ESLint TS parsing, add Prettier config, mass-reformat frontend", already on `develop`/`master`
+    — see item 9 above for live-verification detail). `eslint.config.js` now wires `tseslint.parser`
+    into both plain `.ts` files and `.vue` `<script>`/`<script setup>` blocks (previously
+    unconfigured, so any `defineProps<{...}>()` generic in a `lang="ts"` component failed to parse),
+    and the repo was mass-reformatted in the same commit — Prettier's 223-file backlog is now a
+    single drifted file. This bullet originally quantified the debt (223 Prettier files, ~80 ESLint
+    parsing errors, ~8100 warnings) while wiring up CI the same day; it was simply never revisited
+    after the fix landed a few hours later.

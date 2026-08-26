@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\Support;
 
 use App\Api\V1\Actions\Support\CreateSupportTicketAction;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -53,5 +54,39 @@ class CreateSupportTicketActionTest extends TestCase
         $message = $ticket->messages->first();
         Storage::disk('public')->assertExists($message->file_path);
         $this->assertSame('receipt.pdf', $message->file_name);
+    }
+
+    public function test_execute_links_the_ticket_to_a_product_when_given(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::create([
+            'slug' => 'product-'.uniqid(),
+            'name' => ['uk' => 'Товар', 'en' => 'Product'],
+            'description' => ['uk' => '', 'en' => ''],
+            'status' => 'active',
+        ]);
+
+        $ticket = $this->action->execute($user, [
+            'subject' => 'Чи є чохол для цього телефону?',
+            'message' => 'Питаю саме про цей товар.',
+            'product_id' => $product->id,
+        ], null);
+
+        $this->assertSame($product->id, $ticket->product_id);
+        $this->assertTrue($ticket->relationLoaded('product'));
+        $this->assertSame($product->id, $ticket->product->id);
+    }
+
+    public function test_execute_leaves_the_ticket_unlinked_when_no_product_is_given(): void
+    {
+        $user = User::factory()->create();
+
+        $ticket = $this->action->execute($user, [
+            'subject' => 'General question',
+            'message' => 'Not about a specific product.',
+        ], null);
+
+        $this->assertNull($ticket->product_id);
+        $this->assertNull($ticket->product);
     }
 }

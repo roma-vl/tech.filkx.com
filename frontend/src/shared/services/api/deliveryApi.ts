@@ -14,6 +14,10 @@ export const deliveryApi = {
       params: { cityRef, query: query || undefined },
     });
   },
+
+  getEstimate(cityRef: string) {
+    return apiClient.get("/v1/delivery/estimate", { params: { cityRef } });
+  },
 };
 
 export default deliveryApi;

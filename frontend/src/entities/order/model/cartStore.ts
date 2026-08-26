@@ -231,6 +231,20 @@ export const useCartStore = defineStore("cart", {
       return this.wishlist.some((item) => item.id === productId);
     },
 
+    // Requires auth (the backend needs a user to email) - the caller is
+    // responsible for checking authStore.isAuthenticated first and for
+    // showing a translated success/error toast, since this store has no
+    // i18n access.
+    async subscribeRestock(productId: number): Promise<boolean> {
+      try {
+        await authApi.subscribeRestock(productId);
+        return true;
+      } catch (e) {
+        console.error("Failed to subscribe to restock notification", e);
+        return false;
+      }
+    },
+
     async toggleCompare(product: Product | any) {
       const index = this.compare.findIndex((item) => item.id === product.id);
       if (index !== -1) {

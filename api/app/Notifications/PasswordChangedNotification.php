@@ -2,13 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PasswordChangedNotification extends Notification
 {
-    use Queueable;
+    use Queueable, ResolvesRecipientLocale;
 
     public function __construct(
         public readonly string $ipAddress,
@@ -22,15 +23,16 @@ class PasswordChangedNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $notifiable->locale === 'uk' ? 'Пароль змінено' : 'Password Changed';
+        $locale = $this->recipientLocale($notifiable);
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject(__('emails.password_changed.subject', [], $locale))
             ->view('emails.auth.password_changed', [
                 'userName' => $notifiable->name,
                 'time' => $this->time,
                 'ipAddress' => $this->ipAddress,
                 'settingsUrl' => config('app.frontend_url').'/account',
+                'locale' => $locale,
             ]);
     }
 }

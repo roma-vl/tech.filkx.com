@@ -2,13 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class LoginNewDeviceNotification extends Notification
 {
-    use Queueable;
+    use Queueable, ResolvesRecipientLocale;
 
     public function __construct(
         public readonly string $deviceName,
@@ -23,16 +24,17 @@ class LoginNewDeviceNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $notifiable->locale === 'uk' ? 'Новий вхід у ваш акаунт' : 'New login from a new device';
+        $locale = $this->recipientLocale($notifiable);
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject(__('emails.login_new_device.subject', [], $locale))
             ->view('emails.auth.login_new_device', [
                 'userName' => $notifiable->name,
                 'deviceName' => $this->deviceName,
                 'location' => $this->location,
                 'time' => $this->time,
                 'settingsUrl' => config('app.frontend_url').'/account',
+                'locale' => $locale,
             ]);
     }
 }

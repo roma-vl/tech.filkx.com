@@ -15,6 +15,7 @@ class SupportTicket extends Model
 
     protected $fillable = [
         'user_id',
+        'product_id',
         'subject',
         'status',
         'handled_by',
@@ -40,6 +41,11 @@ class SupportTicket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     public function messages(): HasMany

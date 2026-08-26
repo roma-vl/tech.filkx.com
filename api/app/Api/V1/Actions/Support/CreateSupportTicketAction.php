@@ -16,6 +16,7 @@ class CreateSupportTicketAction
     {
         $ticket = SupportTicket::create([
             'user_id' => $user->id,
+            'product_id' => $validated['product_id'] ?? null,
             'subject' => $validated['subject'],
             'status' => 'new',
             'handled_by' => 'human',
@@ -27,6 +28,6 @@ class CreateSupportTicketAction
             'is_admin' => false,
         ], $this->storeSupportAttachmentAction->execute($file)));
 
-        return $ticket->load('messages');
+        return $ticket->load(['messages', 'product.variants']);
     }
 }

@@ -100,6 +100,29 @@
             >{{ ticket.user?.name }}</span
           >
         </div>
+
+        <!-- Linked product - lets support see what the customer is asking
+             about without having to ask, when the ticket was opened from a
+             product page -->
+        <a
+          v-if="linkedProduct"
+          :href="`/product/${linkedProduct.slug}`"
+          target="_blank"
+          rel="noopener"
+          class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800/50 rounded-xl border border-emerald-200 dark:border-emerald-700/40 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-600 transition-colors"
+        >
+          <img
+            :src="linkedProduct.image"
+            class="w-5 h-5 rounded-lg object-contain bg-zinc-50 dark:bg-zinc-900 shrink-0"
+          />
+          <span
+            class="text-xs font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-tight truncate max-w-[200px]"
+            >{{ linkedProduct.name }}</span
+          >
+          <ArrowTopRightOnSquareIcon
+            class="w-3 h-3 text-emerald-500 shrink-0"
+          />
+        </a>
       </div>
 
       <!-- Tags Section -->
@@ -112,10 +135,17 @@
 </template>
 
 <script setup>
-import { SparklesIcon, TicketIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { computed } from "vue";
+import {
+  ArrowTopRightOnSquareIcon,
+  SparklesIcon,
+  TicketIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 import { useI18n } from "vue-i18n";
 import AppButton from "@/components/admin/ui/AppButton.vue";
 import SupportTicketTags from "@/components/admin/features/support/SupportTicketTags.vue";
+import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 const { t } = useI18n();
 
@@ -125,6 +155,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const linkedProduct = computed(() => mapCatalogProduct(props.ticket.product));
 
 const emit = defineEmits([
   "updateStatus",

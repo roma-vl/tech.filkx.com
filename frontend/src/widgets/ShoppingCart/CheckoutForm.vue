@@ -298,6 +298,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { deliveryApi } from "@/shared/services/api/deliveryApi";
 import { useDebounce } from "@/shared/composables/useDebounce";
+import { useDeliveryCitySearch } from "@/features/delivery/composables/useDeliveryCitySearch";
 
 const { t } = useI18n();
 
@@ -361,12 +362,17 @@ const showNovaPoshtaAutocomplete = computed(
     novaPoshtaAvailable.value,
 );
 
-const citySearchQuery = ref(props.modelValue.shippingCity);
-const debouncedCityQuery = useDebounce(citySearchQuery, 350);
-const cityResults = ref<NovaPoshtaCity[]>([]);
-const isCitySearching = ref(false);
-const isCityDropdownOpen = ref(false);
 const selectedCityRef = ref<string | null>(null);
+const isCityDropdownOpen = ref(false);
+const citySearchEnabled = computed(
+  () => showNovaPoshtaAutocomplete.value && !selectedCityRef.value,
+);
+const {
+  query: citySearchQuery,
+  results: cityResults,
+  isSearching: isCitySearching,
+} = useDeliveryCitySearch(citySearchEnabled);
+citySearchQuery.value = props.modelValue.shippingCity;
 
 const warehouseSearchQuery = ref(props.modelValue.shippingAddress);
 const debouncedWarehouseQuery = useDebounce(warehouseSearchQuery, 350);
@@ -417,27 +423,6 @@ function selectCity(city: NovaPoshtaCity) {
   selectedWarehouseRef.value = null;
   updateFields({ shippingCity: city.name, shippingAddress: "" });
 }
-
-watch(debouncedCityQuery, async (query) => {
-  if (!showNovaPoshtaAutocomplete.value || selectedCityRef.value) {
-    return;
-  }
-
-  if (!query || query.trim().length < 2) {
-    cityResults.value = [];
-    return;
-  }
-
-  isCitySearching.value = true;
-  try {
-    const response = await deliveryApi.searchCities(query.trim());
-    cityResults.value = response.data?.data || [];
-  } catch {
-    cityResults.value = [];
-  } finally {
-    isCitySearching.value = false;
-  }
-});
 
 function onWarehouseInput() {
   isWarehouseDropdownOpen.value = true;

@@ -4,6 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\User;
+use App\Notifications\Concerns\ResolvesRecipientLocale;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,7 +13,7 @@ use Illuminate\Notifications\Notification;
 
 class AbandonedCartReminderNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, ResolvesRecipientLocale;
 
     public function __construct(
         public readonly Cart $cart,
@@ -24,12 +26,12 @@ class AbandonedCartReminderNotification extends Notification implements ShouldQu
 
     public function toMail(object $notifiable): MailMessage
     {
-        $locale = $notifiable->locale ?? 'uk';
+        $locale = $this->recipientLocale($notifiable);
 
         $items = $this->cart->items->map(function (CartItem $item) use ($locale) {
             $name = $item->variant->product->name[$locale]
-                ?? $item->variant->product->name['uk']
-                ?? 'Товар';
+                ?? $item->variant->product->name[User::DEFAULT_LOCALE]
+                ?? __('emails.abandoned_cart.item_fallback_name', [], $locale);
 
             return [
                 'name' => $name,
@@ -41,12 +43,13 @@ class AbandonedCartReminderNotification extends Notification implements ShouldQu
         $total = $items->sum(fn (array $item) => $item['price'] * $item['quantity']);
 
         return (new MailMessage)
-            ->subject('Ви залишили товари в кошику')
+            ->subject(__('emails.abandoned_cart.subject', [], $locale))
             ->view('emails.cart.abandoned', [
                 'userName' => $notifiable->name,
                 'items' => $items,
                 'total' => $total,
                 'cartUrl' => config('app.frontend_url', config('app.url')).'/cart',
+                'locale' => $locale,
             ]);
     }
 }

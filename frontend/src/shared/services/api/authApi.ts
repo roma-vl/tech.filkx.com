@@ -146,6 +146,11 @@ export const authApi = {
   syncFavorites(productIds: (number | string)[]) {
     return apiClient.post("/user/favorites/sync", { product_ids: productIds });
   },
+  subscribeRestock(productId: number | string) {
+    return apiClient.post("/user/favorites/notify-restock", {
+      product_id: productId,
+    });
+  },
 
   // Compare endpoints
   getCompares() {

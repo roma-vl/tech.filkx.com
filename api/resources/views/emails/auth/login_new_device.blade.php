@@ -1,36 +1,41 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#d97706')
+
+@section('badge')
+    {{ __('emails.login_new_device.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">New Login Detected</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.login_new_device.heading', [], $locale) }}</h2>
 
-    <p>Hello {{ $userName }},</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.login_new_device.greeting', ['name' => $userName], $locale) }}</p>
 
-    <p>We noticed a login to your <strong>{{ config('app.name') }}</strong> account from a new device or location.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.login_new_device.body', ['app' => config('app.name')], $locale) }}</p>
 
-    <table width="100%" style="margin: 24px 0; border-collapse: collapse;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;">
         <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #718096;">Device</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right; color: #2d3748;">{{ $deviceName }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">{{ __('emails.login_new_device.device', [], $locale) }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 700; text-align: right; color: #111827; font-size: 13px;">{{ $deviceName }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #718096;">Location</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right; color: #2d3748;">{{ $location }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">{{ __('emails.login_new_device.location', [], $locale) }}</td>
+            <td style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 700; text-align: right; color: #111827; font-size: 13px;">{{ $location }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #718096;">Time</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right; color: #2d3748;">{{ $time }}</td>
+            <td style="padding: 14px 20px; color: #6b7280; font-size: 13px;">{{ __('emails.login_new_device.time', [], $locale) }}</td>
+            <td style="padding: 14px 20px; font-weight: 700; text-align: right; color: #111827; font-size: 13px;">{{ $time }}</td>
         </tr>
     </table>
 
-    <p>If this was you, you can safely ignore this email.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.login_new_device.safe', [], $locale) }}</p>
 
-    <p><strong>If you don't recognize this activity</strong>, please secure your account immediately:</p>
+    <p class="text-body" style="color: #374151;"><strong>{{ __('emails.login_new_device.warning_lead', [], $locale) }}</strong>{{ __('emails.login_new_device.warning_tail', [], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $settingsUrl])
-        Review Active Sessions
+        {{ __('emails.login_new_device.button', [], $locale) }}
     @endcomponent
 
     @include('emails.components.divider')
 
-    <p>Thanks,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.login_new_device.thanks', [], $locale) }}<br>{{ __('emails.login_new_device.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

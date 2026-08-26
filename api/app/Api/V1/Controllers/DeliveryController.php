@@ -3,9 +3,11 @@
 namespace App\Api\V1\Controllers;
 
 use App\Api\V1\Actions\Delivery\GetDeliveryAvailabilityAction;
+use App\Api\V1\Actions\Delivery\GetDeliveryDateEstimateAction;
 use App\Api\V1\Actions\Delivery\SearchDeliveryCitiesAction;
 use App\Api\V1\Actions\Delivery\SearchDeliveryWarehousesAction;
 use App\Api\V1\Exceptions\DeliveryProviderUnavailableException;
+use App\Api\V1\Requests\GetDeliveryDateEstimateRequest;
 use App\Api\V1\Requests\SearchDeliveryCitiesRequest;
 use App\Api\V1\Requests\SearchDeliveryWarehousesRequest;
 use Illuminate\Http\JsonResponse;
@@ -152,5 +154,49 @@ class DeliveryController extends BaseApiController
         } catch (DeliveryProviderUnavailableException $e) {
             return self::errorResponse($e->getMessage(), Response::HTTP_SERVICE_UNAVAILABLE);
         }
+    }
+
+    #[OA\Get(
+        path: '/api/v1/delivery/estimate',
+        summary: 'Estimate the delivery date to a Nova Poshta recipient city',
+        description: 'Always returns 200. When the integration is not configured, the shipping-origin '
+            .'city is not set, or Nova Poshta is unreachable, `available` is false rather than an error - '
+            .'callers should fall back to a generic delivery message in that case.',
+        tags: [
+            'Delivery',
+        ],
+        parameters: [
+            new OA\Parameter(
+                name: 'cityRef',
+                description: 'Recipient city ref, as returned by /delivery/cities',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'string'),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Estimate result',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'available', type: 'boolean'),
+                                new OA\Property(property: 'date', type: 'string', format: 'date', nullable: true),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function estimate(GetDeliveryDateEstimateRequest $request, GetDeliveryDateEstimateAction $action): JsonResponse
+    {
+        return self::successfulResponseWithData(
+            $action->execute($request->validated('cityRef'))
+        );
     }
 }

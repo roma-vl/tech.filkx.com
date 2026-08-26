@@ -3,6 +3,10 @@ import CartDrawer from "@/widgets/CartDrawer/CartDrawer.vue";
 import AccountDrawer from "@/widgets/AccountDrawer/AccountDrawer.vue";
 import ToastNotification from "@/shared/ui/ToastNotification.vue";
 import CookieConsent from "@/widgets/CookieConsent/CookieConsent.vue";
+import SupportWidget from "@/widgets/Support/SupportWidget.vue";
+import { useAuthStore } from "@/entities/user/model/authStore";
+
+const authStore = useAuthStore();
 </script>
 
 <template>
@@ -16,5 +20,6 @@ import CookieConsent from "@/widgets/CookieConsent/CookieConsent.vue";
     <AccountDrawer />
     <ToastNotification />
     <CookieConsent />
+    <SupportWidget v-if="authStore.isAuthenticated" />
   </div>
 </template>

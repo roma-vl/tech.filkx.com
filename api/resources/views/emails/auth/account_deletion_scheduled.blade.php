@@ -1,25 +1,28 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#dc2626')
+
+@section('badge')
+    {{ __('emails.account_deletion_scheduled.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Hello, {{ $userName }}!</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.account_deletion_scheduled.heading', ['name' => $userName], $locale) }}</h2>
 
-    <p>Your account at <strong>{{ config('app.name') }}</strong> has been scheduled for permanent deletion.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_deletion_scheduled.body_1', ['app' => config('app.name')], $locale) }}</p>
 
-    <p>All associated data, including your orders and account history, will be deleted in <strong>3
-            days</strong>.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_deletion_scheduled.body_2', ['days' => 3], $locale) }}</p>
 
-    <p>If you did not request this, or have changed your mind, you can restore your account immediately by clicking the
-        button below:</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_deletion_scheduled.body_3', [], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $restoreUrl])
-        Restore My Account
+        {{ __('emails.account_deletion_scheduled.button', [], $locale) }}
     @endcomponent
 
-    <p>This restoration link is valid for 3 days.</p>
+    <p class="text-muted" style="color: #6b7280; font-size: 13px;">{{ __('emails.account_deletion_scheduled.note', ['days' => 3], $locale) }}</p>
 
     @include('emails.components.divider')
 
-    <p>If you have any questions or need assistance, please reply to this email or contact our support team.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_deletion_scheduled.help', [], $locale) }}</p>
 
-    <p>Best regards,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.account_deletion_scheduled.regards', [], $locale) }}<br>{{ __('emails.account_deletion_scheduled.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

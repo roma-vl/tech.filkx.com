@@ -87,29 +87,29 @@
   <div v-else class="font-sans">
     <!-- Breadcrumbs -->
     <nav
-      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500"
+      class="max-w-container-max mx-auto px-4 md:px-8 pt-6 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500 overflow-x-auto hide-scrollbar"
     >
       <router-link
         :to="{ name: 'home' }"
-        class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold"
+        class="hover:text-[#00a046] transition-colors flex items-center gap-1 font-semibold shrink-0 whitespace-nowrap"
       >
         <span class="material-symbols-outlined text-[15px]">home</span>
         {{ t("product.page.breadcrumbs.home") }}
       </router-link>
       <span
-        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+        class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700 shrink-0"
         >chevron_right</span
       >
       <template v-if="categoryPath.length">
         <template v-for="cat in categoryPath" :key="cat.slug">
           <router-link
             :to="{ name: 'category', params: { slug: cat.slug } }"
-            class="hover:text-[#00a046] transition-colors font-semibold"
+            class="hover:text-[#00a046] transition-colors font-semibold shrink-0 whitespace-nowrap"
           >
             {{ pickLocalized(cat.name, locale) }}
           </router-link>
           <span
-            class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+            class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700 shrink-0"
             >chevron_right</span
           >
         </template>
@@ -117,17 +117,17 @@
       <template v-else>
         <router-link
           :to="{ name: 'catalog' }"
-          class="hover:text-[#00a046] transition-colors font-semibold"
+          class="hover:text-[#00a046] transition-colors font-semibold shrink-0 whitespace-nowrap"
         >
           {{ t("product.page.breadcrumbs.catalog") }}
         </router-link>
         <span
-          class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700"
+          class="material-symbols-outlined text-[13px] text-zinc-300 dark:text-zinc-700 shrink-0"
           >chevron_right</span
         >
       </template>
       <span
-        class="text-zinc-700 dark:text-zinc-300 font-semibold line-clamp-1 max-w-[220px]"
+        class="text-zinc-700 dark:text-zinc-300 font-semibold whitespace-nowrap shrink-0 max-w-[220px] truncate"
         >{{ product.name }}</span
       >
     </nav>
@@ -346,11 +346,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onServerPrefetch, ref } from "vue";
+import {
+  computed,
+  onMounted,
+  onServerPrefetch,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import { useHead } from "@vueuse/head";
 import { useI18n } from "vue-i18n";
 import { useProductDetail } from "@/features/product/composables/useProductDetail";
 import { productApi } from "@/shared/services/api/productApi";
+import { useUiStore } from "@/shared/model/uiStore";
 import { getCategoryPath, pickLocalized } from "@/shared/utils/categoryMapper";
 import ProductGallery from "@/widgets/ProductDetail/ProductGallery.vue";
 import ProductPurchase from "@/widgets/ProductDetail/ProductPurchase.vue";
@@ -400,6 +408,16 @@ const {
 } = useProductDetail();
 
 const { t, locale } = useI18n();
+
+// The sticky buy bar below is fixed to the bottom of the viewport, same as
+// the globally-mounted support-chat bubble - without this, the bubble sits
+// on top of the bar's add-to-cart button once the bar slides up.
+const STICKY_BAR_HEIGHT_PX = 68;
+const uiStore = useUiStore();
+watch(showStickyBar, (visible) => {
+  uiStore.setStickyBottomBarHeight(visible ? STICKY_BAR_HEIGHT_PX : 0);
+});
+onUnmounted(() => uiStore.setStickyBottomBarHeight(0));
 
 const categoriesList = ref<any[]>([]);
 const fetchCategoriesForBreadcrumbs = async () => {

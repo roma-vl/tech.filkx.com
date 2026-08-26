@@ -23,6 +23,7 @@ class AdminSupportTicketResource extends JsonResource
             'subject' => $this->subject,
             'status' => $this->status,
             'tags' => $this->tags ?? [],
+            'product' => $this->whenLoaded('product'),
             // Force calculation to ensure accuracy
             'unreadCount' => $this->unreadMessagesForAdmin()->count(),
             'lastMessage' => new AdminSupportMessageResource($this->whenLoaded('lastMessage')),

@@ -17,6 +17,7 @@ class StoreSupportTicketRequest extends FormRequest
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
             'file' => 'nullable|file|max:10240',
+            'product_id' => 'nullable|integer|exists:products,id',
         ];
     }
 }

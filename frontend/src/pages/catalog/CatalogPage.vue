@@ -62,9 +62,11 @@
       </template>
     </span>
 
-    <!-- View Toggle: 4-per-row grid / 5-per-row grid / list -->
+    <!-- View Toggle: 4-per-row grid / 5-per-row grid / list - grid density and
+         list-vs-grid are both meaningless on a single-column mobile layout,
+         so this only shows once there's room for it to matter. -->
     <div
-      class="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5"
+      class="hidden sm:flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 gap-0.5"
     >
       <button
         :class="
@@ -264,61 +266,49 @@
         </UiButton>
       </div>
 
-      <!-- Pagination -->
-      <nav
-        v-if="!isLoading && pagination.lastPage > 1"
-        class="mt-10 flex items-center justify-center gap-1"
-      >
-        <button
-          :disabled="pagination.page === 1"
-          :class="
-            pagination.page === 1
-              ? 'opacity-40 cursor-not-allowed'
-              : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'
-          "
-          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
-          @click="changePage(pagination.page - 1)"
+      <!-- Infinite Scroll: loading-more skeleton (same card style as the
+           initial-load skeleton above) plus the sentinel that triggers the
+           next page fetch once it scrolls into view. -->
+      <template v-if="!isLoading && filteredProducts.length">
+        <div
+          v-if="isLoadingMore"
+          class="mt-4"
+          :class="viewMode === 'grid' ? gridClass : 'flex flex-col gap-4'"
         >
-          <span class="material-symbols-outlined text-[18px]"
-            >chevron_left</span
-          >
-        </button>
-
-        <template v-for="p in paginationPages" :key="p">
-          <span
-            v-if="p === '...'"
-            class="w-9 h-9 flex items-center justify-center text-zinc-400 text-sm"
-            >…</span
-          >
-          <button
-            v-else
+          <div
+            v-for="i in gridDensity"
+            :key="i"
             :class="
-              pagination.page === p
-                ? 'bg-[#00a046] text-white border-[#00a046] shadow-sm'
-                : 'text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600'
+              viewMode === 'grid'
+                ? 'border border-zinc-200 dark:border-zinc-800'
+                : 'rounded-md border border-zinc-100 dark:border-zinc-800'
             "
-            class="w-9 h-9 flex items-center justify-center rounded-md border font-bold text-sm transition-all"
-            @click="changePage(p as number)"
+            class="animate-pulse bg-white dark:bg-zinc-900 overflow-hidden"
           >
-            {{ p }}
-          </button>
-        </template>
-
-        <button
-          :disabled="pagination.page === pagination.lastPage"
-          :class="
-            pagination.page === pagination.lastPage
-              ? 'opacity-40 cursor-not-allowed'
-              : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#00a046]'
-          "
-          class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-500 transition-all"
-          @click="changePage(pagination.page + 1)"
-        >
-          <span class="material-symbols-outlined text-[18px]"
-            >chevron_right</span
-          >
-        </button>
-      </nav>
+            <div class="aspect-[1.15/1] bg-zinc-100 dark:bg-zinc-800" />
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between">
+                <div class="h-3 w-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                <div class="h-3 w-20 bg-zinc-100 dark:bg-zinc-800 rounded" />
+              </div>
+              <div class="h-4 bg-zinc-100 dark:bg-zinc-800 rounded" />
+              <div class="h-4 w-3/4 bg-zinc-100 dark:bg-zinc-800 rounded" />
+              <div class="flex gap-2">
+                <div class="h-6 w-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                <div class="h-6 w-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                <div class="h-6 w-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+              </div>
+              <div
+                class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center"
+              >
+                <div class="h-7 w-28 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                <div class="h-9 w-28 bg-zinc-100 dark:bg-zinc-800 rounded" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="hasMore" ref="loadMoreSentinel" class="h-1 w-full" />
+      </template>
     </section>
   </main>
 
@@ -398,7 +388,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import { useHead } from "@vueuse/head";
 import { useCatalog } from "@/features/catalog/composables/useCatalog";
@@ -428,6 +418,7 @@ const {
   onlyInStock,
   isMobileFilterOpen,
   isLoading,
+  isLoadingMore,
   rawProducts,
   categorySlug,
   categoriesList,
@@ -435,7 +426,7 @@ const {
   dynamicAttributes,
   pagination,
   selectCategory,
-  changePage,
+  loadMore,
   filteredProducts,
   activeFilters,
   removeFilter,
@@ -478,24 +469,34 @@ const sortOptions = computed(() => [
   { value: "price-desc", label: t("catalog.sort.priceDesc") },
 ]);
 
-const paginationPages = computed(() => {
-  const total = pagination.value.lastPage;
-  const current = pagination.value.page;
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+const hasMore = computed(
+  () => pagination.value.page < pagination.value.lastPage,
+);
 
-  const show = new Set(
-    [1, total, current, current - 1, current + 1].filter(
-      (p) => p >= 1 && p <= total,
-    ),
+// Infinite scroll: observes the sentinel rendered right after the product
+// grid and asks the composable for the next page once it enters the
+// viewport. The sentinel only exists in the DOM while hasMore is true (see
+// template), so watching the template ref itself is enough to know when to
+// (dis)connect - no separate "should we still be observing" bookkeeping.
+const loadMoreSentinel = ref<HTMLElement | null>(null);
+let sentinelObserver: IntersectionObserver | null = null;
+
+watch(loadMoreSentinel, (el) => {
+  sentinelObserver?.disconnect();
+  sentinelObserver = null;
+  if (!el) return;
+
+  sentinelObserver = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting) loadMore();
+    },
+    { rootMargin: "400px" },
   );
-  const sorted = [...show].sort((a, b) => a - b);
+  sentinelObserver.observe(el);
+});
 
-  const result: (number | string)[] = [];
-  for (let i = 0; i < sorted.length; i++) {
-    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push("...");
-    result.push(sorted[i]);
-  }
-  return result;
+onBeforeUnmount(() => {
+  sentinelObserver?.disconnect();
 });
 </script>
 

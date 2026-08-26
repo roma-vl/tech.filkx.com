@@ -6,6 +6,7 @@ use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use database\factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements HasLocalePreference, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
@@ -115,6 +116,11 @@ class User extends Authenticatable implements MustVerifyEmail
         $settings = $this->settings ?? [];
         $settings['language'] = $value;
         $this->attributes['settings'] = json_encode($settings);
+    }
+
+    public function preferredLocale(): string
+    {
+        return $this->locale ?: self::DEFAULT_LOCALE;
     }
 
     public function sendEmailVerificationNotification(): void

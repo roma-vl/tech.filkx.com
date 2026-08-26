@@ -1,23 +1,28 @@
 @extends('emails.layouts.system')
+@php($badgeColor = '#00a046')
+
+@section('badge')
+    {{ __('emails.reset_password.badge', [], $locale) }}
+@endsection
 
 @section('content')
-    <h2 style="color: #2d3748; margin-top: 0;">Reset Your Password</h2>
+    <h2 class="text-heading" style="color: #111827; margin: 0 0 16px; font-size: 21px;">{{ __('emails.reset_password.heading', [], $locale) }}</h2>
 
-    <p>Hello,</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.reset_password.greeting', [], $locale) }}</p>
 
-    <p>We received a password reset request for your <strong>{{ config('app.name') }}</strong> account.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.reset_password.body', ['app' => config('app.name')], $locale) }}</p>
 
-    <p>If you made this request, please click the button below to set a new password:</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.reset_password.instruction', [], $locale) }}</p>
 
     @component('emails.components.button', ['url' => $resetUrl])
-        Reset Password
+        {{ __('emails.reset_password.button', [], $locale) }}
     @endcomponent
 
-    <p>This password reset link will expire in <strong>{{ $expire }} minutes</strong>.</p>
+    <p class="text-muted" style="color: #6b7280; font-size: 13px;">{{ __('emails.reset_password.expiry', ['minutes' => $expire], $locale) }}</p>
 
     @include('emails.components.divider')
 
-    <p>If you did not request a password reset, no further action is required. Your account remains secure.</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.reset_password.ignore', [], $locale) }}</p>
 
-    <p>Thanks,<br>{{ config('app.name') }} Team</p>
+    <p class="text-body" style="color: #374151;">{{ __('emails.reset_password.thanks', [], $locale) }}<br>{{ __('emails.reset_password.team', ['app' => config('app.name')], $locale) }}</p>
 @endsection

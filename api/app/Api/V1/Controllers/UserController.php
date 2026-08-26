@@ -9,6 +9,7 @@ use App\Api\V1\Actions\User\Compare\ToggleUserCompareAction;
 use App\Api\V1\Actions\User\ConfirmEmailChangeAction;
 use App\Api\V1\Actions\User\DeleteUserAvatarAction;
 use App\Api\V1\Actions\User\Favorites\GetUserFavoritesAction;
+use App\Api\V1\Actions\User\Favorites\SubscribeProductRestockAction;
 use App\Api\V1\Actions\User\Favorites\SyncUserFavoritesAction;
 use App\Api\V1\Actions\User\Favorites\ToggleUserFavoriteAction;
 use App\Api\V1\Actions\User\GetUserAction;
@@ -565,6 +566,41 @@ class UserController extends BaseApiController
         return self::successfulResponseWithData(
             $action->execute($request->user(), $request->input('product_ids', []))
         );
+    }
+
+    #[OA\Post(
+        path: '/api/user/favorites/notify-restock',
+        summary: 'Subscribe to a one-time email when an out-of-stock product is back in stock',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['product_id'],
+                properties: [new OA\Property(property: 'product_id', type: 'integer')],
+            ),
+        ),
+        tags: ['User'],
+        responses: [
+            new OA\Response(response: 200, description: 'Subscribed'),
+            new OA\Response(response: 400, description: 'Product ID is required'),
+            new OA\Response(response: 404, description: 'Product not found'),
+        ],
+    )]
+    public function subscribeRestock(Request $request, SubscribeProductRestockAction $action): JsonResponse
+    {
+        $productId = $request->input('product_id');
+        if (! $productId) {
+            return self::errorResponse('Product ID is required.', 400);
+        }
+
+        $product = Product::find($productId);
+        if (! $product) {
+            return self::errorResponse('Product not found.', 404);
+        }
+
+        $action->execute($request->user(), $product);
+
+        return self::successfulResponseWithData(['subscribed' => true]);
     }
 
     #[OA\Get(

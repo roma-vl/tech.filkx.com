@@ -65,6 +65,7 @@ class SupportController extends BaseApiController
                         new OA\Property(property: 'subject', type: 'string', maxLength: 255),
                         new OA\Property(property: 'message', type: 'string'),
                         new OA\Property(property: 'file', description: 'Up to 10 MB', type: 'string', format: 'binary'),
+                        new OA\Property(property: 'product_id', description: 'The product this ticket is about, if opened from a product page', type: 'integer', nullable: true),
                     ],
                 ),
             ),

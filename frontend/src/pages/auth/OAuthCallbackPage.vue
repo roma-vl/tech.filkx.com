@@ -1,112 +1,100 @@
 <template>
-  <div
-    class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"
-  >
-    <div class="text-center">
-      <div
-        v-if="error"
-        class="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg"
-      >
-        <div class="text-red-500 mb-4">
+  <AuthLayout size="md">
+    <div class="text-center w-full py-4">
+      <div v-if="error" class="flex flex-col items-center">
+        <div
+          class="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6 text-red-600"
+        >
           <svg
-            class="w-12 h-12 mx-auto"
+            class="w-12 h-12"
             fill="none"
-            viewBox="0 0 24 24"
             stroke="currentColor"
+            viewBox="0 0 24 24"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              stroke-width="3"
+              d="M12 9v3.75m0 3.75h.008M4.062 18h15.876c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L2.33 15c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
-          Authentication Failed
-        </h3>
-        <p class="text-gray-500 dark:text-gray-400 mb-6">
+        <h1
+          class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight"
+        >
+          {{ $t("auth.oauthCallback.errorTitle") }}
+        </h1>
+        <p
+          class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto text-lg leading-relaxed"
+        >
           {{ error }}
         </p>
-        <div class="space-y-3">
-          <router-link
-            to="/login"
-            class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 w-full"
-          >
-            Back to Login
-          </router-link>
-          <p class="text-xs text-gray-400">Need help? Contact support</p>
-        </div>
+        <UiButton
+          to="/login"
+          variant="primary"
+          size="lg"
+          class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 font-bold"
+        >
+          {{ $t("auth.oauthCallback.backToLogin") }}
+        </UiButton>
+        <p class="text-gray-400 dark:text-gray-500 text-xs mt-6">
+          {{ $t("auth.oauthCallback.needHelp") }}
+        </p>
       </div>
-      <div
-        v-else-if="showRestorationModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      >
+
+      <div v-else-if="showRestorationModal" class="flex flex-col items-center">
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full"
+          class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 text-green-600"
         >
-          <div class="p-6">
-            <div class="text-center mb-4">
-              <div
-                class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
-                <svg
-                  class="w-8 h-8 text-green-600 dark:text-green-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Welcome Back!
-              </h3>
-              <p class="text-gray-500 dark:text-gray-400">
-                Your account has been successfully restored.
-              </p>
-            </div>
-            <div class="flex justify-center">
-              <button
-                class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
-                @click="confirmRestoration"
-              >
-                Continue to Dashboard
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else class="flex flex-col items-center">
-        <svg
-          class="animate-spin h-10 w-10 text-primary-600 mb-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
+          <svg
+            class="w-12 h-12"
+            fill="none"
             stroke="currentColor"
-            stroke-width="4"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="3"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h1
+          class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight"
+        >
+          {{ $t("auth.oauthCallback.restoredTitle") }}
+        </h1>
+        <p
+          class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto text-lg leading-relaxed"
+        >
+          {{ $t("auth.oauthCallback.restoredSubtitle") }}
+        </p>
+        <UiButton
+          variant="primary"
+          size="lg"
+          class="w-full !bg-gradient-to-r !from-[#00a046] !to-[#00b050] !rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 font-bold"
+          @click="confirmRestoration"
+        >
+          {{ $t("auth.oauthCallback.continueToDashboard") }}
+        </UiButton>
+      </div>
+
+      <div v-else class="flex flex-col items-center">
+        <div class="relative w-20 h-20 mb-6">
+          <div
+            class="absolute inset-0 border-4 border-primary-200 rounded-full"
           />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          <div
+            class="absolute inset-0 border-4 border-primary-600 rounded-full border-t-transparent animate-spin"
           />
-        </svg>
-        <p class="text-gray-500 dark:text-gray-400">Completing sign in...</p>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {{ $t("auth.oauthCallback.completing") }}
+        </h2>
       </div>
     </div>
-  </div>
+  </AuthLayout>
 </template>
 
 <script setup lang="ts">
@@ -114,11 +102,15 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/entities/user/model/authStore";
 import { useToast } from "vue-toastification";
+import { useI18n } from "vue-i18n";
+import AuthLayout from "@/layouts/auth/AuthLayout.vue";
+import UiButton from "@/shared/ui/UiButton.vue";
 
 const route = useRoute();
 const router = useRouter();
 const store = useAuthStore();
 const toast = useToast();
+const { t } = useI18n();
 
 const error = ref<string | null>(null);
 const showRestorationModal = ref(false);
@@ -140,7 +132,7 @@ onMounted(async () => {
   }
 
   if (!token) {
-    error.value = "Authentication failed. No token received.";
+    error.value = t("auth.oauthCallback.noToken");
     return;
   }
 
@@ -153,7 +145,7 @@ onMounted(async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
     await store.fetchUser();
 
-    toast.success("Successfully signed in with Google!");
+    toast.success(t("auth.oauthCallback.successMessage"));
 
     if (wasRestored) {
       showRestorationModal.value = true;
@@ -163,7 +155,7 @@ onMounted(async () => {
     }
   } catch (err: any) {
     console.error("OAuth callback error:", err);
-    error.value = err.message || "Failed to complete authentication";
+    error.value = err.message || t("auth.oauthCallback.genericError");
     store.clear(); // Clear any partial auth state
   }
 });
