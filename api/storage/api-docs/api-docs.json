@@ -4843,6 +4843,11 @@
                                         "description": "Up to 10 MB",
                                         "type": "string",
                                         "format": "binary"
+                                    },
+                                    "product_id": {
+                                        "description": "The product this ticket is about, if opened from a product page",
+                                        "type": "integer",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -6942,6 +6947,11 @@
                         "items": {
                             "$ref": "#/components/schemas/SupportMessageResource"
                         }
+                    },
+                    "product": {
+                        "description": "The product this ticket was opened about, if the customer started it from a product page - same raw shape as /catalog/products/{slug}",
+                        "type": "object",
+                        "nullable": true
                     },
                     "createdAt": {
                         "type": "string",

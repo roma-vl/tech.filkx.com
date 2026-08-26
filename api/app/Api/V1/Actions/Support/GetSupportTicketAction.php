@@ -14,6 +14,6 @@ class GetSupportTicketAction
             throw new AccessDeniedHttpException('Access denied');
         }
 
-        return $ticket->load(['publicMessages.user', 'user']);
+        return $ticket->load(['publicMessages.user', 'user', 'product.variants']);
     }
 }

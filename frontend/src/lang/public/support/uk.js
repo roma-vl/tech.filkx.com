@@ -22,6 +22,7 @@ export default {
     support: "Підтримка",
     inputPlaceholder: "Введіть повідомлення…",
     send: "Надіслати",
+    aboutProduct: "Питання про товар",
   },
   status: {
     new: "Нове",

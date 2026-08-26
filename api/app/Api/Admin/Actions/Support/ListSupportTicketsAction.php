@@ -12,7 +12,7 @@ class ListSupportTicketsAction
      */
     public function execute(array $filters = []): LengthAwarePaginator
     {
-        $query = SupportTicket::with(['user', 'lastMessage'])
+        $query = SupportTicket::with(['user', 'lastMessage', 'product'])
             ->withCount(['unreadMessagesForAdmin as unreadCount']);
 
         // Search by ID, Subject, Username, Email

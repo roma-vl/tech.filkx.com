@@ -2,16 +2,19 @@
   <main class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
     <!-- Loading state -->
     <div v-if="loading" class="max-w-container-max mx-auto px-4 md:px-8 py-10">
-      <div class="animate-pulse space-y-8">
-        <div
-          class="aspect-video md:aspect-auto md:h-80 bg-zinc-200 dark:bg-zinc-800 rounded-2xl"
-        />
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="animate-pulse flex gap-6 items-start">
+        <div class="hidden lg:block w-64 h-96 flex-shrink-0 bg-zinc-200 dark:bg-zinc-800" />
+        <div class="flex-1 min-w-0 space-y-6">
           <div
-            v-for="i in 10"
-            :key="i"
-            class="h-72 bg-zinc-200 dark:bg-zinc-800 rounded-xl"
+            class="aspect-video md:aspect-auto md:h-64 bg-zinc-200 dark:bg-zinc-800 rounded-xl"
           />
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div
+              v-for="i in 10"
+              :key="i"
+              class="h-72 bg-zinc-200 dark:bg-zinc-800 rounded-xl"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -35,57 +38,18 @@
 
     <!-- Content -->
     <template v-else>
-      <!-- Hero header -->
-      <section
-        class="relative aspect-video md:aspect-auto md:h-80 overflow-hidden"
-      >
-        <img
-          class="absolute inset-0 w-full h-full object-cover opacity-60"
-          :src="promoPage.imageUrl"
-          :alt="promoPage.title"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
-        />
-        <div
-          class="relative z-10 max-w-container-max mx-auto px-4 md:px-8 h-full flex flex-col justify-center text-white"
-        >
-          <div
-            v-if="promoPage.badge"
-            class="mb-3 inline-flex w-fit items-center bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 rounded-none text-[10px]"
-          >
-            {{ promoPage.badge }}
-          </div>
-          <h1 class="font-extrabold text-3xl md:text-5xl mb-3 leading-tight">
-            {{ promoPage.title }}
-          </h1>
-          <p
-            v-if="promoPage.subtitle"
-            class="text-zinc-200 font-bold text-sm uppercase tracking-widest mb-2"
-          >
-            {{ promoPage.subtitle }}
-          </p>
-          <p
-            v-if="promoPage.description"
-            class="text-sm md:text-[15px] text-zinc-300 max-w-2xl leading-relaxed"
-          >
-            {{ promoPage.description }}
-          </p>
-        </div>
-      </section>
-
-      <div class="max-w-container-max mx-auto px-4 md:px-8 py-10">
-        <!-- Category strip (Mobile) -->
+      <div class="max-w-container-max mx-auto px-4 md:px-8 py-6 lg:py-10">
+        <!-- Category strip (Mobile) - above everything, including the banner -->
         <div
           v-if="categoryFacets.length > 1"
           class="lg:hidden mb-5 -mx-1 px-1 flex gap-2 overflow-x-auto hide-scrollbar"
         >
           <button
             :class="[
-              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all',
+              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-all',
               !selectedCategory
-                ? 'bg-[#00a046] text-white border-transparent shadow-sm'
-                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
+                ? 'bg-[#00a046] text-white shadow-sm'
+                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
             ]"
             @click="selectCategory('')"
           >
@@ -96,10 +60,10 @@
             v-for="cat in categoryFacets"
             :key="cat.slug"
             :class="[
-              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all',
+              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-all',
               selectedCategory === cat.slug
-                ? 'bg-[#00a046] text-white border-transparent shadow-sm'
-                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
+                ? 'bg-[#00a046] text-white shadow-sm'
+                : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700/50',
             ]"
             @click="selectCategory(cat.slug)"
           >
@@ -109,13 +73,14 @@
         </div>
 
         <div class="flex gap-6 items-start">
-          <!-- Sidebar (Desktop) -->
+          <!-- Sidebar (Desktop) - starts from the very top of the page, level
+               with the banner, not below it -->
           <aside
             v-if="categoryFacets.length > 1"
             class="hidden lg:block w-64 flex-shrink-0"
           >
             <div
-              class="sticky top-24 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm"
+              class="sticky top-24 bg-white dark:bg-zinc-900 p-5"
             >
               <h3
                 class="font-extrabold text-zinc-900 dark:text-white mb-4 text-xs uppercase tracking-wider"
@@ -125,7 +90,7 @@
               <div class="space-y-1">
                 <button
                   :class="[
-                    'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
+                    'w-full flex items-center justify-between px-3 py-2 text-sm font-medium transition-all',
                     !selectedCategory
                       ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
                       : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
@@ -134,7 +99,7 @@
                 >
                   <span>{{ t("promoPage.categories.all") }}</span>
                   <span
-                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 font-bold"
                     >{{ rawProducts.length }}</span
                   >
                 </button>
@@ -142,7 +107,7 @@
                   v-for="cat in categoryFacets"
                   :key="cat.slug"
                   :class="[
-                    'w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all',
+                    'w-full flex items-center justify-between px-3 py-2 text-sm font-medium transition-all',
                     selectedCategory === cat.slug
                       ? 'bg-emerald-50 dark:bg-emerald-950/20 text-[#00a046] font-extrabold'
                       : 'text-zinc-650 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
@@ -153,7 +118,7 @@
                     pickLocalized(cat.name, locale)
                   }}</span>
                   <span
-                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full font-bold"
+                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 font-bold"
                     >{{ cat.count }}</span
                   >
                 </button>
@@ -161,26 +126,67 @@
             </div>
           </aside>
 
-          <!-- Products Workspace -->
-          <section class="flex-1 min-w-0">
-            <div
-              v-if="products.length"
-              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
+          <!-- Content column: banner sits only above the products, not
+               full-page-width above the sidebar too -->
+          <div class="flex-1 min-w-0 space-y-6">
+            <section
+              class="relative rounded-xl overflow-hidden aspect-video md:aspect-auto md:h-64"
             >
-              <ProductCard
-                v-for="product in products"
-                :key="product.id"
-                :product="product"
-                view-mode="grid"
+              <img
+                class="absolute inset-0 w-full h-full object-cover opacity-60"
+                :src="promoPage.imageUrl"
+                :alt="promoPage.title"
               />
-            </div>
-            <div
-              v-else
-              class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center text-zinc-500 dark:text-zinc-400"
-            >
-              {{ t("promoPage.empty") }}
-            </div>
-          </section>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"
+              />
+              <div
+                class="relative z-10 h-full flex flex-col justify-center text-white px-6 md:px-10"
+              >
+                <div
+                  v-if="promoPage.badge"
+                  class="mb-3 inline-flex w-fit items-center bg-[#00a046] text-white font-bold uppercase tracking-wider px-3 py-1 text-[10px]"
+                >
+                  {{ promoPage.badge }}
+                </div>
+                <h1 class="font-extrabold text-2xl md:text-4xl mb-3 leading-tight">
+                  {{ promoPage.title }}
+                </h1>
+                <p
+                  v-if="promoPage.subtitle"
+                  class="text-zinc-200 font-bold text-sm uppercase tracking-widest mb-2"
+                >
+                  {{ promoPage.subtitle }}
+                </p>
+                <p
+                  v-if="promoPage.description"
+                  class="text-sm md:text-[15px] text-zinc-300 max-w-2xl leading-relaxed"
+                >
+                  {{ promoPage.description }}
+                </p>
+              </div>
+            </section>
+
+            <section>
+              <div
+                v-if="products.length"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
+              >
+                <ProductCard
+                  v-for="product in products"
+                  :key="product.id"
+                  :product="product"
+                  view-mode="grid"
+                />
+              </div>
+              <div
+                v-else
+                class="bg-white dark:bg-zinc-900 rounded-md border border-zinc-100 dark:border-zinc-800 p-16 text-center text-zinc-500 dark:text-zinc-400"
+              >
+                {{ t("promoPage.empty") }}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </template>

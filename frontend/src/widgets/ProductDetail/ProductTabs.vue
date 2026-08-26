@@ -419,7 +419,12 @@ const handleStartChat = () => {
     return;
   }
 
-  supportStore.startNewChat();
+  supportStore.startNewChat({
+    id: props.product.productId,
+    slug: props.product.slug,
+    name: props.product.name,
+    image: props.product.image,
+  });
 };
 
 interface TabItem {

@@ -5,8 +5,12 @@ export const supportApi = {
     return apiClient.get("/support/tickets");
   },
 
-  createTicket(subject: string, message: string) {
-    return apiClient.post("/support/tickets", { subject, message });
+  createTicket(subject: string, message: string, productId?: number | string) {
+    return apiClient.post("/support/tickets", {
+      subject,
+      message,
+      product_id: productId ?? undefined,
+    });
   },
 
   getTicket(id: number | string) {

@@ -22,6 +22,7 @@ export default {
     support: "Support",
     inputPlaceholder: "Type your message…",
     send: "Send",
+    aboutProduct: "About this product",
   },
   status: {
     new: "New",

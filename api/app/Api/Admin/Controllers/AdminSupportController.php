@@ -71,7 +71,7 @@ class AdminSupportController extends BaseApiController
      */
     public function show(SupportTicket $ticket): JsonResponse
     {
-        $ticket->load(['user']);
+        $ticket->load(['user', 'product.variants']);
 
         // Load latest 5 messages for initial view (descending by ID/created_at)
         // Then reverse to show in chronological order

@@ -98,6 +98,36 @@ describe("supportStore view transitions", () => {
     expect(store.activeTicket).toBeNull();
   });
 
+  it("startNewChat stores the given product as pending, goHome clears it", () => {
+    const store = useSupportStore();
+    const product = {
+      id: 7,
+      slug: "some-case",
+      name: "Some Case",
+      image: "https://example.com/case.jpg",
+    };
+
+    store.startNewChat(product);
+    expect(store.pendingProduct).toEqual(product);
+
+    store.goHome();
+    expect(store.pendingProduct).toBeNull();
+  });
+
+  it("startNewChat with no product clears any previously pending one", () => {
+    const store = useSupportStore();
+    store.pendingProduct = {
+      id: 7,
+      slug: "some-case",
+      name: "Some Case",
+      image: "https://example.com/case.jpg",
+    };
+
+    store.startNewChat();
+
+    expect(store.pendingProduct).toBeNull();
+  });
+
   it("toggleOpen flips isOpen", () => {
     const store = useSupportStore();
     expect(store.isOpen).toBe(false);
@@ -215,8 +245,34 @@ describe("supportStore sendMessage", () => {
     expect(supportApi.createTicket).toHaveBeenCalledWith(
       "Hello, I need help",
       "Hello, I need help",
+      undefined,
     );
     expect(store.activeTicket?.id).toBe(9);
+  });
+
+  it("passes the pending product's id when starting a chat from a product page", async () => {
+    const store = useSupportStore();
+    store.startNewChat({
+      id: 42,
+      slug: "some-phone",
+      name: "Some Phone",
+      image: "https://example.com/phone.jpg",
+    });
+    vi.mocked(supportApi.createTicket).mockResolvedValue({
+      data: { status: "success", data: makeTicket({ id: 9 }) },
+    } as any);
+    vi.mocked(supportApi.getTickets).mockResolvedValue({
+      data: { status: "success", data: [] },
+    } as any);
+
+    await store.sendMessage("Do you have a case for this phone?");
+
+    expect(supportApi.createTicket).toHaveBeenCalledWith(
+      "Do you have a case for this phone?",
+      "Do you have a case for this phone?",
+      42,
+    );
+    expect(store.pendingProduct).toBeNull();
   });
 
   it("truncates long messages into the new ticket's subject", async () => {

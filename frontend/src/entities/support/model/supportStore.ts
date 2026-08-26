@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { supportApi } from "@/shared/services/api/supportApi";
-import { SupportTicket } from "../types";
+import { SupportTicket, SupportTicketProductSummary } from "../types";
 
 const POLL_INTERVAL_MS = 30000;
 const NEW_TICKET_SUBJECT_MAX_LENGTH = 60;
@@ -12,6 +12,10 @@ export interface SupportState {
   view: SupportWidgetView;
   tickets: SupportTicket[];
   activeTicket: SupportTicket | null;
+  // Set only while composing a *new* ticket started from a product page -
+  // lets the compose view show what product the shopper is asking about
+  // before the ticket (and its own `product` relation) exists yet.
+  pendingProduct: SupportTicketProductSummary | null;
   loadingTickets: boolean;
   loadingTicket: boolean;
   sending: boolean;
@@ -24,6 +28,7 @@ export const useSupportStore = defineStore("support", {
     view: "home",
     tickets: [],
     activeTicket: null,
+    pendingProduct: null,
     loadingTickets: false,
     loadingTicket: false,
     sending: false,
@@ -54,12 +59,14 @@ export const useSupportStore = defineStore("support", {
     goHome() {
       this.view = "home";
       this.activeTicket = null;
+      this.pendingProduct = null;
     },
 
-    startNewChat() {
+    startNewChat(product?: SupportTicketProductSummary) {
       this.isOpen = true;
       this.view = "chat";
       this.activeTicket = null;
+      this.pendingProduct = product ?? null;
     },
 
     startPolling() {
@@ -96,6 +103,7 @@ export const useSupportStore = defineStore("support", {
     async selectTicket(ticket: SupportTicket) {
       this.view = "chat";
       this.activeTicket = ticket;
+      this.pendingProduct = null;
       this.loadingTicket = true;
       try {
         const { data } = await supportApi.getTicket(ticket.id);
@@ -157,8 +165,13 @@ export const useSupportStore = defineStore("support", {
           text.length > NEW_TICKET_SUBJECT_MAX_LENGTH
             ? `${text.slice(0, NEW_TICKET_SUBJECT_MAX_LENGTH)}…`
             : text;
-        const { data } = await supportApi.createTicket(subject, text);
+        const { data } = await supportApi.createTicket(
+          subject,
+          text,
+          this.pendingProduct?.id,
+        );
         this.activeTicket = data?.data ?? null;
+        this.pendingProduct = null;
         this.fetchTickets();
       } catch (error) {
         console.error("Failed to create support ticket", error);
@@ -173,6 +186,7 @@ export const useSupportStore = defineStore("support", {
       this.view = "home";
       this.tickets = [];
       this.activeTicket = null;
+      this.pendingProduct = null;
       this.loadingTickets = false;
       this.loadingTicket = false;
       this.sending = false;

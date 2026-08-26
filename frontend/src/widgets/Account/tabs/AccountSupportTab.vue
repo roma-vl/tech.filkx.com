@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { useCartStore } from "@/entities/order/model/cartStore";
 import api from "@/shared/services/api/apiClient";
 import UiDropdown from "@/shared/ui/UiDropdown.vue";
+import { mapCatalogProduct } from "@/entities/product/lib/mapCatalogProduct";
 
 const cartStore = useCartStore();
 const { t } = useI18n();
@@ -78,6 +79,9 @@ const loadingTickets = ref(false);
 const isSubmitting = ref(false);
 
 const selectedTicket = ref<TicketItem | null>(null);
+const linkedTicketProduct = computed(() =>
+  mapCatalogProduct(selectedTicket.value?.product),
+);
 const selectedTicketMessages = ref<TicketMessage[]>([]);
 const replyText = ref("");
 const replying = ref(false);
@@ -440,6 +444,19 @@ onMounted(() => {
                 })
               }}
             </p>
+            <router-link
+              v-if="linkedTicketProduct"
+              :to="{
+                name: 'product-detail',
+                params: { id: linkedTicketProduct.slug },
+              }"
+              class="inline-flex items-center gap-1.5 mt-1.5 text-[11px] font-bold text-[#00a046] hover:underline"
+            >
+              <span class="material-symbols-outlined text-[13px]"
+                >inventory_2</span
+              >
+              {{ linkedTicketProduct.name }}
+            </router-link>
           </div>
           <button
             class="text-zinc-400 hover:text-zinc-600 dark:hover:text-white p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center"

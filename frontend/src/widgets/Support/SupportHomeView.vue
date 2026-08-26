@@ -46,6 +46,11 @@ const formatTimestamp = (dateStr: string) => {
 const previewText = (ticket: SupportTicket) =>
   ticket.lastMessage?.message || t("support.home.waitingForReply");
 
+const productName = (product: NonNullable<SupportTicket["product"]>) =>
+  typeof product.name === "object"
+    ? product.name.uk || product.name.en
+    : product.name;
+
 const emit = defineEmits<{
   (e: "select-ticket", ticket: SupportTicket): void;
   (e: "start-new-chat"): void;
@@ -88,6 +93,13 @@ const emit = defineEmits<{
         </div>
         <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
           {{ previewText(ticket) }}
+        </p>
+        <p
+          v-if="ticket.product"
+          class="flex items-center gap-1 text-[10px] font-semibold text-[#00a046] mt-1 truncate"
+        >
+          <span class="material-symbols-outlined text-[12px]">inventory_2</span>
+          {{ productName(ticket.product) }}
         </p>
         <div class="flex items-center justify-between mt-2">
           <span
