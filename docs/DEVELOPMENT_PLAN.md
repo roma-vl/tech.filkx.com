@@ -138,12 +138,17 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   the full inventory.
 
 ### 2.3 Observability
-- 🟡 **Error tracking wired but inert** (done 2026-08-16, commit `f0de4e4`). `sentry/sentry-laravel`
-  is in the exception handler (`bootstrap/app.php`) and `@sentry/vue` in `main.js`, with
-  `SENTRY_LARAVEL_DSN`/`VITE_SENTRY_DSN` placeholders added to `api/.env(.example)` and all three
-  frontend env files. Both stay fully inert until a DSN is actually set — **no Sentry account
-  exists yet**, so nothing is currently being reported anywhere. **Action**: create the Sentry
-  project and set the DSNs before launch; the code-side integration itself is done.
+- ✅ **Error tracking now live for dev** (2026-08-25). A self-hosted GlitchTip instance
+  (`monitor.filkx.com`) is in use instead of sentry.io — same `sentry/sentry-laravel`/`@sentry/vue`
+  SDKs, GlitchTip just speaks the Sentry protocol. `SENTRY_LARAVEL_DSN` (`api/.env`) and
+  `VITE_SENTRY_DSN` (`frontend/.env`, dev only) are set to the `dev.tech.filkx.com` GlitchTip
+  project's DSN; `SENTRY_TRACES_SAMPLE_RATE` dropped from `0.2` to `0.01` per GlitchTip's own
+  sizing guidance. Verified live: `Sentry\captureException()` + `$client->flush(5)` from
+  `artisan tinker` returned `SUCCESS`. **Deliberately not set** on `frontend/.env.production`/
+  `.env.staging` (both tracked in git) — the DSN GlitchTip issued is scoped to one project
+  (`dev.tech.filkx.com`); reusing it there would mix staging/production events into the dev
+  project. **Action before launch**: create separate GlitchTip projects for staging/production and
+  set their own DSNs.
 - 🟡 **Logging**: standard Laravel `LOG_CHANNEL=stack` only; `AdminServerLogController` gives
   admins a UI to view/clear log files, which is a reasonable stop-gap but not a substitute for
   centralized/aggregated logging in production.
@@ -155,11 +160,18 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
 - ✅ **CI pipeline added** (2026-08-21, commit `480d661`). `.github/workflows/ci.yml` runs on every
   push/PR to `develop`/`master`: a backend job brings up the same `docker-compose.yml` stack local
   dev uses and runs `pint --test` + the full `php artisan test` suite; a frontend job runs `npm ci` +
-  `npm run build` (a real compile-error gate) + Prettier/ESLint checks. The lint checks are
-  `continue-on-error` for now — see `PROJECT_MAP.md` "Known technical debt" #16 for the
-  now-quantified pre-existing repo-wide lint debt (223 files fail Prettier, ~80 ESLint parsing
-  errors from a missing TypeScript parser for `.vue` files) that makes them non-blocking until fixed.
-  `test-frontend`/vitest is deliberately not wired up — zero spec files exist anywhere (see below).
+  `npm run test:unit -- --run` (Vitest, real spec files — see item 3 below, not the "zero spec files"
+  state this paragraph used to describe) + `npm run build` (a real compile-error gate) +
+  Prettier/ESLint checks. **Update 2026-08-25**: the ESLint step is no longer `continue-on-error` —
+  commit `0455010` ("Fix ESLint TS parsing, add Prettier config, mass-reformat frontend",
+  2026-08-21, already on `develop`/`master`) fixed the missing `.vue` TypeScript parser and
+  mass-reformatted the repo; verified live, `npx eslint --config=eslint.config.js --no-cache` now
+  exits 0 (230 warnings, 0 errors, down from ~80 parsing errors + ~8100 warnings). The same commit
+  brought Prettier's backlog down from 223 files to 1 (`src/widgets/Catalog/CatalogCategoryNav.vue`,
+  drifted since) — see `PROJECT_MAP.md` "Known technical debt" #9/#16 for detail. Only the
+  `Prettier check` CI step still carries `continue-on-error: true`, with a comment citing the
+  now-stale 223-file count; reformatting that one file and dropping the flag is a trivial follow-up,
+  not done as part of this doc pass.
 - Note (corrects a stale claim earlier in this doc's history): `Makefile`'s `test-backend` target
   already runs `php artisan test` correctly (`docker compose run --rm tech-api-php-cli php artisan test`)
   — the "missing `test` argument" bug this section used to describe was already fixed by the time of
@@ -324,13 +336,12 @@ Legend: **✅ verified-done** — **🟡 partially done** — **❌ verified-mis
   `REDIS_CLIENT=predis` (the pure-PHP client, already a `composer.json` dependency, no extension
   needed). Verified via `php artisan tinker` inside the container: `Cache::put`/`Cache::get`
   round-trips through Redis, `config('cache.default')` reports `redis`.
-  **Related, found but not fixed** (bigger blast radius, out of scope for this pass):
-  `QUEUE_CONNECTION` is still `database`, not `redis`, even though `tech-api-queue`'s
-  `docker-compose.yml` service `depends_on: tech-redis` — the dependency ordering exists but the
-  queue driver itself doesn't use Redis. Flipping it would need draining/checking the `jobs` table
-  first so in-flight jobs aren't orphaned (low risk today — only one queued Job exists,
-  `NotifyProductWishlistsJob` — but still a deliberate follow-up, not a silent side effect of a cache
-  config change).
+  **Related — fixed 2026-08-25**: `QUEUE_CONNECTION` flipped from `database` to `redis` in
+  `api/.env`/`.env.example` (`tech-api-queue`'s `docker-compose.yml` `depends_on: tech-redis` now
+  actually matches what the queue driver uses). Verified safe first: `jobs`/`failed_jobs` were both
+  empty, so nothing was orphaned. Verified working: after `config:clear` + restarting
+  `tech-api-queue`, `artisan tinker` confirms `config('queue.default')` and its driver both resolve
+  to `redis`.
 - ❌ No image optimization/CDN pipeline (see §2.5 — local disk, no WebP/AVIF conversion observed
   in the upload actions inspected).
 
@@ -418,10 +429,15 @@ user impact, as originally written) with each item's resolution noted:
   to three redundant `fetchProducts()` calls (an explicit one, plus reactive ones triggered by
   clearing filter refs and by the price-bounds refetch) — simplified to rely on the existing reactive
   watcher instead of also calling it explicitly, cutting it down to one.
-- Still open, data not code: a gaming laptop ("Lenovo Legion 5 Pro") is miscategorized under
-  "Смартфони" (Smartphones) in the seeded catalog data — not a logic bug, but it compounds the
-  "filters don't make sense here" impression while browsing that category. Worth a seed-data
-  correction, not a code fix.
+- ~~Still open, data not code: a gaming laptop ("Lenovo Legion 5 Pro") is miscategorized under
+  "Смартфони" (Smartphones)~~ **found already fixed, 2026-08-25**: migration
+  `2026_08_21_150100_fix_miscategorized_seeded_products.php` (same day as this bullet was written)
+  moved it into a new `laptops` child category; a follow-up migration
+  `2026_08_24_090500_recategorize_seeded_products_into_child_categories.php` then found and repaired
+  a bug in that first fix — its hardcoded product id `3` wasn't stable across environments (on
+  production it was actually "Nothing Phone (3)", not the Lenovo laptop, and got wrongly moved into
+  `laptops`) — by switching to slug-based product lookup instead. Both migrations are already on
+  `develop`; this bullet was simply never updated after either landed.
 
 ---
 
@@ -525,12 +541,14 @@ user impact, as originally written) with each item's resolution noted:
    (commit `5889d74`), and "Гарячі пропозиції дня" changed from 4 genuinely random products
    (reshuffling on every request — Postgres ignores `inRandomOrder()`'s seed argument, so the
    "hourly rotation" was never real) to real, stable, discount-qualified picks (commit `061a59c`).
-6. **Next up (recommended immediate priority)**: none currently queued — see §2 for open items by
-   area (lawyer review of legal pages and Sentry project creation are the remaining launch blockers
-   per phase 2 above — both need the business, not more code; promotions engine hardening and image
-   storage strategy are the next launch-quality items per phase 3; fixing the ESLint
-   TypeScript-parser config — `PROJECT_MAP.md` "Known technical debt" #16 — is the highest-leverage
-   frontend-quality item now that CI surfaces it).
+6. **Next up (recommended immediate priority)**: ~~Sentry project creation~~ ✅ done for dev
+   (2026-08-25, self-hosted GlitchTip — see §2.3; staging/production still need their own DSNs),
+   ~~fixing the ESLint TypeScript-parser config~~ ✅ already done (commit `0455010`, 2026-08-21 — see
+   §2.4 / `PROJECT_MAP.md` "Known technical debt" #9/#16; this phase-order doc just hadn't caught
+   up). Lawyer review of the legal pages remains the one open launch blocker that needs the
+   business, not code (LiqPay/Nova Poshta real credentials are the other two, per §2.1). Promotions
+   engine hardening and image storage strategy (S3/R2 vs. local disk) are the next launch-quality
+   items per phase 3.
 7. **Growth**: Meilisearch-backed faceted search on the frontend if not already, broaden backend
    test coverage to the live coupon-validation endpoint, admin marketing CRUD, and the
    Meilisearch-search-keyword path (checkout/cart/catalog/admin-orders are now covered — see §2.4),
